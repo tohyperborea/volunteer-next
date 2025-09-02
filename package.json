@@ -9,7 +9,7 @@
     "lint": "eslint",
     "start:db": "docker-compose --env-file .env.local up -d",
     "stop:db": "docker-compose --env-file .env.local down",
-    "connect:db": "docker-compose --env-file .env.local exec -it db psql -U postgres"
+    "connect:db": "docker-compose --env-file .env.local exec db psql -U postgres"
   },
   "dependencies": {
     "@radix-ui/themes": "^3.2.1",
