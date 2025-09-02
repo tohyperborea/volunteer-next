@@ -1,3 +1,9 @@
+/**
+ * Root layout component for the whole application.
+ * @since 2025-09-02
+ * @author Michael Townsend <@continuities>
+ */
+
 import type { Metadata } from 'next';
 import './globals.css';
 import '@radix-ui/themes/styles.css';
@@ -16,7 +22,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body>
+      <body suppressHydrationWarning>
         <ThemeProvider attribute="class">
           <Theme>
             <Container>{children}</Container>

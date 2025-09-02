@@ -1,0 +1,30 @@
+version: '3'
+services:
+  db:
+    image: postgres
+    env_file:
+      - ./.env.local
+    restart: always
+    ports:
+      - ${POSTGRES_PORT}:${POSTGRES_PORT}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  liquibase:
+    image: liquibase/liquibase
+    env_file:
+      - .env.local
+    volumes:
+      - ./db/changelog.xml:/liquibase/changelog.xml
+      - ./db/scripts:/liquibase/scripts
+    command: >
+      --url=jdbc:postgresql://db:${POSTGRES_PORT}/${POSTGRES_DB}
+      --changeLogFile=changelog.xml
+      --username=postgres
+      --password=${POSTGRES_PASSWORD}
+      update
+    depends_on:
+      - db
+
+volumes:
+  pgdata:
