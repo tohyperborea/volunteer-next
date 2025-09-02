@@ -1,0 +1,1 @@
+CREATE TABLE TEST_LIQUIBASE (Id int, Test varchar(255));
