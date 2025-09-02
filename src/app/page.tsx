@@ -5,11 +5,13 @@
  */
 
 import { Flex, Text } from '@radix-ui/themes';
+import db from '../db';
 
-export default function MyApp() {
+export default async function MyApp() {
+  const dbValue = (await db.query('SELECT 1 as value')).rows[0].value; // Ensure DB is initialized
   return (
     <Flex direction="column" gap="2">
-      <Text>Hello World</Text>
+      <Text>Hello World [{dbValue}]</Text>
     </Flex>
   );
 }
