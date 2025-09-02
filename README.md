@@ -22,5 +22,5 @@ A system to support the organisation of alternative arts festivals.
 1. Pull `main`
 2. Create a new branch for your change
 3. Implement and test your work in your branch
-4. Open a Pull Request in github to merge your branch into `main`
+4. Open a Pull Request in GitHub to merge your branch into `main`
 5. Get at least one 👍 on your PR and then squash merge it
