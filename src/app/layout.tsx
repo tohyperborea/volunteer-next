@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import './globals.css';
 import '@radix-ui/themes/styles.css';
 import { ThemeProvider } from 'next-themes';
 import { Theme, Container } from '@radix-ui/themes';
