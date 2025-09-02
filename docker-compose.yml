@@ -18,7 +18,7 @@ services:
       - ./db/changelog.xml:/liquibase/changelog.xml
       - ./db/scripts:/liquibase/scripts
     command: >
-      --url=jdbc:postgresql://volunteer-next_db_1:${POSTGRES_PORT}/${POSTGRES_DB}
+      --url=jdbc:postgresql://db:${POSTGRES_PORT}/${POSTGRES_DB}
       --changeLogFile=changelog.xml
       --username=postgres
       --password=${POSTGRES_PASSWORD}
