@@ -11,7 +11,7 @@ const pool = new Pool({
   user: 'postgres',
   password: process.env.POSTGRES_PASSWORD,
   database: process.env.POSTGRES_DB,
-  port: Number(process.env.POSTGRES_PORT) ?? 5432
+  port: Number(process.env.POSTGRES_PORT) || 5432
 });
 
 export default pool;
