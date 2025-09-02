@@ -1,3 +1,9 @@
+/**
+ * Base homepage
+ * @since 2025-09-02
+ * @author Michael Townsend <@continuities>
+ */
+
 import { Flex, Text } from '@radix-ui/themes';
 
 export default function MyApp() {
