@@ -9,13 +9,17 @@ A system to support the organisation of alternative arts festivals.
 - [Auth.js](https://authjs.dev)
 - [Radix UI](https://www.radix-ui.com/)
 - [Tanstack Query](https://tanstack.com/query/latest)
+- [PostgreSQL](https://www.postgresql.org/)
 
 ## Getting Started
 
 1. Install dependencies: `npm install`
-2. Create an AUTH_SECRET token: `npx auth secret`
-3. Run development server: `npm run dev`
-4. Visit http://localhost:3000
+2. Copy `.env.example` to `.env.local`
+3. Create an AUTH_SECRET token: `npx auth secret`
+4. Fill in all the `.env.local` placeholder values
+5. Start the database: `docker-compose up`
+6. Run development server: `npm run dev`
+7. Visit http://localhost:3000
 
 ## Development workflow
 

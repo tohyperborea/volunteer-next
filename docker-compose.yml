@@ -1,0 +1,12 @@
+version: '3'
+services:
+  db:
+    image: postgres
+    env_file:
+      - .env.local
+    restart: always
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:

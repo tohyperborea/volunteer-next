@@ -6,7 +6,8 @@
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "connect:db": "docker exec -it volunteer-next_db_1 psql -U postgres"
   },
   "dependencies": {
     "@radix-ui/themes": "^3.2.1",
