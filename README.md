@@ -6,7 +6,7 @@ A system to support the organisation of alternative arts festivals.
 
 - [React](https://react.dev/) - Rendering
 - [Next.js](https://nextjs.org) - Routing and server-side rendering
-- [Auth.js](https://authjs.dev) - Authentication
+- [Better Auth](https://www.better-auth.com/) - Authentication
 - [Radix UI](https://www.radix-ui.com/) - UI components
 - [Tanstack Query](https://tanstack.com/query/latest) - Data querying
 - [PostgreSQL](https://www.postgresql.org/) - Data persistence
