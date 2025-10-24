@@ -5,6 +5,7 @@
  */
 
 import { betterAuth } from 'better-auth';
+import { nextCookies } from 'better-auth/next-js';
 import { genericOAuth } from 'better-auth/plugins';
 import db from '@/db';
 
@@ -23,7 +24,14 @@ export const auth = betterAuth({
           discoveryUrl: 'http://localhost:8000/testorg/.well-known/openid-configuration'
         }
       ]
-    })
+    }),
+    nextCookies()
   ],
-  database: db
+  database: db,
+  advanced: {
+    defaultCookieAttributes: {
+      sameSite: 'none',
+      secure: true
+    }
+  }
 });
