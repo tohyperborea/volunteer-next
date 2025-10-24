@@ -17,6 +17,13 @@ if (!process.env.OAUTH_PROVIDER_ID) {
   throw new Error('OAUTH_PROVIDER_ID is not set in environment variables');
 }
 
+if (!process.env.OAUTH_CLIENT_SECRET) {
+  throw new Error('OAUTH_CLIENT_SECRET is not set in environment variables');
+}
+
+if (!process.env.OAUTH_DISCOVERY_URL) {
+  throw new Error('OAUTH_DISCOVERY_URL is not set in environment variables');
+}
 export const auth = betterAuth({
   plugins: [
     genericOAuth({
