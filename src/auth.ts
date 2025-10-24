@@ -1,11 +1,9 @@
 /**
- * Authentication configuration using NextAuth.js
+ * Authentication configuration using BetterAuth
  * @author Michael Townsend <@continuities>
  * @since 2025-09-02
  */
 
-import NextAuth from 'next-auth';
+import { betterAuth } from 'better-auth';
 
-export const { handlers, signIn, signOut, auth } = NextAuth({
-  providers: []
-});
+export const auth = betterAuth({});
