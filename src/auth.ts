@@ -13,15 +13,19 @@ if (!process.env.OAUTH_CLIENT_ID) {
   throw new Error('OAUTH_CLIENT_ID is not set in environment variables');
 }
 
+if (!process.env.OAUTH_PROVIDER_ID) {
+  throw new Error('OAUTH_PROVIDER_ID is not set in environment variables');
+}
+
 export const auth = betterAuth({
   plugins: [
     genericOAuth({
       config: [
         {
-          providerId: 'local-pretix',
+          providerId: process.env.OAUTH_PROVIDER_ID,
           clientId: process.env.OAUTH_CLIENT_ID,
           clientSecret: process.env.OAUTH_CLIENT_SECRET,
-          discoveryUrl: 'http://localhost:8000/testorg/.well-known/openid-configuration'
+          discoveryUrl: process.env.OAUTH_DISCOVERY_URL
         }
       ]
     }),
