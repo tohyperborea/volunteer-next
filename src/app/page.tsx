@@ -15,7 +15,7 @@ export default async function MyApp() {
     'use server';
     const data = await auth.api.signInWithOAuth2({
       body: {
-        providerId: process.env.OAUTH_PROVIDER_ID,
+        providerId: process.env.OAUTH_PROVIDER_ID ?? '',
         callbackURL: '/',
         scopes: ['openid', 'email', 'profile']
       }
