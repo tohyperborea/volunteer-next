@@ -26,5 +26,15 @@ create table "role" (
     "eventId" uuid references "event" ("id") on delete cascade,
     "teamId" uuid references "team" ("id") on delete cascade,
     "createdAt" timestamptz default CURRENT_TIMESTAMP not null,
-    "updatedAt" timestamptz default CURRENT_TIMESTAMP not null
+    "updatedAt" timestamptz default CURRENT_TIMESTAMP not null,
+
+    constraint "role_organiser_check" check (
+        ("type" = 'organiser' and "eventId" is not null) or "type" != 'organiser'
+    ),
+    constraint "role_team_lead_check" check (
+        ("type" = 'team-lead' and "eventId" is not null and "teamId" is not null) or "type" != 'team-lead'
+    ),
+    constraint "role_admin_check" check (
+        ("type" = 'admin' and "eventId" is null and "teamId" is null) or "type" != 'admin'
+    )
 );

@@ -16,8 +16,14 @@ export const getUserRoles = async (userId: UserId): Promise<UserRole[]> => {
       case 'admin':
         return { type: 'admin' };
       case 'organiser':
+        if (!row.eventId) {
+          throw new Error(`Organiser role missing eventId for user ${userId}`);
+        }
         return { type: 'organiser', eventId: row.eventId };
       case 'team-lead':
+        if (!row.eventId || !row.teamId) {
+          throw new Error(`Team-lead role missing eventId or teamId for user ${userId}`);
+        }
         return { type: 'team-lead', eventId: row.eventId, teamId: row.teamId };
       default:
         throw new Error(`Unknown role type: ${row.type}`);
