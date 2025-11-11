@@ -1,12 +1,17 @@
-version: '3'
+#version: '3'
 services:
   db:
-    image: postgres
-    env_file:
-      - ./.env.local
+    image: postgres:17
+    #env_file:
+    #  - ./.env.local
+    environment:
+      POSTGRES_DB: volunteer_next_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: foobar
+      #POSTGRES_PORT: "5432"
     restart: always
     ports:
-      - ${POSTGRES_PORT}:${POSTGRES_PORT}
+      - '5432:5432'
     volumes:
       - pgdata:/var/lib/postgresql/data
 
@@ -18,10 +23,10 @@ services:
       - ./db/changelog.xml:/liquibase/changelog.xml
       - ./db/scripts:/liquibase/scripts
     command: >
-      --url=jdbc:postgresql://db:${POSTGRES_PORT}/${POSTGRES_DB}
+      --url=jdbc:postgresql://db:5432/volunteer_next_db
       --changeLogFile=changelog.xml
       --username=postgres
-      --password=${POSTGRES_PASSWORD}
+      --password=foobar
       update
     depends_on:
       - db
