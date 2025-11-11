@@ -9,6 +9,7 @@ import db from '@/db';
 import { auth } from '@/auth';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { getUserRoles } from '@/service/user-service';
 
 export default async function MyApp() {
   const signin = async () => {
@@ -37,10 +38,10 @@ export default async function MyApp() {
     headers: await headers()
   });
 
-  const dbValue = (await db.query('SELECT 1 as value')).rows[0].value; // Ensure DB is initialized
+  const userRoles = session?.user ? await getUserRoles(session.user.id) : [];
+
   return (
     <Flex direction="column" gap="2">
-      <Text>Hello World [{dbValue}]</Text>
       {!session ? (
         <form action={signin}>
           <button type="submit">Sign In with Pretix</button>
@@ -49,6 +50,18 @@ export default async function MyApp() {
         <form action={signout}>
           <Flex direction="column" gap="2">
             <Text>Welcome, {session.user?.email}</Text>
+            <Text>Your roles:</Text>
+            {userRoles.length === 0 && <Text>- No roles assigned</Text>}
+            {userRoles.map((role, index) => (
+              <Text key={index}>
+                -{' '}
+                {role.type === 'admin'
+                  ? 'Admin'
+                  : role.type === 'organiser'
+                    ? `Organiser for event ${role.eventId}`
+                    : `Team Lead for team ${role.teamId} in event ${role.eventId}`}
+              </Text>
+            ))}
             <button type="submit">Sign out</button>
           </Flex>
         </form>
