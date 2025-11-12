@@ -42,17 +42,17 @@ export const currentUser = cache(async (): Promise<User | null> => {
  * @param acceptedRoles - An optional array of UserRole objects that are accepted.
  * @returns True if the user is authorised, otherwise redirects.
  */
-export const checkAuthorisation = async (acceptedRoles?: UserRole[]): Promise<boolean> => {
+export const checkAuthorisation = async (acceptedRoles?: UserRole[]): Promise<void> => {
   const user = await currentUser();
   if (!user) {
     redirect('/');
   }
   if (!acceptedRoles || acceptedRoles.length === 0) {
-    return true;
+    return;
   }
   for (const role of acceptedRoles) {
     if (user.roles.find((userRole) => rolesEq(userRole, role))) {
-      return true;
+      return;
     }
   }
   unauthorized();
