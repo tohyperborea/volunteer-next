@@ -24,7 +24,15 @@ export const getEvents = async (): Promise<EventInfo[]> => {
  * @return The EventInfo object if found, or null if not found.
  */
 export const getEventById = async (eventId: EventId): Promise<EventInfo | null> => {
-  return null; // TODO
+  const result = await db.query('SELECT id, name FROM event WHERE id = $1', [eventId]);
+  if (result.rows.length === 0) {
+    return null;
+  }
+  const row = result.rows[0];
+  return {
+    id: row.id,
+    name: row.name
+  };
 };
 
 /**
@@ -33,5 +41,12 @@ export const getEventById = async (eventId: EventId): Promise<EventInfo | null> 
  * @return The newly created EventInfo object, including its ID.
  */
 export const createEvent = async (event: Omit<EventInfo, 'id'>): Promise<EventInfo> => {
-  return { id: 'todo', ...event }; // TODO
+  const result = await db.query('INSERT INTO event (name) VALUES ($1) RETURNING id, name', [
+    event.name
+  ]);
+  const row = result.rows[0];
+  return {
+    id: row.id,
+    name: row.name
+  };
 };

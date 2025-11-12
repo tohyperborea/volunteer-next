@@ -1,6 +1,6 @@
 import metadata from '@/i18n/metadata';
 import { getEvents } from '@/service/event-service';
-import { Heading, Flex, Card, Text, Button, Box } from '@radix-ui/themes';
+import { Heading, Flex, Card, Text, Button, Box, Link } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
 import { PlusIcon } from '@radix-ui/react-icons';
 
@@ -14,9 +14,11 @@ export default async function EventsDashboard() {
     <Flex direction="column" gap="4" p="4">
       <Heading my="4">{t('title')}</Heading>
       <Box>
-        <Button>
-          <PlusIcon /> {t('createEvent')}
-        </Button>
+        <Link href="/create-event">
+          <Button>
+            <PlusIcon /> {t('createEvent')}
+          </Button>
+        </Link>
       </Box>
       {events.length === 0 && (
         <Card>

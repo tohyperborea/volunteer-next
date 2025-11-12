@@ -9,6 +9,13 @@ type UserId = string;
 type EventId = string;
 type TeamId = string;
 
+interface User {
+  id: UserId;
+  name: string;
+  email: string;
+  roles: UserRole[];
+}
+
 /* These align with the role_type enum in the database
  * If you change this, you must also change the role_type enum in psql */
 type UserRole =

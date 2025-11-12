@@ -3,5 +3,11 @@
     "title": "Events Dashboard",
     "noEvents": "No events yet!",
     "createEvent": "Create New Event"
+  },
+  "CreateEvent": {
+    "title": "Create Event",
+    "eventName": "Event Name",
+    "eventOrganiser": "Event Organiser",
+    "createButton": "Create Event"
   }
 }
