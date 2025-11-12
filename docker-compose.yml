@@ -16,7 +16,9 @@ services:
     volumes:
       - ./db/changelog.xml:/liquibase/changelog.xml
       - ./db/scripts:/liquibase/scripts
+      - ./db/drivers:/liquibase/lib
     command: >
+      --classpath=/liquibase/lib/postgresql.jar
       --url=jdbc:postgresql://db:${POSTGRES_PORT}/${POSTGRES_DB}
       --changeLogFile=changelog.xml
       --username=postgres
