@@ -20,3 +20,8 @@ type UserRole =
 
   // Manage volunteers and shifts in assigned area
   | { type: 'team-lead'; eventId: EventId; teamId: TeamId };
+
+interface EventInfo {
+  id: EventId;
+  name: string;
+}

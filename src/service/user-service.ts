@@ -6,6 +6,11 @@
 
 import db from '@/db';
 
+/**
+ * Fetches all roles associated with a given user.
+ * @param userId - The ID of the user to fetch roles for.
+ * @returns An array of UserRole objects associated with the user.
+ */
 export const getUserRoles = async (userId: UserId): Promise<UserRole[]> => {
   const result = await db.query(
     'SELECT "type", "eventId", "teamId" FROM role WHERE "userId" = $1',

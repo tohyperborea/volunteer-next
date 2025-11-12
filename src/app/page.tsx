@@ -1,11 +1,11 @@
 /**
- * Base homepage
+ * Temporary test page.
+ * Will be removed/replaced later with a better splash page.
  * @since 2025-09-02
  * @author Michael Townsend <@continuities>
  */
 
 import { Flex, Text } from '@radix-ui/themes';
-import db from '@/db';
 import { auth } from '@/auth';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
