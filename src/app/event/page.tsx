@@ -3,10 +3,13 @@ import { getEvents } from '@/service/event-service';
 import { Heading, Flex, Card, Text, Button, Box, Link } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
 import { PlusIcon } from '@radix-ui/react-icons';
+import { checkAuthorisation } from '@/session';
 
 export const generateMetadata = metadata('EventsDashboard');
 
 export default async function EventsDashboard() {
+  await checkAuthorisation([{ type: 'admin' }]);
+
   const t = await getTranslations('EventsDashboard');
   const events = await getEvents();
 
@@ -28,7 +31,7 @@ export default async function EventsDashboard() {
       {events.map((event) => (
         <Card key={event.id}>
           <Heading size="4">{event.name}</Heading>
-          <Text>TODO</Text>
+          <Text>TODO: event details?</Text>
         </Card>
       ))}
     </Flex>

@@ -9,7 +9,7 @@ import { Flex, Text } from '@radix-ui/themes';
 import { auth } from '@/auth';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { getUserRoles } from '@/service/user-service';
+import { currentUser } from '@/session';
 
 export default async function MyApp() {
   const signin = async () => {
@@ -34,25 +34,21 @@ export default async function MyApp() {
     redirect('/');
   };
 
-  const session = await auth.api.getSession({
-    headers: await headers()
-  });
-
-  const userRoles = session?.user ? await getUserRoles(session.user.id) : [];
+  const user = await currentUser();
 
   return (
     <Flex direction="column" gap="2">
-      {!session ? (
+      {!user ? (
         <form action={signin}>
           <button type="submit">Sign In with Pretix</button>
         </form>
       ) : (
         <form action={signout}>
           <Flex direction="column" gap="2">
-            <Text>Welcome, {session.user?.email}</Text>
+            <Text>Welcome, {user.email}</Text>
             <Text>Your roles:</Text>
-            {userRoles.length === 0 && <Text>- No roles assigned</Text>}
-            {userRoles.map((role, index) => (
+            {user.roles.length === 0 && <Text>- No roles assigned</Text>}
+            {user.roles.map((role, index) => (
               <Text key={index}>
                 -{' '}
                 {role.type === 'admin'

@@ -5,25 +5,26 @@
  */
 
 import db from '@/db';
+import { cache } from 'react';
 
 /**
  * Fetches a list of all events from the database.
  * @return An array of EventInfo objects.
  */
-export const getEvents = async (): Promise<EventInfo[]> => {
+export const getEvents = cache(async (): Promise<EventInfo[]> => {
   const result = await db.query('SELECT id, name FROM event');
   return result.rows.map((row) => ({
     id: row.id,
     name: row.name
   }));
-};
+});
 
 /**
  * Fetches a specific event by its ID.
  * @param eventId - The unique identifier of the event.
  * @return The EventInfo object if found, or null if not found.
  */
-export const getEventById = async (eventId: EventId): Promise<EventInfo | null> => {
+export const getEventById = cache(async (eventId: EventId): Promise<EventInfo | null> => {
   const result = await db.query('SELECT id, name FROM event WHERE id = $1', [eventId]);
   if (result.rows.length === 0) {
     return null;
@@ -33,7 +34,7 @@ export const getEventById = async (eventId: EventId): Promise<EventInfo | null> 
     id: row.id,
     name: row.name
   };
-};
+});
 
 /**
  * Creates a new event in the database.

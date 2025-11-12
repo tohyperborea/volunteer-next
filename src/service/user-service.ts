@@ -5,6 +5,7 @@
  */
 
 import db from '@/db';
+import { cache } from 'react';
 
 const roleFromRow = (row: any): UserRole => {
   switch (row.type) {
@@ -26,11 +27,47 @@ const roleFromRow = (row: any): UserRole => {
 };
 
 /**
+ * Fetches a user by their ID.
+ * @param userId - The unique identifier of the user.
+ * @returns The User object if found, or null if not found.
+ */
+export const getUser = cache(async (userId: UserId): Promise<User | null> => {
+  const result = await db.query(
+    `
+    SELECT u.id, u.name, u.email, r.type, r."eventId", r."teamId"
+    FROM "user" u
+    LEFT JOIN role r ON u.id = r."userId"
+    WHERE u.id = $1
+  `,
+    [userId]
+  );
+
+  if (result.rows.length === 0) {
+    return null;
+  }
+
+  const user: User = {
+    id: result.rows[0].id,
+    name: result.rows[0].name,
+    email: result.rows[0].email,
+    roles: []
+  };
+
+  result.rows.forEach((row) => {
+    if (row.type) {
+      user.roles.push(roleFromRow(row));
+    }
+  });
+
+  return user;
+});
+
+/**
  * Retrieves all the users in the system.
  * @returns A promise that resolves to an array of users.
  * @throws {Error} If the database query fails.
  */
-export const getUsers = async (): Promise<User[]> => {
+export const getUsers = cache(async (): Promise<User[]> => {
   const result = await db.query(`
     SELECT u.id, u.name, u.email, r.type, r."eventId", r."teamId"
     FROM "user" u
@@ -57,20 +94,20 @@ export const getUsers = async (): Promise<User[]> => {
   });
 
   return Array.from(usersMap.values());
-};
+});
 
 /**
  * Fetches all roles associated with a given user.
  * @param userId - The ID of the user to fetch roles for.
  * @returns An array of UserRole objects associated with the user.
  */
-export const getUserRoles = async (userId: UserId): Promise<UserRole[]> => {
+export const getUserRoles = cache(async (userId: UserId): Promise<UserRole[]> => {
   const result = await db.query(
     'SELECT "type", "eventId", "teamId" FROM role WHERE "userId" = $1',
     [userId]
   );
   return result.rows.map(roleFromRow);
-};
+});
 
 /**
  * Adds a role to a user.

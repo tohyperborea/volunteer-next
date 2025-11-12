@@ -4,16 +4,16 @@ import { Flex, Heading, Box, Button, Card, TextField, Select } from '@radix-ui/t
 import { getTranslations } from 'next-intl/server';
 import { createEvent } from '@/service/event-service';
 import { addUserRole, getUsers } from '@/service/user-service';
+import { checkAuthorisation } from '@/session';
 
 export const generateMetadata = metadata('CreateEvent');
 
 export default async function EventsDashboard() {
-  const t = await getTranslations('CreateEvent');
-
-  const users = await getUsers();
-
   const onSubmit = async (data: FormData) => {
     'use server';
+
+    await checkAuthorisation([{ type: 'admin' }]);
+
     const name = data.get('name')?.toString() ?? null;
     if (!name) {
       throw new Error('Event name is required');
@@ -29,6 +29,10 @@ export default async function EventsDashboard() {
     console.info('Created new event:', newEvent);
     redirect('/event');
   };
+
+  await checkAuthorisation([{ type: 'admin' }]);
+  const t = await getTranslations('CreateEvent');
+  const users = await getUsers();
 
   return (
     <Flex direction="column" gap="4" p="4">
