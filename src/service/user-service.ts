@@ -4,7 +4,8 @@
  * @since 2025-11-10
  */
 
-import db from '@/db';
+import pool from '@/db';
+import { PoolClient } from 'pg';
 import { cache } from 'react';
 
 const roleFromRow = (row: any): UserRole => {
@@ -32,7 +33,7 @@ const roleFromRow = (row: any): UserRole => {
  * @returns The User object if found, or null if not found.
  */
 export const getUser = cache(async (userId: UserId): Promise<User | null> => {
-  const result = await db.query(
+  const result = await pool.query(
     `
     SELECT u.id, u.name, u.email, r.type, r."eventId", r."teamId"
     FROM "user" u
@@ -68,7 +69,7 @@ export const getUser = cache(async (userId: UserId): Promise<User | null> => {
  * @throws {Error} If the database query fails.
  */
 export const getUsers = cache(async (): Promise<User[]> => {
-  const result = await db.query(`
+  const result = await pool.query(`
     SELECT u.id, u.name, u.email, r.type, r."eventId", r."teamId"
     FROM "user" u
     LEFT JOIN role r ON u.id = r."userId"
@@ -102,7 +103,7 @@ export const getUsers = cache(async (): Promise<User[]> => {
  * @returns An array of UserRole objects associated with the user.
  */
 export const getUserRoles = cache(async (userId: UserId): Promise<UserRole[]> => {
-  const result = await db.query(
+  const result = await pool.query(
     'SELECT "type", "eventId", "teamId" FROM role WHERE "userId" = $1',
     [userId]
   );
@@ -113,9 +114,15 @@ export const getUserRoles = cache(async (userId: UserId): Promise<UserRole[]> =>
  * Adds a role to a user.
  * @param userId - The ID of the user to add the role to.
  * @param role - The role to add.
+ * @param client - Optional database client for transaction support.
  * @throws {Error} If the database query fails or the role is invalid.
  */
-export const addUserRole = async (userId: UserId, role: UserRole): Promise<void> => {
+export const addUserRole = async (
+  userId: UserId,
+  role: UserRole,
+  client?: PoolClient
+): Promise<void> => {
+  const db = client || pool;
   switch (role.type) {
     case 'admin':
       await db.query('INSERT INTO role ("userId", "type") VALUES ($1, $2)', [userId, 'admin']);

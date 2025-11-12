@@ -5,6 +5,7 @@ import { getTranslations } from 'next-intl/server';
 import { createEvent } from '@/service/event-service';
 import { addUserRole, getUsers } from '@/service/user-service';
 import { checkAuthorisation } from '@/session';
+import { inTransaction } from '@/db';
 
 export const generateMetadata = metadata('CreateEvent');
 
@@ -22,11 +23,10 @@ export default async function EventsDashboard() {
     if (!organiser) {
       throw new Error('Organiser is required');
     }
-    const newEvent = await createEvent({
-      name
+    inTransaction(async (client) => {
+      const newEvent = await createEvent({ name }, client);
+      await addUserRole(organiser, { type: 'organiser', eventId: newEvent.id }, client);
     });
-    await addUserRole(organiser, { type: 'organiser', eventId: newEvent.id });
-    console.info('Created new event:', newEvent);
     redirect('/event');
   };
 
