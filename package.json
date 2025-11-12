@@ -7,10 +7,10 @@
     "build": "next build --turbopack",
     "start": "next start",
     "lint": "eslint",
-    "start:db": "docker-compose --env-file .env.local up -d",
-    "stop:db": "docker-compose --env-file .env.local down",
-    "connect:db": "docker-compose --env-file .env.local exec db psql -U postgres",
-    "logs:db": "docker-compose --env-file .env.local logs -f db"
+    "start:db": "docker compose --env-file .env.local up -d",
+    "stop:db": "docker compose --env-file .env.local down",
+    "connect:db": "docker compose --env-file .env.local exec db psql -U postgres",
+    "logs:db": "docker compose --env-file .env.local logs -f db"
   },
   "dependencies": {
     "@radix-ui/themes": "^3.2.1",
@@ -23,6 +23,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@radix-ui/react-icons": "^1.3.2",
     "@tailwindcss/postcss": "^4",
     "@tanstack/eslint-plugin-query": "^5.83.1",
     "@types/node": "^20",
@@ -32,6 +33,7 @@
     "better-auth": "^1.3.30",
     "eslint": "^9",
     "eslint-config-next": "16.0.0",
+    "next-intl": "^4.5.2",
     "prettier": "^3.6.2",
     "tailwindcss": "^4",
     "typescript": "^5"
