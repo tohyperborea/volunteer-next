@@ -9,6 +9,7 @@ import './globals.css';
 import '@radix-ui/themes/styles.css';
 import { ThemeProvider } from 'next-themes';
 import { Theme, Container } from '@radix-ui/themes';
+import NavBar from '@/ui/navbar';
 
 export const metadata: Metadata = {
   title: 'volunteer-next',
@@ -25,7 +26,10 @@ export default function RootLayout({
       <body suppressHydrationWarning>
         <ThemeProvider attribute="class">
           <Theme>
-            <Container>{children}</Container>
+            <Container>
+              <NavBar />
+              <main>{children}</main>
+            </Container>
           </Theme>
         </ThemeProvider>
       </body>

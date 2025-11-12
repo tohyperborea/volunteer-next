@@ -1,0 +1,5 @@
+.navbar {
+  height: 50px;
+  background: var(--color-panel-solid);
+  box-shadow: var(--shadow-2);
+}
