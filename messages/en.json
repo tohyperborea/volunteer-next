@@ -1,5 +1,7 @@
 {
   "EventsDashboard": {
-    "title": "Events Dashboard"
+    "title": "Events Dashboard",
+    "noEvents": "No events yet!",
+    "createEvent": "Create New Event"
   }
 }

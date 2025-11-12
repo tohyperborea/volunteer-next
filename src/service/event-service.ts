@@ -4,12 +4,18 @@
  * @author Michael Townsend <@continuities>
  */
 
+import db from '@/db';
+
 /**
  * Fetches a list of all events from the database.
  * @return An array of EventInfo objects.
  */
 export const getEvents = async (): Promise<EventInfo[]> => {
-  return []; // TODO
+  const result = await db.query('SELECT id, name FROM event');
+  return result.rows.map((row) => ({
+    id: row.id,
+    name: row.name
+  }));
 };
 
 /**

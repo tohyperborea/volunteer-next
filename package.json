@@ -7,10 +7,10 @@
     "build": "next build --turbopack",
     "start": "next start",
     "lint": "eslint",
-    "start:db": "docker-compose --env-file .env.local up -d",
-    "stop:db": "docker-compose --env-file .env.local down",
-    "connect:db": "docker-compose --env-file .env.local exec db psql -U postgres",
-    "logs:db": "docker-compose --env-file .env.local logs -f db"
+    "start:db": "docker compose --env-file .env.local up -d",
+    "stop:db": "docker compose --env-file .env.local down",
+    "connect:db": "docker compose --env-file .env.local exec db psql -U postgres",
+    "logs:db": "docker compose --env-file .env.local logs -f db"
   },
   "dependencies": {
     "@radix-ui/themes": "^3.2.1",
