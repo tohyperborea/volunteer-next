@@ -102,6 +102,7 @@ export const getUsersWithRole = cache(async (role: UserRole): Promise<User[]> =>
   }
   if (role.type === 'team-lead') {
     roleQuery.push(`"teamId" = $3`);
+    queryParams.push(role.teamId);
   }
   const result = await pool.query(
     `
