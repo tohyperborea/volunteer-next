@@ -1,6 +1,6 @@
 import metadata from '@/i18n/metadata';
 import { redirect } from 'next/navigation';
-import { Flex, Heading, Card } from '@radix-ui/themes';
+import { Flex, Heading, Box, Button, Card, TextField, Select, Text } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
 import { createEvent } from '@/service/event-service';
 import { addRoleToUser, getUsers } from '@/service/user-service';
