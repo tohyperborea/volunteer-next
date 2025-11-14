@@ -17,5 +17,13 @@
     "eventOrganiser": "Event Organiser",
     "createButton": "Create Event",
     "updateButton": "Update Event"
+  },
+  "EventCard": {
+    "update": "Update",
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "dateSpan": "{startDate} to {endDate}",
+    "confirmDeletion": "Confirm Deletion",
+    "confirmText": "Are you sure you want to delete \"{eventName}\"?"
   }
 }

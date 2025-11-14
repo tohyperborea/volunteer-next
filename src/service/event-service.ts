@@ -76,3 +76,14 @@ export const updateEvent = async (event: EventInfo, client?: PoolClient): Promis
   console.info('Updated event:', updatedEvent);
   return updatedEvent;
 };
+
+/**
+ * Deletes an event from the database.
+ * @param eventId - The ID of the event to delete.
+ * @param client - Optional database client for transaction support.
+ */
+export const deleteEvent = async (eventId: EventId, client?: PoolClient): Promise<void> => {
+  const db = client || pool;
+  await db.query('DELETE FROM event WHERE id = $1', [eventId]);
+  console.info('Deleted event with id:', eventId);
+};
