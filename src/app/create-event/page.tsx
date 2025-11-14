@@ -1,11 +1,12 @@
 import metadata from '@/i18n/metadata';
 import { redirect } from 'next/navigation';
-import { Flex, Heading, Box, Button, Card, TextField, Select } from '@radix-ui/themes';
+import { Flex, Heading, Box, Button, Card, TextField, Select, Text } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
 import { createEvent } from '@/service/event-service';
 import { addUserRole, getUsers } from '@/service/user-service';
 import { checkAuthorisation } from '@/session';
 import { inTransaction } from '@/db';
+import EventForm from '@/ui/event-form';
 
 export const generateMetadata = metadata('CreateEvent');
 
@@ -19,12 +20,32 @@ export default async function EventsDashboard() {
     if (!name) {
       throw new Error('Event name is required');
     }
+    const startDateString = data.get('startDate')?.toString() ?? null;
+    if (!startDateString) {
+      throw new Error('Start date is required');
+    }
+    const endDateString = data.get('endDate')?.toString() ?? null;
+    if (!endDateString) {
+      throw new Error('End date is required');
+    }
     const organiser = data.get('organiserId')?.toString() ?? null;
     if (!organiser) {
       throw new Error('Organiser is required');
     }
-    inTransaction(async (client) => {
-      const newEvent = await createEvent({ name }, client);
+    const startDate = new Date(startDateString);
+    const endDate = new Date(endDateString);
+    if (endDate < startDate) {
+      throw new Error('End date cannot be before start date');
+    }
+    await inTransaction(async (client) => {
+      const newEvent = await createEvent(
+        {
+          name,
+          startDate,
+          endDate
+        },
+        client
+      );
       await addUserRole(organiser, { type: 'organiser', eventId: newEvent.id }, client);
     });
     redirect('/event');
@@ -38,24 +59,7 @@ export default async function EventsDashboard() {
     <Flex direction="column" gap="4" p="4">
       <Heading my="4">{t('title')}</Heading>
       <Card>
-        <form action={onSubmit}>
-          <Flex direction="column" gap="2">
-            <TextField.Root name="name" placeholder={t('eventName')} required />
-            <Select.Root required name="organiserId">
-              <Select.Trigger placeholder={t('eventOrganiser')} />
-              <Select.Content>
-                {users.map((user) => (
-                  <Select.Item key={user.id} value={user.id}>
-                    {user.name}
-                  </Select.Item>
-                ))}
-              </Select.Content>
-            </Select.Root>
-            <Box>
-              <Button type="submit">{t('createButton')}</Button>
-            </Box>
-          </Flex>
-        </form>
+        <EventForm onSubmit={onSubmit} organiserOptions={users} />
       </Card>
     </Flex>
   );

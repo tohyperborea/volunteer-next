@@ -8,16 +8,20 @@ import pool from '@/db';
 import { PoolClient } from 'pg';
 import { cache } from 'react';
 
+const rowToEvent = (row: any): EventInfo => ({
+  id: row.id,
+  name: row.name,
+  startDate: row.startDate,
+  endDate: row.endDate
+});
+
 /**
  * Fetches a list of all events from the database.
  * @return An array of EventInfo objects.
  */
 export const getEvents = cache(async (): Promise<EventInfo[]> => {
-  const result = await pool.query('SELECT id, name FROM event');
-  return result.rows.map((row) => ({
-    id: row.id,
-    name: row.name
-  }));
+  const result = await pool.query('SELECT id, name, "startDate", "endDate" FROM event');
+  return result.rows.map(rowToEvent);
 });
 
 /**
@@ -26,15 +30,14 @@ export const getEvents = cache(async (): Promise<EventInfo[]> => {
  * @return The EventInfo object if found, or null if not found.
  */
 export const getEventById = cache(async (eventId: EventId): Promise<EventInfo | null> => {
-  const result = await pool.query('SELECT id, name FROM event WHERE id = $1', [eventId]);
+  const result = await pool.query(
+    'SELECT id, name, "startDate", "endDate" FROM event WHERE id = $1',
+    [eventId]
+  );
   if (result.rows.length === 0) {
     return null;
   }
-  const row = result.rows[0];
-  return {
-    id: row.id,
-    name: row.name
-  };
+  return rowToEvent(result.rows[0]);
 });
 
 /**
@@ -48,14 +51,11 @@ export const createEvent = async (
   client?: PoolClient
 ): Promise<EventInfo> => {
   const db = client || pool;
-  const result = await db.query('INSERT INTO event (name) VALUES ($1) RETURNING id, name', [
-    event.name
-  ]);
-  const row = result.rows[0];
-  const newEvent = {
-    id: row.id,
-    name: row.name
-  };
+  const result = await db.query(
+    'INSERT INTO event (name, "startDate", "endDate") VALUES ($1, $2, $3) RETURNING id, name, "startDate", "endDate"',
+    [event.name, event.startDate, event.endDate]
+  );
+  const newEvent = rowToEvent(result.rows[0]);
   console.info('Created new event:', newEvent);
   return newEvent;
 };
