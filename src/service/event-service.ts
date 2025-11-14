@@ -53,9 +53,26 @@ export const createEvent = async (
   const db = client || pool;
   const result = await db.query(
     'INSERT INTO event (name, "startDate", "endDate") VALUES ($1, $2, $3) RETURNING id, name, "startDate", "endDate"',
-    [event.name, event.startDate, event.endDate]
+    [event.name, event.startDate.toISOString(), event.endDate.toISOString()]
   );
   const newEvent = rowToEvent(result.rows[0]);
   console.info('Created new event:', newEvent);
   return newEvent;
+};
+
+/**
+ * Updates an existing event in the database.
+ * @param event - The event data to update, including its ID.
+ * @param client - Optional database client for transaction support.
+ * @returns The updated EventInfo object.
+ */
+export const updateEvent = async (event: EventInfo, client?: PoolClient): Promise<EventInfo> => {
+  const db = client || pool;
+  const result = await db.query(
+    'UPDATE event SET name = $1, "startDate" = $2, "endDate" = $3 WHERE id = $4 RETURNING id, name, "startDate", "endDate"',
+    [event.name, event.startDate.toISOString(), event.endDate.toISOString(), event.id]
+  );
+  const updatedEvent = rowToEvent(result.rows[0]);
+  console.info('Updated event:', updatedEvent);
+  return updatedEvent;
 };

@@ -7,11 +7,15 @@
   "CreateEvent": {
     "title": "Create Event"
   },
+  "UpdateEvent": {
+    "title": "Update Event"
+  },
   "EventForm": {
     "eventName": "Event Name",
     "startDate": "Start Date",
     "endDate": "End Date",
     "eventOrganiser": "Event Organiser",
-    "createButton": "Create Event"
+    "createButton": "Create Event",
+    "updateButton": "Update Event"
   }
 }

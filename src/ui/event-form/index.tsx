@@ -20,9 +20,16 @@ const FormItem = ({ children }: { children: React.ReactNode }) => (
 interface Props {
   onSubmit: (data: FormData) => Promise<void>;
   organiserOptions: User[];
+  editingEvent?: EventInfo;
+  editingOrganiser?: User;
 }
 
-export default function EventForm({ onSubmit, organiserOptions }: Props) {
+export default function EventForm({
+  onSubmit,
+  organiserOptions,
+  editingEvent,
+  editingOrganiser
+}: Props) {
   const t = useTranslations('EventForm');
   const [startDate, setStartDate] = useState<string>('');
   const [endDate, setEndDate] = useState<string>('');
@@ -30,6 +37,7 @@ export default function EventForm({ onSubmit, organiserOptions }: Props) {
   const minEndDate = startDate?.length ? startDate : today;
   return (
     <form action={onSubmit}>
+      {editingEvent && <input type="hidden" name="id" value={editingEvent.id} />}
       <Flex direction="column" gap="4">
         <FormItem>
           <Text as="label" id="event-name-label" htmlFor="event-name" size="2" weight="bold">
@@ -41,6 +49,7 @@ export default function EventForm({ onSubmit, organiserOptions }: Props) {
             id="event-name"
             placeholder={t('eventName')}
             autoComplete="off"
+            defaultValue={editingEvent?.name}
             required
           />
         </FormItem>
@@ -58,6 +67,7 @@ export default function EventForm({ onSubmit, organiserOptions }: Props) {
             min={today}
             max={endDate}
             onChange={(e) => setStartDate(e.target.value)}
+            defaultValue={editingEvent?.startDate.toISOString().split('T')[0]}
             required
           />
         </FormItem>
@@ -74,6 +84,7 @@ export default function EventForm({ onSubmit, organiserOptions }: Props) {
             placeholder={t('endDate')}
             min={minEndDate}
             onChange={(e) => setEndDate(e.target.value)}
+            defaultValue={editingEvent?.endDate.toISOString().split('T')[0]}
             required
           />
         </FormItem>
@@ -87,7 +98,7 @@ export default function EventForm({ onSubmit, organiserOptions }: Props) {
           >
             {t('eventOrganiser')}
           </Text>
-          <Select.Root required name="organiserId">
+          <Select.Root required name="organiserId" defaultValue={editingOrganiser?.id}>
             <Select.Trigger placeholder={t('eventOrganiser')} />
             <Select.Content>
               {organiserOptions.map((user) => (
@@ -99,7 +110,7 @@ export default function EventForm({ onSubmit, organiserOptions }: Props) {
           </Select.Root>
         </FormItem>
         <Box>
-          <Button type="submit">{t('createButton')}</Button>
+          <Button type="submit">{t(editingEvent ? 'updateButton' : 'createButton')}</Button>
         </Box>
       </Flex>
     </form>

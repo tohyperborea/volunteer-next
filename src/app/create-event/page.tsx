@@ -1,16 +1,16 @@
 import metadata from '@/i18n/metadata';
 import { redirect } from 'next/navigation';
-import { Flex, Heading, Box, Button, Card, TextField, Select, Text } from '@radix-ui/themes';
+import { Flex, Heading, Card } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
 import { createEvent } from '@/service/event-service';
-import { addUserRole, getUsers } from '@/service/user-service';
+import { addRoleToUser, getUsers } from '@/service/user-service';
 import { checkAuthorisation } from '@/session';
 import { inTransaction } from '@/db';
 import EventForm from '@/ui/event-form';
 
 export const generateMetadata = metadata('CreateEvent');
 
-export default async function EventsDashboard() {
+export default async function CreateEvent() {
   const onSubmit = async (data: FormData) => {
     'use server';
 
@@ -46,7 +46,7 @@ export default async function EventsDashboard() {
         },
         client
       );
-      await addUserRole(organiser, { type: 'organiser', eventId: newEvent.id }, client);
+      await addRoleToUser({ type: 'organiser', eventId: newEvent.id }, organiser, client);
     });
     redirect('/event');
   };
