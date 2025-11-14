@@ -45,10 +45,8 @@ export default async function UpdateEvent({ params }: Props) {
     if (!organiser) {
       throw new Error('Organiser is required');
     }
-    const startDate = new Date(`${startDateString}z`);
-    const endDate = new Date(`${endDateString}z`);
-
-    console.log(startDate, endDate);
+    const startDate = new Date(startDateString);
+    const endDate = new Date(endDateString);
 
     if (endDate < startDate) {
       throw new Error('End date cannot be before start date');
