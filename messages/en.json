@@ -12,11 +12,13 @@
   },
   "EventForm": {
     "eventName": "Event Name",
+    "eventSlug": "URL Slug",
     "startDate": "Start Date",
     "endDate": "End Date",
     "eventOrganiser": "Event Organiser",
     "createButton": "Create Event",
-    "updateButton": "Update Event"
+    "updateButton": "Update Event",
+    "cancelButton": "Cancel"
   },
   "EventCard": {
     "update": "Update",

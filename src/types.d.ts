@@ -8,6 +8,7 @@
 type UserId = string;
 type EventId = string;
 type TeamId = string;
+type UrlSlug = string;
 
 interface User {
   id: UserId;
@@ -31,6 +32,15 @@ type UserRole =
 interface EventInfo {
   id: EventId;
   name: string;
+  slug: UrlSlug;
   startDate: Date;
   endDate: Date;
+}
+
+interface TeamInfo {
+  id: TeamId;
+  eventId: EventId;
+  name: string;
+  slug: UrlSlug;
+  description: string;
 }

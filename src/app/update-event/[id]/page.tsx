@@ -12,6 +12,8 @@ import {
 import { checkAuthorisation } from '@/session';
 import { inTransaction } from '@/db';
 import EventForm from '@/ui/event-form';
+import { validateExistingEvent } from '@/validator/event-validator';
+import { validateUserId } from '@/validator/user-validator';
 
 export const generateMetadata = metadata('UpdateEvent');
 
@@ -25,32 +27,8 @@ export default async function UpdateEvent({ params }: Props) {
 
     await checkAuthorisation([{ type: 'admin' }]);
 
-    const id = data.get('id')?.toString() ?? null;
-    if (!id) {
-      throw new Error('Event ID is required');
-    }
-    const name = data.get('name')?.toString() ?? null;
-    if (!name) {
-      throw new Error('Event name is required');
-    }
-    const startDateString = data.get('startDate')?.toString() ?? null;
-    if (!startDateString) {
-      throw new Error('Start date is required');
-    }
-    const endDateString = data.get('endDate')?.toString() ?? null;
-    if (!endDateString) {
-      throw new Error('End date is required');
-    }
-    const organiser = data.get('organiserId')?.toString() ?? null;
-    if (!organiser) {
-      throw new Error('Organiser is required');
-    }
-    const startDate = new Date(startDateString);
-    const endDate = new Date(endDateString);
-
-    if (endDate < startDate) {
-      throw new Error('End date cannot be before start date');
-    }
+    const newEvent = validateExistingEvent(data);
+    const organiser = validateUserId(data, 'organiserId');
 
     const roleToAdd: UserRole = { type: 'organiser', eventId: id };
     const existingOrganisers = await getUsersWithRole(roleToAdd);
@@ -62,15 +40,7 @@ export default async function UpdateEvent({ params }: Props) {
     const shouldAdd = toRemove.length === existingOrganisers.length;
 
     await inTransaction(async (client) => {
-      await updateEvent(
-        {
-          id,
-          name,
-          startDate,
-          endDate
-        },
-        client
-      );
+      await updateEvent(newEvent, client);
       if (toRemove.length > 0) {
         await removeRoleFromUsers(roleToAdd, toRemove, client);
       }
@@ -99,6 +69,7 @@ export default async function UpdateEvent({ params }: Props) {
         <Card>
           <EventForm
             onSubmit={onSubmit}
+            backOnCancel
             organiserOptions={users}
             editingEvent={event}
             editingOrganiser={organiser}
