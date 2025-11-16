@@ -7,6 +7,8 @@ import { addRoleToUser, getUsers } from '@/service/user-service';
 import { checkAuthorisation } from '@/session';
 import { inTransaction } from '@/db';
 import EventForm from '@/ui/event-form';
+import { validateNewEvent } from '@/validator/event-validator';
+import { validateUserId } from '@/validator/user-validator';
 
 export const generateMetadata = metadata('CreateEvent');
 
@@ -16,37 +18,12 @@ export default async function CreateEvent() {
 
     await checkAuthorisation([{ type: 'admin' }]);
 
-    const name = data.get('name')?.toString() ?? null;
-    if (!name) {
-      throw new Error('Event name is required');
-    }
-    const startDateString = data.get('startDate')?.toString() ?? null;
-    if (!startDateString) {
-      throw new Error('Start date is required');
-    }
-    const endDateString = data.get('endDate')?.toString() ?? null;
-    if (!endDateString) {
-      throw new Error('End date is required');
-    }
-    const organiser = data.get('organiserId')?.toString() ?? null;
-    if (!organiser) {
-      throw new Error('Organiser is required');
-    }
-    const startDate = new Date(startDateString);
-    const endDate = new Date(endDateString);
-    if (endDate < startDate) {
-      throw new Error('End date cannot be before start date');
-    }
+    const newEvent = validateNewEvent(data);
+    const organiser = validateUserId(data, 'organiserId');
+
     await inTransaction(async (client) => {
-      const newEvent = await createEvent(
-        {
-          name,
-          startDate,
-          endDate
-        },
-        client
-      );
-      await addRoleToUser({ type: 'organiser', eventId: newEvent.id }, organiser, client);
+      const createdEvent = await createEvent(newEvent, client);
+      await addRoleToUser({ type: 'organiser', eventId: createdEvent.id }, organiser, client);
     });
     redirect('/event');
   };
@@ -59,7 +36,7 @@ export default async function CreateEvent() {
     <Flex direction="column" gap="4" p="4">
       <Heading my="4">{t('title')}</Heading>
       <Card>
-        <EventForm onSubmit={onSubmit} organiserOptions={users} />
+        <EventForm onSubmit={onSubmit} backOnCancel organiserOptions={users} />
       </Card>
     </Flex>
   );
