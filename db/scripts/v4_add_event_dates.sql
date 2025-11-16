@@ -1,0 +1,3 @@
+ALTER TABLE "event"
+ADD COLUMN "startDate" DATE NOT NULL,
+ADD COLUMN "endDate" DATE NOT NULL;

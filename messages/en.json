@@ -5,9 +5,25 @@
     "createEvent": "Create New Event"
   },
   "CreateEvent": {
-    "title": "Create Event",
+    "title": "Create Event"
+  },
+  "UpdateEvent": {
+    "title": "Update Event"
+  },
+  "EventForm": {
     "eventName": "Event Name",
+    "startDate": "Start Date",
+    "endDate": "End Date",
     "eventOrganiser": "Event Organiser",
-    "createButton": "Create Event"
+    "createButton": "Create Event",
+    "updateButton": "Update Event"
+  },
+  "EventCard": {
+    "update": "Update",
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "dateSpan": "{startDate} to {endDate}",
+    "confirmDeletion": "Confirm Deletion",
+    "confirmText": "Are you sure you want to delete \"{eventName}\"?"
   }
 }

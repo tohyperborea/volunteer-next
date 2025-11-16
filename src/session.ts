@@ -28,6 +28,32 @@ const rolesEq = (a: UserRole, b: UserRole): boolean => {
  * @returns The User object if authenticated, or null if not authenticated.
  */
 export const currentUser = cache(async (): Promise<User | null> => {
+  if (process.env.DEBUG_FORCE_ROLE && process.env.NODE_ENV !== 'production') {
+    switch (process.env.DEBUG_FORCE_ROLE) {
+      case 'admin':
+        return {
+          id: 'debug-admin',
+          name: 'Debug Admin',
+          email: 'admin@localhost',
+          roles: [{ type: 'admin' }]
+        };
+      case 'organiser':
+        return {
+          id: 'debug-organiser',
+          name: 'Debug Organiser',
+          email: 'organiser@localhost',
+          roles: [{ type: 'organiser', eventId: 'debug-event' }]
+        };
+      case 'team-lead':
+        return {
+          id: 'debug-team-lead',
+          name: 'Debug Team Lead',
+          email: 'teamlead@localhost',
+          roles: [{ type: 'team-lead', eventId: 'debug-event', teamId: 'debug-team' }]
+        };
+    }
+  }
+
   const session = await auth.api.getSession({
     headers: await headers()
   });
