@@ -27,8 +27,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    ".next/dev/types/**/*.ts",
-    "src/ui/event-form"
+    ".next/dev/types/**/*.ts"
   ],
   "exclude": ["node_modules"]
 }
