@@ -15,7 +15,9 @@ import EventForm from '@/ui/event-form';
 import { validateExistingEvent } from '@/validator/event-validator';
 import { validateUserId } from '@/validator/user-validator';
 
-export const generateMetadata = metadata('UpdateEvent');
+const PAGE_KEY = 'UpdateEventPage';
+
+export const generateMetadata = metadata(PAGE_KEY);
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -30,7 +32,7 @@ export default async function UpdateEvent({ params }: Props) {
     const newEvent = validateExistingEvent(data);
     const organiser = validateUserId(data, 'organiserId');
 
-    const roleToAdd: UserRole = { type: 'organiser', eventId: id };
+    const roleToAdd: UserRole = { type: 'organiser', eventId: newEvent.id };
     const existingOrganisers = await getUsersWithRole(roleToAdd);
     // Only currently supporting a single organiser, so remove all who aren't the new one
     // If we are removing all existing organisers, it means we need to add the new one
@@ -52,7 +54,7 @@ export default async function UpdateEvent({ params }: Props) {
   };
 
   await checkAuthorisation([{ type: 'admin' }]);
-  const t = await getTranslations('UpdateEvent');
+  const t = await getTranslations(PAGE_KEY);
   const { id } = await params;
   try {
     const event = id ? await getEventById(id) : null;

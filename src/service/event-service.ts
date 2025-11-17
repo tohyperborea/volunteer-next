@@ -42,6 +42,22 @@ export const getEventById = cache(async (eventId: EventId): Promise<EventInfo | 
 });
 
 /**
+ * Fetches a specific event by its slug.
+ * @param slug - The slug identifier of the event.
+ * @return The EventInfo object if found, or null if not found.
+ */
+export const getEventBySlug = cache(async (slug: string): Promise<EventInfo | null> => {
+  const result = await pool.query(
+    'SELECT id, name, "slug", "startDate", "endDate" FROM event WHERE "slug" = $1',
+    [slug]
+  );
+  if (result.rows.length === 0) {
+    return null;
+  }
+  return rowToEvent(result.rows[0]);
+});
+
+/**
  * Creates a new event in the database.
  * @param event - The event data, excluding the ID.
  * @param client - Optional database client for transaction support.

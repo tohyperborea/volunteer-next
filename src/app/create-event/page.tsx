@@ -10,7 +10,9 @@ import EventForm from '@/ui/event-form';
 import { validateNewEvent } from '@/validator/event-validator';
 import { validateUserId } from '@/validator/user-validator';
 
-export const generateMetadata = metadata('CreateEvent');
+const PAGE_KEY = 'CreateEventPage';
+
+export const generateMetadata = metadata(PAGE_KEY);
 
 export default async function CreateEvent() {
   const onSubmit = async (data: FormData) => {
@@ -29,7 +31,7 @@ export default async function CreateEvent() {
   };
 
   await checkAuthorisation([{ type: 'admin' }]);
-  const t = await getTranslations('CreateEvent');
+  const t = await getTranslations(PAGE_KEY);
   const users = await getUsers();
 
   return (
