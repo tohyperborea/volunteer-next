@@ -49,13 +49,15 @@ export default async function EventsDashboard({ params }: Props) {
   return (
     <Flex direction="column" gap="4" p="4">
       <Heading my="4">{t('teamsForEvent', { eventName: event.name })}</Heading>
-      <Box>
-        <Link href={`/event/${eventSlug}/create-team`}>
-          <Button>
-            <PlusIcon /> {t('createTeam')}
-          </Button>
-        </Link>
-      </Box>
+      {isEditable && (
+        <Box>
+          <Link href={`/event/${eventSlug}/create-team`}>
+            <Button>
+              <PlusIcon /> {t('createTeam')}
+            </Button>
+          </Link>
+        </Box>
+      )}
       {teams.length === 0 && (
         <Card>
           <Text>{t('noTeams')}</Text>

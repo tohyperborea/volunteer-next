@@ -51,6 +51,13 @@ export const currentUser = cache(async (): Promise<User | null> => {
           email: 'teamlead@localhost',
           roles: [{ type: 'team-lead', eventId: 'debug-event', teamId: 'debug-team' }]
         };
+      case 'volunteer':
+        return {
+          id: 'debug-volunteer',
+          name: 'Debug Volunteer',
+          email: 'volunteer@localhost',
+          roles: []
+        };
     }
   }
 
@@ -66,18 +73,16 @@ export const currentUser = cache(async (): Promise<User | null> => {
 /**
  * Validates that the user is logged in and, optionally, has one of the accepted roles.
  * @param acceptedRoles - An optional array of UserRole objects that are accepted.
- * @param noRedirect - If true, does not redirect on failure (default: false).
+ * @param checkOnly - If true, does not redirect on missing roles (default: false).
  * @returns True if the user is authorised, otherwise redirects.
  */
 export const checkAuthorisation = async (
   acceptedRoles?: UserRole[],
-  noRedirect = false
+  checkOnly = false
 ): Promise<boolean> => {
   const user = await currentUser();
   if (!user) {
-    if (!noRedirect) {
-      redirect('/');
-    }
+    redirect('/');
     return false;
   }
   if (!acceptedRoles || acceptedRoles.length === 0) {
@@ -88,7 +93,7 @@ export const checkAuthorisation = async (
       return true;
     }
   }
-  if (!noRedirect) {
+  if (!checkOnly) {
     unauthorized();
   }
   return false;
