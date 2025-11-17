@@ -6,7 +6,7 @@ import { PlusIcon } from '@radix-ui/react-icons';
 import { checkAuthorisation } from '@/session';
 import TeamCard from '@/ui/team-card';
 import { notFound, redirect } from 'next/navigation';
-import { deleteTeam } from '@/service/team-service';
+import { deleteTeam, getTeamsForEvent } from '@/service/team-service';
 
 const PAGE_KEY = 'TeamsDashboardPage';
 
@@ -33,13 +33,17 @@ export default async function EventsDashboard({ params }: Props) {
     notFound();
   }
 
-  const teams: TeamInfo[] = []; // TODO
+  const teams = await getTeamsForEvent(event.id);
+  const isEditable = await checkAuthorisation(
+    [{ type: 'admin' }, { type: 'organiser', eventId: event.id }],
+    true
+  );
 
   const deleteAction = async (id: TeamId) => {
     'use server';
     await checkAuthorisation([{ type: 'admin' }]);
     await deleteTeam(id);
-    redirect('/event');
+    redirect(`/event/${eventSlug}/team`);
   };
 
   return (
@@ -64,7 +68,7 @@ export default async function EventsDashboard({ params }: Props) {
           href={`/event/${eventSlug}/team/${team.slug}`}
           key={team.id}
         >
-          <TeamCard team={team} onDelete={deleteAction} />
+          <TeamCard team={team} editable={isEditable} onDelete={deleteAction} />
         </Link>
       ))}
     </Flex>

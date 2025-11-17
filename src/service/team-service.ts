@@ -5,6 +5,7 @@
  */
 
 import pool from '@/db';
+import { PoolClient } from 'pg';
 import { cache } from 'react';
 
 const rowToTeam = (row: any): TeamInfo => ({
@@ -16,6 +17,21 @@ const rowToTeam = (row: any): TeamInfo => ({
 });
 
 /**
+ * Get all teams for a specific event
+ * @param eventId - The ID of the event
+ * @returns A list of teams associated with the event
+ */
+export const getTeamsForEvent = cache(async (eventId: EventId): Promise<TeamInfo[]> => {
+  const res = await pool.query(
+    `SELECT id, "eventId", slug, name, description
+     FROM team
+     WHERE "eventId" = $1`,
+    [eventId]
+  );
+  return res.rows.map(rowToTeam);
+});
+
+/**
  * Get a team by its slug within a specific event
  * @param eventSlug - The url slug of the event
  * @param teamSlug - The url slug of the team
@@ -23,17 +39,36 @@ const rowToTeam = (row: any): TeamInfo => ({
  */
 export const getTeamBySlug = cache(
   async (eventSlug: UrlSlug, teamSlug: UrlSlug): Promise<TeamInfo | null> => {
-    const res = await pool.query(
+    const result = await pool.query(
       `SELECT t.id, t."eventId", t.slug, t.name, t.description
-       FROM teams t
-       JOIN events e ON t.event_id = e.id
+       FROM team t
+       JOIN event e ON t."eventId" = e.id
        WHERE e.slug = $1 AND t.slug = $2`,
       [eventSlug, teamSlug]
     );
-    if (res.rowCount === 0) {
+    if (result.rowCount === 0) {
       return null;
     }
-    return rowToTeam(res.rows[0]);
+    return rowToTeam(result.rows[0]);
+  }
+);
+
+/**
+ * Create a new team in the database
+ * @param team - The team information to create, minus id
+ * @param client - Optional database client for transaction
+ * @returns The created team information, with id populated
+ */
+export const createTeam = cache(
+  async (team: Omit<TeamInfo, 'id'>, client?: PoolClient): Promise<TeamInfo> => {
+    const db = client || pool;
+    const result = await db.query(
+      `INSERT INTO team ("eventId", slug, name, description)
+       VALUES ($1, $2, $3, $4)
+       RETURNING id, "eventId", slug, name, description`,
+      [team.eventId, team.slug, team.name, team.description]
+    );
+    return rowToTeam(result.rows[0]);
   }
 );
 
@@ -43,5 +78,5 @@ export const getTeamBySlug = cache(
  * @returns A promise that resolves when the team is deleted
  */
 export const deleteTeam = cache(async (id: TeamId): Promise<void> => {
-  await pool.query('DELETE FROM teams WHERE id = $1', [id]);
+  await pool.query('DELETE FROM team WHERE id = $1', [id]);
 });
