@@ -1,14 +1,28 @@
 {
-  "EventsDashboard": {
+  "EventsDashboardPage": {
     "title": "Events Dashboard",
     "noEvents": "No events yet!",
     "createEvent": "Create New Event"
   },
-  "CreateEvent": {
+  "CreateEventPage": {
     "title": "Create Event"
   },
-  "UpdateEvent": {
+  "UpdateEventPage": {
     "title": "Update Event"
+  },
+  "EventPage": {},
+  "TeamsDashboardPage": {
+    "teamsForEvent": "Teams for {eventName}",
+    "noTeams": "No teams yet!",
+    "createTeam": "Create New Team"
+  },
+
+  "MenuCard": {
+    "update": "Update",
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "confirmDeletion": "Confirm Deletion",
+    "confirmText": "Are you sure you want to delete \"{title}\"?"
   },
   "EventForm": {
     "eventName": "Event Name",
@@ -21,11 +35,9 @@
     "cancelButton": "Cancel"
   },
   "EventCard": {
-    "update": "Update",
-    "delete": "Delete",
-    "cancel": "Cancel",
-    "dateSpan": "{startDate} to {endDate}",
-    "confirmDeletion": "Confirm Deletion",
-    "confirmText": "Are you sure you want to delete \"{eventName}\"?"
+    "dateSpan": "{startDate} to {endDate}"
+  },
+  "TeamCard": {
+    "noTeams": "No teams yet!"
   }
 }
