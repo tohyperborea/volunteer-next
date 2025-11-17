@@ -10,7 +10,7 @@ import { cache } from 'react';
 
 const rowToTeam = (row: any): TeamInfo => ({
   id: row.id,
-  eventId: row.event_id,
+  eventId: row.eventId,
   slug: row.slug,
   name: row.name,
   description: row.description
@@ -54,6 +54,24 @@ export const getTeamBySlug = cache(
 );
 
 /**
+ * Get a team by its ID
+ * @param id - The ID of the team
+ * @returns The team information or null if not found
+ */
+export const getTeamById = cache(async (id: TeamId): Promise<TeamInfo | null> => {
+  const result = await pool.query(
+    `SELECT id, "eventId", slug, name, description
+       FROM team
+       WHERE id = $1`,
+    [id]
+  );
+  if (result.rowCount === 0) {
+    return null;
+  }
+  return rowToTeam(result.rows[0]);
+});
+
+/**
  * Create a new team in the database
  * @param team - The team information to create, minus id
  * @param client - Optional database client for transaction
@@ -71,6 +89,27 @@ export const createTeam = cache(
     return rowToTeam(result.rows[0]);
   }
 );
+
+/**
+ * Update an existing team in the database
+ * @param team - The team information to update
+ * @param client - Optional database client for transaction
+ * @returns The updated team information
+ */
+export const updateTeam = cache(async (team: TeamInfo, client?: PoolClient): Promise<TeamInfo> => {
+  const db = client || pool;
+  const result = await db.query(
+    `UPDATE team
+       SET "eventId" = $1,
+           slug = $2,
+           name = $3,
+           description = $4
+       WHERE id = $5
+       RETURNING id, "eventId", slug, name, description`,
+    [team.eventId, team.slug, team.name, team.description, team.id]
+  );
+  return rowToTeam(result.rows[0]);
+});
 
 /**
  * Delete a team by its ID
