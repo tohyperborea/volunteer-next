@@ -68,7 +68,12 @@ export default async function EventsDashboard({ params }: Props) {
           href={`/event/${eventSlug}/team/${team.slug}`}
           key={team.id}
         >
-          <TeamCard team={team} editable={isEditable} onDelete={deleteAction} />
+          <TeamCard
+            team={team}
+            editable={isEditable}
+            eventSlug={eventSlug}
+            onDelete={deleteAction}
+          />
         </Link>
       ))}
     </Flex>

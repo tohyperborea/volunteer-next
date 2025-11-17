@@ -19,6 +19,9 @@
   "CreateTeamPage": {
     "title": "Create Team for {eventName}"
   },
+  "UpdateTeamPage": {
+    "title": "Update Team"
+  },
 
   "MenuCard": {
     "update": "Update",
@@ -47,7 +50,7 @@
     "teamName": "Team Name",
     "teamSlug": "URL Slug",
     "teamDescription": "Team Description",
-    "teamLead": "Teamn Lead",
+    "teamLead": "Team Lead",
     "createButton": "Create Team",
     "updateButton": "Update Team",
     "cancelButton": "Cancel"
