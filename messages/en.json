@@ -16,6 +16,9 @@
     "noTeams": "No teams yet!",
     "createTeam": "Create New Team"
   },
+  "CreateTeamPage": {
+    "title": "Create Team for {eventName}"
+  },
 
   "MenuCard": {
     "update": "Update",
@@ -39,5 +42,14 @@
   },
   "TeamCard": {
     "noTeams": "No teams yet!"
+  },
+  "TeamForm": {
+    "teamName": "Team Name",
+    "teamSlug": "URL Slug",
+    "teamDescription": "Team Description",
+    "teamLead": "Teamn Lead",
+    "createButton": "Create Team",
+    "updateButton": "Update Team",
+    "cancelButton": "Cancel"
   }
 }

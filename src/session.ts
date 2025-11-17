@@ -66,20 +66,30 @@ export const currentUser = cache(async (): Promise<User | null> => {
 /**
  * Validates that the user is logged in and, optionally, has one of the accepted roles.
  * @param acceptedRoles - An optional array of UserRole objects that are accepted.
+ * @param noRedirect - If true, does not redirect on failure (default: false).
  * @returns True if the user is authorised, otherwise redirects.
  */
-export const checkAuthorisation = async (acceptedRoles?: UserRole[]): Promise<void> => {
+export const checkAuthorisation = async (
+  acceptedRoles?: UserRole[],
+  noRedirect = false
+): Promise<boolean> => {
   const user = await currentUser();
   if (!user) {
-    redirect('/');
+    if (!noRedirect) {
+      redirect('/');
+    }
+    return false;
   }
   if (!acceptedRoles || acceptedRoles.length === 0) {
-    return;
+    return true;
   }
   for (const role of acceptedRoles) {
     if (user.roles.find((userRole) => rolesEq(userRole, role))) {
-      return;
+      return true;
     }
   }
-  unauthorized();
+  if (!noRedirect) {
+    unauthorized();
+  }
+  return false;
 };
