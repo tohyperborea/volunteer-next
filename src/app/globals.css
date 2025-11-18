@@ -11,3 +11,14 @@ html {
 body {
   margin: 0;
 }
+
+/* Fix checkbox size to prevent layout shift */
+.checkbox-root {
+  width: 16px;
+  height: 16px;
+  min-width: 16px;
+  min-height: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}

@@ -9,5 +9,25 @@
     "eventName": "Event Name",
     "eventOrganiser": "Event Organiser",
     "createButton": "Create Event"
+  },
+  "UsersDashboard": {
+    "title": "Users Dashboard",
+    "noUsers": "No users yet!",
+    "createUser": "Create New User",
+    "email": "Email",
+    "emailVerified": "Email Verified",
+    "yes": "Yes",
+    "no": "No",
+    "roles": "Roles"
+  },
+  "CreateUser": {
+    "title": "Create User",
+    "userName": "User Name",
+    "userEmail": "User Email",
+    "emailVerificationSkip": "Skip email verification",
+    "yes": "Yes",
+    "no": "No",
+    "roles": "Roles",
+    "createButton": "Create User"
   }
 }

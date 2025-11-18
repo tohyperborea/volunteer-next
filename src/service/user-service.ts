@@ -7,6 +7,7 @@
 import pool from '@/db';
 import { PoolClient } from 'pg';
 import { cache } from 'react';
+import { randomUUID } from 'crypto';
 
 const roleFromRow = (row: any): UserRole => {
   switch (row.type) {
@@ -35,7 +36,7 @@ const roleFromRow = (row: any): UserRole => {
 export const getUser = cache(async (userId: UserId): Promise<User | null> => {
   const result = await pool.query(
     `
-    SELECT u.id, u.name, u.email, r.type, r."eventId", r."teamId"
+    SELECT u.id, u.name, u.email, u."emailVerified", r.type, r."eventId", r."teamId"
     FROM "user" u
     LEFT JOIN role r ON u.id = r."userId"
     WHERE u.id = $1
@@ -51,6 +52,7 @@ export const getUser = cache(async (userId: UserId): Promise<User | null> => {
     id: result.rows[0].id,
     name: result.rows[0].name,
     email: result.rows[0].email,
+    emailVerified: result.rows[0].emailVerified,
     roles: []
   };
 
@@ -70,7 +72,7 @@ export const getUser = cache(async (userId: UserId): Promise<User | null> => {
  */
 export const getUsers = cache(async (): Promise<User[]> => {
   const result = await pool.query(`
-    SELECT u.id, u.name, u.email, r.type, r."eventId", r."teamId"
+    SELECT u.id, u.name, u.email, u."emailVerified", r.type, r."eventId", r."teamId"
     FROM "user" u
     LEFT JOIN role r ON u.id = r."userId"
   `);
@@ -83,6 +85,7 @@ export const getUsers = cache(async (): Promise<User[]> => {
         id: row.id,
         name: row.name,
         email: row.email,
+        emailVerified: row.emailVerified,
         roles: []
       });
     }
@@ -109,6 +112,34 @@ export const getUserRoles = cache(async (userId: UserId): Promise<UserRole[]> =>
   );
   return result.rows.map(roleFromRow);
 });
+
+/**
+ * Creates a new user in the database.
+ * @param user - The user data, excluding the ID.
+ * @param client - Optional database client for transaction support.
+ * @return The newly created User object, including its ID.
+ */
+export const createUser = async (
+  user: Omit<User, 'id' | 'roles'>,
+  client?: PoolClient
+): Promise<User> => {
+  const db = client || pool;
+  const id = randomUUID();
+  const result = await db.query(
+    'INSERT INTO "user" (id, name, email, "emailVerified") VALUES ($1, $2, $3, $4) RETURNING id, name, email, "emailVerified"',
+    [id, user.name, user.email, user.emailVerified ?? false]
+  );
+  const row = result.rows[0];
+  const newUser: User = {
+    id: row.id,
+    name: row.name,
+    email: row.email,
+    emailVerified: row.emailVerified,
+    roles: []
+  };
+  console.info('Created new user:', newUser);
+  return newUser;
+};
 
 /**
  * Adds a role to a user.
