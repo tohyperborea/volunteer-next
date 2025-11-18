@@ -18,7 +18,8 @@
     "emailVerified": "Email Verified",
     "yes": "Yes",
     "no": "No",
-    "roles": "Roles"
+    "roles": "Roles",
+    "edit": "Edit"
   },
   "CreateUser": {
     "title": "Create User",
@@ -29,5 +30,15 @@
     "no": "No",
     "roles": "Roles",
     "createButton": "Create User"
+  },
+  "EditUser": {
+    "title": "Edit User",
+    "userName": "User Name",
+    "userEmail": "User Email",
+    "emailVerified": "Email Verified",
+    "yes": "Yes",
+    "no": "No",
+    "roles": "Roles",
+    "saveButton": "Save User"
   }
 }

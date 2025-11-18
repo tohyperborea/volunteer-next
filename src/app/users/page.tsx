@@ -1,7 +1,7 @@
 import metadata from '@/i18n/metadata';
 import { Heading, Flex, Card, Text, Button, Box, Link, Grid } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
-import { PlusIcon } from '@radix-ui/react-icons';
+import { Pencil1Icon, PlusIcon, TrashIcon } from '@radix-ui/react-icons';
 import { checkAuthorisation } from '@/session';
 import { getUsers } from '@/service/user-service';
 
@@ -46,6 +46,14 @@ export default async function UsersDashboard() {
               <Box>{user.emailVerified ? t('yes') : t('no')}</Box>
               <Box>{user.roles.map((role) => role.type).join(', ')}</Box>
             </Grid>
+            <Link href={`/edit-user/${user.id}`}>
+              <Button variant="outline">
+                <Pencil1Icon />
+              </Button>
+            </Link>
+            <Button variant="outline" color="red">
+              <TrashIcon />
+            </Button>
           </Flex>
         </Card>
       ))}

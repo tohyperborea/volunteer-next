@@ -182,3 +182,24 @@ export const addUserRole = async (
   }
   console.info(`Added role ${JSON.stringify(role)} to user ${userId}`);
 };
+
+/**
+ * Updates a user in the database.
+ * @param userId - The ID of the user to update.
+ * @param user - The user data to update.
+ * @param client - Optional database client for transaction support.
+ * @throws {Error} If the database query fails or the user is invalid.
+ */
+export const updateUser = async (
+  userId: UserId,
+  user: User,
+  client?: PoolClient
+): Promise<void> => {
+  const db = client || pool;
+  await db.query('UPDATE "user" SET name = $1, email = $2, "emailVerified" = $3 WHERE id = $4', [
+    user.name,
+    user.email,
+    user.emailVerified ?? false,
+    userId
+  ]);
+};
