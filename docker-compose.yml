@@ -8,6 +8,11 @@ services:
       - ${POSTGRES_PORT}:${POSTGRES_PORT}
     volumes:
       - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   liquibase:
     image: liquibase/liquibase
@@ -25,7 +30,8 @@ services:
       --password=${POSTGRES_PASSWORD}
       update
     depends_on:
-      - db
+      db:
+        condition: service_healthy
 
 volumes:
   pgdata:
