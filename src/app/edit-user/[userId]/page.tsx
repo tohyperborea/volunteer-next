@@ -42,7 +42,6 @@ export default async function EditUser({ params }: { params: Promise<{ userId: s
           id: userId,
           name,
           email,
-          emailVerified: data.get('emailVerified')?.toString() === 'on',
           roles: existingUser.roles
         },
         client

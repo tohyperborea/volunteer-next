@@ -52,7 +52,6 @@ export const getUser = cache(async (userId: UserId): Promise<User | null> => {
     id: result.rows[0].id,
     name: result.rows[0].name,
     email: result.rows[0].email,
-    emailVerified: result.rows[0].emailVerified,
     roles: []
   };
 
@@ -85,7 +84,6 @@ export const getUsers = cache(async (): Promise<User[]> => {
         id: row.id,
         name: row.name,
         email: row.email,
-        emailVerified: row.emailVerified,
         roles: []
       });
     }

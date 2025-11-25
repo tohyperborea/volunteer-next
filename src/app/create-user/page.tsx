@@ -5,8 +5,6 @@ import { getTranslations } from 'next-intl/server';
 import { createUser } from '@/service/user-service';
 import { checkAuthorisation } from '@/session';
 import { inTransaction } from '@/db';
-import * as Checkbox from '@radix-ui/react-checkbox';
-import { CheckIcon } from '@radix-ui/react-icons';
 
 export const generateMetadata = metadata('CreateUser');
 
@@ -25,10 +23,7 @@ export default async function CreateUser() {
       throw new Error('User email is required');
     }
     inTransaction(async (client) => {
-      await createUser(
-        { name, email, emailVerified: data.get('emailVerified')?.toString() === 'on' },
-        client
-      );
+      await createUser({ name, email }, client);
     });
     redirect('/users');
   };
