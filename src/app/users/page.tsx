@@ -48,6 +48,8 @@ export default async function UsersDashboard() {
                 <Pencil1Icon />
               </Button>
             </Link>
+            {/* TODO: add confirmation dialog */}
+            {/* TODO: are we just marking as deleted in the database? */}
             <Button variant="outline" color="red">
               <TrashIcon />
             </Button>
