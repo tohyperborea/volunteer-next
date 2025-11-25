@@ -81,19 +81,7 @@ export default async function EditUser({ params }: { params: Promise<{ userId: s
               required
               defaultValue={user.email}
             />
-            <Flex align="center" gap="2">
-              <Checkbox.Root
-                name="emailVerified"
-                defaultChecked={user.emailVerified}
-                id="emailVerified"
-                className="checkbox-root"
-              >
-                <Checkbox.Indicator>
-                  <CheckIcon />
-                </Checkbox.Indicator>
-              </Checkbox.Root>
-              <label htmlFor="emailVerified">{t('emailVerified')}</label>
-            </Flex>
+
             <Box>
               <Button type="submit">{t('saveButton')}</Button>
             </Box>

@@ -44,19 +44,6 @@ export default async function CreateUser() {
           <Flex direction="column" gap="2">
             <TextField.Root name="name" placeholder={t('userName')} required />
             <TextField.Root name="email" type="email" placeholder={t('userEmail')} required />
-            <Flex align="center" gap="2">
-              <Checkbox.Root
-                name="emailVerified"
-                defaultChecked={false}
-                id="emailVerified"
-                className="checkbox-root"
-              >
-                <Checkbox.Indicator>
-                  <CheckIcon />
-                </Checkbox.Indicator>
-              </Checkbox.Root>
-              <label htmlFor="emailVerified">{t('emailVerificationSkip')}</label>
-            </Flex>
             <Box>
               <Button type="submit">{t('createButton')}</Button>
             </Box>

@@ -13,7 +13,6 @@ interface User {
   id: UserId;
   name: string;
   email: string;
-  emailVerified: boolean;
   roles: UserRole[];
 }
 

@@ -126,15 +126,14 @@ export const createUser = async (
   const db = client || pool;
   const id = randomUUID();
   const result = await db.query(
-    'INSERT INTO "user" (id, name, email, "emailVerified") VALUES ($1, $2, $3, $4) RETURNING id, name, email, "emailVerified"',
-    [id, user.name, user.email, user.emailVerified ?? false]
+    'INSERT INTO "user" (id, name, email) VALUES ($1, $2, $3) RETURNING id, name, email',
+    [id, user.name, user.email]
   );
   const row = result.rows[0];
   const newUser: User = {
     id: row.id,
     name: row.name,
     email: row.email,
-    emailVerified: row.emailVerified,
     roles: []
   };
   console.info('Created new user:', newUser);
@@ -199,7 +198,6 @@ export const updateUser = async (
   await db.query('UPDATE "user" SET name = $1, email = $2, "emailVerified" = $3 WHERE id = $4', [
     user.name,
     user.email,
-    user.emailVerified ?? false,
     userId
   ]);
 };
