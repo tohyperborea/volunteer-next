@@ -21,7 +21,14 @@
     "title": "Create User",
     "userName": "User Name",
     "userEmail": "User Email",
+    "admin": "Admin",
+    "organiser": "Organiser",
+    "organiserNoEvents": "Organiser role requires an event",
+    "teamLead": "Team Lead",
+    "teamLeadNoEvents": "Team Lead role requires an event and a team",
     "role": "Role",
+    "event": "Event",
+    "team": "Team",
     "createButton": "Create User"
   },
   "EditUser": {

@@ -124,8 +124,8 @@ export const createUser = async (
   const db = client || pool;
   const id = randomUUID();
   const result = await db.query(
-    'INSERT INTO "user" (id, name, email) VALUES ($1, $2, $3) RETURNING id, name, email',
-    [id, user.name, user.email]
+    'INSERT INTO "user" (id, name, email, "emailVerified") VALUES ($1, $2, $3, $4) RETURNING id, name, email',
+    [id, user.name, user.email, false]
   );
   const row = result.rows[0];
   const newUser: User = {

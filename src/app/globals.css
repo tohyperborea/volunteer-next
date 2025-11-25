@@ -12,13 +12,26 @@ body {
   margin: 0;
 }
 
-/* Fix checkbox size to prevent layout shift */
-.checkbox-root {
-  width: 16px;
-  height: 16px;
-  min-width: 16px;
-  min-height: 16px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+/* Fix for Radix UI Select accessibility warning: prevent hidden select from receiving focus */
+select[aria-hidden='true'] {
+  pointer-events: none;
+  user-select: none;
+  /* Prevent focus completely */
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+select[aria-hidden='true']:focus,
+select[aria-hidden='true']:focus-visible,
+select[aria-hidden='true']:focus-within {
+  outline: none !important;
+  box-shadow: none !important;
+  border: 0 !important;
 }

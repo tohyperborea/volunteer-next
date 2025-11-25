@@ -32,3 +32,9 @@ interface EventInfo {
   id: EventId;
   name: string;
 }
+
+interface TeamInfo {
+  id: TeamId;
+  name: string;
+  eventId: EventId;
+}
