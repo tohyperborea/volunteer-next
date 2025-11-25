@@ -15,30 +15,20 @@
     "noUsers": "No users yet!",
     "createUser": "Create New User",
     "email": "Email",
-    "emailVerified": "Email Verified",
-    "yes": "Yes",
-    "no": "No",
-    "roles": "Roles",
-    "edit": "Edit"
+    "role": "Role"
   },
   "CreateUser": {
     "title": "Create User",
     "userName": "User Name",
     "userEmail": "User Email",
-    "emailVerificationSkip": "Skip email verification",
-    "yes": "Yes",
-    "no": "No",
-    "roles": "Roles",
+    "role": "Role",
     "createButton": "Create User"
   },
   "EditUser": {
     "title": "Edit User",
     "userName": "User Name",
     "userEmail": "User Email",
-    "emailVerified": "Email Verified",
-    "yes": "Yes",
-    "no": "No",
-    "roles": "Roles",
+    "role": "Role",
     "saveButton": "Save User"
   }
 }

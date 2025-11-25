@@ -1,6 +1,6 @@
 import metadata from '@/i18n/metadata';
 import { redirect } from 'next/navigation';
-import { Flex, Heading, Box, Button, Card, TextField } from '@radix-ui/themes';
+import { Flex, Heading, Box, Button, Card, TextField, Select } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
 import { createUser } from '@/service/user-service';
 import { checkAuthorisation } from '@/session';
@@ -39,6 +39,13 @@ export default async function CreateUser() {
           <Flex direction="column" gap="2">
             <TextField.Root name="name" placeholder={t('userName')} required />
             <TextField.Root name="email" type="email" placeholder={t('userEmail')} required />
+            <Select.Root required name="role">
+              <Select.Trigger placeholder={t('role')} />
+              <Select.Content>
+                <Select.Item value="admin">Admin</Select.Item>
+                <Select.Item value="organiser">Organiser</Select.Item>
+              </Select.Content>
+            </Select.Root>
             <Box>
               <Button type="submit">{t('createButton')}</Button>
             </Box>

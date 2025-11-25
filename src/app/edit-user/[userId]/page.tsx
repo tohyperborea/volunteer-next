@@ -1,12 +1,10 @@
 import metadata from '@/i18n/metadata';
 import { redirect } from 'next/navigation';
-import { Flex, Heading, Box, Button, Card, TextField } from '@radix-ui/themes';
+import { Flex, Heading, Box, Button, Card, TextField, Select } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
 import { getUser, updateUser } from '@/service/user-service';
 import { checkAuthorisation } from '@/session';
 import { inTransaction } from '@/db';
-import * as Checkbox from '@radix-ui/react-checkbox';
-import { CheckIcon } from '@radix-ui/react-icons';
 
 export const generateMetadata = metadata('EditUser');
 
@@ -80,6 +78,17 @@ export default async function EditUser({ params }: { params: Promise<{ userId: s
               required
               defaultValue={user.email}
             />
+            <Select.Root
+              required
+              name="roles"
+              defaultValue={user.roles.map((role) => role.type).join(', ') || 'volunteer'}
+            >
+              <Select.Trigger placeholder={t('role')} />
+              <Select.Content>
+                <Select.Item value="admin">Admin</Select.Item>
+                <Select.Item value="organiser">Organiser</Select.Item>
+              </Select.Content>
+            </Select.Root>
 
             <Box>
               <Button type="submit">{t('saveButton')}</Button>

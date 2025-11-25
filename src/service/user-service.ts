@@ -36,7 +36,7 @@ const roleFromRow = (row: any): UserRole => {
 export const getUser = cache(async (userId: UserId): Promise<User | null> => {
   const result = await pool.query(
     `
-    SELECT u.id, u.name, u.email, u."emailVerified", r.type, r."eventId", r."teamId"
+    SELECT u.id, u.name, u.email, r.type, r."eventId", r."teamId"
     FROM "user" u
     LEFT JOIN role r ON u.id = r."userId"
     WHERE u.id = $1
@@ -71,7 +71,7 @@ export const getUser = cache(async (userId: UserId): Promise<User | null> => {
  */
 export const getUsers = cache(async (): Promise<User[]> => {
   const result = await pool.query(`
-    SELECT u.id, u.name, u.email, u."emailVerified", r.type, r."eventId", r."teamId"
+    SELECT u.id, u.name, u.email, r.type, r."eventId", r."teamId"
     FROM "user" u
     LEFT JOIN role r ON u.id = r."userId"
   `);
@@ -193,7 +193,7 @@ export const updateUser = async (
   client?: PoolClient
 ): Promise<void> => {
   const db = client || pool;
-  await db.query('UPDATE "user" SET name = $1, email = $2, "emailVerified" = $3 WHERE id = $4', [
+  await db.query('UPDATE "user" SET name = $1, email = $2 WHERE id = $3', [
     user.name,
     user.email,
     userId

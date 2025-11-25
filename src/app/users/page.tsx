@@ -32,19 +32,16 @@ export default async function UsersDashboard() {
         <Card key={user.id}>
           <Heading size="4">{user.name}</Heading>
           <Flex direction="row" gap="2" width="100%">
-            <Grid columns="3" gap="2" width="100%">
+            <Grid columns="2" gap="2" width="100%">
               <Text size="1" color="gray">
                 {t('email')}:
               </Text>
               <Text size="1" color="gray">
-                {t('emailVerified')}:
-              </Text>
-              <Text size="1" color="gray">
-                {t('roles')}:
+                {t('role')}:
               </Text>
               <Box>{user.email}</Box>
-              <Box>{user.emailVerified ? t('yes') : t('no')}</Box>
-              <Box>{user.roles.map((role) => role.type).join(', ')}</Box>
+
+              <Box>{user.roles.map((role) => role.type).join(', ') || 'volunteer'}</Box>
             </Grid>
             <Link href={`/edit-user/${user.id}`}>
               <Button variant="outline">
