@@ -28,6 +28,29 @@ const roleFromRow = (row: any): UserRole => {
   }
 };
 
+const usersFromRows = (rows: any[]): User[] => {
+  const usersMap = new Map<UserId, User>();
+
+  rows.forEach((row) => {
+    if (!usersMap.has(row.id)) {
+      usersMap.set(row.id, {
+        id: row.id,
+        name: row.name,
+        email: row.email,
+        roles: []
+      });
+    }
+
+    const user = usersMap.get(row.id)!;
+
+    if (row.type) {
+      user.roles.push(roleFromRow(row));
+    }
+  });
+
+  return Array.from(usersMap.values());
+};
+
 /**
  * Fetches a user by their ID.
  * @param userId - The unique identifier of the user.
@@ -48,20 +71,7 @@ export const getUser = cache(async (userId: UserId): Promise<User | null> => {
     return null;
   }
 
-  const user: User = {
-    id: result.rows[0].id,
-    name: result.rows[0].name,
-    email: result.rows[0].email,
-    roles: []
-  };
-
-  result.rows.forEach((row) => {
-    if (row.type) {
-      user.roles.push(roleFromRow(row));
-    }
-  });
-
-  return user;
+  return usersFromRows(result.rows)[0];
 });
 
 /**
@@ -76,26 +86,36 @@ export const getUsers = cache(async (): Promise<User[]> => {
     LEFT JOIN role r ON u.id = r."userId"
   `);
 
-  const usersMap = new Map<UserId, User>();
+  return usersFromRows(result.rows);
+});
 
-  result.rows.forEach((row) => {
-    if (!usersMap.has(row.id)) {
-      usersMap.set(row.id, {
-        id: row.id,
-        name: row.name,
-        email: row.email,
-        roles: []
-      });
-    }
+/**
+ * Fetches all users with a specific role.
+ * @param role - The role to filter users by.
+ * @returns An array of User objects that have the specified role.
+ */
+export const getUsersWithRole = cache(async (role: UserRole): Promise<User[]> => {
+  const roleQuery = [`select 1 from role where "userId" = u.id and type=$1`];
+  const queryParams: string[] = [role.type];
+  if (role.type === 'organiser' || role.type === 'team-lead') {
+    roleQuery.push(`"eventId" = $2`);
+    queryParams.push(role.eventId);
+  }
+  if (role.type === 'team-lead') {
+    roleQuery.push(`"teamId" = $3`);
+    queryParams.push(role.teamId);
+  }
+  const result = await pool.query(
+    `
+    SELECT u.id, u.name, u.email, r.type, r."eventId", r."teamId"
+    FROM "user" u
+    LEFT JOIN role r ON u.id = r."userId"
+    WHERE EXISTS (${roleQuery.join(' AND ')})
+  `,
+    queryParams
+  );
 
-    const user = usersMap.get(row.id)!;
-
-    if (row.type) {
-      user.roles.push(roleFromRow(row));
-    }
-  });
-
-  return Array.from(usersMap.values());
+  return usersFromRows(result.rows);
 });
 
 /**
@@ -145,9 +165,9 @@ export const createUser = async (
  * @param client - Optional database client for transaction support.
  * @throws {Error} If the database query fails or the role is invalid.
  */
-export const addUserRole = async (
-  userId: UserId,
+export const addRoleToUser = async (
   role: UserRole,
+  userId: UserId,
   client?: PoolClient
 ): Promise<void> => {
   const db = client || pool;
@@ -198,4 +218,31 @@ export const updateUser = async (
     user.email,
     userId
   ]);
+};
+
+/**
+ * Removes a role from a list of users.
+ * @param role - The role to remove.
+ * @param users - The list of user IDs to remove the role from.
+ * @param client - Optional database client for transaction support.
+ */
+export const removeRoleFromUsers = async (
+  role: UserRole,
+  users: UserId[],
+  client?: PoolClient
+): Promise<void> => {
+  const db = client || pool;
+  const queryParams: any[] = [role.type, users];
+  let query = 'DELETE FROM role WHERE type = $1 AND "userId" = ANY($2::text[])';
+
+  if (role.type === 'organiser' || role.type === 'team-lead') {
+    query += ' AND "eventId" = $3';
+    queryParams.push(role.eventId);
+  }
+  if (role.type === 'team-lead') {
+    query += ' AND "teamId" = $4';
+    queryParams.push(role.teamId);
+  }
+
+  await db.query(query, queryParams);
 };
