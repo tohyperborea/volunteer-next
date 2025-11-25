@@ -6,7 +6,6 @@
 
 import pool from '@/db';
 import { PoolClient } from 'pg';
-import { cache } from 'react';
 import { randomUUID } from 'crypto';
 
 const roleFromRow = (row: any): UserRole => {
@@ -56,7 +55,7 @@ const usersFromRows = (rows: any[]): User[] => {
  * @param userId - The unique identifier of the user.
  * @returns The User object if found, or null if not found.
  */
-export const getUser = cache(async (userId: UserId): Promise<User | null> => {
+export const getUser = async (userId: UserId): Promise<User | null> => {
   const result = await pool.query(
     `
     SELECT u.id, u.name, u.email, r.type, r."eventId", r."teamId"
@@ -72,14 +71,14 @@ export const getUser = cache(async (userId: UserId): Promise<User | null> => {
   }
 
   return usersFromRows(result.rows)[0];
-});
+};
 
 /**
  * Retrieves all the users in the system.
  * @returns A promise that resolves to an array of users.
  * @throws {Error} If the database query fails.
  */
-export const getUsers = cache(async (): Promise<User[]> => {
+export const getUsers = async (): Promise<User[]> => {
   const result = await pool.query(`
     SELECT u.id, u.name, u.email, r.type, r."eventId", r."teamId"
     FROM "user" u
@@ -87,14 +86,14 @@ export const getUsers = cache(async (): Promise<User[]> => {
   `);
 
   return usersFromRows(result.rows);
-});
+};
 
 /**
  * Fetches all users with a specific role.
  * @param role - The role to filter users by.
  * @returns An array of User objects that have the specified role.
  */
-export const getUsersWithRole = cache(async (role: UserRole): Promise<User[]> => {
+export const getUsersWithRole = async (role: UserRole): Promise<User[]> => {
   const roleQuery = [`select 1 from role where "userId" = u.id and type=$1`];
   const queryParams: string[] = [role.type];
   if (role.type === 'organiser' || role.type === 'team-lead') {
@@ -116,20 +115,20 @@ export const getUsersWithRole = cache(async (role: UserRole): Promise<User[]> =>
   );
 
   return usersFromRows(result.rows);
-});
+};
 
 /**
  * Fetches all roles associated with a given user.
  * @param userId - The ID of the user to fetch roles for.
  * @returns An array of UserRole objects associated with the user.
  */
-export const getUserRoles = cache(async (userId: UserId): Promise<UserRole[]> => {
+export const getUserRoles = async (userId: UserId): Promise<UserRole[]> => {
   const result = await pool.query(
     'SELECT "type", "eventId", "teamId" FROM role WHERE "userId" = $1',
     [userId]
   );
   return result.rows.map(roleFromRow);
-});
+};
 
 /**
  * Creates a new user in the database.

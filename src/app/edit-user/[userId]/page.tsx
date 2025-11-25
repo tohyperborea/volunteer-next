@@ -33,7 +33,7 @@ export default async function EditUser({ params }: { params: Promise<{ userId: s
       throw new Error('User not found');
     }
 
-    inTransaction(async (client) => {
+    await inTransaction(async (client) => {
       await updateUser(
         userId,
         {
