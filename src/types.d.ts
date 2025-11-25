@@ -34,3 +34,9 @@ interface EventInfo {
   startDate: Date;
   endDate: Date;
 }
+
+interface TeamInfo {
+  id: TeamId;
+  name: string;
+  eventId: EventId;
+}
