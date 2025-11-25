@@ -13,11 +13,11 @@ import { PoolClient } from 'pg';
  * @return An array of TeamInfo objects.
  */
 export const getTeams = async (): Promise<TeamInfo[]> => {
-  const result = await pool.query('SELECT id, name, event_id FROM team');
+  const result = await pool.query('SELECT id, name, "eventId" FROM team');
   return result.rows.map((row) => ({
     id: row.id,
     name: row.name,
-    eventId: row.event_id
+    eventId: row.eventId
   }));
 };
 
@@ -27,7 +27,7 @@ export const getTeams = async (): Promise<TeamInfo[]> => {
  * @return The TeamInfo object if found, or null if not found.
  */
 export const getTeamById = async (teamId: TeamId): Promise<TeamInfo | null> => {
-  const result = await pool.query('SELECT id, name, event_id FROM team WHERE id = $1', [teamId]);
+  const result = await pool.query('SELECT id, name, "eventId" FROM team WHERE id = $1', [teamId]);
   if (result.rows.length === 0) {
     return null;
   }
@@ -35,7 +35,7 @@ export const getTeamById = async (teamId: TeamId): Promise<TeamInfo | null> => {
   return {
     id: row.id,
     name: row.name,
-    eventId: row.event_id
+    eventId: row.eventId
   };
 };
 
@@ -51,14 +51,14 @@ export const createTeam = async (
 ): Promise<TeamInfo> => {
   const db = client || pool;
   const result = await db.query(
-    'INSERT INTO team (name, event_id) VALUES ($1, $2) RETURNING id, name, event_id',
+    'INSERT INTO team (name, "eventId") VALUES ($1, $2) RETURNING id, name, "eventId"',
     [team.name, team.eventId]
   );
   const row = result.rows[0];
   const newTeam = {
     id: row.id,
     name: row.name,
-    eventId: row.event_id
+    eventId: row.eventId
   };
   console.info('Created new team:', newTeam);
   return newTeam;

@@ -2,7 +2,7 @@ import metadata from '@/i18n/metadata';
 import { redirect } from 'next/navigation';
 import { Flex, Heading, Box, Button, Card, TextField, Select } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
-import { createUser, addUserRole } from '@/service/user-service';
+import { createUser, addRoleToUser } from '@/service/user-service';
 import { getEvents } from '@/service/event-service';
 import { getTeams } from '@/service/team-service';
 import { checkAuthorisation } from '@/session';
@@ -33,13 +33,13 @@ export default async function CreateUser() {
       const newUser = await createUser({ name, email }, client);
 
       if (role === 'admin') {
-        await addUserRole(newUser.id, { type: 'admin' }, client);
+        await addRoleToUser({ type: 'admin' }, newUser.id, client);
       } else if (role === 'organiser') {
         const eventId = data.get('eventId')?.toString() ?? null;
         if (!eventId) {
           throw new Error('Event ID is required for organiser role');
         }
-        await addUserRole(newUser.id, { type: 'organiser', eventId }, client);
+        await addRoleToUser({ type: 'organiser', eventId }, newUser.id, client);
       } else if (role === 'team-lead') {
         const eventId = data.get('eventId')?.toString() ?? null;
         const teamId = data.get('teamId')?.toString() ?? null;
@@ -49,7 +49,7 @@ export default async function CreateUser() {
         if (!teamId) {
           throw new Error('Team ID is required for team-lead role');
         }
-        await addUserRole(newUser.id, { type: 'team-lead', eventId, teamId }, client);
+        await addRoleToUser({ type: 'team-lead', eventId, teamId }, newUser.id, client);
       }
     });
     redirect('/users');
