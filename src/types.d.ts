@@ -31,4 +31,6 @@ type UserRole =
 interface EventInfo {
   id: EventId;
   name: string;
+  startDate: Date;
+  endDate: Date;
 }
