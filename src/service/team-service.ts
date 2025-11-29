@@ -77,18 +77,19 @@ export const getTeamById = cache(async (id: TeamId): Promise<TeamInfo | null> =>
  * @param client - Optional database client for transaction
  * @returns The created team information, with id populated
  */
-export const createTeam = cache(
-  async (team: Omit<TeamInfo, 'id'>, client?: PoolClient): Promise<TeamInfo> => {
-    const db = client || pool;
-    const result = await db.query(
-      `INSERT INTO team ("eventId", slug, name, description)
+export const createTeam = async (
+  team: Omit<TeamInfo, 'id'>,
+  client?: PoolClient
+): Promise<TeamInfo> => {
+  const db = client || pool;
+  const result = await db.query(
+    `INSERT INTO team ("eventId", slug, name, description)
        VALUES ($1, $2, $3, $4)
        RETURNING id, "eventId", slug, name, description`,
-      [team.eventId, team.slug, team.name, team.description]
-    );
-    return rowToTeam(result.rows[0]);
-  }
-);
+    [team.eventId, team.slug, team.name, team.description]
+  );
+  return rowToTeam(result.rows[0]);
+};
 
 /**
  * Update an existing team in the database
@@ -96,7 +97,7 @@ export const createTeam = cache(
  * @param client - Optional database client for transaction
  * @returns The updated team information
  */
-export const updateTeam = cache(async (team: TeamInfo, client?: PoolClient): Promise<TeamInfo> => {
+export const updateTeam = async (team: TeamInfo, client?: PoolClient): Promise<TeamInfo> => {
   const db = client || pool;
   const result = await db.query(
     `UPDATE team
@@ -109,13 +110,13 @@ export const updateTeam = cache(async (team: TeamInfo, client?: PoolClient): Pro
     [team.eventId, team.slug, team.name, team.description, team.id]
   );
   return rowToTeam(result.rows[0]);
-});
+};
 
 /**
  * Delete a team by its ID
  * @param id - The ID of the team to delete
  * @returns A promise that resolves when the team is deleted
  */
-export const deleteTeam = cache(async (id: TeamId): Promise<void> => {
+export const deleteTeam = async (id: TeamId): Promise<void> => {
   await pool.query('DELETE FROM team WHERE id = $1', [id]);
-});
+};

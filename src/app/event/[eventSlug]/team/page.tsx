@@ -33,15 +33,14 @@ export default async function EventsDashboard({ params }: Props) {
     notFound();
   }
 
+  const editorRoles: UserRole[] = [{ type: 'admin' }, { type: 'organiser', eventId: event.id }];
+
   const teams = await getTeamsForEvent(event.id);
-  const isEditable = await checkAuthorisation(
-    [{ type: 'admin' }, { type: 'organiser', eventId: event.id }],
-    true
-  );
+  const isEditable = await checkAuthorisation(editorRoles, true);
 
   const deleteAction = async (id: TeamId) => {
     'use server';
-    await checkAuthorisation([{ type: 'admin' }]);
+    await checkAuthorisation(editorRoles);
     await deleteTeam(id);
     redirect(`/event/${eventSlug}/team`);
   };

@@ -16,8 +16,7 @@ import {
   Flex,
   Heading,
   IconButton,
-  Link,
-  Text
+  Link
 } from '@radix-ui/themes';
 import { useRef } from 'react';
 

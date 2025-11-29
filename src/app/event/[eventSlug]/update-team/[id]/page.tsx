@@ -2,7 +2,6 @@ import metadata from '@/i18n/metadata';
 import { notFound, redirect } from 'next/navigation';
 import { Flex, Heading, Card } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
-import { updateEvent, getEventById } from '@/service/event-service';
 import {
   addRoleToUser,
   getUsers,
@@ -40,7 +39,7 @@ export default async function UpdateTeam({ params }: Props) {
 
     await checkAuthorisation([{ type: 'admin' }, { type: 'organiser', eventId: newTeam.eventId }]);
 
-    const organiser = validateUserId(data, 'teamleadId');
+    const teamlead = validateUserId(data, 'teamleadId');
 
     const roleToAdd: UserRole = { type: 'team-lead', eventId: newTeam.eventId, teamId: newTeam.id };
     const existingTeamleads = await getUsersWithRole(roleToAdd);
@@ -48,7 +47,7 @@ export default async function UpdateTeam({ params }: Props) {
     // If we are removing all existing teamleads, it means we need to add the new one
     const toRemove = existingTeamleads
       .map((user) => user.id)
-      .filter((userId) => userId !== organiser);
+      .filter((userId) => userId !== teamlead);
     const shouldAdd = toRemove.length === existingTeamleads.length;
 
     await inTransaction(async (client) => {
@@ -57,7 +56,7 @@ export default async function UpdateTeam({ params }: Props) {
         await removeRoleFromUsers(roleToAdd, toRemove, client);
       }
       if (shouldAdd) {
-        await addRoleToUser(roleToAdd, organiser, client);
+        await addRoleToUser(roleToAdd, teamlead, client);
       }
     });
     redirect(`/event/${eventSlug}/team`);

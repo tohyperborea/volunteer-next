@@ -83,7 +83,6 @@ export const checkAuthorisation = async (
   const user = await currentUser();
   if (!user) {
     redirect('/');
-    return false;
   }
   if (!acceptedRoles || acceptedRoles.length === 0) {
     return true;

@@ -21,7 +21,7 @@ interface Props {
 export default async function TeamPage({ params }: Props) {
   const t = await getTranslations(PAGE_KEY);
   const { eventSlug, teamSlug } = await params;
-  const team = eventSlug ? await getTeamBySlug(eventSlug, teamSlug) : null;
+  const team = eventSlug && teamSlug ? await getTeamBySlug(eventSlug, teamSlug) : null;
 
   if (!team) {
     notFound();

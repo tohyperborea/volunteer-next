@@ -6,7 +6,7 @@
 
 'use client';
 
-import { Flex, Text, TextField, Select, Box, Button, TextArea } from '@radix-ui/themes';
+import { Flex, Text, TextField, Select, Button, TextArea } from '@radix-ui/themes';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 
@@ -107,7 +107,7 @@ export default function TeamForm({
           {backOnCancel && (
             <Button
               variant="outline"
-              onClick={async (e) => {
+              onClick={(e) => {
                 e.preventDefault();
                 router.back();
               }}

@@ -132,7 +132,7 @@ export default function EventForm({
           {backOnCancel && (
             <Button
               variant="outline"
-              onClick={async (e) => {
+              onClick={(e) => {
                 e.preventDefault();
                 router.back();
               }}
