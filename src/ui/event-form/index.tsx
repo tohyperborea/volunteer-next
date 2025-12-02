@@ -10,6 +10,7 @@ import { Flex, Text, TextField, Select, Box, Button } from '@radix-ui/themes';
 import { useTranslations } from 'next-intl';
 import styles from './styles.module.css';
 import { useState } from 'react';
+import { EventInfo, User } from '@/types';
 
 const FormItem = ({ children }: { children: React.ReactNode }) => (
   <Flex direction="column" gap="1">

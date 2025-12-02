@@ -5,9 +5,9 @@
  * @since 2025-11-10
  */
 
-type UserId = string;
-type EventId = string;
-type TeamId = string;
+export type UserId = string;
+export type EventId = string;
+export type TeamId = string;
 
 export interface User {
   id: UserId;
@@ -18,7 +18,7 @@ export interface User {
 
 /* These align with the role_type enum in the database
  * If you change this, you must also change the role_type enum in psql */
-type UserRole =
+export type UserRole =
   // Global platform-wide control
   | { type: 'admin' }
 
@@ -28,14 +28,14 @@ type UserRole =
   // Manage volunteers and shifts in assigned area
   | { type: 'team-lead'; eventId: EventId; teamId: TeamId };
 
-interface EventInfo {
+export interface EventInfo {
   id: EventId;
   name: string;
   startDate: Date;
   endDate: Date;
 }
 
-interface TeamInfo {
+export interface TeamInfo {
   id: TeamId;
   name: string;
   eventId: EventId;

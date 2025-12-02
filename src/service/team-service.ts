@@ -5,6 +5,7 @@
  */
 
 import pool from '@/db';
+import { TeamId, TeamInfo } from '@/types';
 import { PoolClient } from 'pg';
 
 /**

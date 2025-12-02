@@ -8,8 +8,6 @@
 
 import { Flex, Text, TextField, Select, Box, Button } from '@radix-ui/themes';
 import { useTranslations } from 'next-intl';
-import styles from './styles.module.css';
-import { useState } from 'react';
 import { User } from '@/types';
 
 const FormItem = ({ children }: { children: React.ReactNode }) => (
@@ -48,7 +46,6 @@ export default function EventForm({ onSubmit, editingUser }: Props) {
             {t('userEmail')}
           </Text>
           <TextField.Root
-            className={styles.dateInput}
             name="email"
             id="user-email"
             aria-labelledby="user-email-label"

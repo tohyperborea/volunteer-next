@@ -7,6 +7,7 @@ import { getEvents } from '@/service/event-service';
 import { getTeams } from '@/service/team-service';
 import { checkAuthorisation } from '@/session';
 import { inTransaction } from '@/db';
+import UserForm from '@/ui/user-form';
 
 export const generateMetadata = metadata('CreateUser');
 
@@ -66,51 +67,7 @@ export default async function CreateUser() {
     <Flex direction="column" gap="4" p="4">
       <Heading my="4">{t('title')}</Heading>
       <Card>
-        <form action={onSubmit}>
-          <Flex direction="column" gap="2">
-            <TextField.Root name="name" placeholder={t('userName')} required />
-            <TextField.Root name="email" type="email" placeholder={t('userEmail')} required />
-            <Select.Root required name="role">
-              <Select.Trigger placeholder={t('role')} />
-              <Select.Content>
-                <Select.Item value="admin">{t('admin')}</Select.Item>
-                <Select.Item value="organiser" disabled={organiserDisabled}>
-                  {organiserDisabled ? t('organiserNoEvents') : t('organiser')}
-                </Select.Item>
-                <Select.Item value="team-lead" disabled={teamLeadDisabled}>
-                  {teamLeadDisabled ? t('teamLeadNoEvents') : t('teamLead')}
-                </Select.Item>
-              </Select.Content>
-            </Select.Root>
-            {events.length > 0 && (
-              <Select.Root name="eventId">
-                <Select.Trigger placeholder={t('event') || 'Select Event'} />
-                <Select.Content>
-                  {events.map((event) => (
-                    <Select.Item key={event.id} value={event.id}>
-                      {event.name}
-                    </Select.Item>
-                  ))}
-                </Select.Content>
-              </Select.Root>
-            )}
-            {teams.length > 0 && (
-              <Select.Root name="teamId">
-                <Select.Trigger placeholder={t('team') || 'Select Team'} />
-                <Select.Content>
-                  {teams.map((team) => (
-                    <Select.Item key={team.id} value={team.id}>
-                      {team.name}
-                    </Select.Item>
-                  ))}
-                </Select.Content>
-              </Select.Root>
-            )}
-            <Box>
-              <Button type="submit">{t('createButton')}</Button>
-            </Box>
-          </Flex>
-        </form>
+        <UserForm onSubmit={onSubmit} editingUser={undefined} />
       </Card>
     </Flex>
   );

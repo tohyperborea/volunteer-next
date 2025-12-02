@@ -12,6 +12,7 @@ import {
 import { checkAuthorisation } from '@/session';
 import { inTransaction } from '@/db';
 import EventForm from '@/ui/event-form';
+import { UserRole } from '@/types';
 
 export const generateMetadata = metadata('UpdateEvent');
 
