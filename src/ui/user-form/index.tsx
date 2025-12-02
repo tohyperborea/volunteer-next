@@ -9,6 +9,7 @@
 import { Flex, Text, TextField, Box, Button } from '@radix-ui/themes';
 import { useTranslations } from 'next-intl';
 import RolesTable from './roles-table';
+import NewRoleRow from './new-role-row';
 
 const FormItem = ({ children }: { children: React.ReactNode }) => (
   <Flex direction="column" gap="1">
@@ -73,14 +74,18 @@ export default function UserForm({
           <Button type="submit">{t(editingUser ? 'updateButton' : 'createButton')}</Button>
         </Box>
         {/* Roles */}
-        <RolesTable
-          onDeleteRole={onDeleteRole}
-          onAddRole={onAddRole}
-          editingUser={editingUser}
-          events={events}
-          teams={teams}
-          currentUserId={currentUserId}
-        />
+        {editingUser ? (
+          <RolesTable
+            onDeleteRole={onDeleteRole}
+            onAddRole={onAddRole}
+            editingUser={editingUser}
+            events={events}
+            teams={teams}
+            currentUserId={currentUserId}
+          />
+        ) : (
+          <NewRoleRow events={events} teams={teams} standalone={true} />
+        )}
       </Flex>
     </form>
   );
