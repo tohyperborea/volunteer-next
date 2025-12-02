@@ -3,8 +3,6 @@
  * Put all your type definitions here so we can access them everywhere
  * @author Michael Townsend <@continuities>
  * @since 2025-11-10
- *
- * These types are globally available - no import needed!
  */
 
 type UserId = string;
