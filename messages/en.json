@@ -54,6 +54,7 @@
     "createdAt": "Created At",
     "newRole": "New Role",
     "noRoles": "No roles assigned",
+    "cancelButton": "Cancel",
     "actions": "Actions",
     "duplicateAdminRole": "This user already has an admin role",
     "duplicateOrganiserRole": "This user already has an organiser role for this event",

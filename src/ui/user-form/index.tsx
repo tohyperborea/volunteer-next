@@ -11,6 +11,8 @@ import { useTranslations } from 'next-intl';
 import RolesTable from './roles-table';
 import NewRoleRow from './new-roles-table';
 
+import Link from 'next/link';
+
 const FormItem = ({ children }: { children: React.ReactNode }) => (
   <Flex direction="column" gap="1">
     {children}
@@ -70,9 +72,12 @@ export default function UserForm({
             required
           />
         </FormItem>
-        <Box>
+        <Flex direction="row" justify="between">
+          <Link href="/users">
+            <Button variant="outline">{t('cancelButton')}</Button>
+          </Link>
           <Button type="submit">{t(editingUser ? 'updateButton' : 'createButton')}</Button>
-        </Box>
+        </Flex>
         {/* Roles */}
         {editingUser ? (
           <RolesTable
