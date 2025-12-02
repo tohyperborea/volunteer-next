@@ -9,7 +9,7 @@ type UserId = string;
 type EventId = string;
 type TeamId = string;
 
-interface User {
+export interface User {
   id: UserId;
   name: string;
   email: string;
