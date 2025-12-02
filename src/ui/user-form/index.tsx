@@ -9,7 +9,7 @@
 import { Flex, Text, TextField, Box, Button } from '@radix-ui/themes';
 import { useTranslations } from 'next-intl';
 import RolesTable from './roles-table';
-import NewRoleRow from './new-role-row';
+import NewRoleRow from './new-roles-table';
 
 const FormItem = ({ children }: { children: React.ReactNode }) => (
   <Flex direction="column" gap="1">
@@ -84,7 +84,7 @@ export default function UserForm({
             currentUserId={currentUserId}
           />
         ) : (
-          <NewRoleRow events={events} teams={teams} standalone={true} />
+          <NewRoleRow events={events} teams={teams} />
         )}
       </Flex>
     </form>

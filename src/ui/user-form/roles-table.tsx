@@ -9,7 +9,7 @@
 import { Text, Box, IconButton, Flex, Tooltip } from '@radix-ui/themes';
 import { TrashIcon, CircleBackslashIcon } from '@radix-ui/react-icons';
 import { useTranslations } from 'next-intl';
-import NewRoleRow from './new-role-row';
+import NewRoleRow from './new-roles-table';
 
 const FormItem = ({ children }: { children: React.ReactNode }) => (
   <Flex direction="column" gap="1">
@@ -191,18 +191,13 @@ export default function RolesTable({
                 </td>
               </tr>
             )}
-            {/* New Role Row */}
-            {onAddRole && editingUser && (
-              <NewRoleRow
-                onAddRole={onAddRole}
-                editingUser={editingUser}
-                events={events}
-                teams={teams}
-              />
-            )}
           </tbody>
         </table>
       </Box>
+      {/* New Role Row in its own table */}
+      {onAddRole && editingUser && (
+        <NewRoleRow onAddRole={onAddRole} editingUser={editingUser} events={events} teams={teams} />
+      )}
     </FormItem>
   );
 }
