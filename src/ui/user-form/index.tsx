@@ -1,14 +1,14 @@
 /**
  * UserForm component for creating or editing users.
  * @since 2025-11-14
- * @author Jason Offet
+ * @author Jason Offet <@joffet>
  */
 
 'use client';
 
 import { Flex, Text, TextField, Box, Button } from '@radix-ui/themes';
 import { useTranslations } from 'next-intl';
-import { User } from '@/types';
+import RolesTable from './roles-table';
 
 const FormItem = ({ children }: { children: React.ReactNode }) => (
   <Flex direction="column" gap="1">
@@ -18,11 +18,25 @@ const FormItem = ({ children }: { children: React.ReactNode }) => (
 
 interface Props {
   onSubmit: (data: FormData) => Promise<void>;
+  onDeleteRole?: (role: UserRole, userId: string) => Promise<void>;
+  onAddRole?: (data: FormData) => Promise<void>;
   editingUser?: User;
+  events: EventInfo[];
+  teams: TeamInfo[];
+  currentUserId?: string;
 }
 
-export default function EventForm({ onSubmit, editingUser }: Props) {
+export default function UserForm({
+  onSubmit,
+  onDeleteRole,
+  onAddRole,
+  editingUser,
+  events,
+  teams,
+  currentUserId
+}: Props) {
   const t = useTranslations('UserForm');
+
   return (
     <form action={onSubmit}>
       {editingUser && <input type="hidden" name="id" value={editingUser.id} />}
@@ -55,10 +69,18 @@ export default function EventForm({ onSubmit, editingUser }: Props) {
             required
           />
         </FormItem>
-
         <Box>
           <Button type="submit">{t(editingUser ? 'updateButton' : 'createButton')}</Button>
         </Box>
+        {/* Roles */}
+        <RolesTable
+          onDeleteRole={onDeleteRole}
+          onAddRole={onAddRole}
+          editingUser={editingUser}
+          events={events}
+          teams={teams}
+          currentUserId={currentUserId}
+        />
       </Flex>
     </form>
   );

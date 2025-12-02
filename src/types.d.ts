@@ -3,13 +3,15 @@
  * Put all your type definitions here so we can access them everywhere
  * @author Michael Townsend <@continuities>
  * @since 2025-11-10
+ *
+ * These types are globally available - no import needed!
  */
 
-export type UserId = string;
-export type EventId = string;
-export type TeamId = string;
+type UserId = string;
+type EventId = string;
+type TeamId = string;
 
-export interface User {
+interface User {
   id: UserId;
   name: string;
   email: string;
@@ -18,7 +20,7 @@ export interface User {
 
 /* These align with the role_type enum in the database
  * If you change this, you must also change the role_type enum in psql */
-export type UserRole =
+type UserRole =
   // Global platform-wide control
   | { type: 'admin' }
 
@@ -28,14 +30,14 @@ export type UserRole =
   // Manage volunteers and shifts in assigned area
   | { type: 'team-lead'; eventId: EventId; teamId: TeamId };
 
-export interface EventInfo {
+interface EventInfo {
   id: EventId;
   name: string;
   startDate: Date;
   endDate: Date;
 }
 
-export interface TeamInfo {
+interface TeamInfo {
   id: TeamId;
   name: string;
   eventId: EventId;

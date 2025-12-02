@@ -6,6 +6,8 @@ import { createUser, addRoleToUser } from '@/service/user-service';
 import { checkAuthorisation } from '@/session';
 import { inTransaction } from '@/db';
 import UserForm from '@/ui/user-form';
+import { getEvents } from '@/service/event-service';
+import { getTeams } from '@/service/team-service';
 
 export const generateMetadata = metadata('CreateUser');
 
@@ -24,9 +26,6 @@ export default async function CreateUser() {
       throw new Error('User email is required');
     }
     const role = data.get('role')?.toString() ?? null;
-    if (!role) {
-      throw new Error('User role is required');
-    }
 
     await inTransaction(async (client) => {
       const newUser = await createUser({ name, email }, client);
@@ -56,12 +55,14 @@ export default async function CreateUser() {
 
   await checkAuthorisation([{ type: 'admin' }]);
   const t = await getTranslations('CreateUser');
+  const events = await getEvents();
+  const teams = await getTeams();
 
   return (
     <Flex direction="column" gap="4" p="4">
       <Heading my="4">{t('title')}</Heading>
       <Card>
-        <UserForm onSubmit={onSubmit} editingUser={undefined} />
+        <UserForm onSubmit={onSubmit} editingUser={undefined} events={events} teams={teams} />
       </Card>
     </Flex>
   );

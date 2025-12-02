@@ -7,7 +7,6 @@
 import pool from '@/db';
 import { PoolClient } from 'pg';
 import { cache } from 'react';
-import { UserRole, User, UserId } from '@/types';
 import { randomUUID } from 'node:crypto';
 
 const roleFromRow = (row: any): UserRole => {

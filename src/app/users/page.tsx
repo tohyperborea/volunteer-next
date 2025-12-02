@@ -43,7 +43,7 @@ export default async function UsersDashboard() {
 
               <Box>{user.roles.map((role) => role.type).join(', ') || 'volunteer'}</Box>
             </Grid>
-            <Link href={`/edit-user/${user.id}`}>
+            <Link href={`/update-user/${user.id}`}>
               <Button variant="outline">
                 <Pencil1Icon />
               </Button>

@@ -48,7 +48,7 @@ export default async function MyApp() {
             <Text>Welcome, {user.email}</Text>
             <Text>Your roles:</Text>
             {user.roles.length === 0 && <Text>- No roles assigned</Text>}
-            {user.roles.map((role, index) => (
+            {user.roles.map((role: UserRole, index: number) => (
               <Text key={index}>
                 -{' '}
                 {role.type === 'admin'
