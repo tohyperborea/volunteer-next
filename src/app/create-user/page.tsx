@@ -1,10 +1,8 @@
 import metadata from '@/i18n/metadata';
 import { redirect } from 'next/navigation';
-import { Flex, Heading, Box, Button, Card, TextField, Select } from '@radix-ui/themes';
+import { Flex, Heading, Card } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
 import { createUser, addRoleToUser } from '@/service/user-service';
-import { getEvents } from '@/service/event-service';
-import { getTeams } from '@/service/team-service';
 import { checkAuthorisation } from '@/session';
 import { inTransaction } from '@/db';
 import UserForm from '@/ui/user-form';
@@ -58,10 +56,6 @@ export default async function CreateUser() {
 
   await checkAuthorisation([{ type: 'admin' }]);
   const t = await getTranslations('CreateUser');
-  const events = await getEvents();
-  const teams = await getTeams();
-  const organiserDisabled = events.length === 0;
-  const teamLeadDisabled = events.length === 0 || teams.length === 0;
 
   return (
     <Flex direction="column" gap="4" p="4">

@@ -6,7 +6,7 @@
 
 'use client';
 
-import { Flex, Text, TextField, Select, Box, Button } from '@radix-ui/themes';
+import { Flex, Text, TextField, Box, Button } from '@radix-ui/themes';
 import { useTranslations } from 'next-intl';
 import { User } from '@/types';
 
