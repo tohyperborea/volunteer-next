@@ -7,12 +7,14 @@ import { checkAuthorisation } from '@/session';
 import EventCard from '@/ui/event-card';
 import { redirect } from 'next/navigation';
 
-export const generateMetadata = metadata('EventsDashboard');
+const PAGE_KEY = 'EventsDashboardPage';
+
+export const generateMetadata = metadata(PAGE_KEY);
 
 export default async function EventsDashboard() {
   await checkAuthorisation([{ type: 'admin' }]);
 
-  const t = await getTranslations('EventsDashboard');
+  const t = await getTranslations(PAGE_KEY);
   const events = await getEvents();
 
   const deleteAction = async (id: EventId) => {
@@ -38,7 +40,9 @@ export default async function EventsDashboard() {
         </Card>
       )}
       {events.map((event) => (
-        <EventCard key={event.id} event={event} onDelete={deleteAction} />
+        <Link highContrast underline="none" href={`/event/${event.slug}`} key={event.id}>
+          <EventCard event={event} onDelete={deleteAction} />
+        </Link>
       ))}
     </Flex>
   );

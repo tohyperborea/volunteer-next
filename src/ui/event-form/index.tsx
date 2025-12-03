@@ -10,6 +10,7 @@ import { Flex, Text, TextField, Select, Box, Button } from '@radix-ui/themes';
 import { useTranslations } from 'next-intl';
 import styles from './styles.module.css';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 const FormItem = ({ children }: { children: React.ReactNode }) => (
   <Flex direction="column" gap="1">
@@ -19,6 +20,7 @@ const FormItem = ({ children }: { children: React.ReactNode }) => (
 
 interface Props {
   onSubmit: (data: FormData) => Promise<void>;
+  backOnCancel?: boolean;
   organiserOptions: User[];
   editingEvent?: EventInfo;
   editingOrganiser?: User;
@@ -26,11 +28,13 @@ interface Props {
 
 export default function EventForm({
   onSubmit,
+  backOnCancel,
   organiserOptions,
   editingEvent,
   editingOrganiser
 }: Props) {
   const t = useTranslations('EventForm');
+  const router = useRouter();
   const [startDate, setStartDate] = useState<string>('');
   const [endDate, setEndDate] = useState<string>('');
   const today = new Date().toISOString().split('T')[0];
@@ -50,6 +54,20 @@ export default function EventForm({
             placeholder={t('eventName')}
             autoComplete="off"
             defaultValue={editingEvent?.name}
+            required
+          />
+        </FormItem>
+        <FormItem>
+          <Text as="label" id="event-slug-label" htmlFor="event-slug" size="2" weight="bold">
+            {t('eventSlug')}
+          </Text>
+          <TextField.Root
+            name="slug"
+            aria-labelledby="event-slug-label"
+            id="event-slug"
+            placeholder={t('eventSlug')}
+            autoComplete="off"
+            defaultValue={editingEvent?.slug}
             required
           />
         </FormItem>
@@ -109,9 +127,20 @@ export default function EventForm({
             </Select.Content>
           </Select.Root>
         </FormItem>
-        <Box>
+        <Flex gap="2" justify="end">
           <Button type="submit">{t(editingEvent ? 'updateButton' : 'createButton')}</Button>
-        </Box>
+          {backOnCancel && (
+            <Button
+              variant="outline"
+              onClick={(e) => {
+                e.preventDefault();
+                router.back();
+              }}
+            >
+              {t('cancelButton')}
+            </Button>
+          )}
+        </Flex>
       </Flex>
     </form>
   );

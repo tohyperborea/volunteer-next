@@ -1,29 +1,58 @@
 {
-  "EventsDashboard": {
+  "EventsDashboardPage": {
     "title": "Events Dashboard",
     "noEvents": "No events yet!",
     "createEvent": "Create New Event"
   },
-  "CreateEvent": {
+  "CreateEventPage": {
     "title": "Create Event"
   },
-  "UpdateEvent": {
+  "UpdateEventPage": {
     "title": "Update Event"
+  },
+  "EventPage": {},
+  "TeamsDashboardPage": {
+    "teamsForEvent": "Teams for {eventName}",
+    "noTeams": "No teams yet!",
+    "createTeam": "Create New Team"
+  },
+  "CreateTeamPage": {
+    "title": "Create Team for {eventName}"
+  },
+  "UpdateTeamPage": {
+    "title": "Update Team"
+  },
+
+  "MenuCard": {
+    "update": "Update",
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "confirmDeletion": "Confirm Deletion",
+    "confirmText": "Are you sure you want to delete \"{title}\"?"
   },
   "EventForm": {
     "eventName": "Event Name",
+    "eventSlug": "URL Slug",
     "startDate": "Start Date",
     "endDate": "End Date",
     "eventOrganiser": "Event Organiser",
     "createButton": "Create Event",
-    "updateButton": "Update Event"
+    "updateButton": "Update Event",
+    "cancelButton": "Cancel"
   },
   "EventCard": {
-    "update": "Update",
-    "delete": "Delete",
-    "cancel": "Cancel",
-    "dateSpan": "{startDate} to {endDate}",
-    "confirmDeletion": "Confirm Deletion",
-    "confirmText": "Are you sure you want to delete \"{eventName}\"?"
+    "dateSpan": "{startDate} to {endDate}"
+  },
+  "TeamCard": {
+    "noTeams": "No teams yet!"
+  },
+  "TeamForm": {
+    "teamName": "Team Name",
+    "teamSlug": "URL Slug",
+    "teamDescription": "Team Description",
+    "teamLead": "Team Lead",
+    "createButton": "Create Team",
+    "updateButton": "Update Team",
+    "cancelButton": "Cancel"
   }
 }
