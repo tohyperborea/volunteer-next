@@ -56,15 +56,18 @@ export default async function EditUser({ params }: { params: Promise<{ userId: s
     redirect('/users');
   };
 
-  const onDeleteRole = async (
-    role: { type: string; eventId?: string; teamId?: string },
-    roleUserId: string
-  ) => {
+  const onDeleteRole = async (role: UserRole, roleUserId: string) => {
     'use server';
 
     await checkAuthorisation([{ type: 'admin' }]);
 
-    await removeRoleFromUsers(role as any, [roleUserId]);
+    // Prevent users from removing their own admin role
+    const current = await currentUser();
+    if (role.type === 'admin' && roleUserId === current?.id) {
+      throw new Error('You cannot remove your own admin role.');
+    }
+
+    await removeRoleFromUsers(role as UserRole, [roleUserId]);
     redirect(`/update-user/${roleUserId}`);
   };
 
@@ -107,9 +110,7 @@ export default async function EditUser({ params }: { params: Promise<{ userId: s
 
     redirect(`/update-user/${roleUserId}`);
   };
-  if (!userId) {
-    throw new Error('User ID is required');
-  }
+
   const user = await getUser(userId);
   if (!user) {
     throw new Error('User not found');

@@ -235,11 +235,13 @@ export default function NewRoleRow({ onAddRole, editingUser, events, teams }: Pr
                 >
                   <Select.Trigger placeholder={t('teamName')} />
                   <Select.Content>
-                    {teams.map((team) => (
-                      <Select.Item key={team.id} value={team.id}>
-                        {team.name}
-                      </Select.Item>
-                    ))}
+                    {teams
+                      .filter((team) => team.eventId === newRoleEventId)
+                      .map((team) => (
+                        <Select.Item key={team.id} value={team.id}>
+                          {team.name}
+                        </Select.Item>
+                      ))}
                   </Select.Content>
                 </Select.Root>
               </td>

@@ -107,7 +107,7 @@ export default function RolesTable({
                     ? teams.find((t) => t.id === role.teamId)?.name || '-'
                     : '-';
                 return (
-                  <tr key={index}>
+                  <tr key={`${index}-${eventName}-${teamName}`}>
                     <td
                       style={{
                         padding: '8px',
