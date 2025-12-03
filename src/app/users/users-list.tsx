@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react';
 import { Heading, Flex, Card, Text, Button, Box, Link } from '@radix-ui/themes';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
-import { Pencil1Icon, PlusIcon, TrashIcon } from '@radix-ui/react-icons';
+import { Pencil1Icon, TrashIcon } from '@radix-ui/react-icons';
 import Filters from './filters';
 
 interface UsersListProps {
