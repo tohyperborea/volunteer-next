@@ -8,8 +8,8 @@
 
 import { Flex, Text, TextField, Button } from '@radix-ui/themes';
 import { useTranslations } from 'next-intl';
-import RolesTable from './roles-table';
-import NewRoleRow from './new-roles-table';
+import RolesEditForm from './roles-edit-form';
+import NewRoleForm from './new-role-form';
 
 import Link from 'next/link';
 
@@ -80,7 +80,7 @@ export default function UserForm({
         </Flex>
         {/* Roles */}
         {editingUser ? (
-          <RolesTable
+          <RolesEditForm
             onDeleteRole={onDeleteRole}
             onAddRole={onAddRole}
             editingUser={editingUser}
@@ -89,7 +89,7 @@ export default function UserForm({
             currentUserId={currentUserId}
           />
         ) : (
-          <NewRoleRow events={events} teams={teams} />
+          <NewRoleForm events={events} teams={teams} />
         )}
       </Flex>
     </form>

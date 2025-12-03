@@ -1,5 +1,5 @@
 /**
- * RolesTable component for displaying and managing user roles.
+ * RolesEditForm component for displaying and managing user roles.
  * @since 2025-11-14
  * @author Jason Offet <@joffet>
  */
@@ -9,7 +9,7 @@
 import { Text, Box, IconButton, Flex, Tooltip } from '@radix-ui/themes';
 import { TrashIcon, CircleBackslashIcon } from '@radix-ui/react-icons';
 import { useTranslations } from 'next-intl';
-import NewRoleRow from './new-roles-table';
+import NewRoleRow from './new-role-form';
 
 const FormItem = ({ children }: { children: React.ReactNode }) => (
   <Flex direction="column" gap="1">
@@ -26,7 +26,7 @@ interface Props {
   currentUserId?: string;
 }
 
-export default function RolesTable({
+export default function RolesEditForm({
   onDeleteRole,
   onAddRole,
   editingUser,
