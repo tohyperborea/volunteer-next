@@ -18,12 +18,14 @@ export default async function UsersDashboard() {
 
   const handleDeleteUser = async (userId: string) => {
     'use server';
+    await checkAuthorisation([{ type: 'admin' }]);
     await markUserAsDeleted(userId);
     revalidatePath('/users');
   };
 
   const handleUndeleteUser = async (userId: string) => {
     'use server';
+    await checkAuthorisation([{ type: 'admin' }]);
     await undeleteUser(userId);
     revalidatePath('/users');
   };

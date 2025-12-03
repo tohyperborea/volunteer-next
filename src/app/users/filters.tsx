@@ -18,7 +18,7 @@ interface FiltersProps {
 }
 
 export default function Filters({ filters, onFiltersChange, isAdmin }: FiltersProps) {
-  const t = useTranslations('UsersDashboard');
+  const t = useTranslations('UsersFilters');
   const [isOpen, setIsOpen] = useState(false);
   const [roleType, setRoleType] = useState<string>(filters.roleType || 'all');
   const [searchQuery, setSearchQuery] = useState<string>(filters.searchQuery || '');
@@ -67,17 +67,17 @@ export default function Filters({ filters, onFiltersChange, isAdmin }: FiltersPr
         >
           <TextField.Root
             name="searchQuery"
-            placeholder="Search by name or email..."
+            placeholder={t('searchPlaceholder')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
           <Select.Root value={roleType} onValueChange={setRoleType}>
-            <Select.Trigger placeholder="Filter by role..." />
+            <Select.Trigger placeholder={t('roleFilterPlaceholder')} />
             <Select.Content>
-              <Select.Item value="all">All roles</Select.Item>
-              <Select.Item value="admin">Admin</Select.Item>
-              <Select.Item value="organiser">Organiser</Select.Item>
-              <Select.Item value="team-lead">Team Lead</Select.Item>
+              <Select.Item value="all">{t('allRoles')}</Select.Item>
+              <Select.Item value="admin">{t('admin')}</Select.Item>
+              <Select.Item value="organiser">{t('organiser')}</Select.Item>
+              <Select.Item value="team-lead">{t('teamLead')}</Select.Item>
             </Select.Content>
           </Select.Root>
           {/* Show deleted users - only for admins */}
@@ -87,13 +87,13 @@ export default function Filters({ filters, onFiltersChange, isAdmin }: FiltersPr
                 checked={showDeleted}
                 onCheckedChange={(checked) => setShowDeleted(checked === true)}
               />
-              <Text size="2">Show deleted users</Text>
+              <Text size="2">{t('showDeleted')}</Text>
             </Flex>
           )}
           <Flex gap="2">
-            <Button onClick={handleApplyFilters}>Apply Filters</Button>
+            <Button onClick={handleApplyFilters}>{t('applyFilters')}</Button>
             <Button variant="outline" onClick={handleClearFilters}>
-              Clear
+              {t('clear')}
             </Button>
           </Flex>
         </Flex>

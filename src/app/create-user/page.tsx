@@ -17,13 +17,15 @@ export default async function CreateUser() {
 
     await checkAuthorisation([{ type: 'admin' }]);
 
+    const t = await getTranslations('CreateUser');
+
     const name = data.get('name')?.toString() ?? null;
     if (!name) {
-      throw new Error('User name is required');
+      throw new Error(t('errors.userNameRequired'));
     }
     const email = data.get('email')?.toString() ?? null;
     if (!email) {
-      throw new Error('User email is required');
+      throw new Error(t('errors.userEmailRequired'));
     }
     const role = data.get('role')?.toString() ?? null;
 
@@ -35,17 +37,17 @@ export default async function CreateUser() {
       } else if (role === 'organiser') {
         const eventId = data.get('eventId')?.toString() ?? null;
         if (!eventId) {
-          throw new Error('Event ID is required for organiser role');
+          throw new Error(t('errors.eventIdRequiredForOrganiser'));
         }
         await addRoleToUser({ type: 'organiser', eventId }, newUser.id, client);
       } else if (role === 'team-lead') {
         const eventId = data.get('eventId')?.toString() ?? null;
         const teamId = data.get('teamId')?.toString() ?? null;
         if (!eventId) {
-          throw new Error('Event ID is required for team-lead role');
+          throw new Error(t('errors.eventIdRequiredForTeamLead'));
         }
         if (!teamId) {
-          throw new Error('Team ID is required for team-lead role');
+          throw new Error(t('errors.teamIdRequiredForTeamLead'));
         }
         await addRoleToUser({ type: 'team-lead', eventId, teamId }, newUser.id, client);
       }

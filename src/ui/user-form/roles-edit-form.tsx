@@ -107,7 +107,9 @@ export default function RolesEditForm({
                     ? teams.find((t) => t.id === role.teamId)?.name || '-'
                     : '-';
                 return (
-                  <tr key={`${index}-${eventName}-${teamName}`}>
+                  <tr
+                    key={`${role.type}-${role.type === 'organiser' || role.type === 'team-lead' ? (role.eventId ?? 'none') : 'none'}-${role.type === 'team-lead' ? (role.teamId ?? 'none') : 'none'}`}
+                  >
                     <td
                       style={{
                         padding: '8px',

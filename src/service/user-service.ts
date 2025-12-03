@@ -155,7 +155,6 @@ export const createUser = async (
     email: row.email,
     roles: []
   };
-  console.info('Created new user:', newUser);
   return newUser;
 };
 
@@ -258,6 +257,11 @@ export const markUserAsDeleted = async (userId: UserId, client?: PoolClient): Pr
   await db.query('UPDATE "user" SET "deletedAt" = CURRENT_TIMESTAMP WHERE id = $1', [userId]);
 };
 
+/**
+ * Removes the deletion mark from a user.
+ * @param userId - The ID of the user to remove the deletion mark from.
+ * @param client - Optional database client for transaction support.
+ */
 export const undeleteUser = async (userId: UserId, client?: PoolClient): Promise<void> => {
   const db = client || pool;
   await db.query('UPDATE "user" SET "deletedAt" = NULL WHERE id = $1', [userId]);

@@ -51,15 +51,34 @@
     "createUser": "Create New User",
     "email": "Email",
     "role": "Role",
-    "filter": "Filter",
     "undelete": "Undelete",
     "confirmDeletion": "Confirm Deletion",
     "confirmDeleteText": "Are you sure you want to delete \"{userName}\"? The record will be permanently deleted after 30 days.",
     "delete": "Delete",
     "cancel": "Cancel"
   },
+  "UsersFilters": {
+    "createUser": "Create New User",
+    "filter": "Filter",
+    "showDeleted": "Show Deleted",
+    "searchPlaceholder": "Search by name or email...",
+    "roleFilterPlaceholder": "Filter by role...",
+    "allRoles": "All roles",
+    "admin": "Admin",
+    "organiser": "Organiser",
+    "teamLead": "Team Lead",
+    "applyFilters": "Apply Filters",
+    "clear": "Clear"
+  },
   "CreateUser": {
-    "title": "Create User"
+    "title": "Create User",
+    "errors": {
+      "userNameRequired": "User name is required",
+      "userEmailRequired": "User email is required",
+      "eventIdRequiredForOrganiser": "Event ID is required for organiser role",
+      "eventIdRequiredForTeamLead": "Event ID is required for team-lead role",
+      "teamIdRequiredForTeamLead": "Team ID is required for team-lead role"
+    }
   },
   "EditUser": {
     "title": "Edit User"
