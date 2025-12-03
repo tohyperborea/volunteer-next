@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { Heading, Flex, Card, Text, Button, Box, Link } from '@radix-ui/themes';
+import { Heading, Flex, Card, Text, Button, Box, Link, Dialog } from '@radix-ui/themes';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { Pencil1Icon, TrashIcon } from '@radix-ui/react-icons';
@@ -29,6 +29,7 @@ export default function UsersList({
   const t = useTranslations('UsersDashboard');
   const router = useRouter();
   const [filters, setFilters] = useState<Filters>({});
+  const [userToDelete, setUserToDelete] = useState<string | null>(null);
 
   // Filter users based on applied filters
   const filteredUsers = useMemo(() => {
@@ -62,6 +63,7 @@ export default function UsersList({
 
   const handleDelete = async (userId: string) => {
     await onDeleteUser(userId);
+    setUserToDelete(null);
     router.refresh();
   };
 
@@ -120,9 +122,32 @@ export default function UsersList({
                     {t('undelete')}
                   </Button>
                 ) : (
-                  <Button variant="outline" color="red" onClick={() => handleDelete(user.id)}>
-                    <TrashIcon />
-                  </Button>
+                  <>
+                    <Button variant="outline" color="red" onClick={() => setUserToDelete(user.id)}>
+                      <TrashIcon />
+                    </Button>
+                    <Dialog.Root
+                      open={userToDelete === user.id}
+                      onOpenChange={(open) => !open && setUserToDelete(null)}
+                    >
+                      <Dialog.Content>
+                        <Dialog.Title>{t('confirmDeletion')}</Dialog.Title>
+                        <Dialog.Description>
+                          {t('confirmDeleteText', { userName: user.name })}
+                        </Dialog.Description>
+                        <Flex justify="end" gap="2" mt="4">
+                          <Dialog.Close>
+                            <Button variant="outline">{t('cancel')}</Button>
+                          </Dialog.Close>
+                          <Dialog.Close>
+                            <Button color="red" onClick={() => handleDelete(user.id)}>
+                              {t('delete')}
+                            </Button>
+                          </Dialog.Close>
+                        </Flex>
+                      </Dialog.Content>
+                    </Dialog.Root>
+                  </>
                 )}
               </>
             )}

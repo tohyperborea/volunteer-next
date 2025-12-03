@@ -33,7 +33,11 @@
     "email": "Email",
     "role": "Role",
     "filter": "Filter",
-    "undelete": "Undelete"
+    "undelete": "Undelete",
+    "confirmDeletion": "Confirm Deletion",
+    "confirmDeleteText": "Are you sure you want to delete \"{userName}\"? The record will be permanently deleted after 30 days.",
+    "delete": "Delete",
+    "cancel": "Cancel"
   },
   "CreateUser": {
     "title": "Create User"
