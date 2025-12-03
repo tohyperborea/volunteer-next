@@ -1,7 +1,7 @@
 import metadata from '@/i18n/metadata';
-import { Heading, Flex, Button, Link } from '@radix-ui/themes';
+import { Heading, Flex } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
-import { checkAuthorisation } from '@/session';
+import { checkAuthorisation, currentUser } from '@/session';
 import { getUsers } from '@/service/user-service';
 import { markUserAsDeleted, undeleteUser } from '@/service/user-service';
 import { revalidatePath } from 'next/cache';
@@ -14,6 +14,7 @@ export default async function UsersDashboard() {
 
   const t = await getTranslations('UsersDashboard');
   const users = await getUsers();
+  const user = await currentUser();
 
   const handleDeleteUser = async (userId: string) => {
     'use server';
@@ -34,6 +35,7 @@ export default async function UsersDashboard() {
         users={users}
         onDeleteUser={handleDeleteUser}
         onUndeleteUser={handleUndeleteUser}
+        currentUser={user as User}
       />
     </Flex>
   );

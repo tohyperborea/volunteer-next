@@ -14,9 +14,10 @@ interface Filters {
 interface FiltersProps {
   filters: Filters;
   onFiltersChange: (filters: Filters) => void;
+  isAdmin: boolean;
 }
 
-export default function Filters({ filters, onFiltersChange }: FiltersProps) {
+export default function Filters({ filters, onFiltersChange, isAdmin }: FiltersProps) {
   const t = useTranslations('UsersDashboard');
   const [isOpen, setIsOpen] = useState(false);
   const [roleType, setRoleType] = useState<string>(filters.roleType || 'all');
@@ -79,14 +80,16 @@ export default function Filters({ filters, onFiltersChange }: FiltersProps) {
               <Select.Item value="team-lead">Team Lead</Select.Item>
             </Select.Content>
           </Select.Root>
-          {/* Show deleted users */}
-          <Flex align="center" gap="2">
-            <Checkbox
-              checked={showDeleted}
-              onCheckedChange={(checked) => setShowDeleted(checked === true)}
-            />
-            <Text size="2">Show deleted users</Text>
-          </Flex>
+          {/* Show deleted users - only for admins */}
+          {isAdmin && (
+            <Flex align="center" gap="2">
+              <Checkbox
+                checked={showDeleted}
+                onCheckedChange={(checked) => setShowDeleted(checked === true)}
+              />
+              <Text size="2">Show deleted users</Text>
+            </Flex>
+          )}
           <Flex gap="2">
             <Button onClick={handleApplyFilters}>Apply Filters</Button>
             <Button variant="outline" onClick={handleClearFilters}>

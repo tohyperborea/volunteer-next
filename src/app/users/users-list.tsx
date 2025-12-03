@@ -11,6 +11,7 @@ interface UsersListProps {
   users: User[];
   onDeleteUser: (userId: string) => Promise<void>;
   onUndeleteUser: (userId: string) => Promise<void>;
+  currentUser: User;
 }
 
 interface Filters {
@@ -19,7 +20,12 @@ interface Filters {
   showDeleted?: boolean;
 }
 
-export default function UsersList({ users, onDeleteUser, onUndeleteUser }: UsersListProps) {
+export default function UsersList({
+  users,
+  onDeleteUser,
+  onUndeleteUser,
+  currentUser
+}: UsersListProps) {
   const t = useTranslations('UsersDashboard');
   const router = useRouter();
   const [filters, setFilters] = useState<Filters>({});
@@ -66,7 +72,11 @@ export default function UsersList({ users, onDeleteUser, onUndeleteUser }: Users
 
   return (
     <>
-      <Filters filters={filters} onFiltersChange={setFilters} />
+      <Filters
+        filters={filters}
+        onFiltersChange={setFilters}
+        isAdmin={currentUser.roles.some((role) => role.type === 'admin')}
+      />
       {filteredUsers.length === 0 && (
         <Card>
           <Text>{t('noUsers')}</Text>
@@ -82,33 +92,39 @@ export default function UsersList({ users, onDeleteUser, onUndeleteUser }: Users
           <Flex direction="row" gap="2" width="100%">
             <Flex direction={{ initial: 'column', sm: 'row' }} gap="2" width="100%">
               {/* Email */}
-              <Flex direction="column" gap="2" flexGrow="1">
+              <Flex direction="column" gap="2" width={{ initial: '100%', sm: '40%' }}>
                 <Text size="1" color="gray">
                   {t('email')}:
                 </Text>
                 <Box>{user.email}</Box>
               </Flex>
               {/* Roles */}
-              <Flex direction="column" gap="2" flexGrow="1">
+              <Flex direction="column" gap="2" width={{ initial: '100%', sm: '40%' }}>
                 <Text size="1" color="gray">
                   {t('role')}:
                 </Text>
                 <Box>{user.roles.map((role) => role.type).join(', ') || 'volunteer'}</Box>
               </Flex>
             </Flex>
-            <Link href={`/update-user/${user.id}`}>
-              <Button variant="outline">
-                <Pencil1Icon />
-              </Button>
-            </Link>
-            {user.deletedAt ? (
-              <Button variant="outline" color="green" onClick={() => handleUndelete(user.id)}>
-                {t('undelete')}
-              </Button>
-            ) : (
-              <Button variant="outline" color="red" onClick={() => handleDelete(user.id)}>
-                <TrashIcon />
-              </Button>
+            {currentUser.roles.some(
+              (role) => role.type === 'admin' || role.type === 'organiser'
+            ) && (
+              <>
+                <Link href={`/update-user/${user.id}`}>
+                  <Button variant="outline">
+                    <Pencil1Icon />
+                  </Button>
+                </Link>
+                {user.deletedAt ? (
+                  <Button variant="outline" color="green" onClick={() => handleUndelete(user.id)}>
+                    {t('undelete')}
+                  </Button>
+                ) : (
+                  <Button variant="outline" color="red" onClick={() => handleDelete(user.id)}>
+                    <TrashIcon />
+                  </Button>
+                )}
+              </>
             )}
           </Flex>
         </Card>

@@ -9,6 +9,7 @@ import './globals.css';
 import '@radix-ui/themes/styles.css';
 import { ThemeProvider } from 'next-themes';
 import { NextIntlClientProvider } from 'next-intl';
+import { getMessages } from 'next-intl/server';
 import { Theme, Container } from '@radix-ui/themes';
 import NavBar from '@/ui/navbar';
 
@@ -17,15 +18,17 @@ export const metadata: Metadata = {
   description: 'A system to support the organisation of alternative arts events'
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const messages = await getMessages();
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body suppressHydrationWarning>
-        <NextIntlClientProvider>
+        <NextIntlClientProvider messages={messages}>
           <ThemeProvider attribute="class">
             <Theme>
               <Container>
