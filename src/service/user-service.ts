@@ -37,7 +37,8 @@ const usersFromRows = (rows: any[]): User[] => {
         id: row.id,
         name: row.name,
         email: row.email,
-        roles: []
+        roles: [],
+        deletedAt: row.deletedAt ? new Date(row.deletedAt) : undefined
       });
     }
 
@@ -59,7 +60,7 @@ const usersFromRows = (rows: any[]): User[] => {
 export const getUser = cache(async (userId: UserId): Promise<User | null> => {
   const result = await pool.query(
     `
-    SELECT u.id, u.name, u.email, r.type, r."eventId", r."teamId"
+    SELECT u.id, u.name, u.email, u."deletedAt", r.type, r."eventId", r."teamId"
     FROM "user" u
     LEFT JOIN role r ON u.id = r."userId"
     WHERE u.id = $1
@@ -81,7 +82,7 @@ export const getUser = cache(async (userId: UserId): Promise<User | null> => {
  */
 export const getUsers = cache(async (): Promise<User[]> => {
   const result = await pool.query(`
-    SELECT u.id, u.name, u.email, r.type, r."eventId", r."teamId"
+    SELECT u.id, u.name, u.email, u."deletedAt", r.type, r."eventId", r."teamId"
     FROM "user" u
     LEFT JOIN role r ON u.id = r."userId"
   `);
@@ -107,7 +108,7 @@ export const getUsersWithRole = cache(async (role: UserRole): Promise<User[]> =>
   }
   const result = await pool.query(
     `
-    SELECT u.id, u.name, u.email, r.type, r."eventId", r."teamId"
+    SELECT u.id, u.name, u.email, u."deletedAt", r.type, r."eventId", r."teamId"
     FROM "user" u
     LEFT JOIN role r ON u.id = r."userId"
     WHERE EXISTS (${roleQuery.join(' AND ')})
@@ -245,4 +246,19 @@ export const removeRoleFromUsers = async (
   }
 
   await db.query(query, queryParams);
+};
+
+/**
+ * Marks a user as deleted.
+ * @param userId - The ID of the user to mark as deleted.
+ * @param client - Optional database client for transaction support.
+ */
+export const markUserAsDeleted = async (userId: UserId, client?: PoolClient): Promise<void> => {
+  const db = client || pool;
+  await db.query('UPDATE "user" SET "deletedAt" = CURRENT_TIMESTAMP WHERE id = $1', [userId]);
+};
+
+export const undeleteUser = async (userId: UserId, client?: PoolClient): Promise<void> => {
+  const db = client || pool;
+  await db.query('UPDATE "user" SET "deletedAt" = NULL WHERE id = $1', [userId]);
 };

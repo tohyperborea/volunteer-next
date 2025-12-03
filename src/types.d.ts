@@ -14,6 +14,7 @@ interface User {
   name: string;
   email: string;
   roles: UserRole[];
+  deletedAt?: Date;
 }
 
 /* These align with the role_type enum in the database

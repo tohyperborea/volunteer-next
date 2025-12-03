@@ -31,7 +31,9 @@
     "noUsers": "No users yet!",
     "createUser": "Create New User",
     "email": "Email",
-    "role": "Role"
+    "role": "Role",
+    "filter": "Filter",
+    "undelete": "Undelete"
   },
   "CreateUser": {
     "title": "Create User"
