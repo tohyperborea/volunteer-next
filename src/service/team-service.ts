@@ -1,5 +1,5 @@
-
-import pool from '@/db';
+/**
+ * Service for managing teams in the database
  * @since 2025-11-16
  * @author Michael Townsend <@continuities>
  */
@@ -10,18 +10,6 @@ import { cache } from 'react';
 
 const rowToTeam = (row: any): TeamInfo => ({
   id: row.id,
-  name: row.name,
-  eventId: row.eventId
-});
-
-/**
- * Fetches a list of all teams from the database.
- * @return An array of TeamInfo objects.
- */
-export const getTeams = cache(async (): Promise<TeamInfo[]> => {
-  const result = await pool.query('SELECT id, name, "eventId" FROM team');
-  return result.rows.map(rowToTeam);
-});
   eventId: row.eventId,
   slug: row.slug,
   name: row.name,
@@ -41,6 +29,15 @@ export const getTeamsForEvent = cache(async (eventId: EventId): Promise<TeamInfo
     [eventId]
   );
   return res.rows.map(rowToTeam);
+});
+
+/**
+ * Fetches a list of all teams from the database.
+ * @return An array of TeamInfo objects.
+ */
+export const getAllTeams = cache(async (): Promise<TeamInfo[]> => {
+  const result = await pool.query('SELECT id, "eventId", slug, name, description FROM team');
+  return result.rows.map(rowToTeam);
 });
 
 /**

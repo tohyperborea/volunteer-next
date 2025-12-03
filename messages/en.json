@@ -22,6 +22,7 @@
   "UpdateTeamPage": {
     "title": "Update Team"
   },
+  "TeamPage": {},
 
   "MenuCard": {
     "update": "Update",
@@ -41,13 +42,9 @@
     "cancelButton": "Cancel"
   },
   "EventCard": {
-    "update": "Update",
-    "delete": "Delete",
-    "cancel": "Cancel",
-    "dateSpan": "{startDate} to {endDate}",
-    "confirmDeletion": "Confirm Deletion",
-    "confirmText": "Are you sure you want to delete \"{eventName}\"?"
+    "dateSpan": "{startDate} to {endDate}"
   },
+  "TeamCard": {},
   "UsersDashboard": {
     "title": "Users Dashboard",
     "noUsers": "No users yet!",
@@ -79,11 +76,9 @@
     "roleType": "Type",
     "eventName": "Event Name",
     "teamName": "Team Name",
-    "createdAt": "Created At",
     "newRole": "New Role",
     "noRoles": "No roles assigned",
     "cancelButton": "Cancel",
-    "actions": "Actions",
     "duplicateAdminRole": "This user already has an admin role",
     "duplicateOrganiserRole": "This user already has an organiser role for this event",
     "duplicateTeamLeadRole": "This user already has a team lead role for this event and team",
@@ -91,10 +86,6 @@
     "eventAndTeamRequired": "Event and team are required for team lead role",
     "cannotRemoveOwnAdminRole": "You cannot remove your own admin role",
     "addRole": "Add Role"
-    "dateSpan": "{startDate} to {endDate}"
-  },
-  "TeamCard": {
-    "noTeams": "No teams yet!"
   },
   "TeamForm": {
     "teamName": "Team Name",

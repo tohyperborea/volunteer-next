@@ -7,7 +7,7 @@ import { checkAuthorisation, currentUser } from '@/session';
 import { inTransaction } from '@/db';
 import UserForm from '@/ui/user-form';
 import { getEvents } from '@/service/event-service';
-import { getTeams } from '@/service/team-service';
+import { getAllTeams } from '@/service/team-service';
 
 export const generateMetadata = metadata('EditUser');
 
@@ -117,7 +117,7 @@ export default async function EditUser({ params }: { params: Promise<{ userId: s
   }
 
   const events = await getEvents();
-  const teams = await getTeams();
+  const teams = await getAllTeams();
 
   await checkAuthorisation([{ type: 'admin' }]);
   const current = await currentUser();

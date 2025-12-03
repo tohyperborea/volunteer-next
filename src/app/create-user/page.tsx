@@ -7,7 +7,7 @@ import { checkAuthorisation } from '@/session';
 import { inTransaction } from '@/db';
 import UserForm from '@/ui/user-form';
 import { getEvents } from '@/service/event-service';
-import { getTeams } from '@/service/team-service';
+import { getAllTeams } from '@/service/team-service';
 
 export const generateMetadata = metadata('CreateUser');
 
@@ -56,7 +56,7 @@ export default async function CreateUser() {
   await checkAuthorisation([{ type: 'admin' }]);
   const t = await getTranslations('CreateUser');
   const events = await getEvents();
-  const teams = await getTeams();
+  const teams = await getAllTeams();
 
   return (
     <Flex direction="column" gap="4" p="4">
