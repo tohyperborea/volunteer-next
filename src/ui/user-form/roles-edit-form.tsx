@@ -10,6 +10,7 @@ import { Text, Box, IconButton, Flex, Tooltip } from '@radix-ui/themes';
 import { TrashIcon, CircleBackslashIcon } from '@radix-ui/react-icons';
 import { useTranslations } from 'next-intl';
 import NewRoleRow from './new-role-form';
+import styles from './styles.module.css';
 
 const FormItem = ({ children }: { children: React.ReactNode }) => (
   <Flex direction="column" gap="1">
@@ -41,48 +42,16 @@ export default function RolesEditForm({
       <Text as="label" size="2" weight="bold" mb="2">
         {t('roles')}
       </Text>
-      <Box style={{ overflowX: 'auto' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed' }}>
+      <Box className={styles.tableContainer}>
+        <table className={styles.table}>
           <thead>
             <tr>
-              <th
-                style={{
-                  textAlign: 'left',
-                  padding: '8px',
-                  borderBottom: '1px solid var(--gray-6)',
-                  width: '30%'
-                }}
-              >
-                {t('roleType')}
-              </th>
-              <th
-                style={{
-                  textAlign: 'left',
-                  padding: '8px',
-                  borderBottom: '1px solid var(--gray-6)',
-                  width: '30%'
-                }}
-              >
+              <th className={`${styles.tableHeader} ${styles.tableHeaderLeft}`}>{t('roleType')}</th>
+              <th className={`${styles.tableHeader} ${styles.tableHeaderLeft}`}>
                 {t('eventName')}
               </th>
-              <th
-                style={{
-                  textAlign: 'left',
-                  padding: '8px',
-                  borderBottom: '1px solid var(--gray-6)',
-                  width: '30%'
-                }}
-              >
-                {t('teamName')}
-              </th>
-              <th
-                style={{
-                  textAlign: 'center',
-                  padding: '8px',
-                  borderBottom: '1px solid var(--gray-6)',
-                  width: '10%'
-                }}
-              ></th>
+              <th className={`${styles.tableHeader} ${styles.tableHeaderLeft}`}>{t('teamName')}</th>
+              <th className={`${styles.tableHeader} ${styles.tableHeaderCenter}`}></th>
             </tr>
           </thead>
           <tbody>
@@ -110,48 +79,16 @@ export default function RolesEditForm({
                   <tr
                     key={`${role.type}-${role.type === 'organiser' || role.type === 'team-lead' ? (role.eventId ?? 'none') : 'none'}-${role.type === 'team-lead' ? (role.teamId ?? 'none') : 'none'}`}
                   >
-                    <td
-                      style={{
-                        padding: '8px',
-                        borderBottom: '1px solid var(--gray-4)',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis'
-                      }}
-                    >
+                    <td className={styles.tableCell}>
                       {role.type === 'admin'
                         ? t('admin')
                         : role.type === 'organiser'
                           ? t('eventOrganiser')
                           : t('teamLead')}
                     </td>
-                    <td
-                      style={{
-                        padding: '8px',
-                        borderBottom: '1px solid var(--gray-4)',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis'
-                      }}
-                    >
-                      {eventName}
-                    </td>
-                    <td
-                      style={{
-                        padding: '8px',
-                        borderBottom: '1px solid var(--gray-4)',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis'
-                      }}
-                    >
-                      {teamName}
-                    </td>
-                    <td
-                      style={{
-                        padding: '8px',
-                        borderBottom: '1px solid var(--gray-4)',
-                        textAlign: 'center',
-                        overflow: 'hidden'
-                      }}
-                    >
+                    <td className={styles.tableCell}>{eventName}</td>
+                    <td className={styles.tableCell}>{teamName}</td>
+                    <td className={styles.tableCellCenter}>
                       {onDeleteRole && editingUser && (
                         <>
                           {currentUserId === editingUser.id && role.type === 'admin' ? (
@@ -181,14 +118,7 @@ export default function RolesEditForm({
               })}
             {(!editingUser || editingUser.roles.length === 0) && (
               <tr>
-                <td
-                  colSpan={4}
-                  style={{
-                    padding: '8px',
-                    borderBottom: '1px solid var(--gray-4)',
-                    color: 'var(--gray-9)'
-                  }}
-                >
+                <td colSpan={4} className={styles.tableCellEmpty}>
                   {t('noRoles')}
                 </td>
               </tr>

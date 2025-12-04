@@ -64,7 +64,7 @@ export default async function CreateUser() {
     <Flex direction="column" gap="4" p="4">
       <Heading my="4">{t('title')}</Heading>
       <Card>
-        <UserForm onSubmit={onSubmit} editingUser={undefined} events={events} teams={teams} />
+        <UserForm onSubmit={onSubmit} events={events} teams={teams} />
       </Card>
     </Flex>
   );

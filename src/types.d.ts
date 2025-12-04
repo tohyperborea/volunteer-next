@@ -42,7 +42,6 @@ interface TeamInfo {
   id: TeamId;
   name: string;
   eventId: EventId;
-  name: string;
   slug: UrlSlug;
   description: string;
 }

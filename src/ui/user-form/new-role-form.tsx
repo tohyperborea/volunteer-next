@@ -10,6 +10,7 @@ import { Text, Select, Button, Flex } from '@radix-ui/themes';
 import { PlusIcon } from '@radix-ui/react-icons';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
+import { rolesEq } from '@/session';
 
 interface Props {
   onAddRole?: (data: FormData) => Promise<void>;
@@ -42,7 +43,8 @@ export default function NewRoleForm({ onAddRole, editingUser, events, teams }: P
 
     if (newRoleType === 'admin') {
       // Check if user already has an admin role
-      const hasAdmin = editingUser.roles.some((role) => role.type === 'admin');
+      const newRole: UserRole = { type: 'admin' };
+      const hasAdmin = editingUser.roles.some((role) => rolesEq(role, newRole));
       if (hasAdmin) {
         setValidationError(t('duplicateAdminRole'));
         return true;
@@ -50,9 +52,11 @@ export default function NewRoleForm({ onAddRole, editingUser, events, teams }: P
     } else if (newRoleType === 'organiser') {
       // Check if user already has an organiser role for this event
       if (!newRoleEventId) return false;
-      const hasOrganiser = editingUser.roles.some(
-        (role) => role.type === 'organiser' && role.eventId === newRoleEventId
-      );
+      const newRole: UserRole = {
+        type: 'organiser',
+        eventId: newRoleEventId
+      };
+      const hasOrganiser = editingUser.roles.some((role) => rolesEq(role, newRole));
       if (hasOrganiser) {
         setValidationError(t('duplicateOrganiserRole'));
         return true;
@@ -60,12 +64,12 @@ export default function NewRoleForm({ onAddRole, editingUser, events, teams }: P
     } else if (newRoleType === 'team-lead') {
       // Check if user already has a team-lead role for this event and team
       if (!newRoleEventId || !newRoleTeamId) return false;
-      const hasTeamLead = editingUser.roles.some(
-        (role) =>
-          role.type === 'team-lead' &&
-          role.eventId === newRoleEventId &&
-          role.teamId === newRoleTeamId
-      );
+      const newRole: UserRole = {
+        type: 'team-lead',
+        eventId: newRoleEventId,
+        teamId: newRoleTeamId
+      };
+      const hasTeamLead = editingUser.roles.some((role) => rolesEq(role, newRole));
       if (hasTeamLead) {
         setValidationError(t('duplicateTeamLeadRole'));
         return true;

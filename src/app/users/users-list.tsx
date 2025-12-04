@@ -26,7 +26,7 @@ export default function UsersList({
   onUndeleteUser,
   currentUser
 }: UsersListProps) {
-  const t = useTranslations('UsersDashboard');
+  const t = useTranslations('UsersList');
   const router = useRouter();
   const [filters, setFilters] = useState<Filters>({});
   const [userToDelete, setUserToDelete] = useState<string | null>(null);

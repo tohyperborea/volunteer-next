@@ -44,11 +44,14 @@
   "EventCard": {
     "dateSpan": "{startDate} to {endDate}"
   },
-  "TeamCard": {},
+  "TeamCard": {
+    "noTeams": "No teams yet!"
+  },
   "UsersDashboard": {
-    "title": "Users Dashboard",
+    "title": "Users Dashboard"
+  },
+  "UsersList": {
     "noUsers": "No users yet!",
-    "createUser": "Create New User",
     "email": "Email",
     "role": "Role",
     "undelete": "Undelete",
