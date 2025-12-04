@@ -15,6 +15,7 @@ interface User {
   name: string;
   email: string;
   roles: UserRole[];
+  deletedAt?: Date;
 }
 
 /* These align with the role_type enum in the database
@@ -39,8 +40,8 @@ interface EventInfo {
 
 interface TeamInfo {
   id: TeamId;
-  eventId: EventId;
   name: string;
+  eventId: EventId;
   slug: UrlSlug;
   description: string;
 }
