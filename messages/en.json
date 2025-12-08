@@ -54,5 +54,12 @@
     "createButton": "Create Team",
     "updateButton": "Update Team",
     "cancelButton": "Cancel"
+  },
+  "NavBar": {
+    "dashboard": "Dashboard",
+    "event": "Event",
+    "teams": "Teams",
+    "users": "Users",
+    "settings": "Settings"
   }
 }
