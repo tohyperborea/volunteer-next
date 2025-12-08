@@ -60,6 +60,7 @@
     "event": "Event",
     "teams": "Teams",
     "users": "Users",
-    "settings": "Settings"
+    "settings": "Settings",
+    "screenReaderDialogDescription": "Navigation menu with links to different sections of the application"
   }
 }

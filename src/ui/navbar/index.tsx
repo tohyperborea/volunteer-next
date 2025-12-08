@@ -14,6 +14,7 @@ import * as Dialog from '@radix-ui/react-dialog';
 import { useState } from 'react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
+import * as VisuallyHidden from '@radix-ui/react-visually-hidden';
 
 const navLinkMap = new Map<string, string>([
   ['/', 'dashboard'],
@@ -71,7 +72,10 @@ export default function NavBar({ text }: Props) {
                 <Cross1Icon />
               </IconButton>
             </Dialog.Close>
-            <Dialog.Title>{text}</Dialog.Title>
+            <VisuallyHidden.Root>
+              <Dialog.Title>{text}</Dialog.Title>
+              <Dialog.Description>{t('screenReaderDialogDescription')}</Dialog.Description>
+            </VisuallyHidden.Root>
             {getNavItems(true)}
           </Dialog.Content>
         </NavigationMenu.List>
