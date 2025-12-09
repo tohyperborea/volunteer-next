@@ -11,17 +11,23 @@ import { ThemeProvider } from 'next-themes';
 import { NextIntlClientProvider } from 'next-intl';
 import { Theme, Container } from '@radix-ui/themes';
 import NavBar from '@/ui/navbar';
+import { currentUser } from '@/session';
+import { getTranslations } from 'next-intl/server';
 
-export const metadata: Metadata = {
-  title: process.env.APP_NAME,
-  description: 'A system to support the organisation of alternative arts events'
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('Metadata');
+  return {
+    title: process.env.APP_NAME,
+    description: t('description')
+  };
+}
 
-export default function RootLayout({
+export default async function RootLayout({
   children
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const user = await currentUser();
   return (
     <html lang="en" suppressHydrationWarning>
       <body suppressHydrationWarning>
@@ -29,7 +35,7 @@ export default function RootLayout({
           <ThemeProvider attribute="class">
             <Theme>
               <Container>
-                <NavBar text={process.env.APP_NAME} />
+                {user && <NavBar text={process.env.APP_NAME} />}
                 <main>{children}</main>
               </Container>
             </Theme>
