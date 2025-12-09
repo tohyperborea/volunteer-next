@@ -45,3 +45,9 @@ interface TeamInfo {
   slug: UrlSlug;
   description: string;
 }
+
+interface UserFilters {
+  roleType?: string;
+  searchQuery?: string;
+  showDeleted?: boolean;
+}

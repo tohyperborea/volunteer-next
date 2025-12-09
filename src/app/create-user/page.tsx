@@ -8,6 +8,7 @@ import { inTransaction } from '@/db';
 import UserForm from '@/ui/user-form';
 import { getEvents } from '@/service/event-service';
 import { getAllTeams } from '@/service/team-service';
+import { validateNewUser } from '@/validator/user-validator';
 
 export const generateMetadata = metadata('CreateUser');
 
@@ -19,18 +20,11 @@ export default async function CreateUser() {
 
     const t = await getTranslations('CreateUser');
 
-    const name = data.get('name')?.toString() ?? null;
-    if (!name) {
-      throw new Error(t('errors.userNameRequired'));
-    }
-    const email = data.get('email')?.toString() ?? null;
-    if (!email) {
-      throw new Error(t('errors.userEmailRequired'));
-    }
+    const validatedUser = validateNewUser(data);
     const role = data.get('role')?.toString() ?? null;
 
     await inTransaction(async (client) => {
-      const newUser = await createUser({ name, email }, client);
+      const newUser = await createUser(validatedUser, client);
 
       if (role === 'admin') {
         await addRoleToUser({ type: 'admin' }, newUser.id, client);

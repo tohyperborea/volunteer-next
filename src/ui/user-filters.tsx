@@ -5,19 +5,17 @@ import { Button, Flex, TextField, Select, Link, Checkbox, Text } from '@radix-ui
 import { useTranslations } from 'next-intl';
 import { MixerHorizontalIcon, PlusIcon } from '@radix-ui/react-icons';
 
-interface Filters {
-  roleType?: string;
-  searchQuery?: string;
-  showDeleted?: boolean;
-}
-
 interface FiltersProps {
-  filters: Filters;
-  onFiltersChange: (filters: Filters) => void;
-  isAdmin: boolean;
+  filters: UserFilters;
+  onFiltersChange: (filters: UserFilters) => void;
+  hasAccessToShowDeleted: boolean;
 }
 
-export default function Filters({ filters, onFiltersChange, isAdmin }: FiltersProps) {
+export default function Filters({
+  filters,
+  onFiltersChange,
+  hasAccessToShowDeleted
+}: FiltersProps) {
   const t = useTranslations('UsersFilters');
   const [isOpen, setIsOpen] = useState(false);
   const [roleType, setRoleType] = useState<string>(filters.roleType || 'all');
@@ -80,8 +78,8 @@ export default function Filters({ filters, onFiltersChange, isAdmin }: FiltersPr
               <Select.Item value="team-lead">{t('teamLead')}</Select.Item>
             </Select.Content>
           </Select.Root>
-          {/* Show deleted users - only for admins */}
-          {isAdmin && (
+          {/* Show deleted users */}
+          {hasAccessToShowDeleted && (
             <Flex align="center" gap="2">
               <Checkbox
                 checked={showDeleted}

@@ -8,6 +8,7 @@ import { inTransaction } from '@/db';
 import UserForm from '@/ui/user-form';
 import { getEvents } from '@/service/event-service';
 import { getAllTeams } from '@/service/team-service';
+import { validateExistingUser } from '@/validator/user-validator';
 
 export const generateMetadata = metadata('EditUser');
 
@@ -22,33 +23,19 @@ export default async function EditUser({ params }: { params: Promise<{ userId: s
 
     await checkAuthorisation([{ type: 'admin' }]);
 
-    const formUserId = data.get('id')?.toString();
-    if (!formUserId) {
-      throw new Error('User ID is required');
-    }
+    const validatedUser = validateExistingUser(data);
 
-    const name = data.get('name')?.toString() ?? null;
-    if (!name) {
-      throw new Error('User name is required');
-    }
-    const email = data.get('email')?.toString() ?? null;
-    if (!email) {
-      throw new Error('User email is required');
-    }
-
-    const existingUser = await getUser(formUserId);
+    const existingUser = await getUser(validatedUser.id);
     if (!existingUser) {
       throw new Error('User not found');
     }
 
     await inTransaction(async (client) => {
       await updateUser(
-        formUserId,
+        validatedUser.id,
         {
-          id: formUserId,
-          name,
-          email,
-          roles: existingUser.roles
+          name: validatedUser.name,
+          email: validatedUser.email
         },
         client
       );

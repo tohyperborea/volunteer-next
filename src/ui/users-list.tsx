@@ -5,19 +5,13 @@ import { Heading, Flex, Card, Text, Button, Box, Link, Dialog } from '@radix-ui/
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { Pencil1Icon, TrashIcon } from '@radix-ui/react-icons';
-import Filters from './filters';
+import Filters from './user-filters';
 
 interface UsersListProps {
   users: User[];
   onDeleteUser: (userId: string) => Promise<void>;
   onUndeleteUser: (userId: string) => Promise<void>;
   currentUser: User;
-}
-
-interface Filters {
-  roleType?: string;
-  searchQuery?: string;
-  showDeleted?: boolean;
 }
 
 export default function UsersList({
@@ -28,14 +22,14 @@ export default function UsersList({
 }: UsersListProps) {
   const t = useTranslations('UsersList');
   const router = useRouter();
-  const [filters, setFilters] = useState<Filters>({});
+  const [filters, setFilters] = useState<UserFilters>({});
   const [userToDelete, setUserToDelete] = useState<string | null>(null);
 
   // Filter users based on applied filters
   const filteredUsers = useMemo(() => {
     return users.filter((user) => {
       // Filter out deleted users (default: hide deleted users)
-      if (user.deletedAt && !(filters.showDeleted === true)) {
+      if (user.deletedAt && !filters.showDeleted) {
         return false;
       }
 
@@ -72,12 +66,14 @@ export default function UsersList({
     router.refresh();
   };
 
+  const hasAccessToShowDeleted = currentUser.roles.some((role) => role.type === 'admin'); // TODO: Add setting to allow event creator to determine access level
+
   return (
     <>
       <Filters
         filters={filters}
         onFiltersChange={setFilters}
-        isAdmin={currentUser.roles.some((role) => role.type === 'admin')}
+        hasAccessToShowDeleted={hasAccessToShowDeleted}
       />
       {filteredUsers.length === 0 && (
         <Card>

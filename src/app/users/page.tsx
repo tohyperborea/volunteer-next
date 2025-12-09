@@ -5,7 +5,7 @@ import { checkAuthorisation, currentUser } from '@/session';
 import { getUsers } from '@/service/user-service';
 import { markUserAsDeleted, undeleteUser } from '@/service/user-service';
 import { revalidatePath } from 'next/cache';
-import UsersList from './users-list';
+import UsersList from '../../ui/users-list';
 
 export const generateMetadata = metadata('UsersDashboard');
 

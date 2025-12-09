@@ -38,7 +38,11 @@ const usersFromRows = (rows: any[]): User[] => {
         name: row.name,
         email: row.email,
         roles: [],
-        deletedAt: row.deletedAt ? new Date(row.deletedAt) : undefined
+        deletedAt: row.deletedAt
+          ? row.deletedAt instanceof Date
+            ? row.deletedAt
+            : new Date(row.deletedAt)
+          : undefined
       });
     }
 
@@ -161,13 +165,13 @@ export const createUser = async (
 /**
  * Updates a user in the database.
  * @param userId - The ID of the user to update.
- * @param user - The user data to update.
+ * @param user - The user data to update, excluding the ID.
  * @param client - Optional database client for transaction support.
  * @throws {Error} If the database query fails or the user is invalid.
  */
 export const updateUser = async (
   userId: UserId,
-  user: User,
+  user: Omit<User, 'id' | 'roles' | 'deletedAt'>,
   client?: PoolClient
 ): Promise<void> => {
   const db = client || pool;
