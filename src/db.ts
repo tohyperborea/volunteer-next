@@ -4,6 +4,7 @@
  * @since 2025-09-02
  */
 
+import 'server-only';
 import { Pool, PoolClient } from 'pg';
 
 const pool = new Pool({

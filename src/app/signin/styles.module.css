@@ -1,0 +1,27 @@
+.signinContainerOuter {
+  background: var(--color-panel-gradient);
+  color: var(--color-panel-contrast);
+  box-shadow: var(--shadow-2);
+  padding: 30px;
+  margin: auto;
+  margin-top: 60px;
+  border-radius: 10px;
+  height: 500px;
+  width: 300px;
+  gap: 40px;
+}
+
+.signinButton {
+  width: 100%;
+  height: 40px;
+  border-radius: 5px;
+  background: var(--color-panel-contrast);
+  color: var(--color-panel-solid);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.signinForm {
+  width: 100%;
+}

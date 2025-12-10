@@ -1,0 +1,24 @@
+/* Custom theme variable overrides */
+/* Must be imported AFTER @radix-ui/themes/styles.css */
+
+/* Override semantic colors */
+.radix-themes {
+  --color-panel-solid: rgb(89, 55, 239);
+  --color-panel-contrast: white;
+  --color-panel-gradient: linear-gradient(to bottom, #5937ef, rgba(89, 55, 239, 0.77));
+}
+
+/* Add theme-specific overrides here if values differ between light/dark themes */
+/* Example:
+.radix-themes.dark,
+.radix-themes.dark-theme {
+  --color-panel-solid: rgb(89, 55, 239);
+  --color-panel-contrast: white;
+}
+*/
+
+/* Example: Override an accent color (if using indigo as accent) */
+/* .radix-themes {
+  --indigo-9: rgb(89, 55, 239);
+  --indigo-a9: rgb(89, 55, 239);
+} */

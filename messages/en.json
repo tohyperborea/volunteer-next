@@ -117,5 +117,24 @@
     "createButton": "Create Team",
     "updateButton": "Update Team",
     "cancelButton": "Cancel"
+  },
+  "NavBar": {
+    "home": "Home",
+    "event": "Event",
+    "teams": "Teams",
+    "users": "Users",
+    "settings": "Settings",
+    "screenReaderDialogDescription": "Navigation menu with links to different sections of the application"
+  },
+  "Metadata": {
+    "description": "A system to support the organisation of alternative arts events"
+  },
+  "SignInPage": {
+    "title": "Sign In",
+    "descriptionOne": "Sign in to your account to continue.",
+    "descriptionTwo": "We use our ticket system, Pretix, to provide a single sign-on experience.",
+    "descriptionThree": "Clicking the button below will redirect you to the Pretix login page.",
+    "descriptionFour": "After logging in, you will be redirected back to this application.",
+    "button": "Sign In with Pretix"
   }
 }

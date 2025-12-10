@@ -7,32 +7,39 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import '@radix-ui/themes/styles.css';
+import './theme-overrides.css';
 import { ThemeProvider } from 'next-themes';
 import { NextIntlClientProvider } from 'next-intl';
-import { getMessages } from 'next-intl/server';
 import { Theme, Container } from '@radix-ui/themes';
 import NavBar from '@/ui/navbar';
+import { currentUser } from '@/session';
+import { getTranslations } from 'next-intl/server';
 
-export const metadata: Metadata = {
-  title: process.env.APP_NAME,
-  description: 'A system to support the organisation of alternative arts events'
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('Metadata');
+  return {
+    title: process.env.APP_NAME,
+    description: t('description')
+  };
+}
 
 export default async function RootLayout({
   children
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const messages = await getMessages();
-
+  const user = await currentUser();
   return (
     <html lang="en" suppressHydrationWarning>
       <body suppressHydrationWarning>
         <NextIntlClientProvider>
-          <ThemeProvider attribute="class">
+          <ThemeProvider
+            attribute="class"
+            defaultTheme={(process.env.DEFAULT_THEME as ThemeMode) || 'system'}
+          >
             <Theme>
               <Container>
-                <NavBar text={process.env.APP_NAME} />
+                {user && <NavBar text={process.env.APP_NAME} user={user} />}
                 <main>{children}</main>
               </Container>
             </Theme>

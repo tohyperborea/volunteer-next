@@ -51,3 +51,5 @@ interface UserFilters {
   searchQuery?: string;
   showDeleted?: boolean;
 }
+
+type ThemeMode = 'light' | 'dark' | 'system';
