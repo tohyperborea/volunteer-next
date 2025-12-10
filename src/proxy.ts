@@ -20,6 +20,11 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
+  if (process.env.DEBUG_FORCE_ROLE && process.env.NODE_ENV !== 'production') {
+    // In debug mode, allow all requests to proceed
+    return NextResponse.next();
+  }
+
   // Check authentication for all other routes
   // Since proxy runs in Node.js runtime, we can use BetterAuth's API
   const session = await auth.api.getSession({
