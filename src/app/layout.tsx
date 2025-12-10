@@ -39,7 +39,7 @@ export default async function RootLayout({
           >
             <Theme>
               <Container>
-                {user && <NavBar text={process.env.APP_NAME} />}
+                {user && <NavBar text={process.env.APP_NAME} user={user} />}
                 <main>{children}</main>
               </Container>
             </Theme>

@@ -31,9 +31,10 @@ const navLinkMap = new Map<string, string>([
 
 interface Props {
   text?: string;
+  user: User;
 }
 
-export default function NavBar({ text }: Props) {
+export default function NavBar({ text, user }: Props) {
   const t = useTranslations('NavBar');
   const [dialogOpen, setDialogOpen] = useState(false);
   const router = useRouter();
@@ -41,6 +42,7 @@ export default function NavBar({ text }: Props) {
     return title === Array.from(navLinkMap.values()).pop();
   };
   const pathname = usePathname();
+
   return (
     <Dialog.Root open={dialogOpen} onOpenChange={setDialogOpen}>
       <TabNav.Root className={styles.navigationMenuList}>
@@ -57,6 +59,9 @@ export default function NavBar({ text }: Props) {
         <Flex direction="row" justify="center" align="center" style={{ flex: 1 }}>
           <Heading size="3">{text}</Heading>
         </Flex>
+        <Box className={styles.navigationUserInitial}>
+          <Text>{(user?.name || user?.email)?.charAt(0).toUpperCase()}</Text>
+        </Box>
         <Dialog.Content className={styles.dialogContent}>
           <Dialog.Close className={styles.dialogCloseButton}>
             <IconButton variant="ghost" size="3" aria-label="Close">

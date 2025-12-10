@@ -8,19 +8,14 @@
   --color-panel-gradient: linear-gradient(to bottom, #5937ef, rgba(89, 55, 239, 0.77));
 }
 
-/* For theme-specific overrides (light/dark) */
-.radix-themes.light,
-.radix-themes.light-theme {
-  --color-panel-solid: rgb(89, 55, 239);
-  --color-panel-contrast: white;
-  --color-panel-gradient: linear-gradient(to bottom, #5937ef, rgba(89, 55, 239, 0.77));
-}
-
+/* Add theme-specific overrides here if values differ between light/dark themes */
+/* Example:
 .radix-themes.dark,
 .radix-themes.dark-theme {
   --color-panel-solid: rgb(89, 55, 239);
   --color-panel-contrast: white;
 }
+*/
 
 /* Example: Override an accent color (if using indigo as accent) */
 /* .radix-themes {
