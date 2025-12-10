@@ -7,6 +7,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import '@radix-ui/themes/styles.css';
+import './theme-overrides.css';
 import { ThemeProvider } from 'next-themes';
 import { NextIntlClientProvider } from 'next-intl';
 import { Theme, Container } from '@radix-ui/themes';
@@ -32,7 +33,10 @@ export default async function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body suppressHydrationWarning>
         <NextIntlClientProvider>
-          <ThemeProvider attribute="class">
+          <ThemeProvider
+            attribute="class"
+            defaultTheme={(process.env.DEFAULT_THEME as ThemeMode) || 'system'}
+          >
             <Theme>
               <Container>
                 {user && <NavBar text={process.env.APP_NAME} />}

@@ -77,7 +77,7 @@ export default function NavBar({ text }: Props) {
             }}
             active={pathname === '/'}
           >
-            <Box className={styles.navigationHomeIconContainer}>
+            <Box>
               <HomeIcon className={styles.navigationHomeIcon} />
               <Text style={{ marginLeft: '0.5rem' }}>{t('home')}</Text>
             </Box>
