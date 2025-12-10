@@ -7,6 +7,7 @@
 import pool from '@/db';
 import { PoolClient } from 'pg';
 import { cache } from 'react';
+import { randomUUID } from 'node:crypto';
 
 const roleFromRow = (row: any): UserRole => {
   switch (row.type) {
@@ -36,7 +37,12 @@ const usersFromRows = (rows: any[]): User[] => {
         id: row.id,
         name: row.name,
         email: row.email,
-        roles: []
+        roles: [],
+        deletedAt: row.deletedAt
+          ? row.deletedAt instanceof Date
+            ? row.deletedAt
+            : new Date(row.deletedAt)
+          : undefined
       });
     }
 
@@ -58,7 +64,7 @@ const usersFromRows = (rows: any[]): User[] => {
 export const getUser = cache(async (userId: UserId): Promise<User | null> => {
   const result = await pool.query(
     `
-    SELECT u.id, u.name, u.email, r.type, r."eventId", r."teamId"
+    SELECT u.id, u.name, u.email, u."deletedAt", r.type, r."eventId", r."teamId"
     FROM "user" u
     LEFT JOIN role r ON u.id = r."userId"
     WHERE u.id = $1
@@ -80,7 +86,7 @@ export const getUser = cache(async (userId: UserId): Promise<User | null> => {
  */
 export const getUsers = cache(async (): Promise<User[]> => {
   const result = await pool.query(`
-    SELECT u.id, u.name, u.email, r.type, r."eventId", r."teamId"
+    SELECT u.id, u.name, u.email, u."deletedAt", r.type, r."eventId", r."teamId"
     FROM "user" u
     LEFT JOIN role r ON u.id = r."userId"
   `);
@@ -106,7 +112,7 @@ export const getUsersWithRole = cache(async (role: UserRole): Promise<User[]> =>
   }
   const result = await pool.query(
     `
-    SELECT u.id, u.name, u.email, r.type, r."eventId", r."teamId"
+    SELECT u.id, u.name, u.email, u."deletedAt", r.type, r."eventId", r."teamId"
     FROM "user" u
     LEFT JOIN role r ON u.id = r."userId"
     WHERE EXISTS (${roleQuery.join(' AND ')})
@@ -129,6 +135,52 @@ export const getUserRoles = cache(async (userId: UserId): Promise<UserRole[]> =>
   );
   return result.rows.map(roleFromRow);
 });
+
+/**
+ * Creates a new user in the database.
+ * @param user - The user data, excluding the ID.
+ * @param client - Optional database client for transaction support.
+ * @return The newly created User object, including its ID.
+ */
+export const createUser = async (
+  user: Omit<User, 'id' | 'roles'>,
+  client?: PoolClient
+): Promise<User> => {
+  const db = client || pool;
+  const id = randomUUID();
+  const result = await db.query(
+    'INSERT INTO "user" (id, name, email, "emailVerified") VALUES ($1, $2, $3, $4) RETURNING id, name, email',
+    [id, user.name, user.email, false]
+  );
+  const row = result.rows[0];
+  const newUser: User = {
+    id: row.id,
+    name: row.name,
+    email: row.email,
+    roles: []
+  };
+  return newUser;
+};
+
+/**
+ * Updates a user in the database.
+ * @param userId - The ID of the user to update.
+ * @param user - The user data to update, excluding the ID.
+ * @param client - Optional database client for transaction support.
+ * @throws {Error} If the database query fails or the user is invalid.
+ */
+export const updateUser = async (
+  userId: UserId,
+  user: Omit<User, 'id' | 'roles' | 'deletedAt'>,
+  client?: PoolClient
+): Promise<void> => {
+  const db = client || pool;
+  await db.query('UPDATE "user" SET name = $1, email = $2 WHERE id = $3', [
+    user.name,
+    user.email,
+    userId
+  ]);
+};
 
 /**
  * Adds a role to a user.
@@ -197,4 +249,24 @@ export const removeRoleFromUsers = async (
   }
 
   await db.query(query, queryParams);
+};
+
+/**
+ * Marks a user as deleted.
+ * @param userId - The ID of the user to mark as deleted.
+ * @param client - Optional database client for transaction support.
+ */
+export const markUserAsDeleted = async (userId: UserId, client?: PoolClient): Promise<void> => {
+  const db = client || pool;
+  await db.query('UPDATE "user" SET "deletedAt" = CURRENT_TIMESTAMP WHERE id = $1', [userId]);
+};
+
+/**
+ * Removes the deletion mark from a user.
+ * @param userId - The ID of the user to remove the deletion mark from.
+ * @param client - Optional database client for transaction support.
+ */
+export const undeleteUser = async (userId: UserId, client?: PoolClient): Promise<void> => {
+  const db = client || pool;
+  await db.query('UPDATE "user" SET "deletedAt" = NULL WHERE id = $1', [userId]);
 };

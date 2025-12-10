@@ -10,7 +10,7 @@ import { headers } from 'next/headers';
 import { getUser } from './service/user-service';
 import { redirect, unauthorized } from 'next/navigation';
 
-const rolesEq = (a: UserRole, b: UserRole): boolean => {
+export const rolesEq = (a: UserRole, b: UserRole): boolean => {
   switch (a.type) {
     case 'admin':
       return b.type === 'admin';
