@@ -10,7 +10,7 @@ import { Text, Select, Button, Flex } from '@radix-ui/themes';
 import { PlusIcon } from '@radix-ui/react-icons';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
-import { rolesEq } from '@/session';
+import { rolesEq } from '@/utils/roles';
 
 interface Props {
   onAddRole?: (data: FormData) => Promise<void>;

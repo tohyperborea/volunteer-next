@@ -9,19 +9,7 @@ import { auth } from './auth';
 import { headers } from 'next/headers';
 import { getUser } from './service/user-service';
 import { redirect, unauthorized } from 'next/navigation';
-
-export const rolesEq = (a: UserRole, b: UserRole): boolean => {
-  switch (a.type) {
-    case 'admin':
-      return b.type === 'admin';
-    case 'organiser':
-      return b.type === 'organiser' && a.eventId === b.eventId;
-    case 'team-lead':
-      return b.type === 'team-lead' && a.eventId === b.eventId && a.teamId === b.teamId;
-    default:
-      return false;
-  }
-};
+import { rolesEq } from './utils/roles';
 
 /**
  * Retrieves the currently authenticated user based on the session.

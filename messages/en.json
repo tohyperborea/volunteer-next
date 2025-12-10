@@ -130,6 +130,7 @@
     "description": "A system to support the organisation of alternative arts events"
   },
   "SignInPage": {
+    "title": "Sign In",
     "descriptionOne": "Sign in to your account to continue.",
     "descriptionTwo": "We use our ticket system, Pretix, to provide a single sign-on experience.",
     "descriptionThree": "Clicking the button below will redirect you to the Pretix login page.",
