@@ -56,7 +56,7 @@
     "cancelButton": "Cancel"
   },
   "NavBar": {
-    "dashboard": "Dashboard",
+    "home": "Home",
     "event": "Event",
     "teams": "Teams",
     "users": "Users",
