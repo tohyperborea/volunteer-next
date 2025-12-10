@@ -27,7 +27,7 @@ export default async function MyApp() {
       <Flex direction="column" gap="2">
         <Text>Welcome, {user?.email}</Text>
         <Text>Your roles:</Text>
-        {user?.roles.length === 0 && <Text>- No roles assigned</Text>}
+        {(user?.roles.length ?? 0) === 0 && <Text>- No roles assigned</Text>}
         {user?.roles.map((role, index) => (
           <Text key={index}>
             -{' '}
