@@ -7,6 +7,11 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { auth } from '@/auth';
 
+const isLocalRequest = (request: NextRequest) => {
+  const forwardedFor = request.headers.get('x-forwarded-for') || '';
+  return forwardedFor === '127.0.0.1' || forwardedFor === '::1';
+};
+
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
@@ -17,6 +22,16 @@ export async function proxy(request: NextRequest) {
 
   // Allow access to signin page
   if (pathname === '/signin') {
+    return NextResponse.next();
+  }
+
+  if (
+    process.env.DEBUG_FORCE_ROLE &&
+    process.env.NODE_ENV !== 'production' &&
+    isLocalRequest(request)
+  ) {
+    // In debug mode, bypass authentication
+    // User will be set in session.ts::currentUser() based on the DEBUG_FORCE_ROLE env var
     return NextResponse.next();
   }
 
