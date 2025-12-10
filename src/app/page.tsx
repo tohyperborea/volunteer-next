@@ -24,24 +24,24 @@ export default async function MyApp() {
 
   return (
     <Flex direction="column" gap="2">
-      <form action={signout}>
-        <Flex direction="column" gap="2">
-          <Text>Welcome, {user?.email}</Text>
-          <Text>Your roles:</Text>
-          {user?.roles.length === 0 && <Text>- No roles assigned</Text>}
-          {user?.roles.map((role, index) => (
-            <Text key={index}>
-              -{' '}
-              {role.type === 'admin'
-                ? 'Admin'
-                : role.type === 'organiser'
-                  ? `Organiser for event ${role.eventId}`
-                  : `Team Lead for team ${role.teamId} in event ${role.eventId}`}
-            </Text>
-          ))}
+      <Flex direction="column" gap="2">
+        <Text>Welcome, {user?.email}</Text>
+        <Text>Your roles:</Text>
+        {user?.roles.length === 0 && <Text>- No roles assigned</Text>}
+        {user?.roles.map((role, index) => (
+          <Text key={index}>
+            -{' '}
+            {role.type === 'admin'
+              ? 'Admin'
+              : role.type === 'organiser'
+                ? `Organiser for event ${role.eventId}`
+                : `Team Lead for team ${role.teamId} in event ${role.eventId}`}
+          </Text>
+        ))}
+        <form action={signout}>
           <button type="submit">Sign out</button>
-        </Flex>
-      </form>
+        </form>
+      </Flex>
     </Flex>
   );
 }
