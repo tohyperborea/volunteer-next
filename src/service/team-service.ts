@@ -32,6 +32,15 @@ export const getTeamsForEvent = cache(async (eventId: EventId): Promise<TeamInfo
 });
 
 /**
+ * Fetches a list of all teams from the database.
+ * @return An array of TeamInfo objects.
+ */
+export const getAllTeams = cache(async (): Promise<TeamInfo[]> => {
+  const result = await pool.query('SELECT id, "eventId", slug, name, description FROM team');
+  return result.rows.map(rowToTeam);
+});
+
+/**
  * Get a team by its slug within a specific event
  * @param eventSlug - The url slug of the event
  * @param teamSlug - The url slug of the team

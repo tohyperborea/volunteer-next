@@ -1,0 +1,44 @@
+.tableContainer {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.tableHeader {
+  text-align: left;
+  padding: 8px;
+  border-bottom: 1px solid var(--gray-6);
+}
+
+.tableHeaderLeft {
+  width: 30%;
+}
+
+.tableHeaderCenter {
+  text-align: center;
+  width: 10%;
+}
+
+.tableCell {
+  padding: 8px;
+  border-bottom: 1px solid var(--gray-4);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tableCellCenter {
+  padding: 8px;
+  border-bottom: 1px solid var(--gray-4);
+  text-align: center;
+  overflow: hidden;
+}
+
+.tableCellEmpty {
+  padding: 8px;
+  border-bottom: 1px solid var(--gray-4);
+  color: var(--gray-9);
+}

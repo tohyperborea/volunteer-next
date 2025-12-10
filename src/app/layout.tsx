@@ -9,6 +9,7 @@ import './globals.css';
 import '@radix-ui/themes/styles.css';
 import { ThemeProvider } from 'next-themes';
 import { NextIntlClientProvider } from 'next-intl';
+import { getMessages } from 'next-intl/server';
 import { Theme, Container } from '@radix-ui/themes';
 import NavBar from '@/ui/navbar';
 import { currentUser } from '@/session';
@@ -22,6 +23,7 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
+export default async function RootLayout({
 export default async function RootLayout({
   children
 }: Readonly<{

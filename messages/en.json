@@ -22,6 +22,7 @@
   "UpdateTeamPage": {
     "title": "Update Team"
   },
+  "TeamPage": {},
 
   "MenuCard": {
     "update": "Update",
@@ -45,6 +46,68 @@
   },
   "TeamCard": {
     "noTeams": "No teams yet!"
+  },
+  "UsersDashboard": {
+    "title": "Users Dashboard"
+  },
+  "UsersList": {
+    "noUsers": "No users yet!",
+    "email": "Email",
+    "role": "Role",
+    "undelete": "Undelete",
+    "confirmDeletion": "Confirm Deletion",
+    "confirmDeleteText": "Are you sure you want to delete \"{userName}\"? The record will be permanently deleted after 30 days.",
+    "delete": "Delete",
+    "cancel": "Cancel"
+  },
+  "UsersFilters": {
+    "createUser": "Create New User",
+    "filter": "Filter",
+    "showDeleted": "Show Deleted",
+    "searchPlaceholder": "Search by name or email...",
+    "roleFilterPlaceholder": "Filter by role...",
+    "allRoles": "All roles",
+    "admin": "Admin",
+    "organiser": "Organiser",
+    "teamLead": "Team Lead",
+    "applyFilters": "Apply Filters",
+    "clear": "Clear"
+  },
+  "CreateUser": {
+    "title": "Create User",
+    "errors": {
+      "userNameRequired": "User name is required",
+      "userEmailRequired": "User email is required",
+      "eventIdRequiredForOrganiser": "Event ID is required for organiser role",
+      "eventIdRequiredForTeamLead": "Event ID is required for team-lead role",
+      "teamIdRequiredForTeamLead": "Team ID is required for team-lead role"
+    }
+  },
+  "EditUser": {
+    "title": "Edit User"
+  },
+  "UserForm": {
+    "userName": "User Name",
+    "userEmail": "User Email",
+    "createButton": "Create User",
+    "updateButton": "Update User",
+    "roles": "Roles",
+    "admin": "Admin",
+    "teamLead": "Team Lead",
+    "eventOrganiser": "Event Organiser",
+    "roleType": "Type",
+    "eventName": "Event Name",
+    "teamName": "Team Name",
+    "newRole": "New Role",
+    "noRoles": "No roles assigned",
+    "cancelButton": "Cancel",
+    "duplicateAdminRole": "This user already has an admin role",
+    "duplicateOrganiserRole": "This user already has an organiser role for this event",
+    "duplicateTeamLeadRole": "This user already has a team lead role for this event and team",
+    "eventRequired": "Event is required for organiser role",
+    "eventAndTeamRequired": "Event and team are required for team lead role",
+    "cannotRemoveOwnAdminRole": "You cannot remove your own admin role",
+    "addRole": "Add Role"
   },
   "TeamForm": {
     "teamName": "Team Name",
