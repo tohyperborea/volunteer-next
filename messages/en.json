@@ -6,7 +6,8 @@
   },
   "EventDashboardPage": {
     "volunteers": "Volunteers",
-    "shifts": "Shifts"
+    "shifts": "Shifts",
+    "teams": "Teams"
   },
   "CreateEventPage": {
     "title": "Create Event"
