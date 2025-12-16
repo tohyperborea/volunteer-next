@@ -7,7 +7,7 @@ import { checkAuthorisation } from '@/session';
 import EventCard from '@/ui/event-card';
 import { redirect } from 'next/navigation';
 
-const PAGE_KEY = 'EventsDashboardPage';
+const PAGE_KEY = 'EventsManagementPage';
 
 export const generateMetadata = metadata(PAGE_KEY);
 

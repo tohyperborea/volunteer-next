@@ -30,11 +30,12 @@ const navLinkMap = new Map<string, string>([
 ]);
 
 interface Props {
-  text?: string;
+  title?: string;
+  subtitle?: string;
   user: User;
 }
 
-export default function NavBar({ text, user }: Props) {
+export default function NavBar({ title, subtitle, user }: Props) {
   const t = useTranslations('NavBar');
   const [dialogOpen, setDialogOpen] = useState(false);
   const router = useRouter();
@@ -56,8 +57,9 @@ export default function NavBar({ text, user }: Props) {
             <HamburgerMenuIcon className={styles.navigationHamburgerMenuIcon} />
           </IconButton>
         </Dialog.Trigger>
-        <Flex direction="row" justify="center" align="center" style={{ flex: 1 }}>
-          <Heading size="3">{text}</Heading>
+        <Flex direction="column" justify="center" align="center" style={{ flex: 1 }}>
+          <Heading size="3">{title}</Heading>
+          <Text size="1">{subtitle}</Text>
         </Flex>
         <Box className={styles.navigationUserInitial}>
           <Text>{(user?.name || user?.email)?.charAt(0).toUpperCase()}</Text>
@@ -69,7 +71,7 @@ export default function NavBar({ text, user }: Props) {
             </IconButton>
           </Dialog.Close>
           <VisuallyHidden>
-            <Dialog.Title>{text}</Dialog.Title>
+            <Dialog.Title>{title}</Dialog.Title>
             <Dialog.Description>{t('screenReaderDialogDescription')}</Dialog.Description>
           </VisuallyHidden>
           <TabNav.Link
