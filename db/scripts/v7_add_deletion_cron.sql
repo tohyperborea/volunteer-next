@@ -1,5 +1,6 @@
 CREATE EXTENSION IF NOT EXISTS pg_cron;
 
+SELECT cron.unschedule('remove_deleted_users');
 SELECT cron.schedule(
     'remove_deleted_users',
     -- schedule: every day at midnight
@@ -7,6 +8,7 @@ SELECT cron.schedule(
     $$
     DELETE FROM "user"
     WHERE "deletedAt" IS NOT NULL
-      AND "deletedAt" < now() - interval '30 days';
+      AND "deletedAt" < now() - interval '30 days'
+    RETURNING "id";
     $$
 );
