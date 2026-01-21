@@ -1,4 +1,4 @@
-.navigationMenuList {
+.navigationBar {
   display: flex;
   align-items: center;
   list-style: none;
@@ -8,6 +8,30 @@
   background: var(--color-panel-solid);
   color: var(--color-panel-contrast);
   box-shadow: var(--shadow-2);
+}
+
+.navigationMenuListOuter {
+  flex-direction: column;
+  width: 200px;
+  height: 100vh;
+  box-shadow: 0px 0 12px rgba(0, 0, 0, 0.15);
+  padding: 8px 16px;
+  display: none;
+  @media (min-width: 768px) {
+    display: flex;
+  }
+}
+
+.mobileConditionalRender {
+  display: flex;
+  @media (min-width: 768px) {
+    display: none;
+  }
+}
+
+.navigationMenuListInner {
+  display: flex;
+  flex-direction: column;
 }
 
 .navigationIconButton {

@@ -60,8 +60,7 @@ export default async function RootLayout({
           >
             <Theme>
               <Container>
-                {user && <NavBar title={navBarTitle} subtitle={navBarSubtitle} user={user} />}
-                <main>{children}</main>
+                {user ? <NavBar title={navBarTitle} subtitle={navBarSubtitle} user={user}>{children}</NavBar> : <>{children}</>}
               </Container>
             </Theme>
           </ThemeProvider>
