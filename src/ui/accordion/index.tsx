@@ -29,13 +29,15 @@ interface AccordionProps {
   className?: string;
 }
 
-function AccordionItem({ value, trigger, children, disabled }: AccordionItemProps) {
+export function AccordionItem({ value, trigger, children, disabled }: AccordionItemProps) {
   return (
     <AccordionPrimitive.Item value={value} className={styles.accordionItem} disabled={disabled}>
       <AccordionPrimitive.Header className={styles.accordionHeader}>
         <AccordionPrimitive.Trigger className={styles.accordionTrigger}>
-          {trigger}
-          <ChevronDownIcon className={styles.accordionChevron} aria-hidden />
+          <span className={styles.accordionTriggerContent}>{trigger}</span>
+          <span className={styles.accordionChevronWrapper}>
+            <ChevronDownIcon className={styles.accordionChevron} aria-hidden />
+          </span>
         </AccordionPrimitive.Trigger>
       </AccordionPrimitive.Header>
       <AccordionPrimitive.Content className={styles.accordionContent}>
@@ -45,7 +47,7 @@ function AccordionItem({ value, trigger, children, disabled }: AccordionItemProp
   );
 }
 
-export default function Accordion({
+function AccordionRoot({
   type = 'single',
   defaultValue,
   value,
@@ -55,17 +57,25 @@ export default function Accordion({
   children,
   className
 }: AccordionProps) {
-  const rootProps = {
+  const rootProps: any = {
     type,
     defaultValue,
     value,
     onValueChange,
-    collapsible,
     'data-tone': tone,
     className: className ? `${styles.accordionRoot} ${className}` : styles.accordionRoot
   };
 
-  return <AccordionPrimitive.Root {...(rootProps as any)}>{children}</AccordionPrimitive.Root>;
+  // collapsible is only valid for type="single"
+  if (type === 'single') {
+    rootProps.collapsible = collapsible;
+  }
+
+  return <AccordionPrimitive.Root {...rootProps}>{children}</AccordionPrimitive.Root>;
 }
 
-Accordion.Item = AccordionItem;
+const Accordion = Object.assign(AccordionRoot, {
+  Item: AccordionItem
+});
+
+export default Accordion;

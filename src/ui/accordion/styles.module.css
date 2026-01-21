@@ -38,6 +38,12 @@
   transition: background-color 0.2s ease;
 }
 
+.accordionTriggerContent {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
 .accordionTrigger:hover {
   background: var(--gray-2);
 }
@@ -60,13 +66,21 @@
   transform: rotate(180deg);
 }
 
+.accordionChevronWrapper {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  margin-left: var(--space-2);
+}
+
 .accordionChevron {
   width: 16px;
   height: 16px;
-  color: var(--gray-11);
+  min-width: 16px;
+  min-height: 16px;
+  color: currentColor;
   transition: transform 0.2s ease;
-  flex-shrink: 0;
-  margin-left: var(--space-2);
+  display: block;
 }
 
 .accordionContent {

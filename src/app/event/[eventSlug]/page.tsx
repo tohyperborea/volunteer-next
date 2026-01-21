@@ -5,12 +5,7 @@ import { ClipboardIcon, PersonIcon } from '@radix-ui/react-icons';
 import { getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import NavSquare from '@/ui/navSquare';
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger
-} from '@radix-ui/react-accordion';
+import Accordion, { AccordionItem } from '@/ui/accordion';
 
 const PAGE_KEY = 'EventDashboardPage';
 
@@ -43,21 +38,16 @@ export default async function EventPage({ params }: Props) {
         <NavSquare icon={<ClipboardIcon width={40} height={40} />} text={t('shifts')} />
       </Flex>
       <Accordion type="multiple">
-        <AccordionItem value="teams">
-          <AccordionTrigger>{t('teams')}</AccordionTrigger>
-          <AccordionContent>
-            <div>
-              <h2>Teams</h2>
-            </div>
-          </AccordionContent>
+        <AccordionItem value="teams" trigger={t('teams')}>
+          <div>
+            <h2>Teams</h2>
+          </div>
         </AccordionItem>
-        <AccordionItem value="shifts">
-          <AccordionTrigger>{t('shifts')}</AccordionTrigger>
-          <AccordionContent>
-            <div>
-              <h2>Shifts</h2>
-            </div>
-          </AccordionContent>
+
+        <AccordionItem value="shifts" trigger={t('shifts')}>
+          <div>
+            <h2>Shifts</h2>
+          </div>
         </AccordionItem>
       </Accordion>
     </Flex>
