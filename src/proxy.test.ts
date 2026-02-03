@@ -114,6 +114,7 @@ describe('proxy', () => {
     });
   });
 
+  
   describe('public auth pages', () => {
     it.each(['/signin', '/signup', '/forgot-password', '/reset-password'])(
       'allows access to %s without authentication',
