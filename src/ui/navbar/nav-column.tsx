@@ -7,7 +7,6 @@
 'use client';
 
 import {
-
   Text,
   TabNav,
   Box
@@ -19,7 +18,7 @@ import { usePathname, useRouter } from 'next/navigation';
 
 const navLinkMap = new Map<string, string>([
   ['/event', 'event'],
-  ['/team', 'teams'],
+  ['../team', 'teams'],
   ['/users', 'users'],
   ['/settings', 'settings']
 ]);
