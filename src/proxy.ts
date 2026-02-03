@@ -20,8 +20,9 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Allow access to signin page
-  if (pathname === '/signin') {
+  // Allow access to auth pages (no session required)
+  const publicAuthPaths = ['/signin', '/signup', '/forgot-password', '/reset-password'];
+  if (publicAuthPaths.includes(pathname)) {
     return NextResponse.next();
   }
 

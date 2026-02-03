@@ -8,6 +8,7 @@ jest.mock('next/navigation', () => ({
 }));
 
 jest.mock('@/auth', () => ({
+  AUTH_MODE: 'oauth',
   auth: {
     api: {
       signInWithOAuth2: jest.fn()
@@ -37,7 +38,12 @@ jest.mock('next-intl/server', () => ({
         descriptionOne: 'Sign in to your account to continue.',
         descriptionTwo: 'We use our ticket system, Pretix, to provide a single sign-on experience.',
         descriptionThree: 'Clicking the button below will redirect you to the Pretix login page.',
-        descriptionFour: 'After logging in, you will be redirected back to this application.'
+        descriptionFour: 'After logging in, you will be redirected back to this application.',
+        emailPlaceholder: 'Email',
+        passwordPlaceholder: 'Password',
+        buttonCredentials: 'Sign In',
+        createAccount: 'Create an account',
+        forgotPassword: 'Forgot password?'
       };
       return translations[key] || key;
     })
@@ -47,7 +53,10 @@ jest.mock('next-intl/server', () => ({
 jest.mock('./styles.module.css', () => ({
   signinContainerOuter: 'signinContainerOuter',
   signinForm: 'signinForm',
-  signinButton: 'signinButton'
+  signinButton: 'signinButton',
+  signinInput: 'signinInput',
+  signinLinks: 'signinLinks',
+  signinLink: 'signinLink'
 }));
 
 describe('SignInPage', () => {

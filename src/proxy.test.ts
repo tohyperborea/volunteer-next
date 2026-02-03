@@ -114,14 +114,17 @@ describe('proxy', () => {
     });
   });
 
-  describe('signin page', () => {
-    it('allows access to signin page without authentication', async () => {
-      const request = createMockRequest('/signin');
-      const response = await proxy(request);
+  describe('public auth pages', () => {
+    it.each(['/signin', '/signup', '/forgot-password', '/reset-password'])(
+      'allows access to %s without authentication',
+      async (pathname) => {
+        const request = createMockRequest(pathname);
+        const response = await proxy(request);
 
-      expect(mockGetSession).not.toHaveBeenCalled();
-      expect(response.status).toBe(200);
-    });
+        expect(mockGetSession).not.toHaveBeenCalled();
+        expect(response.status).toBe(200);
+      }
+    );
   });
 
   describe('protected routes', () => {

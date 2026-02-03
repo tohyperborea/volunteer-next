@@ -135,6 +135,42 @@
     "descriptionTwo": "We use our ticket system, Pretix, to provide a single sign-on experience.",
     "descriptionThree": "Clicking the button below will redirect you to the Pretix login page.",
     "descriptionFour": "After logging in, you will be redirected back to this application.",
-    "button": "Sign In with Pretix"
+    "button": "Sign In with Pretix",
+    "emailPlaceholder": "Email",
+    "passwordPlaceholder": "Password",
+    "buttonCredentials": "Sign In",
+    "createAccount": "Create an account",
+    "forgotPassword": "Forgot password?",
+    "forgotDescription": "Enter your email and we'll send you a link to reset your password.",
+    "forgotButton": "Send reset link",
+    "forgotSuccessMessage": "If an account exists for that email, we've sent a reset link. Check your inbox.",
+    "backToSignIn": "Back to sign in"
+  },
+  "SignUpPage": {
+    "title": "Create account",
+    "description": "Enter your details to create an account.",
+    "namePlaceholder": "Name",
+    "emailPlaceholder": "Email",
+    "passwordPlaceholder": "Password",
+    "button": "Create account",
+    "signInLink": "Already have an account? Sign in"
+  },
+  "ForgotPasswordPage": {
+    "title": "Forgot password",
+    "description": "Enter your email and we'll send you a link to reset your password.",
+    "emailPlaceholder": "Email",
+    "button": "Send reset link",
+    "successMessage": "If an account exists for that email, we've sent a reset link. Check your inbox.",
+    "signInLink": "Back to sign in"
+  },
+  "ResetPasswordPage": {
+    "title": "Reset password",
+    "description": "Enter your new password.",
+    "passwordPlaceholder": "New password",
+    "confirmPlaceholder": "Confirm new password",
+    "button": "Reset password",
+    "signInLink": "Back to sign in",
+    "invalidToken": "This reset link is invalid or has expired. Please request a new one.",
+    "missingToken": "Missing reset token. Please use the link from your email."
   }
 }
