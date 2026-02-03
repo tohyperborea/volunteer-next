@@ -1,8 +1,13 @@
 {
-  "EventsDashboardPage": {
+  "EventsManagementPage": {
     "title": "Events Dashboard",
     "noEvents": "No events yet!",
     "createEvent": "Create New Event"
+  },
+  "EventDashboardPage": {
+    "volunteers": "Volunteers",
+    "shifts": "Shifts",
+    "teams": "Teams"
   },
   "CreateEventPage": {
     "title": "Create Event"
@@ -10,7 +15,6 @@
   "UpdateEventPage": {
     "title": "Update Event"
   },
-  "EventPage": {},
   "TeamsDashboardPage": {
     "teamsForEvent": "Teams for {eventName}",
     "noTeams": "No teams yet!",
