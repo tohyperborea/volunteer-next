@@ -148,7 +148,10 @@
     "forgotDescription": "Enter your email and we'll send you a link to reset your password.",
     "forgotButton": "Send reset link",
     "forgotSuccessMessage": "If an account exists for that email, we've sent a reset link. Check your inbox.",
-    "backToSignIn": "Back to sign in"
+    "backToSignIn": "Back to sign in",
+    "invalidCredentialsTitle": "Sign in failed",
+    "invalidCredentials": "Invalid email or password. Please try again.",
+    "errorDialogClose": "OK"
   },
   "SignUpPage": {
     "title": "Create account",

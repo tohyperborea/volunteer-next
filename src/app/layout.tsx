@@ -17,6 +17,7 @@ import { getTranslations } from 'next-intl/server';
 import { headers } from 'next/headers';
 import { getEventBySlug } from '@/service/event-service';
 import { getEventDateRangeDisplayText } from '@/utils/date';
+import styles from './styles.module.css';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('Metadata');
@@ -50,6 +51,14 @@ export default async function RootLayout({
     }
   }
 
+  const getChildrenBlock = () => {
+    const childrenWithWrapper = <div className={styles.pageWrapper}>{children}</div>;
+    if (user) {
+      return <NavBar title={navBarTitle} subtitle={navBarSubtitle} user={user}>{childrenWithWrapper}</NavBar>;
+    }
+    return childrenWithWrapper;
+  }
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body suppressHydrationWarning>
@@ -60,7 +69,7 @@ export default async function RootLayout({
           >
             <Theme>
               <Container>
-                {user ? <NavBar title={navBarTitle} subtitle={navBarSubtitle} user={user}>{children}</NavBar> : <>{children}</>}
+                {getChildrenBlock()}
               </Container>
             </Theme>
           </ThemeProvider>

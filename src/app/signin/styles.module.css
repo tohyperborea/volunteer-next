@@ -71,9 +71,36 @@
   font: inherit;
   color: var(--color-panel-contrast);
   font-size: 14px;
-  text-decoration: underline;
+  
 }
 
 .signinLinkButton:hover {
   text-underline-offset: 2px;
+}
+
+.errorDialog {
+  width: 100%;
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+}
+
+.errorDialogTitle {
+  text-align: center;
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.errorDialogDescription {
+  text-align: center;
+  width: 100%;
+  margin-bottom: 2rem;
+}
+
+.errorDialogCloseButton {
+  width: 200px;
+  margin-bottom: 1rem;
 }

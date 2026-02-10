@@ -1,8 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import { useCallback, useState } from 'react';
-import { Text } from '@radix-ui/themes';
+import { useCallback, useRef, useState, useTransition } from 'react';
+import { Text, Dialog, Button } from '@radix-ui/themes';
+import { isRedirectError } from 'next/dist/client/components/redirect-error';
 import styles from './styles.module.css';
 
 type View = 'signin' | 'forgot' | 'forgotSent';
@@ -18,6 +19,9 @@ export type CredentialsFormTranslations = {
   forgotButton: string;
   forgotSuccessMessage: string;
   backToSignIn: string;
+  invalidCredentialsTitle: string;
+  invalidCredentials: string;
+  errorDialogClose: string;
 };
 
 type Props = {
@@ -36,9 +40,34 @@ export function CredentialsForm({
   translations: t
 }: Props) {
   const [view, setView] = useState<View>(forgotSent ? 'forgotSent' : 'signin');
+  const [showErrorDialog, setShowErrorDialog] = useState(false);
+  const [isPending, startTransition] = useTransition();
+  const passwordRef = useRef<HTMLInputElement>(null);
 
   const showForgot = useCallback(() => setView('forgot'), []);
   const showSignIn = useCallback(() => setView('signin'), []);
+
+  const handleSignIn = useCallback(
+    (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      setShowErrorDialog(false);
+      const form = e.currentTarget;
+      const formData = new FormData(form);
+      formData.set('callbackUrl', callbackUrl ?? '');
+
+      startTransition(async () => {
+        try {
+          await signInAction(formData);
+        } catch (error) {
+          if (isRedirectError(error)) {
+            throw error;
+          }
+          setShowErrorDialog(true);
+        }
+      });
+    },
+    [callbackUrl, signInAction]
+  );
 
   if (view === 'forgotSent') {
     return (
@@ -80,7 +109,7 @@ export function CredentialsForm({
   return (
     <>
       <Text as="p">{t.descriptionOne}</Text>
-      <form action={signInAction} className={styles.signinForm}>
+      <form onSubmit={handleSignIn} className={styles.signinForm}>
         <input type="hidden" name="callbackUrl" defaultValue={callbackUrl ?? ''} />
         <input
           type="email"
@@ -91,6 +120,7 @@ export function CredentialsForm({
           required
         />
         <input
+          ref={passwordRef}
           type="password"
           name="password"
           placeholder={t.passwordPlaceholder ?? ''}
@@ -98,8 +128,8 @@ export function CredentialsForm({
           autoComplete="current-password"
           required
         />
-        <button type="submit" className={styles.signinButton}>
-          {t.buttonCredentials}
+        <button type="submit" className={styles.signinButton} disabled={isPending}>
+          {isPending ? '...' : t.buttonCredentials}
         </button>
         <div className={styles.signinLinks}>
           <Link href={`/signup${callbackUrl !== '/' ? `?callbackUrl=${encodeURIComponent(callbackUrl)}` : ''}`} className={styles.signinLink}>
@@ -110,6 +140,23 @@ export function CredentialsForm({
           </button>
         </div>
       </form>
+
+      <Dialog.Root
+        open={showErrorDialog}
+        onOpenChange={(open) => {
+          if (!open) passwordRef.current && (passwordRef.current.value = '');
+          setShowErrorDialog(open);
+        }}
+      >
+        <Dialog.Content className={styles.errorDialog}>
+          
+          <Dialog.Title className={styles.errorDialogTitle}>{t.invalidCredentialsTitle}</Dialog.Title>
+          <Dialog.Description className={styles.errorDialogDescription}>{t.invalidCredentials}</Dialog.Description>
+          <Dialog.Close>
+            <Button className={styles.errorDialogCloseButton}>{t.errorDialogClose}</Button>
+          </Dialog.Close>
+        </Dialog.Content>
+      </Dialog.Root>
     </>
   );
 }

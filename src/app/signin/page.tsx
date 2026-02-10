@@ -103,7 +103,10 @@ export default async function SignInPage({
             forgotDescription: t('forgotDescription'),
             forgotButton: t('forgotButton'),
             forgotSuccessMessage: t('forgotSuccessMessage'),
-            backToSignIn: t('backToSignIn')
+            backToSignIn: t('backToSignIn'),
+            invalidCredentialsTitle: t('invalidCredentialsTitle'),
+            invalidCredentials: t('invalidCredentials'),
+            errorDialogClose: t('errorDialogClose')
           }}
         />
       )}
