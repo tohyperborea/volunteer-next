@@ -14,6 +14,7 @@
     "connect:db": "docker compose --env-file .env.local exec db psql -U postgres",
     "logs:db": "docker compose --env-file .env.local logs -f db",
     "logs:liquibase": "docker compose --env-file .env.local logs -f liquibase",
+    "migrate:neon": "./db/migrate-neon.sh",
     "prepare": "husky"
   },
   "dependencies": {
