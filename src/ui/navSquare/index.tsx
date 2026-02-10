@@ -7,17 +7,9 @@ interface NavSquareProps {
   size?: number;
 }
 
-const DEFAULT_SIZE = 120;
-
-export default function NavSquare({ children, size = DEFAULT_SIZE }: NavSquareProps) {
+export default function NavSquare({ children }: NavSquareProps) {
   return (
-    <Flex
-      direction="column"
-      justify="center"
-      className={styles.navigationSquare}
-      gap="2"
-      style={{ width: size, height: size }}
-    >
+    <Flex direction="column" justify="center" className={styles.navigationSquare} gap="2">
       {children}
     </Flex>
   );

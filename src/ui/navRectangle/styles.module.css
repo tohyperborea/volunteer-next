@@ -8,7 +8,5 @@
   align-items: flex-start;
   color: var(--color-text);
   transition: all 0.3s ease;
-  &:hover {
-    transform: scale(1.05);
-  }
+  height: 80px;
 }

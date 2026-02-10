@@ -35,7 +35,9 @@ export default async function MyApp() {
               ? 'Admin'
               : role.type === 'organiser'
                 ? `Organiser for event ${role.eventId}`
-                : `Team Lead for team ${role.teamId} in event ${role.eventId}`}
+                : role.type === 'team-lead'
+                  ? `Team Lead for team ${role.teamId} in event ${role.eventId}`
+                  : 'Volunteer'}
           </Text>
         ))}
         <form action={signout}>

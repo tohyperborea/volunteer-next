@@ -11,7 +11,9 @@
     "next": "Next",
     "shifts": "Shifts",
     "teams": "Teams",
-    "findShifts": "Find Shifts"
+    "qualifications": "Qualifications",
+    "findShifts": "Find Shifts",
+    "eventSettings": "Event Settings"
   },
   "CreateEventPage": {
     "title": "Create Event"

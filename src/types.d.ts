@@ -28,7 +28,8 @@ type UserRole =
   | { type: 'organiser'; eventId: EventId }
 
   // Manage volunteers and shifts in assigned area
-  | { type: 'team-lead'; eventId: EventId; teamId: TeamId };
+  | { type: 'team-lead'; eventId: EventId; teamId: TeamId }
+  | { type: 'volunteer' };
 
 interface EventInfo {
   id: EventId;
@@ -53,3 +54,11 @@ interface UserFilters {
 }
 
 type ThemeMode = 'light' | 'dark' | 'system';
+
+interface ShiftAssignment {
+  id: string;
+  userId: UserId;
+  shiftId: string;
+  startTime: Date;
+  endTime: Date;
+}
