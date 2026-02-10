@@ -52,10 +52,14 @@ Sideburn uses its Pretix instance as the authentication provider for volunteerin
 
 ## Deploying (e.g. Vercel + Neon)
 
-Migrations are run locally via Docker (Liquibase). For a hosted Postgres (e.g. Neon), run the schema once:
+Migrations are run via Liquibase. For local development, Liquibase runs automatically when you start the database (`npm run start:db`).
 
-1. In the [Neon SQL Editor](https://neon.tech/docs/connect/sql-editor), paste and run the contents of `db/scripts/neon-full-schema.sql`, **or**
-2. From your machine (with `POSTGRES_URL` in env):  
-   `psql "$POSTGRES_URL" -f db/scripts/neon-full-schema.sql`
+For a hosted Postgres (e.g. Neon), run migrations with:
+
+```bash
+npm run migrate:neon
+```
+
+Ensure `POSTGRES_URL` is set in `.env.local` (e.g. `postgresql://user:password@host/dbname?sslmode=require`). The script connects to the remote database and applies any pending migrations.
 
 Then set `POSTGRES_URL` (or the individual `POSTGRES_*` vars) in your deployment (e.g. Vercel env).

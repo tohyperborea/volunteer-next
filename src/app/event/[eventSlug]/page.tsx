@@ -1,11 +1,10 @@
 import metadata from '@/i18n/metadata';
 import { getEventBySlug } from '@/service/event-service';
-import { Flex } from '@radix-ui/themes';
-import { ClipboardIcon, PersonIcon } from '@radix-ui/react-icons';
+import { Flex, Text } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import NavSquare from '@/ui/navSquare';
-import Accordion, { AccordionItem } from '@/ui/accordion';
+import NavRectangle from '@/ui/navRectangle';
 
 const PAGE_KEY = 'EventDashboardPage';
 
@@ -31,25 +30,31 @@ export default async function EventPage({ params }: Props) {
   }
 
   return (
-    <Flex direction="column" gap="4" p="4" style={{ width: '100%' }}>
+    <Flex direction="column" gap="8" p="4" style={{ width: '100%' }}>
       {/* nav square row */}
-      <Flex style={{ width: '100%', justifyContent: 'space-around' }} align="center">
-        <NavSquare icon={<PersonIcon width={40} height={40} />} text={t('volunteers')} />
-        <NavSquare icon={<ClipboardIcon width={40} height={40} />} text={t('shifts')} />
+      <Flex style={{ width: '100%', justifyContent: 'space-between' }} align="center">
+        <NavSquare>
+          <Flex direction="column" align="center">
+            <Text>{t('yourHours')}</Text>
+            <Text size="6" weight="bold">
+              00
+            </Text>
+          </Flex>
+        </NavSquare>
+        <NavSquare>
+          <Flex direction="column" align="center">
+            <Text>{t('yourShifts')}</Text>
+            <Text size="6" weight="bold">
+              None
+            </Text>
+          </Flex>
+        </NavSquare>
       </Flex>
-      <Accordion type="multiple">
-        <AccordionItem value="teams" trigger={t('teams')}>
-          <div>
-            <h2>Teams</h2>
-          </div>
-        </AccordionItem>
-
-        <AccordionItem value="shifts" trigger={t('shifts')}>
-          <div>
-            <h2>Shifts</h2>
-          </div>
-        </AccordionItem>
-      </Accordion>
+      <NavRectangle>
+        <Text id="foo" size="6">
+          {t('findShifts')}
+        </Text>
+      </NavRectangle>
     </Flex>
   );
 }

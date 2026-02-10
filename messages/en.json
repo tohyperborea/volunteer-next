@@ -6,8 +6,12 @@
   },
   "EventDashboardPage": {
     "volunteers": "Volunteers",
+    "yourHours": "Your Hours",
+    "yourShifts": "Your Shifts",
+    "next": "Next",
     "shifts": "Shifts",
-    "teams": "Teams"
+    "teams": "Teams",
+    "findShifts": "Find Shifts"
   },
   "CreateEventPage": {
     "title": "Create Event"

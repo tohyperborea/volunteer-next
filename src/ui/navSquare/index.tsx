@@ -3,14 +3,13 @@ import { ReactNode } from 'react';
 import styles from './styles.module.css';
 
 interface NavSquareProps {
-  icon: ReactNode;
-  text: string;
+  children: ReactNode;
   size?: number;
 }
 
-const DEFAULT_SIZE = 150;
+const DEFAULT_SIZE = 120;
 
-export default function NavSquare({ icon, text, size = DEFAULT_SIZE }: NavSquareProps) {
+export default function NavSquare({ children, size = DEFAULT_SIZE }: NavSquareProps) {
   return (
     <Flex
       direction="column"
@@ -19,8 +18,7 @@ export default function NavSquare({ icon, text, size = DEFAULT_SIZE }: NavSquare
       gap="2"
       style={{ width: size, height: size }}
     >
-      {icon}
-      <Text>{text}</Text>
+      {children}
     </Flex>
   );
 }
