@@ -6,26 +6,24 @@
 
 'use client';
 
-import {
-  Heading,
-  Text,
-  Flex,
-  Box
-} from '@radix-ui/themes';
+import { Heading, Text, Flex, Box } from '@radix-ui/themes';
 import styles from './styles.module.css';
 import { useState } from 'react';
 import NavColumn from './nav-column';
 import MobileMenu from './mobile-menu';
+import { useRouter } from 'next/navigation';
 
 interface Props {
   title?: string;
   subtitle?: string;
   user: User;
   children: React.ReactNode;
+  titlePathname: string;
 }
 
-export default function NavBar({ title, subtitle, user, children }: Props) {
+export default function NavBar({ title, subtitle, user, titlePathname, children }: Props) {
   const [dialogOpen, setDialogOpen] = useState(false);
+  const router = useRouter();
   return (
     <>
       {/* Navigation bar */}
@@ -33,7 +31,14 @@ export default function NavBar({ title, subtitle, user, children }: Props) {
         <Flex className={styles.mobileConditionalRender}>
           <MobileMenu dialogOpen={dialogOpen} setDialogOpen={setDialogOpen} title={title} />
         </Flex>
-        <Flex direction="column" justify="center" align="center" style={{ flex: 1 }}>
+        <Flex
+          direction="column"
+          justify="center"
+          align="center"
+          style={{ flex: 1 }}
+          onClick={() => router.push(titlePathname)}
+          className={styles.navigationTitle}
+        >
           <Heading size="3">{title}</Heading>
           <Text size="1">{subtitle}</Text>
         </Flex>
@@ -41,7 +46,7 @@ export default function NavBar({ title, subtitle, user, children }: Props) {
           <Text>{(user?.name || user?.email)?.charAt(0).toUpperCase()}</Text>
         </Box>
       </Flex>
-      
+
       {/* Content area */}
       <Flex direction="row" style={{ flex: 1 }}>
         <Flex direction="column" className={styles.navigationMenuListOuter}>

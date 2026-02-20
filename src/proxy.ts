@@ -6,11 +6,21 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { auth } from '@/auth';
+import { checkRateLimit, PASSWORD_RESET_LIMITS, AUTH_ENDPOINT_LIMITS } from '@/lib/rate-limit';
 
 const isLocalRequest = (request: NextRequest) => {
   const forwardedFor = request.headers.get('x-forwarded-for') || '';
   return forwardedFor === '127.0.0.1' || forwardedFor === '::1';
 };
+
+function getClientIp(request: NextRequest): string {
+  const forwarded = request.headers.get('x-forwarded-for');
+  if (forwarded) {
+    const first = forwarded.split(',')[0]?.trim();
+    if (first) return first;
+  }
+  return request.headers.get('x-real-ip') ?? request.headers.get('cf-connecting-ip') ?? 'unknown';
+}
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -18,6 +28,30 @@ export async function proxy(request: NextRequest) {
   // Set a custom header with the pathname so we can access it in server components
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set('x-pathname', pathname);
+
+  // Rate limit auth endpoints (POST only)
+  if (request.method === 'POST') {
+    const ip = getClientIp(request);
+    if (pathname === '/signup') {
+      if (!checkRateLimit(ip, AUTH_ENDPOINT_LIMITS.signup)) {
+        const url = new URL(pathname, request.url);
+        url.searchParams.set('error', 'rate_limit');
+        return NextResponse.redirect(url);
+      }
+    } else if (pathname === '/forgot-password') {
+      if (!checkRateLimit(ip, PASSWORD_RESET_LIMITS.requestReset)) {
+        const url = new URL(pathname, request.url);
+        url.searchParams.set('error', 'rate_limit');
+        return NextResponse.redirect(url);
+      }
+    } else if (pathname === '/reset-password') {
+      if (!checkRateLimit(ip, PASSWORD_RESET_LIMITS.resetPassword)) {
+        const url = new URL(pathname, request.url);
+        url.searchParams.set('error', 'rate_limit');
+        return NextResponse.redirect(url);
+      }
+    }
+  }
 
   // Allow access to API routes
   if (pathname.startsWith('/api')) {

@@ -157,6 +157,9 @@
     "backToSignIn": "Back to sign in",
     "invalidCredentialsTitle": "Sign in failed",
     "invalidCredentials": "Invalid email or password. Please try again.",
+    "tooManyAttemptsTitle": "Too many attempts",
+    "tooManyAttempts": "Too many failed sign-in attempts. Please try again in 15 minutes.",
+    "rateLimitError": "Too many requests from your connection. Please try again later.",
     "errorDialogClose": "OK"
   },
   "SignUpPage": {
@@ -166,7 +169,15 @@
     "emailPlaceholder": "Email",
     "passwordPlaceholder": "Password",
     "button": "Create account",
-    "signInLink": "Already have an account? Sign in"
+    "signInLink": "Already have an account? Sign in",
+    "errorName_empty": "Please enter your name.",
+    "errorName_too_long": "Name must be 255 characters or less.",
+    "errorName_invalid_chars": "Name contains invalid characters.",
+    "errorEmail_invalid": "Please enter a valid email address.",
+    "errorPassword_too_short": "Password must be at least 8 characters.",
+    "errorPassword_too_weak": "Password must include both letters and numbers.",
+    "errorAccount_exists": "An account with this email already exists. Sign in or reset your password.",
+    "rateLimitError": "Too many attempts. Please try again in 15 minutes."
   },
   "ForgotPasswordPage": {
     "title": "Forgot password",
@@ -174,7 +185,9 @@
     "emailPlaceholder": "Email",
     "button": "Send reset link",
     "successMessage": "If an account exists for that email, we've sent a reset link. Check your inbox.",
-    "signInLink": "Back to sign in"
+    "signInLink": "Back to sign in",
+    "rateLimitError": "Too many requests. Please try again in 15 minutes.",
+    "captchaError": "Verification failed. Please try again."
   },
   "ResetPasswordPage": {
     "title": "Reset password",
@@ -184,6 +197,8 @@
     "button": "Reset password",
     "signInLink": "Back to sign in",
     "invalidToken": "This reset link is invalid or has expired. Please request a new one.",
-    "missingToken": "Missing reset token. Please use the link from your email."
+    "missingToken": "Missing reset token. Please use the link from your email.",
+    "rateLimitError": "Too many attempts. Please try again in 15 minutes.",
+    "passwordMismatch": "Passwords do not match."
   }
 }

@@ -102,3 +102,6 @@
   align-items: center;
 }
 
+.navigationTitle {
+  cursor: pointer;
+}

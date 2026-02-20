@@ -41,6 +41,7 @@ export default async function RootLayout({
   // Extract event slug from pathname if it matches /event/[eventSlug] pattern
   let navBarTitle = process.env.APP_NAME;
   let navBarSubtitle = undefined;
+  let titlePathname = '/';
   const eventMatch = pathname.match(/^\/event\/([^\/]+)/);
   if (eventMatch) {
     const eventSlug = eventMatch[1];
@@ -48,16 +49,26 @@ export default async function RootLayout({
     if (event) {
       navBarTitle = event.name;
       navBarSubtitle = getEventDateRangeDisplayText({ event });
+      titlePathname = `/event/${eventSlug}`;
     }
   }
 
   const getChildrenBlock = () => {
     const childrenWithWrapper = <div className={styles.pageWrapper}>{children}</div>;
     if (user) {
-      return <NavBar title={navBarTitle} subtitle={navBarSubtitle} user={user}>{childrenWithWrapper}</NavBar>;
+      return (
+        <NavBar
+          title={navBarTitle}
+          subtitle={navBarSubtitle}
+          user={user}
+          titlePathname={titlePathname}
+        >
+          {childrenWithWrapper}
+        </NavBar>
+      );
     }
     return childrenWithWrapper;
-  }
+  };
 
   return (
     <html lang="en" suppressHydrationWarning>
@@ -68,9 +79,7 @@ export default async function RootLayout({
             defaultTheme={(process.env.DEFAULT_THEME as ThemeMode) || 'system'}
           >
             <Theme>
-              <Container>
-                {getChildrenBlock()}
-              </Container>
+              <Container>{getChildrenBlock()}</Container>
             </Theme>
           </ThemeProvider>
         </NextIntlClientProvider>
