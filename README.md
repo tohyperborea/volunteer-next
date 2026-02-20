@@ -19,7 +19,9 @@ A system to support the organisation of alternative arts festivals.
 2. Copy `.env.example` to `.env.local`
 3. Create an AUTH_SECRET token: `npx auth secret`
 4. Fill in all the `.env.local` placeholder values
-5. Start the database: `npm run start:db`
+5. Set up your database:
+   - **Option A (Local Docker)**: Start the database: `npm run start:db`
+   - **Option B (Neon or other hosted Postgres)**: Set `POSTGRES_URL` in `.env.local` (e.g. `postgresql://user:password@host/dbname?sslmode=require`) and run migrations: `npm run migrate:neon`
 6. Run development server: `npm run dev`
 7. Visit http://localhost:3000
 
@@ -52,7 +54,7 @@ Sideburn uses its Pretix instance as the authentication provider for volunteerin
 
 ## Deploying (e.g. Vercel + Neon)
 
-Migrations are run via Liquibase. For local development, Liquibase runs automatically when you start the database (`npm run start:db`).
+Migrations are run via Liquibase. For local development with Docker, Liquibase runs automatically when you start the database (`npm run start:db`).
 
 For a hosted Postgres (e.g. Neon), run migrations with:
 
@@ -61,5 +63,7 @@ npm run migrate:neon
 ```
 
 Ensure `POSTGRES_URL` is set in `.env.local` (e.g. `postgresql://user:password@host/dbname?sslmode=require`). The script connects to the remote database and applies any pending migrations.
+
+**Note**: When `POSTGRES_URL` is set, it overrides individual `POSTGRES_*` environment variables (like `POSTGRES_HOST`, `POSTGRES_USER`, etc.). This is the recommended approach for Neon and other hosted Postgres services.
 
 Then set `POSTGRES_URL` (or the individual `POSTGRES_*` vars) in your deployment (e.g. Vercel env).
