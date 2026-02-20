@@ -49,3 +49,13 @@ Sideburn uses its Pretix instance as the authentication provider for volunteerin
 6. Copy the Client ID to the `OAUTH_CLIENT_ID` value in `.env.local`
 7. Set the value of `OAUTH_DISCOVERY_URL` in `.env.local` to `{PRETIX_URI}/ORG_NAME/.well-known/openid-configuration` where `{PRETIX_URI}` is the URI of your Pretix instance. For local pretix as configured in step 1, this would be `http://localhost:8000`
 8. Profit!
+
+## Deploying (e.g. Vercel + Neon)
+
+Migrations are run locally via Docker (Liquibase). For a hosted Postgres (e.g. Neon), run the schema once:
+
+1. In the [Neon SQL Editor](https://neon.tech/docs/connect/sql-editor), paste and run the contents of `db/scripts/neon-full-schema.sql`, **or**
+2. From your machine (with `POSTGRES_URL` in env):  
+   `psql "$POSTGRES_URL" -f db/scripts/neon-full-schema.sql`
+
+Then set `POSTGRES_URL` (or the individual `POSTGRES_*` vars) in your deployment (e.g. Vercel env).

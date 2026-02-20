@@ -5,7 +5,7 @@
  * @author Michael Townsend <@continuities>
  */
 
-import { Flex, Text } from '@radix-ui/themes';
+import { Button, Flex, Text } from '@radix-ui/themes';
 import { auth } from '@/auth';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
@@ -39,7 +39,7 @@ export default async function MyApp() {
           </Text>
         ))}
         <form action={signout}>
-          <button type="submit">Sign out</button>
+          <Button type="submit">Sign out</Button>
         </form>
       </Flex>
     </Flex>
