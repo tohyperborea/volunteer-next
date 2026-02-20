@@ -1,4 +1,7 @@
 import { auth, AUTH_MODE } from '@/auth';
+import { getClientIp } from '@/lib/client-ip';
+import { recordFailedLogin } from '@/lib/login-security';
+import { getSafeCallbackUrl } from '@/lib/signup-validation';
 import { redirect } from 'next/navigation';
 import { Flex, Heading, Text } from '@radix-ui/themes';
 import styles from './styles.module.css';
@@ -19,7 +22,7 @@ export default async function SignInPage({
 
   const signInOAuth = async (formData: FormData) => {
     'use server';
-    const url = (formData.get('callbackUrl') as string) || '/';
+    const url = getSafeCallbackUrl(formData.get('callbackUrl') as string | null);
     const data = await auth.api.signInWithOAuth2({
       body: {
         providerId: process.env.OAUTH_PROVIDER_ID ?? '',
@@ -32,16 +35,32 @@ export default async function SignInPage({
     }
   };
 
-  const signInCredentials = async (formData: FormData) => {
+  const signInCredentials = async (
+    formData: FormData
+  ): Promise<{ ok: true } | { ok: false; reason: 'locked' | 'rate_limit' | 'invalid_credentials' }> => {
     'use server';
     const email = (formData.get('email') as string)?.trim();
     const password = formData.get('password') as string;
-    const url = (formData.get('callbackUrl') as string) || '/';
-    if (!email || !password) return;
-    await auth.api.signInEmail({
-      body: { email, password, callbackURL: url }
-    });
-    redirect(url);
+    const url = getSafeCallbackUrl(formData.get('callbackUrl') as string | null);
+    if (!email || !password) return { ok: false, reason: 'invalid_credentials' };
+    try {
+      await auth.api.signInEmail({
+        body: { email, password, callbackURL: url }
+      });
+      redirect(url);
+      return { ok: true };
+    } catch (err: unknown) {
+      const status = (err as { status?: string }).status;
+      const statusCode = (err as { statusCode?: number }).statusCode;
+      if (status === 'TOO_MANY_REQUESTS' || statusCode === 429) {
+        const msg = (err as { body?: { message?: string } }).body?.message ?? '';
+        if (msg.includes('failed attempts')) return { ok: false, reason: 'locked' };
+        return { ok: false, reason: 'rate_limit' };
+      }
+      const ip = await getClientIp();
+      recordFailedLogin(email, ip);
+      return { ok: false, reason: 'invalid_credentials' };
+    }
   };
 
   const requestReset = async (formData: FormData) => {
@@ -106,6 +125,9 @@ export default async function SignInPage({
             backToSignIn: t('backToSignIn'),
             invalidCredentialsTitle: t('invalidCredentialsTitle'),
             invalidCredentials: t('invalidCredentials'),
+            tooManyAttemptsTitle: t('tooManyAttemptsTitle'),
+            tooManyAttempts: t('tooManyAttempts'),
+            rateLimitError: t('rateLimitError'),
             errorDialogClose: t('errorDialogClose')
           }}
         />

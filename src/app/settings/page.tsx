@@ -51,7 +51,9 @@ export default async function SettingsPage() {
               ? 'Admin'
               : role.type === 'organiser'
                 ? `Organiser for ${eventsById[role.eventId] ?? role.eventId}`
-                : `Team Lead for team ${role.teamId} in ${eventsById[role.eventId] ?? role.eventId}`}
+                : role.type === 'team-lead'
+                  ? `Team Lead for team ${role.teamId} in ${eventsById[role.eventId] ?? role.eventId}`
+                  : 'Volunteer'}
           </Text>
         ))}
         <form className={styles.signoutForm} action={signout}>

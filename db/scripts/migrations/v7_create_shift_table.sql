@@ -14,7 +14,7 @@ create table "shiftAssignment" (
     "userId" text not null references "user" ("id") on delete cascade,
     "shiftId" uuid not null references "shift" ("id") on delete cascade,
     "createdAt" timestamptz default CURRENT_TIMESTAMP not null,
-    "updatedAt" timestamptz default CURRENT_TIMESTAMP not null,
+    "updatedAt" timestamptz default CURRENT_TIMESTAMP not null
 );
 
 create table "qualification" (
@@ -22,7 +22,7 @@ create table "qualification" (
     "name" text not null,
     "description" text,
     "createdAt" timestamptz default CURRENT_TIMESTAMP not null,
-    "updatedAt" timestamptz default CURRENT_TIMESTAMP not null,
+    "updatedAt" timestamptz default CURRENT_TIMESTAMP not null
 );
 
 create table "requiredQualificationForRole" (
@@ -30,7 +30,7 @@ create table "requiredQualificationForRole" (
     "qualificationId" uuid not null references "qualification" ("id") on delete cascade,
     "roleId" uuid not null references "role" ("id") on delete cascade,
     "createdAt" timestamptz default CURRENT_TIMESTAMP not null,
-    "updatedAt" timestamptz default CURRENT_TIMESTAMP not null,
+    "updatedAt" timestamptz default CURRENT_TIMESTAMP not null
 );
 
 create table "requiredQualificationForShift" (
@@ -38,7 +38,7 @@ create table "requiredQualificationForShift" (
     "qualificationId" uuid not null references "qualification" ("id") on delete cascade,
     "shiftId" uuid not null references "shift" ("id") on delete cascade,
     "createdAt" timestamptz default CURRENT_TIMESTAMP not null,
-    "updatedAt" timestamptz default CURRENT_TIMESTAMP not null,
+    "updatedAt" timestamptz default CURRENT_TIMESTAMP not null
 );
 
 create table "teamLead" (
@@ -47,5 +47,5 @@ create table "teamLead" (
     "teamId" uuid not null references "team" ("id") on delete cascade,
     "canGrantCoLead" boolean not null default false,
     "createdAt" timestamptz default CURRENT_TIMESTAMP not null,
-    "updatedAt" timestamptz default CURRENT_TIMESTAMP not null,
+    "updatedAt" timestamptz default CURRENT_TIMESTAMP not null
 );

@@ -8,6 +8,10 @@ import styles from './styles.module.css';
 
 type View = 'signin' | 'forgot' | 'forgotSent';
 
+export type SignInResult =
+  | { ok: true }
+  | { ok: false; reason: 'locked' | 'rate_limit' | 'invalid_credentials' };
+
 export type CredentialsFormTranslations = {
   descriptionOne: string;
   emailPlaceholder: string;
@@ -21,13 +25,16 @@ export type CredentialsFormTranslations = {
   backToSignIn: string;
   invalidCredentialsTitle: string;
   invalidCredentials: string;
+  tooManyAttemptsTitle: string;
+  tooManyAttempts: string;
+  rateLimitError: string;
   errorDialogClose: string;
 };
 
 type Props = {
   callbackUrl: string;
   forgotSent: boolean;
-  signInAction: (formData: FormData) => Promise<void>;
+  signInAction: (formData: FormData) => Promise<SignInResult>;
   requestResetAction: (formData: FormData) => Promise<void>;
   translations: CredentialsFormTranslations;
 };
@@ -41,6 +48,7 @@ export function CredentialsForm({
 }: Props) {
   const [view, setView] = useState<View>(forgotSent ? 'forgotSent' : 'signin');
   const [showErrorDialog, setShowErrorDialog] = useState(false);
+  const [errorReason, setErrorReason] = useState<'locked' | 'rate_limit' | 'invalid_credentials'>('invalid_credentials');
   const [isPending, startTransition] = useTransition();
   const passwordRef = useRef<HTMLInputElement>(null);
 
@@ -57,11 +65,16 @@ export function CredentialsForm({
 
       startTransition(async () => {
         try {
-          await signInAction(formData);
+          const result = await signInAction(formData);
+          if (result?.ok === false) {
+            setErrorReason(result.reason);
+            setShowErrorDialog(true);
+          }
         } catch (error) {
           if (isRedirectError(error)) {
             throw error;
           }
+          setErrorReason('invalid_credentials');
           setShowErrorDialog(true);
         }
       });
@@ -149,9 +162,16 @@ export function CredentialsForm({
         }}
       >
         <Dialog.Content className={styles.errorDialog}>
-          
-          <Dialog.Title className={styles.errorDialogTitle}>{t.invalidCredentialsTitle}</Dialog.Title>
-          <Dialog.Description className={styles.errorDialogDescription}>{t.invalidCredentials}</Dialog.Description>
+          <Dialog.Title className={styles.errorDialogTitle}>
+            {errorReason === 'locked' ? t.tooManyAttemptsTitle : errorReason === 'rate_limit' ? t.tooManyAttemptsTitle : t.invalidCredentialsTitle}
+          </Dialog.Title>
+          <Dialog.Description className={styles.errorDialogDescription}>
+            {errorReason === 'locked'
+              ? t.tooManyAttempts
+              : errorReason === 'rate_limit'
+                ? t.rateLimitError
+                : t.invalidCredentials}
+          </Dialog.Description>
           <Dialog.Close>
             <Button className={styles.errorDialogCloseButton}>{t.errorDialogClose}</Button>
           </Dialog.Close>

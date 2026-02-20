@@ -7,11 +7,10 @@ interface NavRectangleProps {
   height?: number;
 }
 
-const DEFAULT_HEIGHT = 120;
 
-export default function NavRectangle({ children, height = DEFAULT_HEIGHT }: NavRectangleProps) {
+export default function NavRectangle({ children }: NavRectangleProps) {
   return (
-    <Flex className={styles.navigationRectangle} gap="2" style={{ height: height }}>
+    <Flex className={styles.navigationRectangle} gap="2">
       {children}
     </Flex>
   );
