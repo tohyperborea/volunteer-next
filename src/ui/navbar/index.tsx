@@ -6,103 +6,54 @@
 
 'use client';
 
-import {
-  IconButton,
-  Heading,
-  Text,
-  Dialog,
-  VisuallyHidden,
-  TabNav,
-  Flex,
-  Box
-} from '@radix-ui/themes';
-import { Cross1Icon, HamburgerMenuIcon, HomeIcon } from '@radix-ui/react-icons';
+import { Heading, Text, Flex, Box } from '@radix-ui/themes';
 import styles from './styles.module.css';
 import { useState } from 'react';
-import { useTranslations } from 'next-intl';
-import { usePathname, useRouter } from 'next/navigation';
-
-const navLinkMap = new Map<string, string>([
-  ['/event', 'event'],
-  ['/team', 'teams'],
-  ['/users', 'users'],
-  ['/settings', 'settings']
-]);
+import NavColumn from './nav-column';
+import MobileMenu from './mobile-menu';
+import { useRouter } from 'next/navigation';
 
 interface Props {
-  text?: string;
+  title?: string;
+  subtitle?: string;
   user: User;
+  children: React.ReactNode;
+  titlePathname: string;
 }
 
-export default function NavBar({ text, user }: Props) {
-  const t = useTranslations('NavBar');
+export default function NavBar({ title, subtitle, user, titlePathname, children }: Props) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const router = useRouter();
-  const isLastItem = (title: string) => {
-    return title === Array.from(navLinkMap.values()).pop();
-  };
-  const pathname = usePathname();
-
   return (
-    <Dialog.Root open={dialogOpen} onOpenChange={setDialogOpen}>
-      <TabNav.Root className={styles.navigationMenuList}>
-        <Dialog.Trigger>
-          <IconButton
-            variant="ghost"
-            size="3"
-            aria-label="Menu"
-            className={styles.navigationIconButton}
-          >
-            <HamburgerMenuIcon className={styles.navigationHamburgerMenuIcon} />
-          </IconButton>
-        </Dialog.Trigger>
-        <Flex direction="row" justify="center" align="center" style={{ flex: 1 }}>
-          <Heading size="3">{text}</Heading>
+    <>
+      {/* Navigation bar */}
+      <Flex direction="row" align="center" className={styles.navigationBar}>
+        <Flex className={styles.mobileConditionalRender}>
+          <MobileMenu dialogOpen={dialogOpen} setDialogOpen={setDialogOpen} title={title} />
+        </Flex>
+        <Flex
+          direction="column"
+          justify="center"
+          align="center"
+          style={{ flex: 1 }}
+          onClick={() => router.push(titlePathname)}
+          className={styles.navigationTitle}
+        >
+          <Heading size="3">{title}</Heading>
+          <Text size="1">{subtitle}</Text>
         </Flex>
         <Box className={styles.navigationUserInitial}>
           <Text>{(user?.name || user?.email)?.charAt(0).toUpperCase()}</Text>
         </Box>
-        <Dialog.Content className={styles.dialogContent}>
-          <Dialog.Close className={styles.dialogCloseButton}>
-            <IconButton variant="ghost" size="3" aria-label="Close">
-              <Cross1Icon />
-            </IconButton>
-          </Dialog.Close>
-          <VisuallyHidden>
-            <Dialog.Title>{text}</Dialog.Title>
-            <Dialog.Description>{t('screenReaderDialogDescription')}</Dialog.Description>
-          </VisuallyHidden>
-          <TabNav.Link
-            key="/"
-            asChild
-            className={`${styles.navigationMenuItem} ${styles.navigationHomeMenuItem}`}
-            onClick={() => {
-              setDialogOpen(false);
-              router.push('/');
-            }}
-            active={pathname === '/'}
-          >
-            <Box>
-              <HomeIcon className={styles.navigationHomeIcon} />
-              <Text style={{ marginLeft: '0.5rem' }}>{t('home')}</Text>
-            </Box>
-          </TabNav.Link>
-          {Array.from(navLinkMap.entries()).map(([path, title]) => (
-            <TabNav.Link
-              key={path}
-              asChild
-              className={`${styles.navigationMenuItem} ${isLastItem(title) ? styles.navigationHomeMenuItem : ''}`}
-              onClick={() => {
-                setDialogOpen(false);
-                router.push(path);
-              }}
-              active={pathname === path}
-            >
-              <Text>{t(title)}</Text>
-            </TabNav.Link>
-          ))}
-        </Dialog.Content>
-      </TabNav.Root>
-    </Dialog.Root>
+      </Flex>
+
+      {/* Content area */}
+      <Flex direction="row" style={{ flex: 1 }}>
+        <Flex direction="column" className={styles.navigationMenuListOuter}>
+          <NavColumn title={title} />
+        </Flex>
+        {children}
+      </Flex>
+    </>
   );
 }

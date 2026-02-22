@@ -7,13 +7,19 @@
 import 'server-only';
 import { Pool, PoolClient } from 'pg';
 
-const pool = new Pool({
-  host: 'localhost',
-  user: 'postgres',
-  password: process.env.POSTGRES_PASSWORD,
-  database: process.env.POSTGRES_DB,
-  port: Number(process.env.POSTGRES_PORT) || 5432
-});
+const connectionString = process.env.POSTGRES_URL;
+
+const pool = new Pool(
+  connectionString
+    ? { connectionString }
+    : {
+        host: process.env.POSTGRES_HOST ?? 'localhost',
+        user: process.env.POSTGRES_USER,
+        password: process.env.POSTGRES_PASSWORD,
+        database: process.env.POSTGRES_DB ?? process.env.POSTGRES_DATABASE,
+        port: Number(process.env.POSTGRES_PORT) || 5432
+      }
+);
 
 export const inTransaction = async <R>(
   serviceCalls: (client: PoolClient) => Promise<R>

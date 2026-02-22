@@ -5,7 +5,7 @@
  * @author Michael Townsend <@continuities>
  */
 
-import { Flex, Text } from '@radix-ui/themes';
+import { Button, Flex, Text } from '@radix-ui/themes';
 import { auth } from '@/auth';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
@@ -35,11 +35,13 @@ export default async function MyApp() {
               ? 'Admin'
               : role.type === 'organiser'
                 ? `Organiser for event ${role.eventId}`
-                : `Team Lead for team ${role.teamId} in event ${role.eventId}`}
+                : role.type === 'team-lead'
+                  ? `Team Lead for team ${role.teamId} in event ${role.eventId}`
+                  : 'Volunteer'}
           </Text>
         ))}
         <form action={signout}>
-          <button type="submit">Sign out</button>
+          <Button type="submit">Sign out</Button>
         </form>
       </Flex>
     </Flex>

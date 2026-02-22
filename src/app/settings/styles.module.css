@@ -1,0 +1,17 @@
+.signoutForm {
+  width: 100%;
+  margin-top: 2rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.signoutButton {
+  width: 200px;
+  height: 40px;
+  border-radius: 5px;
+  background: red;
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}

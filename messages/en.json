@@ -1,8 +1,19 @@
 {
-  "EventsDashboardPage": {
+  "EventsManagementPage": {
     "title": "Events Dashboard",
     "noEvents": "No events yet!",
     "createEvent": "Create New Event"
+  },
+  "EventDashboardPage": {
+    "volunteers": "Volunteers",
+    "yourHours": "Your Hours",
+    "yourShifts": "Your Shifts",
+    "next": "Next",
+    "shifts": "Shifts",
+    "teams": "Teams",
+    "qualifications": "Qualifications",
+    "findShifts": "Find Shifts",
+    "eventSettings": "Event Settings"
   },
   "CreateEventPage": {
     "title": "Create Event"
@@ -10,7 +21,6 @@
   "UpdateEventPage": {
     "title": "Update Event"
   },
-  "EventPage": {},
   "TeamsDashboardPage": {
     "teamsForEvent": "Teams for {eventName}",
     "noTeams": "No teams yet!",
@@ -135,6 +145,60 @@
     "descriptionTwo": "We use our ticket system, Pretix, to provide a single sign-on experience.",
     "descriptionThree": "Clicking the button below will redirect you to the Pretix login page.",
     "descriptionFour": "After logging in, you will be redirected back to this application.",
-    "button": "Sign In with Pretix"
+    "button": "Sign In with Pretix",
+    "emailPlaceholder": "Email",
+    "passwordPlaceholder": "Password",
+    "buttonCredentials": "Sign In",
+    "createAccount": "Create an account",
+    "forgotPassword": "Forgot password?",
+    "forgotDescription": "Enter your email and we'll send you a link to reset your password.",
+    "forgotButton": "Send reset link",
+    "forgotSuccessMessage": "If an account exists for that email, we've sent a reset link. Check your inbox.",
+    "backToSignIn": "Back to sign in",
+    "invalidCredentialsTitle": "Sign in failed",
+    "invalidCredentials": "Invalid email or password. Please try again.",
+    "tooManyAttemptsTitle": "Too many attempts",
+    "tooManyAttempts": "Too many failed sign-in attempts. Please try again in 15 minutes.",
+    "rateLimitError": "Too many requests from your connection. Please try again later.",
+    "errorDialogClose": "OK"
+  },
+  "SignUpPage": {
+    "title": "Create account",
+    "description": "Enter your details to create an account.",
+    "namePlaceholder": "Name",
+    "emailPlaceholder": "Email",
+    "passwordPlaceholder": "Password",
+    "button": "Create account",
+    "signInLink": "Already have an account? Sign in",
+    "errorName_empty": "Please enter your name.",
+    "errorName_too_long": "Name must be 255 characters or less.",
+    "errorName_invalid_chars": "Name contains invalid characters.",
+    "errorEmail_invalid": "Please enter a valid email address.",
+    "errorPassword_too_short": "Password must be at least 8 characters.",
+    "errorPassword_too_weak": "Password must include both letters and numbers.",
+    "errorAccount_exists": "An account with this email already exists. Sign in or reset your password.",
+    "rateLimitError": "Too many attempts. Please try again in 15 minutes."
+  },
+  "ForgotPasswordPage": {
+    "title": "Forgot password",
+    "description": "Enter your email and we'll send you a link to reset your password.",
+    "emailPlaceholder": "Email",
+    "button": "Send reset link",
+    "successMessage": "If an account exists for that email, we've sent a reset link. Check your inbox.",
+    "signInLink": "Back to sign in",
+    "rateLimitError": "Too many requests. Please try again in 15 minutes.",
+    "captchaError": "Verification failed. Please try again."
+  },
+  "ResetPasswordPage": {
+    "title": "Reset password",
+    "description": "Enter your new password.",
+    "passwordPlaceholder": "New password",
+    "confirmPlaceholder": "Confirm new password",
+    "button": "Reset password",
+    "signInLink": "Back to sign in",
+    "invalidToken": "This reset link is invalid or has expired. Please request a new one.",
+    "missingToken": "Missing reset token. Please use the link from your email.",
+    "rateLimitError": "Too many attempts. Please try again in 15 minutes.",
+    "passwordMismatch": "Passwords do not match."
   }
 }
