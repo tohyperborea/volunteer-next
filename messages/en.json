@@ -158,5 +158,12 @@
     "requirement": "Requirement",
     "spots": "Spots",
     "volunteers": "Volunteers"
+  },
+  "ShiftDialog": {
+    "cancel": "Cancel",
+    "save": "Save Changes",
+    "editShift": "Edit Shift",
+    "addShift": "Add Shift",
+    "deleteShift": "Delete Shift"
   }
 }

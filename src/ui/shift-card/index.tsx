@@ -16,10 +16,10 @@ import { Pencil2Icon } from '@radix-ui/react-icons';
 interface Props {
   shift: ShiftInfo;
   volunteerNames: string[];
-  editable?: boolean;
+  onEdit?: () => void;
 }
 
-export default function ShiftCard({ shift, volunteerNames, editable }: Props) {
+export default function ShiftCard({ shift, volunteerNames, onEdit }: Props) {
   const t = useTranslations('ShiftCard');
   const startTime = shift.startTime;
   const endTime = new Date(shift.startTime.getTime() + shift.durationHours * 60 * 60 * 1000);
@@ -52,8 +52,8 @@ export default function ShiftCard({ shift, volunteerNames, editable }: Props) {
           </Flex>
         </Collapsible>
       </Flex>
-      {editable && (
-        <IconButton className={styles.editButton} variant="ghost">
+      {onEdit && (
+        <IconButton className={styles.editButton} variant="ghost" onClick={onEdit}>
           <Pencil2Icon width={20} height={20} />
         </IconButton>
       )}
