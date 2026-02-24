@@ -26,7 +26,13 @@
   "UpdateTeamPage": {
     "title": "Update Team"
   },
-  "TeamPage": {},
+  "TeamPage": {
+    "tabs": {
+      "team": "Team",
+      "shifts": "Shifts",
+      "volunteers": "Volunteers"
+    }
+  },
 
   "MenuCard": {
     "update": "Update",
