@@ -1,6 +1,7 @@
 import metadata from '@/i18n/metadata';
 import { getEventBySlug } from '@/service/event-service';
-import { Flex, Heading, Card } from '@radix-ui/themes';
+import LinkCard, { LinkCardContent, LinkCardList } from '@/ui/link-card';
+import { Flex, Heading, Text } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 
@@ -30,7 +31,14 @@ export default async function EventPage({ params }: Props) {
   return (
     <Flex direction="column" gap="4" p="4">
       <Heading my="4">{event.name}</Heading>
-      <Card>TODO</Card>
+      <LinkCardList>
+        <LinkCard href={`/event/${eventSlug}/team`}>
+          <LinkCardContent pretext={t('manageMy')} text={t('teams')} />
+        </LinkCard>
+        <LinkCard href="">
+          <LinkCardContent pretext={t('manageMy')} text={t('volunteers')} />
+        </LinkCard>
+      </LinkCardList>
     </Flex>
   );
 }

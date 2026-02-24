@@ -10,7 +10,11 @@
   "UpdateEventPage": {
     "title": "Update Event"
   },
-  "EventPage": {},
+  "EventPage": {
+    "manageMy": "Manage My",
+    "teams": "Teams",
+    "volunteers": "Volunteers"
+  },
   "TeamsDashboardPage": {
     "teamsForEvent": "Teams for {eventName}",
     "noTeams": "No teams yet!",
