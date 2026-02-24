@@ -1,8 +1,12 @@
+'use client';
+
 import DatedList from '@/ui/dated-list';
 import ShiftCard from '@/ui/shift-card';
+import ShiftDialog from '@/ui/shift-dialog';
 import { PlusIcon } from '@radix-ui/react-icons';
 import { Button, Flex } from '@radix-ui/themes';
-import { getTranslations } from 'next-intl/server';
+import { useTranslations } from 'next-intl';
+import { useState } from 'react';
 
 const PAGE_KEY = 'TeamPage.ShiftsTab';
 
@@ -66,14 +70,30 @@ const MOCK_SHIFTS: ShiftInfo[] = [
 
 const MOCK_VOLUNTEERS: string[] = ['Foo McFoo', 'Bar Barman'];
 
-interface Props {}
+interface Props {
+  onAddShift?: (shift: ShiftInfo) => void;
+  onEditShift?: (shift: ShiftInfo) => void;
+  onDeleteShift?: (shiftId: string) => void;
+}
 
-export default async function TeamShifts({}: Props) {
-  const t = await getTranslations(PAGE_KEY);
+export default function TeamShifts({ onAddShift, onEditShift, onDeleteShift }: Props) {
+  const t = useTranslations(PAGE_KEY);
+  const [creatingShift, setCreatingShift] = useState(false);
+  const [editingShift, setEditingShift] = useState<ShiftInfo | undefined>(undefined);
+
+  const onSave = (shift: ShiftInfo) => {
+    alert('TODO');
+  };
+
   return (
     <Flex direction="column" gap="6">
       <Flex direction="row" gap="2">
-        <Button>
+        <Button
+          onClick={() => {
+            setEditingShift(undefined);
+            setCreatingShift(true);
+          }}
+        >
           <PlusIcon /> {t('addShift')}
         </Button>
         <Button>
@@ -84,8 +104,21 @@ export default async function TeamShifts({}: Props) {
         items={MOCK_SHIFTS}
         getDate={(shift) => shift.startTime}
         renderItem={(shift) => (
-          <ShiftCard shift={shift} volunteerNames={MOCK_VOLUNTEERS} key={shift.id} editable />
+          <ShiftCard
+            shift={shift}
+            volunteerNames={MOCK_VOLUNTEERS}
+            key={shift.id}
+            onEdit={() => setEditingShift(shift)}
+          />
         )}
+      />
+      <ShiftDialog
+        creating={creatingShift}
+        editing={editingShift}
+        onClose={() => {
+          setCreatingShift(false);
+          setEditingShift(undefined);
+        }}
       />
     </Flex>
   );

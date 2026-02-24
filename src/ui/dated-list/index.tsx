@@ -4,8 +4,6 @@
  * @author Michael Townsend <@continuities>
  */
 
-'use server';
-
 import { Flex, Text } from '@radix-ui/themes';
 
 interface Props<T> {
@@ -14,7 +12,7 @@ interface Props<T> {
   renderItem: (item: T) => React.ReactNode;
 }
 
-export default async function DatedList<T>({ items, getDate, renderItem }: Props<T>) {
+export default function DatedList<T>({ items, getDate, renderItem }: Props<T>) {
   const sortedItems = [...items].sort((a, b) => getDate(a).getTime() - getDate(b).getTime());
   const itemsByDate = sortedItems.reduce(
     (acc, item) => {
