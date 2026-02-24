@@ -31,7 +31,7 @@ export default async function TeamPage({ params }: Props) {
   }
 
   return (
-    <Flex direction="column" gap="4" p="4">
+    <Flex direction="column" p="4">
       <Heading my="4">{team.name}</Heading>
       <Tabs.Root defaultValue="team">
         <Tabs.List>
@@ -39,7 +39,7 @@ export default async function TeamPage({ params }: Props) {
           <Tabs.Trigger value="shifts">{t('tabs.shifts')}</Tabs.Trigger>
           <Tabs.Trigger value="volunteers">{t('tabs.volunteers')}</Tabs.Trigger>
         </Tabs.List>
-        <Box pt="3">
+        <Box pt="6">
           <Tabs.Content value="team">
             <TeamInfo team={team} />
           </Tabs.Content>

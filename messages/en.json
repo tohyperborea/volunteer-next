@@ -31,7 +31,19 @@
       "team": "Team",
       "shifts": "Shifts",
       "volunteers": "Volunteers"
+    },
+    "ShiftsTab": {
+      "addShift": "Add shift",
+      "importShift": "Import shift"
     }
+  },
+  "SignInPage": {
+    "title": "Sign In",
+    "descriptionOne": "Sign in to your account to continue.",
+    "descriptionTwo": "We use our ticket system, Pretix, to provide a single sign-on experience.",
+    "descriptionThree": "Clicking the button below will redirect you to the Pretix login page.",
+    "descriptionFour": "After logging in, you will be redirected back to this application.",
+    "button": "Sign In with Pretix"
   },
 
   "MenuCard": {
@@ -139,12 +151,12 @@
   "Metadata": {
     "description": "A system to support the organisation of alternative arts events"
   },
-  "SignInPage": {
-    "title": "Sign In",
-    "descriptionOne": "Sign in to your account to continue.",
-    "descriptionTwo": "We use our ticket system, Pretix, to provide a single sign-on experience.",
-    "descriptionThree": "Clicking the button below will redirect you to the Pretix login page.",
-    "descriptionFour": "After logging in, you will be redirected back to this application.",
-    "button": "Sign In with Pretix"
+  "ShiftCard": {
+    "max": "Max",
+    "min": "Min",
+    "status": "Status",
+    "requirement": "Requirement",
+    "spots": "Spots",
+    "volunteers": "Volunteers"
   }
 }

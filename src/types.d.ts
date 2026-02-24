@@ -8,6 +8,8 @@
 type UserId = string;
 type EventId = string;
 type TeamId = string;
+type ShiftId = string;
+type RequirementId = string;
 type UrlSlug = string;
 
 interface User {
@@ -50,6 +52,17 @@ interface UserFilters {
   roleType?: string;
   searchQuery?: string;
   showDeleted?: boolean;
+}
+
+interface ShiftInfo {
+  id: ShiftId;
+  teamId: TeamId;
+  name: string;
+  startTime: Date;
+  durationHours: number;
+  minVolunteers: number;
+  maxVolunteers: number;
+  requirements?: RequirementId[];
 }
 
 type ThemeMode = 'light' | 'dark' | 'system';
