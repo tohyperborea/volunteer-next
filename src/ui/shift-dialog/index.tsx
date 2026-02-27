@@ -46,6 +46,7 @@ export default function ShiftDialog({ creating = false, editing = undefined, onC
           <Flex direction="column" gap="4" mt="6" width="100%">
             <FormField ariaId="shift-title" name={t('title')} description={t('titleDescription')}>
               <TextField.Root
+                defaultValue={editing?.name}
                 aria-labelledby="shift-title"
                 name="title"
                 placeholder={t('titlePlaceholder')}
@@ -56,7 +57,12 @@ export default function ShiftDialog({ creating = false, editing = undefined, onC
               name={t('startTime')}
               description={t('startTimeDescription')}
             >
-              <DatePicker aria-labelledby="shift-start" name="startTime" />
+              <DatePicker
+                defaultValue={editing?.startTime}
+                timepicker
+                aria-labelledby="shift-start"
+                name="startTime"
+              />
             </FormField>
             <FormField
               ariaId="shift-length"
@@ -67,7 +73,7 @@ export default function ShiftDialog({ creating = false, editing = undefined, onC
                 aria-labelledby="shift-length"
                 name="length"
                 type="number"
-                defaultValue={0}
+                defaultValue={editing?.durationHours ?? 0}
               />
             </FormField>
             <FormField
@@ -79,7 +85,7 @@ export default function ShiftDialog({ creating = false, editing = undefined, onC
                 aria-labelledby="min-volunteers"
                 name="minVolunteers"
                 type="number"
-                defaultValue={0}
+                defaultValue={editing?.minVolunteers ?? 0}
               />
             </FormField>
             <FormField
@@ -91,18 +97,23 @@ export default function ShiftDialog({ creating = false, editing = undefined, onC
                 aria-labelledby="max-volunteers"
                 name="maxVolunteers"
                 type="number"
-                defaultValue={0}
+                defaultValue={editing?.maxVolunteers ?? 0}
               />
             </FormField>
             <Text as="label">
               <Flex gap="2" align="center">
-                <Checkbox name="active" defaultChecked />
+                <Checkbox name="active" defaultChecked={editing?.isActive ?? true} />
                 {t('active')}
               </Flex>
             </Text>
             <DropdownMenu.Root>
               <DropdownMenu.Trigger>
-                <Button variant="soft" color="gray" style={{ justifyContent: 'space-between' }}>
+                <Button
+                  variant="soft"
+                  color="gray"
+                  style={{ justifyContent: 'space-between' }}
+                  onClick={() => console.log('TODO')}
+                >
                   {t('requirementId')}
                   <DropdownMenu.TriggerIcon />
                 </Button>

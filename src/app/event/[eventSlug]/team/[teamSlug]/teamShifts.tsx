@@ -16,55 +16,61 @@ const MOCK_SHIFTS: ShiftInfo[] = [
     id: 'mock-shift-1',
     name: 'Morning Setup',
     teamId: 'mock-team',
-    startTime: new Date('2024-07-01T12:00:00Z'),
+    startTime: new Date('2024-07-01T08:00:00Z'),
     durationHours: 4,
     minVolunteers: 1,
-    maxVolunteers: 3
+    maxVolunteers: 3,
+    isActive: true
   },
   {
     id: 'mock-shift-2',
     name: 'Afternoon Cleanup',
     teamId: 'mock-team',
-    startTime: new Date('2024-07-01T20:00:00Z'),
+    startTime: new Date('2024-07-01T16:00:00Z'),
     durationHours: 3,
     minVolunteers: 2,
-    maxVolunteers: 5
+    maxVolunteers: 5,
+    isActive: true
   },
   {
     id: 'mock-shift-3',
     name: 'Evening Support',
     teamId: 'mock-team',
-    startTime: new Date('2024-07-01T24:00:00Z'),
+    startTime: new Date('2024-07-01T20:00:00Z'),
     durationHours: 4,
     minVolunteers: 1,
-    maxVolunteers: 4
+    maxVolunteers: 4,
+    isActive: true
   },
   {
     id: 'mock-shift-1',
     name: 'Morning Setup',
     teamId: 'mock-team',
-    startTime: new Date('2024-07-02T12:00:00Z'),
+    startTime: new Date('2024-07-02T08:00:00Z'),
     durationHours: 4,
     minVolunteers: 1,
-    maxVolunteers: 3
+    maxVolunteers: 3,
+    isActive: true
   },
   {
     id: 'mock-shift-2',
     name: 'Afternoon Cleanup',
     teamId: 'mock-team',
-    startTime: new Date('2024-07-02T20:00:00Z'),
+    startTime: new Date('2024-07-02T16:00:00Z'),
     durationHours: 3,
     minVolunteers: 2,
-    maxVolunteers: 5
+    maxVolunteers: 5,
+    isActive: true
   },
   {
     id: 'mock-shift-3',
     name: 'Evening Support',
     teamId: 'mock-team',
-    startTime: new Date('2024-07-02T24:00:00Z'),
+    startTime: new Date('2024-07-02T20:00:00Z'),
     durationHours: 4,
     minVolunteers: 1,
-    maxVolunteers: 4
+    maxVolunteers: 4,
+    isActive: true
   }
 ];
 
