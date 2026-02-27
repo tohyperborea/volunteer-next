@@ -43,9 +43,12 @@
       "shifts": "Shifts",
       "volunteers": "Volunteers"
     },
+    "InfoTab": {},
     "ShiftsTab": {
-      "addShift": "Add shift",
-      "importShift": "Import shift"
+      "title": "Shifts"
+    },
+    "VolunteersTab": {
+      "title": "Volunteers"
     }
   },
   "SignInPage": {
@@ -220,6 +223,10 @@
   "ResetPasswordEmail": {
     "subject": "Reset your password",
     "text": "Click the link to reset your password: {url}"
+  },
+  "ShiftList": {
+    "addShift": "Add shift",
+    "importShift": "Import shift"
   },
   "ShiftCard": {
     "max": "Max",
