@@ -164,6 +164,19 @@
     "save": "Save Changes",
     "editShift": "Edit Shift",
     "addShift": "Add Shift",
-    "deleteShift": "Delete Shift"
+    "deleteShift": "Delete Shift",
+    "title": "Title of Shift",
+    "titleDescription": "Description",
+    "titlePlaceholder": "Title",
+    "startTime": "Start Time",
+    "startTimeDescription": "Description",
+    "length": "Length of Shift",
+    "lengthDescription": "Length of the shift in HOURS",
+    "minVolunteers": "Minimum Volunteers Needed",
+    "minVolunteersDescription": "Description",
+    "maxVolunteers": "Maximum Volunteers Needed",
+    "maxVolunteersDescription": "Description",
+    "active": "Active",
+    "requirementId": "Requirement ID"
   }
 }
