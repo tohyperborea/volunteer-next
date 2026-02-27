@@ -15,14 +15,18 @@ const isLocalRequest = (request: NextRequest) => {
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  const headers = new Headers(request.headers);
+  // Put pathname in headers for access in server components
+  headers.set('x-current-path', pathname);
+
   // Allow access to API routes
   if (pathname.startsWith('/api')) {
-    return NextResponse.next();
+    return NextResponse.next({ headers });
   }
 
   // Allow access to signin page
   if (pathname === '/signin') {
-    return NextResponse.next();
+    return NextResponse.next({ headers });
   }
 
   if (
@@ -32,7 +36,7 @@ export async function proxy(request: NextRequest) {
   ) {
     // In debug mode, bypass authentication
     // User will be set in session.ts::currentUser() based on the DEBUG_FORCE_ROLE env var
-    return NextResponse.next();
+    return NextResponse.next({ headers });
   }
 
   // Check authentication for all other routes
@@ -50,7 +54,7 @@ export async function proxy(request: NextRequest) {
   }
 
   // User is authenticated, allow the request
-  return NextResponse.next();
+  return NextResponse.next({ headers });
 }
 
 export const config = {

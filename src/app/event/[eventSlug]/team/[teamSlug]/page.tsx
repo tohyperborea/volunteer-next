@@ -1,13 +1,10 @@
 import metadata from '@/i18n/metadata';
 import { getTeamBySlug } from '@/service/team-service';
-import { Box, Flex, Heading, Tabs } from '@radix-ui/themes';
+import { Card, Text } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
-import TeamInfo from './teamInfo';
-import TeamShifts from './teamShifts';
-import TeamVolunteers from './teamVolunteers';
 
-const PAGE_KEY = 'TeamPage';
+const PAGE_KEY = 'TeamPage.InfoTab';
 
 export const generateMetadata = metadata(PAGE_KEY, {
   title: async (params) => {
@@ -29,28 +26,9 @@ export default async function TeamPage({ params }: Props) {
   if (!team) {
     notFound();
   }
-
   return (
-    <Flex direction="column" p="4">
-      <Heading my="4">{team.name}</Heading>
-      <Tabs.Root defaultValue="team">
-        <Tabs.List>
-          <Tabs.Trigger value="team">{t('tabs.team')}</Tabs.Trigger>
-          <Tabs.Trigger value="shifts">{t('tabs.shifts')}</Tabs.Trigger>
-          <Tabs.Trigger value="volunteers">{t('tabs.volunteers')}</Tabs.Trigger>
-        </Tabs.List>
-        <Box pt="6">
-          <Tabs.Content value="team">
-            <TeamInfo team={team} />
-          </Tabs.Content>
-          <Tabs.Content value="shifts">
-            <TeamShifts />
-          </Tabs.Content>
-          <Tabs.Content value="volunteers">
-            <TeamVolunteers />
-          </Tabs.Content>
-        </Box>
-      </Tabs.Root>
-    </Flex>
+    <Card>
+      <Text>{team.description}</Text>
+    </Card>
   );
 }

@@ -32,9 +32,12 @@
       "shifts": "Shifts",
       "volunteers": "Volunteers"
     },
+    "InfoTab": {},
     "ShiftsTab": {
-      "addShift": "Add shift",
-      "importShift": "Import shift"
+      "title": "Shifts"
+    },
+    "VolunteersTab": {
+      "title": "Volunteers"
     }
   },
   "SignInPage": {
@@ -150,6 +153,10 @@
   },
   "Metadata": {
     "description": "A system to support the organisation of alternative arts events"
+  },
+  "ShiftList": {
+    "addShift": "Add shift",
+    "importShift": "Import shift"
   },
   "ShiftCard": {
     "max": "Max",

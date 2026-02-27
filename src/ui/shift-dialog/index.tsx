@@ -24,111 +24,123 @@ interface Props {
   editing?: ShiftInfo;
   creating?: boolean;
   onClose?: () => void;
+  onSubmit?: (data: FormData) => Promise<never>;
+  onDelete?: (data: FormData) => Promise<never>;
 }
 
-export default function ShiftDialog({ creating = false, editing = undefined, onClose }: Props) {
+export default function ShiftDialog({
+  creating = false,
+  editing = undefined,
+  onClose,
+  onSubmit,
+  onDelete
+}: Props) {
   const isEdit = Boolean(editing);
   const open = creating || isEdit;
   const t = useTranslations('ShiftDialog');
   return (
     <Dialog.Root open={open} onOpenChange={(open) => !open && onClose && onClose()}>
-      <Dialog.Content aria-description={'foo'} className={styles.fullScreenDialog}>
-        <Flex direction="column" align="start" height="100%">
-          <Dialog.Title as="h2" mt="4" mb="6">
-            {t(editing ? 'editShift' : 'addShift')}
-          </Dialog.Title>
+      <Dialog.Content className={styles.fullScreenDialog}>
+        <form action={onSubmit} style={{ height: '100%' }}>
+          <input type="hidden" name="id" value={editing?.id} />
+          <Flex direction="column" align="start" height="100%">
+            <Dialog.Title as="h2" mt="4" mb="6">
+              {t(editing ? 'editShift' : 'addShift')}
+            </Dialog.Title>
 
-          {isEdit && (
-            <Button variant="soft" color="red">
-              {t('deleteShift')}
-            </Button>
-          )}
-          <Flex direction="column" gap="4" mt="6" width="100%">
-            <FormField ariaId="shift-title" name={t('title')} description={t('titleDescription')}>
-              <TextField.Root
-                defaultValue={editing?.name}
-                aria-labelledby="shift-title"
-                name="title"
-                placeholder={t('titlePlaceholder')}
-              />
-            </FormField>
-            <FormField
-              ariaId="shift-start"
-              name={t('startTime')}
-              description={t('startTimeDescription')}
-            >
-              <DatePicker
-                defaultValue={editing?.startTime}
-                timepicker
-                aria-labelledby="shift-start"
-                name="startTime"
-              />
-            </FormField>
-            <FormField
-              ariaId="shift-length"
-              name={t('length')}
-              description={t('lengthDescription')}
-            >
-              <TextField.Root
-                aria-labelledby="shift-length"
-                name="length"
-                type="number"
-                defaultValue={editing?.durationHours ?? 0}
-              />
-            </FormField>
-            <FormField
-              ariaId="min-volunteers"
-              name={t('minVolunteers')}
-              description={t('minVolunteersDescription')}
-            >
-              <TextField.Root
-                aria-labelledby="min-volunteers"
-                name="minVolunteers"
-                type="number"
-                defaultValue={editing?.minVolunteers ?? 0}
-              />
-            </FormField>
-            <FormField
-              ariaId="max-volunteers"
-              name={t('maxVolunteers')}
-              description={t('maxVolunteersDescription')}
-            >
-              <TextField.Root
-                aria-labelledby="max-volunteers"
-                name="maxVolunteers"
-                type="number"
-                defaultValue={editing?.maxVolunteers ?? 0}
-              />
-            </FormField>
-            <Text as="label">
-              <Flex gap="2" align="center">
-                <Checkbox name="active" defaultChecked={editing?.isActive ?? true} />
-                {t('active')}
-              </Flex>
-            </Text>
-            <DropdownMenu.Root>
-              <DropdownMenu.Trigger>
-                <Button
-                  variant="soft"
-                  color="gray"
-                  style={{ justifyContent: 'space-between' }}
-                  onClick={() => console.log('TODO')}
-                >
-                  {t('requirementId')}
-                  <DropdownMenu.TriggerIcon />
-                </Button>
-              </DropdownMenu.Trigger>
-            </DropdownMenu.Root>
-          </Flex>
-          <Flex gap="4" mt="auto" mb="6">
-            <Dialog.Close>
-              <Button color="gray" variant="soft">
-                {t('cancel')}
+            {isEdit && onDelete && (
+              <Button variant="soft" color="red" formAction={onDelete}>
+                {t('deleteShift')}
               </Button>
-            </Dialog.Close>
-            <Button variant="soft">{t('save')}</Button>
+            )}
+
+            <Flex direction="column" gap="4" mt="6" width="100%">
+              <FormField ariaId="shift-title" name={t('title')} description={t('titleDescription')}>
+                <TextField.Root
+                  defaultValue={editing?.name}
+                  aria-labelledby="shift-title"
+                  name="title"
+                  placeholder={t('titlePlaceholder')}
+                />
+              </FormField>
+              <FormField
+                ariaId="shift-start"
+                name={t('startTime')}
+                description={t('startTimeDescription')}
+              >
+                <DatePicker
+                  defaultValue={editing?.startTime}
+                  timepicker
+                  aria-labelledby="shift-start"
+                  name="startTime"
+                />
+              </FormField>
+              <FormField
+                ariaId="shift-length"
+                name={t('length')}
+                description={t('lengthDescription')}
+              >
+                <TextField.Root
+                  aria-labelledby="shift-length"
+                  name="length"
+                  type="number"
+                  defaultValue={editing?.durationHours ?? 0}
+                />
+              </FormField>
+              <FormField
+                ariaId="min-volunteers"
+                name={t('minVolunteers')}
+                description={t('minVolunteersDescription')}
+              >
+                <TextField.Root
+                  aria-labelledby="min-volunteers"
+                  name="minVolunteers"
+                  type="number"
+                  defaultValue={editing?.minVolunteers ?? 0}
+                />
+              </FormField>
+              <FormField
+                ariaId="max-volunteers"
+                name={t('maxVolunteers')}
+                description={t('maxVolunteersDescription')}
+              >
+                <TextField.Root
+                  aria-labelledby="max-volunteers"
+                  name="maxVolunteers"
+                  type="number"
+                  defaultValue={editing?.maxVolunteers ?? 0}
+                />
+              </FormField>
+              <Text as="label">
+                <Flex gap="2" align="center">
+                  <Checkbox name="active" defaultChecked={editing?.isActive ?? true} />
+                  {t('active')}
+                </Flex>
+              </Text>
+              <DropdownMenu.Root>
+                <DropdownMenu.Trigger>
+                  <Button
+                    variant="soft"
+                    color="gray"
+                    style={{ justifyContent: 'space-between' }}
+                    onClick={() => console.log('TODO')}
+                  >
+                    {t('requirementId')}
+                    <DropdownMenu.TriggerIcon />
+                  </Button>
+                </DropdownMenu.Trigger>
+              </DropdownMenu.Root>
+            </Flex>
+            <Flex gap="4" mt="auto" mb="6">
+              <Dialog.Close>
+                <Button color="gray" variant="soft">
+                  {t('cancel')}
+                </Button>
+              </Dialog.Close>
+              <Button variant="soft">{t('save')}</Button>
+            </Flex>
           </Flex>
-        </Flex>
+        </form>
       </Dialog.Content>
     </Dialog.Root>
   );
