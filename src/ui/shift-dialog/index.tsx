@@ -32,7 +32,7 @@ export default function ShiftDialog({ creating = false, editing = undefined, onC
   const t = useTranslations('ShiftDialog');
   return (
     <Dialog.Root open={open} onOpenChange={(open) => !open && onClose && onClose()}>
-      <Dialog.Content className={styles.fullScreenDialog}>
+      <Dialog.Content aria-description={'foo'} className={styles.fullScreenDialog}>
         <Flex direction="column" align="start" height="100%">
           <Dialog.Title as="h2" mt="4" mb="6">
             {t(editing ? 'editShift' : 'addShift')}
@@ -44,20 +44,55 @@ export default function ShiftDialog({ creating = false, editing = undefined, onC
             </Button>
           )}
           <Flex direction="column" gap="4" mt="6" width="100%">
-            <FormField name={t('title')} description={t('titleDescription')}>
-              <TextField.Root name="title" placeholder={t('titlePlaceholder')} />
+            <FormField ariaId="shift-title" name={t('title')} description={t('titleDescription')}>
+              <TextField.Root
+                aria-labelledby="shift-title"
+                name="title"
+                placeholder={t('titlePlaceholder')}
+              />
             </FormField>
-            <FormField name={t('startTime')} description={t('startTimeDescription')}>
-              <DatePicker name="startTime" />
+            <FormField
+              ariaId="shift-start"
+              name={t('startTime')}
+              description={t('startTimeDescription')}
+            >
+              <DatePicker aria-labelledby="shift-start" name="startTime" />
             </FormField>
-            <FormField name={t('length')} description={t('lengthDescription')}>
-              <TextField.Root name="length" type="number" defaultValue={0} />
+            <FormField
+              ariaId="shift-length"
+              name={t('length')}
+              description={t('lengthDescription')}
+            >
+              <TextField.Root
+                aria-labelledby="shift-length"
+                name="length"
+                type="number"
+                defaultValue={0}
+              />
             </FormField>
-            <FormField name={t('minVolunteers')} description={t('minVolunteersDescription')}>
-              <TextField.Root name="minVolunteers" type="number" defaultValue={0} />
+            <FormField
+              ariaId="min-volunteers"
+              name={t('minVolunteers')}
+              description={t('minVolunteersDescription')}
+            >
+              <TextField.Root
+                aria-labelledby="min-volunteers"
+                name="minVolunteers"
+                type="number"
+                defaultValue={0}
+              />
             </FormField>
-            <FormField name={t('maxVolunteers')} description={t('maxVolunteersDescription')}>
-              <TextField.Root name="maxVolunteers" type="number" defaultValue={0} />
+            <FormField
+              ariaId="max-volunteers"
+              name={t('maxVolunteers')}
+              description={t('maxVolunteersDescription')}
+            >
+              <TextField.Root
+                aria-labelledby="max-volunteers"
+                name="maxVolunteers"
+                type="number"
+                defaultValue={0}
+              />
             </FormField>
             <Text as="label">
               <Flex gap="2" align="center">
@@ -89,12 +124,13 @@ export default function ShiftDialog({ creating = false, editing = undefined, onC
 }
 
 interface FormFieldProps {
+  ariaId: string;
   name: string;
   description: string;
   children: React.ReactNode;
 }
 
-function FormField({ name, description, children }: FormFieldProps) {
+function FormField({ ariaId, name, description, children }: FormFieldProps) {
   return (
     <Flex direction="column" gap="2">
       <Heading as="h3" size="3">
