@@ -63,6 +63,7 @@ interface ShiftInfo {
   minVolunteers: number;
   maxVolunteers: number;
   requirements?: RequirementId[];
+  isActive: boolean;
 }
 
 type ThemeMode = 'light' | 'dark' | 'system';
