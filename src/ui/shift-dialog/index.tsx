@@ -46,7 +46,7 @@ export default function ShiftDialog({
   return (
     <Dialog.Root open={open} onOpenChange={(open) => !open && onClose && onClose()}>
       <Dialog.Content className={styles.fullScreenDialog}>
-        <form action={onSubmit} style={{ height: '100%' }}>
+        <form style={{ height: '100%' }}>
           <input type="hidden" name="id" value={editing?.id ?? ''} />
           <input type="hidden" name="teamId" value={teamId} />
           <Flex direction="column" align="start" height="100%">
@@ -148,7 +148,9 @@ export default function ShiftDialog({
                   {t('cancel')}
                 </Button>
               </Dialog.Close>
-              <Button variant="soft">{t('save')}</Button>
+              <Button variant="soft" formAction={onSubmit}>
+                {t('save')}
+              </Button>
             </Flex>
           </Flex>
         </form>
@@ -167,7 +169,7 @@ interface FormFieldProps {
 function FormField({ ariaId, name, description, children }: FormFieldProps) {
   return (
     <Flex direction="column" gap="2">
-      <Heading as="h3" size="3">
+      <Heading as="h3" size="3" id={ariaId}>
         {name}
       </Heading>
       <Text size="1" color="gray">
