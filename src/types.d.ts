@@ -11,6 +11,13 @@ type TeamId = string;
 type ShiftId = string;
 type RequirementId = string;
 type UrlSlug = string;
+type TimeString = string; // ISO 8601 time string, e.g. "14:30"
+type EventDay = number; // 0 for first day, 1 for second day, etc.
+
+type EventDayTime = {
+  day: EventDay;
+  time: TimeString;
+};
 
 interface User {
   id: UserId;
@@ -57,8 +64,9 @@ interface UserFilters {
 interface ShiftInfo {
   id: ShiftId;
   teamId: TeamId;
-  name: string;
-  startTime: Date;
+  title: string;
+  eventDay: EventDay;
+  startTime: TimeString;
   durationHours: number;
   minVolunteers: number;
   maxVolunteers: number;

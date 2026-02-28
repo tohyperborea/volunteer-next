@@ -9,6 +9,7 @@
 
 import { Flex, Text } from '@radix-ui/themes';
 import { ClockIcon } from '@radix-ui/react-icons';
+import { stringToTime } from '@/utils/datetime';
 
 const TIME_OPTIONS: Intl.DateTimeFormatOptions = {
   hour: '2-digit',
@@ -18,13 +19,15 @@ const TIME_OPTIONS: Intl.DateTimeFormatOptions = {
 };
 
 interface Props {
-  start: Date;
-  end: Date;
+  start: Date | TimeString;
+  end: Date | TimeString;
 }
 
 export default function TimeSpan({ start, end }: Props) {
-  const startTime = start.toLocaleTimeString([], TIME_OPTIONS);
-  const endTime = end.toLocaleTimeString([], TIME_OPTIONS);
+  const startTime =
+    start instanceof Date ? start.toLocaleTimeString([], TIME_OPTIONS) : stringToTime(start);
+  const endTime =
+    end instanceof Date ? end.toLocaleTimeString([], TIME_OPTIONS) : stringToTime(end);
   return (
     <Flex asChild align="center" gap="2">
       <Text>

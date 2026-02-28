@@ -13,14 +13,23 @@ import ShiftCard from '../shift-card';
 import ShiftDialog from '../shift-dialog';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
+import { eventDayToDate } from '@/utils/datetime';
 
 interface Props {
+  startDate: Date;
+  teamId: TeamId;
   shifts: ShiftInfo[];
   onSaveShift?: (data: FormData) => Promise<never>;
   onDeleteShift?: (data: FormData) => Promise<never>;
 }
 
-export default function ShiftList({ shifts, onSaveShift, onDeleteShift }: Props) {
+export default function ShiftList({
+  startDate,
+  teamId,
+  shifts,
+  onSaveShift,
+  onDeleteShift
+}: Props) {
   const t = useTranslations('ShiftList');
   const canEdit = Boolean(onSaveShift);
   const [creatingShift, setCreatingShift] = useState(false);
@@ -44,7 +53,7 @@ export default function ShiftList({ shifts, onSaveShift, onDeleteShift }: Props)
       )}
       <DatedList
         items={shifts}
-        getDate={(shift) => shift.startTime}
+        getDate={(shift) => eventDayToDate(startDate, shift.eventDay)}
         renderItem={(shift) => (
           <ShiftCard
             shift={shift}
@@ -56,6 +65,8 @@ export default function ShiftList({ shifts, onSaveShift, onDeleteShift }: Props)
       />
       {canEdit && (
         <ShiftDialog
+          startDate={startDate}
+          teamId={teamId}
           creating={creatingShift}
           editing={editingShift}
           onSubmit={onSaveShift}

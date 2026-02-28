@@ -8,6 +8,8 @@
 
 import { TextField } from '@radix-ui/themes';
 import styles from './styles.module.css';
+import { dateToEventDay, eventDayTimeToDate } from '@/utils/datetime';
+import { useState } from 'react';
 
 const dateToString = (date: Date | string, includeTime: boolean) => {
   if (!(date instanceof Date)) {
@@ -20,7 +22,7 @@ const dateToString = (date: Date | string, includeTime: boolean) => {
 };
 
 interface Props {
-  name: string;
+  name?: string;
   id?: string;
   'aria-labelledby'?: string;
   placeholder?: string;
@@ -32,6 +34,9 @@ interface Props {
   timepicker?: boolean;
 }
 
+/**
+ * A simple date picker component that works with Date objects
+ */
 export default function DatePicker({
   name,
   id,
@@ -58,5 +63,44 @@ export default function DatePicker({
       defaultValue={defaultValue && dateToString(defaultValue, timepicker)}
       required={required}
     />
+  );
+}
+
+type EventDayTimePickerProps = {
+  startDate: Date;
+  defaultValue?: EventDayTime;
+} & Omit<Props, 'defaultValue' | 'timepicker'>;
+
+/**
+ * A special date and time picker that works with an event's start date and event day/time format.
+ * It renders two hidden inputs for the event day and time, named {name}-day and {name}-time respectively.
+ */
+export function EventDayTimePicker({
+  startDate,
+  defaultValue,
+  onChange,
+  name,
+  ...rest
+}: EventDayTimePickerProps) {
+  const defaultDate =
+    defaultValue && eventDayTimeToDate(startDate, defaultValue.day, defaultValue.time);
+  const [dayTime, setDayTime] = useState<EventDayTime | undefined>(defaultValue);
+  return (
+    <>
+      <DatePicker
+        {...rest}
+        defaultValue={defaultDate}
+        timepicker
+        onChange={(value) => {
+          setDayTime({
+            day: dateToEventDay(startDate, new Date(value)),
+            time: value.slice(11, 16) as TimeString
+          });
+          onChange && onChange(value);
+        }}
+      />
+      <input type="hidden" name={`${name}-day`} value={dayTime?.day} />
+      <input type="hidden" name={`${name}-time`} value={dayTime?.time} />
+    </>
   );
 }
