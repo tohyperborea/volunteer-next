@@ -64,7 +64,7 @@ export default function ShiftCard({ shift, volunteerNames, onEdit }: Props) {
 
 const ShiftProgress = ({ filled, total }: { filled: number; total: number }) => {
   const t = useTranslations('ShiftCard');
-  const value = Math.round((filled / total) * 100);
+  const value = total <= 0 ? 0 : Math.round((filled / total) * 100);
   return (
     <Box className={styles.shiftProgress}>
       <Box className={styles.shiftProgressFilled} style={{ width: `${value}%` }} />

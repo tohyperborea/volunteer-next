@@ -15,6 +15,6 @@ export const generateMetadata = metadata(PAGE_KEY, {
 
 interface Props {}
 
-export default function TeamShifts({}: Props) {
+export default function TeamVolunteers({}: Props) {
   return <div>TODO: Team Volunteers</div>;
 }

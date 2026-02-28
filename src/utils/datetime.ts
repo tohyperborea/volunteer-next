@@ -28,7 +28,7 @@ export const stringToTime = (timeStr: string): TimeString => {
  */
 export const eventDayToDate = (eventStartDate: Date, eventDay: EventDay): Date => {
   const result = new Date(eventStartDate);
-  result.setDate(result.getDate() + eventDay);
+  result.setUTCDate(result.getUTCDate() + eventDay);
   return result;
 };
 

@@ -7,6 +7,7 @@ import ShiftList from '@/ui/shift-list';
 import { getTeamShiftsPath } from '@/utils/path';
 import { validateNewShift } from '@/validator/shift-validator';
 import { getTranslations } from 'next-intl/server';
+import { revalidatePath } from 'next/cache';
 import { notFound, redirect } from 'next/navigation';
 
 const PAGE_KEY = 'TeamPage.ShiftsTab';
@@ -53,7 +54,9 @@ export default async function TeamShifts({ params }: Props) {
     } else {
       await createShift(shift);
     }
-    redirect(getTeamShiftsPath(eventSlug, teamSlug));
+    const path = getTeamShiftsPath(eventSlug, teamSlug);
+    revalidatePath(path);
+    redirect(path);
   };
 
   const onDeleteShift = async (data: FormData) => {
@@ -65,7 +68,9 @@ export default async function TeamShifts({ params }: Props) {
       throw new Error('Shift id is required for deletion');
     }
     await deleteShift(shiftId);
-    redirect(getTeamShiftsPath(eventSlug, teamSlug));
+    const path = getTeamShiftsPath(eventSlug, teamSlug);
+    revalidatePath(path);
+    redirect(path);
   };
 
   return (

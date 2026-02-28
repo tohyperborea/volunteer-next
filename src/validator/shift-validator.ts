@@ -4,6 +4,8 @@
  * @author Michael Townsend <@continuities>
  */
 
+import { stringToTime } from '@/utils/datetime';
+
 /**
  * Validates FormData for updating an existing shift, so 'id' field is required.
  * @param data - FormData to validate, must include 'id' field
@@ -41,7 +43,7 @@ export const validateNewShift = (data: FormData): Omit<ShiftInfo, 'id'> => {
   if (!eventDayStr) {
     throw new Error('Shift startTime-day is required');
   }
-  const eventDay = parseFloat(eventDayStr);
+  const eventDay = parseInt(eventDayStr, 10);
   if (isNaN(eventDay)) {
     throw new Error('Shift startTime-day must be a valid number');
   }
@@ -53,7 +55,7 @@ export const validateNewShift = (data: FormData): Omit<ShiftInfo, 'id'> => {
   if (!durationHoursStr) {
     throw new Error('Shift durationHours is required');
   }
-  const durationHours = parseFloat(durationHoursStr);
+  const durationHours = parseInt(durationHoursStr, 10);
   if (isNaN(durationHours) || durationHours <= 0) {
     throw new Error('Shift durationHours must be a positive number');
   }
@@ -70,7 +72,7 @@ export const validateNewShift = (data: FormData): Omit<ShiftInfo, 'id'> => {
     throw new Error('Shift maxVolunteers is required');
   }
   const maxVolunteers = parseInt(maxVolunteersStr, 10);
-  if (isNaN(maxVolunteers) || maxVolunteers < minVolunteers) {
+  if (isNaN(maxVolunteers) || maxVolunteers < minVolunteers || maxVolunteers <= 0) {
     throw new Error(
       'Shift maxVolunteers must be an integer greater than or equal to minVolunteers'
     );
@@ -84,7 +86,7 @@ export const validateNewShift = (data: FormData): Omit<ShiftInfo, 'id'> => {
     teamId,
     title,
     eventDay,
-    startTime,
+    startTime: stringToTime(startTime),
     durationHours,
     minVolunteers,
     maxVolunteers,

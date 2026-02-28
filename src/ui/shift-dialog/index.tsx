@@ -92,6 +92,7 @@ export default function ShiftDialog({
                   aria-labelledby="shift-length"
                   name="durationHours"
                   type="number"
+                  min={1}
                   defaultValue={editing?.durationHours ?? 0}
                   required
                 />

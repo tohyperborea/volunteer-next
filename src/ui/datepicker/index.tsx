@@ -103,8 +103,8 @@ export function EventDayTimePicker({
           onChange && onChange(value);
         }}
       />
-      <input type="hidden" name={`${name}-day`} value={dayTime?.day ?? ''} />
-      <input type="hidden" name={`${name}-time`} value={dayTime?.time ?? ''} />
+      <input type="hidden" name={name && `${name}-day`} value={dayTime?.day ?? ''} />
+      <input type="hidden" name={name && `${name}-time`} value={dayTime?.time ?? ''} />
     </>
   );
 }
