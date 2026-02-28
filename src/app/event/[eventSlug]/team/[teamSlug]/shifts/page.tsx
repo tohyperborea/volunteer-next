@@ -1,9 +1,12 @@
 import metadata from '@/i18n/metadata';
+import { getEventBySlug } from '@/service/event-service';
 import { getTeamBySlug } from '@/service/team-service';
+import { checkAuthorisation } from '@/session';
 import ShiftList from '@/ui/shift-list';
 import { getTeamShiftsPath } from '@/utils/path';
+import { validateExistingShift } from '@/validator/shift-validator';
 import { getTranslations } from 'next-intl/server';
-import { redirect } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 
 const PAGE_KEY = 'TeamPage.ShiftsTab';
 
@@ -20,9 +23,10 @@ export const generateMetadata = metadata(PAGE_KEY, {
 const MOCK_SHIFTS: ShiftInfo[] = [
   {
     id: 'mock-shift-1',
-    name: 'Morning Setup',
+    title: 'Morning Setup',
     teamId: 'mock-team',
-    startTime: new Date('2024-07-01T08:00:00Z'),
+    eventDay: 0,
+    startTime: '08:00',
     durationHours: 4,
     minVolunteers: 1,
     maxVolunteers: 3,
@@ -30,9 +34,10 @@ const MOCK_SHIFTS: ShiftInfo[] = [
   },
   {
     id: 'mock-shift-2',
-    name: 'Afternoon Cleanup',
+    title: 'Afternoon Cleanup',
     teamId: 'mock-team',
-    startTime: new Date('2024-07-01T16:00:00Z'),
+    eventDay: 0,
+    startTime: '16:00',
     durationHours: 3,
     minVolunteers: 2,
     maxVolunteers: 5,
@@ -40,9 +45,10 @@ const MOCK_SHIFTS: ShiftInfo[] = [
   },
   {
     id: 'mock-shift-3',
-    name: 'Evening Support',
+    title: 'Evening Support',
     teamId: 'mock-team',
-    startTime: new Date('2024-07-01T20:00:00Z'),
+    eventDay: 0,
+    startTime: '20:00',
     durationHours: 4,
     minVolunteers: 1,
     maxVolunteers: 4,
@@ -50,9 +56,10 @@ const MOCK_SHIFTS: ShiftInfo[] = [
   },
   {
     id: 'mock-shift-1',
-    name: 'Morning Setup',
+    title: 'Morning Setup',
     teamId: 'mock-team',
-    startTime: new Date('2024-07-02T08:00:00Z'),
+    eventDay: 1,
+    startTime: '08:00',
     durationHours: 4,
     minVolunteers: 1,
     maxVolunteers: 3,
@@ -60,9 +67,10 @@ const MOCK_SHIFTS: ShiftInfo[] = [
   },
   {
     id: 'mock-shift-2',
-    name: 'Afternoon Cleanup',
+    title: 'Afternoon Cleanup',
     teamId: 'mock-team',
-    startTime: new Date('2024-07-02T16:00:00Z'),
+    eventDay: 1,
+    startTime: '16:00',
     durationHours: 3,
     minVolunteers: 2,
     maxVolunteers: 5,
@@ -70,9 +78,10 @@ const MOCK_SHIFTS: ShiftInfo[] = [
   },
   {
     id: 'mock-shift-3',
-    name: 'Evening Support',
+    title: 'Evening Support',
     teamId: 'mock-team',
-    startTime: new Date('2024-07-02T20:00:00Z'),
+    eventDay: 1,
+    startTime: '20:00',
     durationHours: 4,
     minVolunteers: 1,
     maxVolunteers: 4,
@@ -86,24 +95,50 @@ interface Props {
 
 export default async function TeamShifts({ params }: Props) {
   const { eventSlug, teamSlug } = await params;
+  const event = await getEventBySlug(eventSlug);
+  const team = await getTeamBySlug(eventSlug, teamSlug);
+  if (!event || !team) {
+    notFound();
+  }
+
+  const allowedRoles: UserRole[] = [
+    { type: 'admin' },
+    { type: 'organiser', eventId: team.eventId },
+    { type: 'team-lead', eventId: team.eventId, teamId: team.id }
+  ];
 
   const onSaveShift = async (data: FormData) => {
     'use server';
     console.log('Saving shift with data:', Object.fromEntries(data.entries()));
-    // TODO: authorisation
-    // TODO: validation
-    // TODO: save shift
+    await checkAuthorisation(allowedRoles);
+    const shift = validateExistingShift(data);
+    if (data.has('id')) {
+      // TODO: update existing shift
+    } else {
+      // TODO: save new shift
+    }
     redirect(getTeamShiftsPath(eventSlug, teamSlug));
   };
 
   const onDeleteShift = async (data: FormData) => {
     'use server';
     console.log('Deleting shift with data:', Object.fromEntries(data.entries()));
-    // TODO: authorisation
-    // TODO: validation
-    // TODO: save shift
+    await checkAuthorisation(allowedRoles);
+    const shiftId = data.get('id')?.toString();
+    if (!shiftId) {
+      throw new Error('Shift id is required for deletion');
+    }
+    // TODO: delete shift
     redirect(getTeamShiftsPath(eventSlug, teamSlug));
   };
 
-  return <ShiftList shifts={MOCK_SHIFTS} onSaveShift={onSaveShift} onDeleteShift={onDeleteShift} />;
+  return (
+    <ShiftList
+      startDate={event.startDate}
+      teamId={team.id}
+      shifts={MOCK_SHIFTS}
+      onSaveShift={onSaveShift}
+      onDeleteShift={onDeleteShift}
+    />
+  );
 }

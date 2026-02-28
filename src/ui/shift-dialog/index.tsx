@@ -18,9 +18,12 @@ import {
 } from '@radix-ui/themes';
 import { useTranslations } from 'next-intl';
 import styles from './styles.module.css';
-import DatePicker from '../datepicker';
+import { EventDayTimePicker } from '../datepicker';
+import { eventDayTimeToDate } from '@/utils/datetime';
 
 interface Props {
+  startDate: Date;
+  teamId: TeamId;
   editing?: ShiftInfo;
   creating?: boolean;
   onClose?: () => void;
@@ -29,6 +32,8 @@ interface Props {
 }
 
 export default function ShiftDialog({
+  startDate,
+  teamId,
   creating = false,
   editing = undefined,
   onClose,
@@ -42,7 +47,8 @@ export default function ShiftDialog({
     <Dialog.Root open={open} onOpenChange={(open) => !open && onClose && onClose()}>
       <Dialog.Content className={styles.fullScreenDialog}>
         <form action={onSubmit} style={{ height: '100%' }}>
-          <input type="hidden" name="id" value={editing?.id} />
+          <input type="hidden" name="id" value={editing?.id ?? ''} />
+          <input type="hidden" name="teamId" value={teamId} />
           <Flex direction="column" align="start" height="100%">
             <Dialog.Title as="h2" mt="4" mb="6">
               {t(editing ? 'editShift' : 'addShift')}
@@ -57,10 +63,11 @@ export default function ShiftDialog({
             <Flex direction="column" gap="4" mt="6" width="100%">
               <FormField ariaId="shift-title" name={t('title')} description={t('titleDescription')}>
                 <TextField.Root
-                  defaultValue={editing?.name}
+                  defaultValue={editing?.title}
                   aria-labelledby="shift-title"
                   name="title"
                   placeholder={t('titlePlaceholder')}
+                  required
                 />
               </FormField>
               <FormField
@@ -68,11 +75,12 @@ export default function ShiftDialog({
                 name={t('startTime')}
                 description={t('startTimeDescription')}
               >
-                <DatePicker
-                  defaultValue={editing?.startTime}
-                  timepicker
+                <EventDayTimePicker
+                  startDate={startDate}
+                  defaultValue={editing && { day: editing.eventDay, time: editing.startTime }}
                   aria-labelledby="shift-start"
                   name="startTime"
+                  required
                 />
               </FormField>
               <FormField
@@ -82,9 +90,10 @@ export default function ShiftDialog({
               >
                 <TextField.Root
                   aria-labelledby="shift-length"
-                  name="length"
+                  name="durationHours"
                   type="number"
                   defaultValue={editing?.durationHours ?? 0}
+                  required
                 />
               </FormField>
               <FormField
@@ -97,6 +106,7 @@ export default function ShiftDialog({
                   name="minVolunteers"
                   type="number"
                   defaultValue={editing?.minVolunteers ?? 0}
+                  required
                 />
               </FormField>
               <FormField
@@ -109,11 +119,12 @@ export default function ShiftDialog({
                   name="maxVolunteers"
                   type="number"
                   defaultValue={editing?.maxVolunteers ?? 0}
+                  required
                 />
               </FormField>
               <Text as="label">
                 <Flex gap="2" align="center">
-                  <Checkbox name="active" defaultChecked={editing?.isActive ?? true} />
+                  <Checkbox name="isActive" defaultChecked={editing?.isActive ?? true} />
                   {t('active')}
                 </Flex>
               </Text>

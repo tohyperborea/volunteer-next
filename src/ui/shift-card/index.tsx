@@ -12,6 +12,7 @@ import { useTranslations } from 'next-intl';
 import styles from './styles.module.css';
 import Collapsible from '../collapsible';
 import { Pencil2Icon } from '@radix-ui/react-icons';
+import { addHoursToTimeString } from '@/utils/datetime';
 
 interface Props {
   shift: ShiftInfo;
@@ -22,14 +23,14 @@ interface Props {
 export default function ShiftCard({ shift, volunteerNames, onEdit }: Props) {
   const t = useTranslations('ShiftCard');
   const startTime = shift.startTime;
-  const endTime = new Date(shift.startTime.getTime() + shift.durationHours * 60 * 60 * 1000);
+  const endTime = addHoursToTimeString(shift.startTime, shift.durationHours);
   const volunteerCount = volunteerNames.length;
   return (
     <Card>
       <Flex direction="column" gap="3" align="start">
         <Flex direction="column">
           <Heading as="h3" size="4" weight="medium">
-            {shift.name}
+            {shift.title}
           </Heading>
           <TimeSpan start={startTime} end={endTime} />
         </Flex>
