@@ -1,16 +1,16 @@
-import { validateNewShift } from './shift-validator';
+import { validateExistingShift, validateNewShift } from './shift-validator';
+
+const createFormData = (data: Record<string, string | undefined>): FormData => {
+  const formData = new FormData();
+  Object.entries(data).forEach(([key, value]) => {
+    if (value !== undefined) {
+      formData.append(key, value);
+    }
+  });
+  return formData;
+};
 
 describe('validateNewShift', () => {
-  const createFormData = (data: Record<string, string | undefined>): FormData => {
-    const formData = new FormData();
-    Object.entries(data).forEach(([key, value]) => {
-      if (value !== undefined) {
-        formData.append(key, value);
-      }
-    });
-    return formData;
-  };
-
   it('validates a valid shift', () => {
     const formData = createFormData({
       teamId: 'team-123',
@@ -202,5 +202,67 @@ describe('validateNewShift', () => {
     const result = validateNewShift(formData);
 
     expect(result.isActive).toBe(false);
+  });
+});
+
+describe('validateExistingShift', () => {
+  it('validates a valid existing shift', () => {
+    const formData = createFormData({
+      id: 'shift-123',
+      teamId: 'team-123',
+      title: 'Morning Shift',
+      'startTime-day': '1',
+      'startTime-time': '08:00',
+      durationHours: '4',
+      minVolunteers: '2',
+      maxVolunteers: '5',
+      isActive: 'on'
+    });
+
+    const result = validateExistingShift(formData);
+
+    expect(result).toEqual({
+      id: 'shift-123',
+      teamId: 'team-123',
+      title: 'Morning Shift',
+      eventDay: 1,
+      startTime: '08:00',
+      durationHours: 4,
+      minVolunteers: 2,
+      maxVolunteers: 5,
+      requirements: [],
+      isActive: true
+    });
+  });
+
+  it('throws an error if id is missing', () => {
+    const formData = createFormData({
+      teamId: 'team-123',
+      title: 'Morning Shift',
+      'startTime-day': '1',
+      'startTime-time': '08:00',
+      durationHours: '4',
+      minVolunteers: '2',
+      maxVolunteers: '5',
+      isActive: 'on'
+    });
+
+    expect(() => validateExistingShift(formData)).toThrow('Shift ID is required');
+  });
+
+  it('throws an error if id is empty', () => {
+    const formData = createFormData({
+      id: '',
+      teamId: 'team-123',
+      title: 'Morning Shift',
+      'startTime-day': '1',
+      'startTime-time': '08:00',
+      durationHours: '4',
+      minVolunteers: '2',
+      maxVolunteers: '5',
+      isActive: 'on'
+    });
+
+    expect(() => validateExistingShift(formData)).toThrow('Shift ID is required');
   });
 });
