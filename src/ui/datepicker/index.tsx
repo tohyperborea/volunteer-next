@@ -92,15 +92,19 @@ export function EventDayTimePicker({
         defaultValue={defaultDate}
         timepicker
         onChange={(value) => {
-          setDayTime({
-            day: dateToEventDay(startDate, new Date(value)),
-            time: value.slice(11, 16) as TimeString
-          });
+          const day = dateToEventDay(startDate, new Date(value));
+          const time = value.slice(11, 16) as TimeString;
+          if (!isNaN(day) && time) {
+            setDayTime({
+              day: dateToEventDay(startDate, new Date(value)),
+              time: value.slice(11, 16) as TimeString
+            });
+          }
           onChange && onChange(value);
         }}
       />
-      <input type="hidden" name={`${name}-day`} value={dayTime?.day} />
-      <input type="hidden" name={`${name}-time`} value={dayTime?.time} />
+      <input type="hidden" name={`${name}-day`} value={dayTime?.day ?? ''} />
+      <input type="hidden" name={`${name}-time`} value={dayTime?.time ?? ''} />
     </>
   );
 }

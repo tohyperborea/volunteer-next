@@ -1,10 +1,11 @@
 import metadata from '@/i18n/metadata';
 import { getEventBySlug } from '@/service/event-service';
+import { createShift, updateShift, deleteShift, getShifts } from '@/service/shift-service';
 import { getTeamBySlug } from '@/service/team-service';
 import { checkAuthorisation } from '@/session';
 import ShiftList from '@/ui/shift-list';
 import { getTeamShiftsPath } from '@/utils/path';
-import { validateExistingShift } from '@/validator/shift-validator';
+import { validateNewShift } from '@/validator/shift-validator';
 import { getTranslations } from 'next-intl/server';
 import { notFound, redirect } from 'next/navigation';
 
@@ -19,76 +20,6 @@ export const generateMetadata = metadata(PAGE_KEY, {
   }
 });
 
-// TODO: Replace mocks with real data from the backend
-const MOCK_SHIFTS: ShiftInfo[] = [
-  {
-    id: 'mock-shift-1',
-    title: 'Morning Setup',
-    teamId: 'mock-team',
-    eventDay: 0,
-    startTime: '08:00',
-    durationHours: 4,
-    minVolunteers: 1,
-    maxVolunteers: 3,
-    isActive: true
-  },
-  {
-    id: 'mock-shift-2',
-    title: 'Afternoon Cleanup',
-    teamId: 'mock-team',
-    eventDay: 0,
-    startTime: '16:00',
-    durationHours: 3,
-    minVolunteers: 2,
-    maxVolunteers: 5,
-    isActive: true
-  },
-  {
-    id: 'mock-shift-3',
-    title: 'Evening Support',
-    teamId: 'mock-team',
-    eventDay: 0,
-    startTime: '20:00',
-    durationHours: 4,
-    minVolunteers: 1,
-    maxVolunteers: 4,
-    isActive: true
-  },
-  {
-    id: 'mock-shift-1',
-    title: 'Morning Setup',
-    teamId: 'mock-team',
-    eventDay: 1,
-    startTime: '08:00',
-    durationHours: 4,
-    minVolunteers: 1,
-    maxVolunteers: 3,
-    isActive: true
-  },
-  {
-    id: 'mock-shift-2',
-    title: 'Afternoon Cleanup',
-    teamId: 'mock-team',
-    eventDay: 1,
-    startTime: '16:00',
-    durationHours: 3,
-    minVolunteers: 2,
-    maxVolunteers: 5,
-    isActive: true
-  },
-  {
-    id: 'mock-shift-3',
-    title: 'Evening Support',
-    teamId: 'mock-team',
-    eventDay: 1,
-    startTime: '20:00',
-    durationHours: 4,
-    minVolunteers: 1,
-    maxVolunteers: 4,
-    isActive: true
-  }
-];
-
 interface Props {
   params: Promise<{ eventSlug: string; teamSlug: string }>;
 }
@@ -101,6 +32,8 @@ export default async function TeamShifts({ params }: Props) {
     notFound();
   }
 
+  const shifts = await getShifts(team.id);
+
   const allowedRoles: UserRole[] = [
     { type: 'admin' },
     { type: 'organiser', eventId: team.eventId },
@@ -111,11 +44,12 @@ export default async function TeamShifts({ params }: Props) {
     'use server';
     console.log('Saving shift with data:', Object.fromEntries(data.entries()));
     await checkAuthorisation(allowedRoles);
-    const shift = validateExistingShift(data);
-    if (data.has('id')) {
-      // TODO: update existing shift
+    const shift = validateNewShift(data);
+    const shiftId = data.get('id')?.toString();
+    if (shiftId) {
+      await updateShift({ id: shiftId, ...shift });
     } else {
-      // TODO: save new shift
+      await createShift(shift);
     }
     redirect(getTeamShiftsPath(eventSlug, teamSlug));
   };
@@ -128,7 +62,7 @@ export default async function TeamShifts({ params }: Props) {
     if (!shiftId) {
       throw new Error('Shift id is required for deletion');
     }
-    // TODO: delete shift
+    await deleteShift(shiftId);
     redirect(getTeamShiftsPath(eventSlug, teamSlug));
   };
 
@@ -136,7 +70,7 @@ export default async function TeamShifts({ params }: Props) {
     <ShiftList
       startDate={event.startDate}
       teamId={team.id}
-      shifts={MOCK_SHIFTS}
+      shifts={shifts}
       onSaveShift={onSaveShift}
       onDeleteShift={onDeleteShift}
     />

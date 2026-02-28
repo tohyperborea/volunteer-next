@@ -98,6 +98,7 @@ export const createShift = async (
       shift.teamId,
       shift.title,
       shift.eventDay,
+      shift.startTime,
       shift.durationHours,
       shift.minVolunteers,
       shift.maxVolunteers,
@@ -126,7 +127,8 @@ export const updateShift = async (shift: ShiftInfo, client?: PoolClient): Promis
       "durationHours" = $5,
       "minVolunteers" = $6,
       "maxVolunteers" = $7,
-      "isActive" = $8
+      "isActive" = $8,
+      "updatedAt" = NOW()
     WHERE id = $1
     RETURNING
       "id",
@@ -143,6 +145,7 @@ export const updateShift = async (shift: ShiftInfo, client?: PoolClient): Promis
       shift.id,
       shift.title,
       shift.eventDay,
+      shift.startTime,
       shift.durationHours,
       shift.minVolunteers,
       shift.maxVolunteers,
