@@ -76,10 +76,7 @@ export const validateNewShift = (data: FormData): Omit<ShiftInfo, 'id'> => {
     );
   }
   const isActiveStr = data.get('isActive')?.toString() ?? null;
-  if (!isActiveStr) {
-    throw new Error('Shift isActive is required');
-  }
-  const isActive = isActiveStr === 'true';
+  const isActive = isActiveStr === 'on';
 
   const requirements: RequirementId[] = []; // TODO
 

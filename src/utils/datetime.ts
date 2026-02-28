@@ -6,17 +6,18 @@
 
 /**
  * Converts a time string in HH:MM format to a TimeString type, validating the format.
- * @param timeStr - A string in HH:MM format
- * @returns The input string if it is valid
- * @throws Error if the input string is not in valid HH:MM format
+ * @param timeStr - A string in HH:MM(:SS)? format
+ * @returns A string in the form HH:MM
+ * @throws Error if the input string is not in valid format
  */
 export const stringToTime = (timeStr: string): TimeString => {
   // Validate time string is in HH:MM format
-  const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
+  const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)(:[0-5]\d)?$/;
   if (!timeRegex.test(timeStr)) {
-    throw new Error('Invalid time format, expected HH:MM');
+    throw new Error('Invalid time format, expected HH:MM(:SS)?');
   }
-  return timeStr as TimeString;
+  const split = timeStr.split(':');
+  return `${split[0]}:${split[1]}` as TimeString;
 };
 
 /**
