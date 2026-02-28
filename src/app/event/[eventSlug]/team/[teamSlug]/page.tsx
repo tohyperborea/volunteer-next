@@ -1,10 +1,10 @@
 import metadata from '@/i18n/metadata';
 import { getTeamBySlug } from '@/service/team-service';
-import { Flex, Heading, Card, Text } from '@radix-ui/themes';
+import { Card, Text } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 
-const PAGE_KEY = 'TeamPage';
+const PAGE_KEY = 'TeamPage.InfoTab';
 
 export const generateMetadata = metadata(PAGE_KEY, {
   title: async (params) => {
@@ -26,13 +26,9 @@ export default async function TeamPage({ params }: Props) {
   if (!team) {
     notFound();
   }
-
   return (
-    <Flex direction="column" gap="4" p="4">
-      <Heading my="4">{team.name}</Heading>
-      <Card>
-        <Text>{team.description}</Text>
-      </Card>
-    </Flex>
+    <Card>
+      <Text>{team.description}</Text>
+    </Card>
   );
 }

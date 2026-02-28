@@ -1,0 +1,18 @@
+.linkCard {
+  aspect-ratio: 1 / 1;
+  background: var(--color-panel-gradient);
+}
+
+.linkCardContent {
+  height: 100%;
+}
+
+.linkCardList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.linkCardListItem {
+  flex-basis: 100%;
+}

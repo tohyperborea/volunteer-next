@@ -10,7 +10,11 @@
   "UpdateEventPage": {
     "title": "Update Event"
   },
-  "EventPage": {},
+  "EventPage": {
+    "manageMy": "Manage My",
+    "teams": "Teams",
+    "volunteers": "Volunteers"
+  },
   "TeamsDashboardPage": {
     "teamsForEvent": "Teams for {eventName}",
     "noTeams": "No teams yet!",
@@ -22,7 +26,28 @@
   "UpdateTeamPage": {
     "title": "Update Team"
   },
-  "TeamPage": {},
+  "TeamPage": {
+    "tabs": {
+      "team": "Team",
+      "shifts": "Shifts",
+      "volunteers": "Volunteers"
+    },
+    "InfoTab": {},
+    "ShiftsTab": {
+      "title": "Shifts"
+    },
+    "VolunteersTab": {
+      "title": "Volunteers"
+    }
+  },
+  "SignInPage": {
+    "title": "Sign In",
+    "descriptionOne": "Sign in to your account to continue.",
+    "descriptionTwo": "We use our ticket system, Pretix, to provide a single sign-on experience.",
+    "descriptionThree": "Clicking the button below will redirect you to the Pretix login page.",
+    "descriptionFour": "After logging in, you will be redirected back to this application.",
+    "button": "Sign In with Pretix"
+  },
 
   "MenuCard": {
     "update": "Update",
@@ -129,12 +154,36 @@
   "Metadata": {
     "description": "A system to support the organisation of alternative arts events"
   },
-  "SignInPage": {
-    "title": "Sign In",
-    "descriptionOne": "Sign in to your account to continue.",
-    "descriptionTwo": "We use our ticket system, Pretix, to provide a single sign-on experience.",
-    "descriptionThree": "Clicking the button below will redirect you to the Pretix login page.",
-    "descriptionFour": "After logging in, you will be redirected back to this application.",
-    "button": "Sign In with Pretix"
+  "ShiftList": {
+    "addShift": "Add shift",
+    "importShift": "Import shift"
+  },
+  "ShiftCard": {
+    "max": "Max",
+    "min": "Min",
+    "status": "Status",
+    "requirement": "Requirement",
+    "spots": "Spots",
+    "volunteers": "Volunteers"
+  },
+  "ShiftDialog": {
+    "cancel": "Cancel",
+    "save": "Save Changes",
+    "editShift": "Edit Shift",
+    "addShift": "Add Shift",
+    "deleteShift": "Delete Shift",
+    "title": "Title of Shift",
+    "titleDescription": "Description",
+    "titlePlaceholder": "Title",
+    "startTime": "Start Time",
+    "startTimeDescription": "Description",
+    "length": "Length of Shift",
+    "lengthDescription": "Length of the shift in HOURS",
+    "minVolunteers": "Minimum Volunteers Needed",
+    "minVolunteersDescription": "Description",
+    "maxVolunteers": "Maximum Volunteers Needed",
+    "maxVolunteersDescription": "Description",
+    "active": "Active",
+    "requirementId": "Requirement ID"
   }
 }

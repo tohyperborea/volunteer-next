@@ -8,7 +8,16 @@
 type UserId = string;
 type EventId = string;
 type TeamId = string;
+type ShiftId = string;
+type RequirementId = string;
 type UrlSlug = string;
+type TimeString = string; // ISO 8601 time string, e.g. "14:30"
+type EventDay = number; // 0 for first day, 1 for second day, etc.
+
+type EventDayTime = {
+  day: EventDay;
+  time: TimeString;
+};
 
 interface User {
   id: UserId;
@@ -50,6 +59,19 @@ interface UserFilters {
   roleType?: string;
   searchQuery?: string;
   showDeleted?: boolean;
+}
+
+interface ShiftInfo {
+  id: ShiftId;
+  teamId: TeamId;
+  title: string;
+  eventDay: EventDay;
+  startTime: TimeString;
+  durationHours: number;
+  minVolunteers: number;
+  maxVolunteers: number;
+  requirements?: RequirementId[];
+  isActive: boolean;
 }
 
 type ThemeMode = 'light' | 'dark' | 'system';
