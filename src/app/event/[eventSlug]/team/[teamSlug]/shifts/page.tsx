@@ -34,16 +34,18 @@ export default async function TeamShifts({ params }: Props) {
 
   const shifts = await getShifts(team.id);
 
-  const allowedRoles: UserRole[] = [
+  const editorRoles: UserRole[] = [
     { type: 'admin' },
     { type: 'organiser', eventId: team.eventId },
     { type: 'team-lead', eventId: team.eventId, teamId: team.id }
   ];
 
+  const isEditable = await checkAuthorisation(editorRoles, true);
+
   const onSaveShift = async (data: FormData) => {
     'use server';
     console.log('Saving shift with data:', Object.fromEntries(data.entries()));
-    await checkAuthorisation(allowedRoles);
+    await checkAuthorisation(editorRoles);
     const shift = validateNewShift(data);
     const shiftId = data.get('id')?.toString();
     if (shiftId) {
@@ -57,7 +59,7 @@ export default async function TeamShifts({ params }: Props) {
   const onDeleteShift = async (data: FormData) => {
     'use server';
     console.log('Deleting shift with data:', Object.fromEntries(data.entries()));
-    await checkAuthorisation(allowedRoles);
+    await checkAuthorisation(editorRoles);
     const shiftId = data.get('id')?.toString();
     if (!shiftId) {
       throw new Error('Shift id is required for deletion');
@@ -71,8 +73,8 @@ export default async function TeamShifts({ params }: Props) {
       startDate={event.startDate}
       teamId={team.id}
       shifts={shifts}
-      onSaveShift={onSaveShift}
-      onDeleteShift={onDeleteShift}
+      onSaveShift={isEditable ? onSaveShift : undefined}
+      onDeleteShift={isEditable ? onDeleteShift : undefined}
     />
   );
 }
