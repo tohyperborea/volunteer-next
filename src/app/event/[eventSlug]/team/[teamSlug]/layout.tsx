@@ -34,7 +34,7 @@ export default async function TeamLayout({ params, children }: Props) {
   const shiftsPath = getTeamShiftsPath(eventSlug, teamSlug);
   const volunteersPath = getTeamVolunteersPath(eventSlug, teamSlug);
   return (
-    <Flex direction="column" p="4">
+    <Flex direction="column">
       <Heading my="4">{team.name}</Heading>
       <TabNav.Root>
         <TabNav.Link active={path === infoPath} href={infoPath}>
