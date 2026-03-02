@@ -265,5 +265,21 @@
   },
   "QualificationDetails": {
     "delete": "Delete Qualification"
+  },
+  "QualificationDialog": {
+    "edit": "Edit Qualification",
+    "add": "Add Qualification",
+    "name": "Name",
+    "nameDescription": "Please include the relevant event and year for the requirement, This way we can tell the difference between each year's Ranger Training's, etc.",
+    "namePlaceholder": "Qualification Name",
+    "team": "Associated Team",
+    "teamDescription": "The team associated with this qualification. Optional.",
+    "noTeam": "No Team",
+    "errorMessage": "Error Message",
+    "errorMessageDescription": "The error someone will see when attempting to sign up for a shift without this requirement.",
+    "errorMessagePlaceholder": "Message",
+    "cancel": "Cancel",
+    "save": "Save Changes",
+    "create": "Create Qualification"
   }
 }

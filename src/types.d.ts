@@ -77,7 +77,7 @@ interface ShiftInfo {
 
 type ThemeMode = 'light' | 'dark' | 'system';
 
-interface Qualification {
+interface QualificationInfo {
   id: QualificationId;
   name: string;
   eventId: EventId;

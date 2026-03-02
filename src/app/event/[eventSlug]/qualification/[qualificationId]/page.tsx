@@ -19,7 +19,7 @@ export const generateMetadata = metadata(PAGE_KEY, {
   }
 });
 
-const MOCK_QUAL: Qualification = {
+const MOCK_QUAL: QualificationInfo = {
   id: 'qual-1',
   name: 'First Aid Training',
   eventId: 'event-1',
@@ -39,7 +39,9 @@ export default async function QualificationsPage({ params }: Props) {
     return notFound();
   }
   const qualification = MOCK_QUAL; // TODO fetch qualification by ID
-  const team = qualification.teamId ? await getTeamById(qualification.teamId) : null;
+  const teams = await getTeamsForEvent(event.id);
+
+  // TODO: Authorisation for editors
 
   const onSave = async (data: FormData) => {
     'use server';
@@ -62,9 +64,9 @@ export default async function QualificationsPage({ params }: Props) {
   return (
     <Flex p="4" direction="column" gap="6">
       <QualificationDetails
-        qualification={MOCK_QUAL}
-        eventName={event.name}
-        teamName={team?.name}
+        qualification={qualification}
+        event={event}
+        teams={teams}
         onSave={onSave}
         onDelete={onDelete}
       />
