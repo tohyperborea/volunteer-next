@@ -13,7 +13,7 @@ import Link from 'next/link';
 import { getQualificationDetailsPath } from '@/utils/path';
 
 interface Props {
-  qualification: Qualification;
+  qualification: QualificationInfo;
   eventName: string;
   teamName?: string;
   onEdit?: () => void;
