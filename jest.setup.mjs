@@ -43,3 +43,11 @@ if (typeof globalThis.Headers === 'undefined') {
     }
   };
 }
+
+/// Radix polyfills
+global.ResizeObserver = class ResizeObserver {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+};
+window.HTMLElement.prototype.scrollIntoView = jest.fn();

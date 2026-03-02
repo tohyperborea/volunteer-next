@@ -32,15 +32,17 @@ export default function QualificationDialog({
   const isEdit = Boolean(editing);
   const open = creating || isEdit;
   const t = useTranslations('QualificationDialog');
+  const title = creating ? t('add') : t('edit');
   return (
     <Dialog.Root open={open} onOpenChange={(open) => !open && onClose?.()}>
+      <Dialog.Description hidden>{title}</Dialog.Description>
       <Dialog.Content className={styles.fullScreenDialog}>
         <form style={{ height: '100%' }}>
           <input type="hidden" name="id" value={editing?.id ?? ''} />
           <input type="hidden" name="eventId" value={eventId} />
           <Flex direction="column" gap="4" mt="6" height="100%" width="100%">
             <Dialog.Title as="h2" mt="4" mb="6">
-              {t(editing ? 'edit' : 'add')}
+              {title}
             </Dialog.Title>
             <FormField
               ariaId="qualification-name"
