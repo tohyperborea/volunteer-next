@@ -12,6 +12,7 @@ import { nextCookies } from 'better-auth/next-js';
 import { genericOAuth } from 'better-auth/plugins';
 import db from '@/db';
 import { sendEmail } from '@/email';
+import enMessages from '../messages/en.json';
 import {
   checkLoginLockout,
   recordSuccessfulLogin,
@@ -83,35 +84,40 @@ const signInEmailAfterHook = createAuthMiddleware(async (ctx) => {
   const isFailure =
     returned &&
     (returned instanceof Error ||
-      (typeof returned === 'object' && typeof (returned as { statusCode?: number }).statusCode === 'number' && (returned as { statusCode: number }).statusCode >= 400));
+      (typeof returned === 'object' &&
+        typeof (returned as { statusCode?: number }).statusCode === 'number' &&
+        (returned as { statusCode: number }).statusCode >= 400));
   if (!isFailure) recordSuccessfulLogin(email);
 });
 
 export const auth = betterAuth({
   plugins,
   database: db,
-  hooks:
-    useOAuth
-      ? undefined
-      : {
-          before: signInEmailBeforeHook,
-          after: signInEmailAfterHook
-        },
+  hooks: useOAuth
+    ? undefined
+    : {
+        before: signInEmailBeforeHook,
+        after: signInEmailAfterHook
+      },
   emailAndPassword: useOAuth
     ? undefined
     : {
         enabled: true,
         /** Reset token TTL in seconds. Tokens are single-use and invalidated after password change (better-auth). */
-        resetPasswordTokenExpiresIn: 15 * 60, // 15 minutes
+        resetPasswordTokenExpiresIn: Number(process.env.RESET_PASSWORD_TOKEN_EXPIRES_IN) || 15 * 60,
         sendResetPassword: async ({ user, url }) => {
           if (process.env.SMTP_HOST) {
             const result = await sendEmail({
               to: user.email,
-              subject: 'Reset your password',
-              text: `Click the link to reset your password: ${url}`
+              subject: enMessages.ResetPasswordEmail.subject,
+              text: enMessages.ResetPasswordEmail.text.replace('{url}', url)
             });
             if (!result.sent && result.error) {
-              console.error('[auth] Password reset email failed for %s: %s', user.email, result.error);
+              console.error(
+                '[auth] Password reset email failed for %s: %s',
+                user.email,
+                result.error
+              );
             }
           } else if (process.env.NODE_ENV === 'development') {
             // eslint-disable-next-line no-console

@@ -28,8 +28,7 @@ type UserRole =
   | { type: 'organiser'; eventId: EventId }
 
   // Manage volunteers in assigned area
-  | { type: 'team-lead'; eventId: EventId; teamId: TeamId }
-  | { type: 'volunteer' };
+  | { type: 'team-lead'; eventId: EventId; teamId: TeamId };
 
 interface EventInfo {
   id: EventId;

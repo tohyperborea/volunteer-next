@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useCallback, useRef, useState, useTransition } from 'react';
-import { Text, Dialog, Button } from '@radix-ui/themes';
+import { Text, Dialog, Button, TextField } from '@radix-ui/themes';
 import { isRedirectError } from 'next/dist/client/components/redirect-error';
 import styles from './styles.module.css';
 
@@ -48,7 +48,9 @@ export function CredentialsForm({
 }: Props) {
   const [view, setView] = useState<View>(forgotSent ? 'forgotSent' : 'signin');
   const [showErrorDialog, setShowErrorDialog] = useState(false);
-  const [errorReason, setErrorReason] = useState<'locked' | 'rate_limit' | 'invalid_credentials'>('invalid_credentials');
+  const [errorReason, setErrorReason] = useState<'locked' | 'rate_limit' | 'invalid_credentials'>(
+    'invalid_credentials'
+  );
   const [isPending, startTransition] = useTransition();
   const passwordRef = useRef<HTMLInputElement>(null);
 
@@ -100,20 +102,16 @@ export function CredentialsForm({
       <>
         <Text as="p">{t.forgotDescription}</Text>
         <form action={requestResetAction} className={styles.signinForm}>
-          <input
-            type="email"
+          <TextField.Root
             name="email"
             placeholder={t.emailPlaceholder ?? ''}
-            className={styles.signinInput}
             autoComplete="email"
             required
           />
-          <button type="submit" className={styles.signinButton}>
-            {t.forgotButton}
-          </button>
-          <button type="button" className={styles.signinLinkButton} onClick={showSignIn}>
+          <Button type="submit">{t.forgotButton}</Button>
+          <Button type="button" className={styles.signinLinkButton} onClick={showSignIn}>
             {t.backToSignIn}
-          </button>
+          </Button>
         </form>
       </>
     );
@@ -123,34 +121,32 @@ export function CredentialsForm({
     <>
       <Text as="p">{t.descriptionOne}</Text>
       <form onSubmit={handleSignIn} className={styles.signinForm}>
-        <input type="hidden" name="callbackUrl" defaultValue={callbackUrl ?? ''} />
-        <input
-          type="email"
+        <TextField.Root name="callbackUrl" value={callbackUrl ?? ''} hidden />
+        <TextField.Root
           name="email"
           placeholder={t.emailPlaceholder ?? ''}
-          className={styles.signinInput}
           autoComplete="email"
           required
         />
-        <input
-          ref={passwordRef}
-          type="password"
+        <TextField.Root
           name="password"
           placeholder={t.passwordPlaceholder ?? ''}
-          className={styles.signinInput}
           autoComplete="current-password"
           required
         />
-        <button type="submit" className={styles.signinButton} disabled={isPending}>
+        <Button type="submit" disabled={isPending}>
           {isPending ? '...' : t.buttonCredentials}
-        </button>
+        </Button>
         <div className={styles.signinLinks}>
-          <Link href={`/signup${callbackUrl !== '/' ? `?callbackUrl=${encodeURIComponent(callbackUrl)}` : ''}`} className={styles.signinLink}>
+          <Link
+            href={`/signup${callbackUrl !== '/' ? `?callbackUrl=${encodeURIComponent(callbackUrl)}` : ''}`}
+            className={styles.signinLink}
+          >
             {t.createAccount}
           </Link>
-          <button type="button" className={styles.signinLinkButton} onClick={showForgot}>
+          <Button type="button" className={styles.signinLinkButton} onClick={showForgot}>
             {t.forgotPassword}
-          </button>
+          </Button>
         </div>
       </form>
 
@@ -163,7 +159,11 @@ export function CredentialsForm({
       >
         <Dialog.Content className={styles.errorDialog}>
           <Dialog.Title className={styles.errorDialogTitle}>
-            {errorReason === 'locked' ? t.tooManyAttemptsTitle : errorReason === 'rate_limit' ? t.tooManyAttemptsTitle : t.invalidCredentialsTitle}
+            {errorReason === 'locked'
+              ? t.tooManyAttemptsTitle
+              : errorReason === 'rate_limit'
+                ? t.tooManyAttemptsTitle
+                : t.invalidCredentialsTitle}
           </Dialog.Title>
           <Dialog.Description className={styles.errorDialogDescription}>
             {errorReason === 'locked'

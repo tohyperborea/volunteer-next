@@ -3,8 +3,7 @@ import { getClientIp } from '@/lib/client-ip';
 import { recordFailedLogin } from '@/lib/login-security';
 import { getSafeCallbackUrl } from '@/lib/signup-validation';
 import { redirect } from 'next/navigation';
-import { Flex, Heading, Text } from '@radix-ui/themes';
-import styles from './styles.module.css';
+import { Button, Flex, Heading, Text, TextField } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
 import { VisuallyHidden } from '@radix-ui/themes';
 import { CredentialsForm } from './credentials-form';
@@ -37,7 +36,9 @@ export default async function SignInPage({
 
   const signInCredentials = async (
     formData: FormData
-  ): Promise<{ ok: true } | { ok: false; reason: 'locked' | 'rate_limit' | 'invalid_credentials' }> => {
+  ): Promise<
+    { ok: true } | { ok: false; reason: 'locked' | 'rate_limit' | 'invalid_credentials' }
+  > => {
     'use server';
     const email = (formData.get('email') as string)?.trim();
     const password = formData.get('password') as string;
@@ -79,30 +80,43 @@ export default async function SignInPage({
 
   const t = await getTranslations('SignInPage');
   return (
-    <Flex direction="column" gap="2" align="center" className={styles.signinContainerOuter}>
+    <Flex
+      direction="column"
+      gap="2"
+      align="center"
+      style={{
+        padding: '30px',
+        margin: 'auto',
+        marginTop: '60px',
+        borderRadius: '10px',
+        height: '500px',
+        width: '300px'
+      }}
+    >
       <VisuallyHidden>
         <Heading>{t('title')}</Heading>
       </VisuallyHidden>
       {useOAuth ? (
         <>
-          <form action={signInOAuth} className={styles.signinForm}>
-            <input type="hidden" name="callbackUrl" value={callbackUrl ?? ''} />
-            <button type="submit" className={styles.signinButton}>
-              {t('button')}
-            </button>
+          <form
+            action={signInOAuth}
+            style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '16px' }}
+          >
+            <TextField.Root name="callbackUrl" value={callbackUrl ?? ''} hidden />
+            <Button type="submit">{t('button')}</Button>
           </form>
           <Text style={{ listStyleType: 'disc', paddingLeft: '20px' }}>
             <li>
-              <Text as="span">{t('descriptionOne')}</Text>
+              <Text as="span">{t('signInToAccount')}</Text>
             </li>
             <li>
-              <Text as="span">{t('descriptionTwo')}</Text>
+              <Text as="span">{t('usePretix')}</Text>
             </li>
             <li>
-              <Text as="span">{t('descriptionThree')}</Text>
+              <Text as="span">{t('clickButtonToRedirect')}</Text>
             </li>
             <li>
-              <Text as="span">{t('descriptionFour')}</Text>
+              <Text as="span">{t('afterLoggingIn')}</Text>
             </li>
           </Text>
         </>
