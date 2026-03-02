@@ -46,7 +46,7 @@ export default async function EventsDashboard({ params }: Props) {
   };
 
   return (
-    <Flex direction="column" gap="4" p="4">
+    <Flex direction="column" gap="4">
       <Heading my="4">{t('teamsForEvent', { eventName: event.name })}</Heading>
       {isEditable && (
         <Box>

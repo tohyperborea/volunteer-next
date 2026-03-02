@@ -28,7 +28,7 @@ export default async function TeamPage({ params }: Props) {
   }
 
   return (
-    <Flex direction="column" gap="4" p="4">
+    <Flex direction="column" gap="4">
       <Heading my="4">{team.name}</Heading>
       <Card>
         <Text>{team.description}</Text>

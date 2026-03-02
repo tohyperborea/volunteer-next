@@ -68,7 +68,7 @@ export default async function UpdateTeam({ params }: Props) {
     const teamlead = (await getUsersWithRole(teamleadRole))[0];
 
     return (
-      <Flex direction="column" gap="4" p="4">
+      <Flex direction="column" gap="4">
         <Heading my="4">{t('title')}</Heading>
         <Card>
           <TeamForm

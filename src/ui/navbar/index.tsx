@@ -28,7 +28,7 @@ export default function NavBar({ title, subtitle, user, titlePathname, children 
     <>
       {/* Navigation bar */}
       <Flex direction="row" align="center" className={styles.navigationBar}>
-        <Flex className={styles.mobileConditionalRender}>
+        <Flex display={{ initial: 'flex', sm: 'none' }}>
           <MobileMenu dialogOpen={dialogOpen} setDialogOpen={setDialogOpen} title={title} />
         </Flex>
         <Flex
@@ -49,7 +49,7 @@ export default function NavBar({ title, subtitle, user, titlePathname, children 
 
       {/* Content area */}
       <Flex direction="row" style={{ flex: 1 }}>
-        <Flex direction="column" className={styles.navigationMenuListOuter}>
+        <Flex direction="column" display={{ initial: 'none', sm: 'flex' }}>
           <NavColumn title={title} />
         </Flex>
         {children}

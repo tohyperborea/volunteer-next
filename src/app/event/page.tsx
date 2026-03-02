@@ -25,7 +25,7 @@ export default async function EventsDashboard() {
   };
 
   return (
-    <Flex direction="column" gap="4" p="4">
+    <Flex direction="column" gap="4">
       <Heading my="4">{t('title')}</Heading>
       <Box>
         <Link href="/create-event">
