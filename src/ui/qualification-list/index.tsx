@@ -15,9 +15,11 @@ import styles from './styles.module.css';
 
 interface Props {
   qualifications: Qualification[];
+  eventName: string;
+  teamNames: Record<TeamId, string>;
 }
 
-export default function QualificationList({ qualifications }: Props) {
+export default function QualificationList({ qualifications, eventName, teamNames }: Props) {
   const t = useTranslations('QualificationList');
   return (
     <Flex direction="column" gap="4">
@@ -41,6 +43,8 @@ export default function QualificationList({ qualifications }: Props) {
               <li>
                 <QualificationCard
                   asLink
+                  eventName={eventName}
+                  teamName={qualification.teamId && teamNames[qualification.teamId]}
                   qualification={qualification}
                   onEdit={() => console.log('TODO')}
                 />

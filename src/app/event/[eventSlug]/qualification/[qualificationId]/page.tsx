@@ -1,11 +1,12 @@
 import metadata from '@/i18n/metadata';
 import { getEventBySlug } from '@/service/event-service';
+import { getTeamById, getTeamsForEvent } from '@/service/team-service';
 import QualificationDetails from '@/ui/qualification-details';
 import VolunteerList from '@/ui/volunteer-list';
 import { getQualificationDetailsPath, getQualificationsPath } from '@/utils/path';
 import { Flex, Heading } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
-import { redirect } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 
 const PAGE_KEY = 'QualificationDetailsPage';
 
@@ -22,7 +23,7 @@ const MOCK_QUAL: Qualification = {
   id: 'qual-1',
   name: 'First Aid Training',
   eventId: 'event-1',
-  teamId: 'first-aid-team',
+  teamId: '847ccf19-0072-486b-8c3f-81a36d5c8d94',
   errorMessage: 'You must have a valid first aid certificate to qualify for this role.'
 };
 
@@ -33,6 +34,12 @@ interface Props {
 export default async function QualificationsPage({ params }: Props) {
   const { eventSlug, qualificationId } = await params;
   const t = await getTranslations(PAGE_KEY);
+  const event = await getEventBySlug(eventSlug);
+  if (!event) {
+    return notFound();
+  }
+  const qualification = MOCK_QUAL; // TODO fetch qualification by ID
+  const team = qualification.teamId ? await getTeamById(qualification.teamId) : null;
 
   const onSave = async (data: FormData) => {
     'use server';
@@ -54,7 +61,13 @@ export default async function QualificationsPage({ params }: Props) {
 
   return (
     <Flex p="4" direction="column" gap="6">
-      <QualificationDetails qualification={MOCK_QUAL} onSave={onSave} onDelete={onDelete} />
+      <QualificationDetails
+        qualification={MOCK_QUAL}
+        eventName={event.name}
+        teamName={team?.name}
+        onSave={onSave}
+        onDelete={onDelete}
+      />
       <Heading size="3" as="h2">
         {t('volunteers')}
       </Heading>

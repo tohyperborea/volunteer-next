@@ -3,6 +3,7 @@ import { getEventBySlug } from '@/service/event-service';
 import QualificationList from '@/ui/qualification-list';
 import { Box } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
+import { notFound } from 'next/navigation';
 
 const PAGE_KEY = 'QualificationsPage';
 
@@ -19,24 +20,29 @@ const MOCK_QUALS: Qualification[] = [
   {
     id: 'qual-1',
     name: 'First Aid',
-    eventId: 'event-1',
+    eventId: 'test-event',
     teamId: 'first-aid-team',
     errorMessage: 'You must have a valid first aid certificate to qualify for this role.'
   },
   {
     id: 'qual-2',
     name: 'Food Handling',
-    eventId: 'event-1',
+    eventId: 'test-event',
     errorMessage: 'You must have a valid food handling certificate to qualify for this role.'
   },
   {
     id: 'qual-3',
     name: 'FAST Training',
-    eventId: 'event-1',
+    eventId: 'test-event',
     teamId: 'fast-team',
     errorMessage: 'You must have completed FAST training to qualify for this role.'
   }
 ];
+
+const MOCK_TEAMS: Record<TeamId, string> = {
+  'first-aid-team': 'First Aid Team',
+  'fast-team': 'FAST Team'
+};
 
 interface Props {
   params: Promise<{ eventSlug: string }>;
@@ -44,9 +50,18 @@ interface Props {
 
 export default async function QualificationsPage({ params }: Props) {
   const { eventSlug } = await params;
+  const event = await getEventBySlug(eventSlug);
+  if (!event) {
+    return notFound();
+  }
+
   return (
     <Box p="4">
-      <QualificationList qualifications={MOCK_QUALS} />
+      <QualificationList
+        qualifications={MOCK_QUALS}
+        eventName={event.name}
+        teamNames={MOCK_TEAMS}
+      />
     </Box>
   );
 }

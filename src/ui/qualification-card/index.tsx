@@ -14,11 +14,19 @@ import { getQualificationDetailsPath } from '@/utils/path';
 
 interface Props {
   qualification: Qualification;
+  eventName: string;
+  teamName?: string;
   onEdit?: () => void;
   asLink?: boolean;
 }
 
-export default function QualificationCard({ qualification, onEdit, asLink }: Props) {
+export default function QualificationCard({
+  qualification,
+  onEdit,
+  asLink,
+  eventName,
+  teamName
+}: Props) {
   const Inner = () => (
     <Flex p="3" direction="column" gap="1">
       <Flex justify="between" align="center">
@@ -37,7 +45,8 @@ export default function QualificationCard({ qualification, onEdit, asLink }: Pro
           </IconButton>
         )}
       </Flex>
-      <Text color="gray">ID {qualification.id}</Text>
+      <Text color="gray">{eventName}</Text>
+      {teamName && <Text color="gray">{teamName}</Text>}
     </Flex>
   );
 

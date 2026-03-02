@@ -13,16 +13,26 @@ import { useTranslations } from 'next-intl';
 
 interface Props {
   qualification: Qualification;
+  eventName: string;
+  teamName?: string;
   onSave?: (data: FormData) => Promise<never>;
   onDelete?: (data: FormData) => Promise<never>;
 }
 
-export default function QualificationDetails({ qualification, onSave, onDelete }: Props) {
+export default function QualificationDetails({
+  qualification,
+  eventName,
+  teamName,
+  onSave,
+  onDelete
+}: Props) {
   const t = useTranslations('QualificationDetails');
   return (
     <Flex direction="column" gap="4">
       <QualificationCard
         qualification={qualification}
+        eventName={eventName}
+        teamName={teamName}
         onEdit={onSave ? () => console.log('TODO') : undefined}
       />
       {onDelete && (
