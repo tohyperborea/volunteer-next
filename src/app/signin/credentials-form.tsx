@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useCallback, useRef, useState, useTransition } from 'react';
-import { Text, Dialog, Button, TextField } from '@radix-ui/themes';
+import { Text, AlertDialog, Button, TextField } from '@radix-ui/themes';
 import { isRedirectError } from 'next/dist/client/components/redirect-error';
 import styles from './styles.module.css';
 import { getTranslations } from 'next-intl/server';
@@ -146,33 +146,33 @@ export async function CredentialsForm({
         </div>
       </form>
 
-      <Dialog.Root
+      <AlertDialog.Root
         open={showErrorDialog}
         onOpenChange={(open) => {
           if (!open) passwordRef.current && (passwordRef.current.value = '');
           setShowErrorDialog(open);
         }}
       >
-        <Dialog.Content className={styles.errorDialog}>
-          <Dialog.Title className={styles.errorDialogTitle}>
+        <AlertDialog.Content className={styles.errorDialog}>
+          <AlertDialog.Title className={styles.errorDialogTitle}>
             {errorReason === 'locked'
               ? t('tooManyAttemptsTitle')
               : errorReason === 'rate_limit'
                 ? t('tooManyAttemptsTitle')
                 : t('invalidCredentialsTitle')}
-          </Dialog.Title>
-          <Dialog.Description className={styles.errorDialogDescription}>
+          </AlertDialog.Title>
+          <AlertDialog.Description className={styles.errorDialogDescription}>
             {errorReason === 'locked'
               ? t('tooManyAttempts')
               : errorReason === 'rate_limit'
                 ? t('rateLimitError')
                 : t('invalidCredentials')}
-          </Dialog.Description>
-          <Dialog.Close>
+          </AlertDialog.Description>
+          <AlertDialog.Action>
             <Button type="button">{t('errorDialogClose')}</Button>
-          </Dialog.Close>
-        </Dialog.Content>
-      </Dialog.Root>
+          </AlertDialog.Action>
+        </AlertDialog.Content>
+      </AlertDialog.Root>
     </>
   );
 }

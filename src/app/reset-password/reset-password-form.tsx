@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { Button, Text, TextField } from '@radix-ui/themes';
-import styles from '../signin/styles.module.css';
 
 type Props = {
   action: (formData: FormData) => Promise<void>;
@@ -35,7 +34,10 @@ export function ResetPasswordForm({
   }
 
   return (
-    <form action={handleSubmit} className={styles.signinForm}>
+    <form
+      action={handleSubmit}
+      style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '16px' }}
+    >
       <TextField.Root name="token" value={token} hidden />
       <div>
         <TextField.Root

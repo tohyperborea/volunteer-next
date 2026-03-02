@@ -3,9 +3,10 @@ import { getClientIp } from '@/lib/client-ip';
 import { recordFailedLogin } from '@/lib/login-security';
 import { getSafeCallbackUrl } from '@/lib/signup-validation';
 import { redirect } from 'next/navigation';
-import { Button, Flex, Heading, Text, TextField } from '@radix-ui/themes';
+import { Button, Heading, Text, TextField } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
 import { VisuallyHidden } from '@radix-ui/themes';
+import SigninContainer from '@/ui/signin-container';
 import { CredentialsForm } from './credentials-form';
 
 const useOAuth = AUTH_MODE === 'oauth';
@@ -80,19 +81,7 @@ export default async function SignInPage({
 
   const t = await getTranslations('SignInPage');
   return (
-    <Flex
-      direction="column"
-      gap="2"
-      align="center"
-      style={{
-        padding: '30px',
-        margin: 'auto',
-        marginTop: '60px',
-        borderRadius: '10px',
-        height: '500px',
-        width: '300px'
-      }}
-    >
+    <SigninContainer>
       <VisuallyHidden>
         <Heading>{t('title')}</Heading>
       </VisuallyHidden>
@@ -128,6 +117,6 @@ export default async function SignInPage({
           requestResetAction={requestReset}
         />
       )}
-    </Flex>
+    </SigninContainer>
   );
 }

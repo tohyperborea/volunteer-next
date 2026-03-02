@@ -7,8 +7,8 @@ import { VisuallyHidden } from '@radix-ui/themes';
 import { checkRateLimit, PASSWORD_RESET_LIMITS } from '@/lib/rate-limit';
 import { getClientIp } from '@/lib/client-ip';
 import { verifyTurnstile } from '@/lib/turnstile';
-import styles from '../signin/styles.module.css';
 import { ForgotPasswordForm } from './forgot-password-form';
+import SigninContainer from '@/ui/signin-container';
 
 const MIN_RESPONSE_DELAY_MS = 400;
 
@@ -55,7 +55,7 @@ export default async function ForgotPasswordPage({
 
   const t = await getTranslations('ForgotPasswordPage');
   return (
-    <Flex direction="column" gap="2" align="center" className={styles.signinContainerOuter}>
+    <SigninContainer>
       <VisuallyHidden>
         <Heading>{t('title')}</Heading>
       </VisuallyHidden>
@@ -81,9 +81,7 @@ export default async function ForgotPasswordPage({
           buttonText={t('button')}
         />
       )}
-      <Link href="/signin" className={styles.signinLink}>
-        {t('signInLink')}
-      </Link>
-    </Flex>
+      <Link href="/signin">{t('signInLink')}</Link>
+    </SigninContainer>
   );
 }
