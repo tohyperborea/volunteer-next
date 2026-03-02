@@ -43,15 +43,17 @@ export default function ShiftDialog({
   const isEdit = Boolean(editing);
   const open = creating || isEdit;
   const t = useTranslations('ShiftDialog');
+  const title = t(editing ? 'editShift' : 'addShift');
   return (
     <Dialog.Root open={open} onOpenChange={(open) => !open && onClose && onClose()}>
+      <Dialog.Description hidden>{title}</Dialog.Description>
       <Dialog.Content className={styles.fullScreenDialog}>
         <form style={{ height: '100%' }}>
           <input type="hidden" name="id" value={editing?.id ?? ''} />
           <input type="hidden" name="teamId" value={teamId} />
           <Flex direction="column" align="start" height="100%">
             <Dialog.Title as="h2" mt="4" mb="6">
-              {t(editing ? 'editShift' : 'addShift')}
+              {title}
             </Dialog.Title>
 
             {isEdit && onDelete && (
