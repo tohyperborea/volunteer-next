@@ -126,24 +126,6 @@ export default async function SignInPage({
           forgotSent={forgotSent}
           signInAction={signInCredentials}
           requestResetAction={requestReset}
-          translations={{
-            descriptionOne: t('descriptionOne'),
-            emailPlaceholder: t('emailPlaceholder'),
-            passwordPlaceholder: t('passwordPlaceholder'),
-            buttonCredentials: t('buttonCredentials'),
-            createAccount: t('createAccount'),
-            forgotPassword: t('forgotPassword'),
-            forgotDescription: t('forgotDescription'),
-            forgotButton: t('forgotButton'),
-            forgotSuccessMessage: t('forgotSuccessMessage'),
-            backToSignIn: t('backToSignIn'),
-            invalidCredentialsTitle: t('invalidCredentialsTitle'),
-            invalidCredentials: t('invalidCredentials'),
-            tooManyAttemptsTitle: t('tooManyAttemptsTitle'),
-            tooManyAttempts: t('tooManyAttempts'),
-            rateLimitError: t('rateLimitError'),
-            errorDialogClose: t('errorDialogClose')
-          }}
         />
       )}
     </Flex>

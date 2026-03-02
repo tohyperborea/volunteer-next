@@ -4,7 +4,6 @@ import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { currentUser } from '@/session';
 import { getEvents } from '@/service/event-service';
-import styles from './styles.module.css';
 
 export default async function SettingsPage() {
   const signout = async () => {
@@ -20,14 +19,18 @@ export default async function SettingsPage() {
   const eventIds =
     user?.roles
       .filter(
-        (r): r is { type: 'organiser'; eventId: string } | { type: 'team-lead'; eventId: string; teamId: string } =>
+        (
+          r
+        ): r is
+          | { type: 'organiser'; eventId: string }
+          | { type: 'team-lead'; eventId: string; teamId: string } =>
           r.type === 'organiser' || r.type === 'team-lead'
       )
       .map((r) => r.eventId) ?? [];
-  const uniqueEventIds = [...new Set(eventIds)];
+  const uniqueEventIds = new Set(eventIds);
   const allEvents = await getEvents();
   const eventsById = Object.fromEntries(
-    allEvents.filter((e) => uniqueEventIds.includes(e.id)).map((e) => [e.id, e.name])
+    allEvents.filter((e) => uniqueEventIds.has(e.id)).map((e) => [e.id, e.name])
   );
 
   return (
@@ -56,8 +59,11 @@ export default async function SettingsPage() {
                   : 'Volunteer'}
           </Text>
         ))}
-        <form className={styles.signoutForm} action={signout}>
-          <Button className={styles.signoutButton} type="submit">Sign out</Button>
+        <form
+          style={{ width: '100%', display: 'flex', justifyContent: 'flex-end' }}
+          action={signout}
+        >
+          <Button type="submit">Sign out</Button>
         </form>
       </Flex>
     </Flex>

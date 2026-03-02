@@ -13,30 +13,6 @@
   width: 100%;
 }
 
-.signinLink {
-  color: var(--color-panel-contrast);
-  font-size: 14px;
-  text-decoration: underline;
-}
-
-.signinLink:hover {
-  text-underline-offset: 2px;
-}
-
-.signinLinkButton {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  font: inherit;
-  color: var(--color-panel-contrast);
-  font-size: 14px;
-}
-
-.signinLinkButton:hover {
-  text-underline-offset: 2px;
-}
-
 .errorDialog {
   width: 100%;
   margin-bottom: 1rem;
@@ -57,9 +33,4 @@
   text-align: center;
   width: 100%;
   margin-bottom: 2rem;
-}
-
-.errorDialogCloseButton {
-  width: 200px;
-  margin-bottom: 1rem;
 }

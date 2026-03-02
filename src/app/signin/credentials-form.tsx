@@ -5,6 +5,7 @@ import { useCallback, useRef, useState, useTransition } from 'react';
 import { Text, Dialog, Button, TextField } from '@radix-ui/themes';
 import { isRedirectError } from 'next/dist/client/components/redirect-error';
 import styles from './styles.module.css';
+import { getTranslations } from 'next-intl/server';
 
 type View = 'signin' | 'forgot' | 'forgotSent';
 
@@ -36,15 +37,13 @@ type Props = {
   forgotSent: boolean;
   signInAction: (formData: FormData) => Promise<SignInResult>;
   requestResetAction: (formData: FormData) => Promise<void>;
-  translations: CredentialsFormTranslations;
 };
 
-export function CredentialsForm({
+export async function CredentialsForm({
   callbackUrl,
   forgotSent,
   signInAction,
-  requestResetAction,
-  translations: t
+  requestResetAction
 }: Props) {
   const [view, setView] = useState<View>(forgotSent ? 'forgotSent' : 'signin');
   const [showErrorDialog, setShowErrorDialog] = useState(false);
@@ -53,7 +52,7 @@ export function CredentialsForm({
   );
   const [isPending, startTransition] = useTransition();
   const passwordRef = useRef<HTMLInputElement>(null);
-
+  const t = await getTranslations('SignInPage');
   const showForgot = useCallback(() => setView('forgot'), []);
   const showSignIn = useCallback(() => setView('signin'), []);
 
@@ -88,11 +87,9 @@ export function CredentialsForm({
     return (
       <>
         <Text as="p" size="2">
-          {t.forgotSuccessMessage}
+          {t('forgotSuccessMessage')}
         </Text>
-        <Link href="/signin" className={styles.signinLink}>
-          {t.backToSignIn}
-        </Link>
+        <Link href="/signin">{t('backToSignIn')}</Link>
       </>
     );
   }
@@ -100,17 +97,17 @@ export function CredentialsForm({
   if (view === 'forgot') {
     return (
       <>
-        <Text as="p">{t.forgotDescription}</Text>
+        <Text as="p">{t('forgotDescription')}</Text>
         <form action={requestResetAction} className={styles.signinForm}>
           <TextField.Root
             name="email"
-            placeholder={t.emailPlaceholder ?? ''}
+            placeholder={t('emailPlaceholder') ?? ''}
             autoComplete="email"
             required
           />
-          <Button type="submit">{t.forgotButton}</Button>
-          <Button type="button" className={styles.signinLinkButton} onClick={showSignIn}>
-            {t.backToSignIn}
+          <Button type="submit">{t('forgotButton')}</Button>
+          <Button type="button" onClick={showSignIn}>
+            {t('backToSignIn')}
           </Button>
         </form>
       </>
@@ -119,33 +116,32 @@ export function CredentialsForm({
 
   return (
     <>
-      <Text as="p">{t.descriptionOne}</Text>
+      <Text as="p">{t('descriptionOne')}</Text>
       <form onSubmit={handleSignIn} className={styles.signinForm}>
         <TextField.Root name="callbackUrl" value={callbackUrl ?? ''} hidden />
         <TextField.Root
           name="email"
-          placeholder={t.emailPlaceholder ?? ''}
+          placeholder={t('emailPlaceholder') ?? ''}
           autoComplete="email"
           required
         />
         <TextField.Root
           name="password"
-          placeholder={t.passwordPlaceholder ?? ''}
+          placeholder={t('passwordPlaceholder') ?? ''}
           autoComplete="current-password"
           required
         />
         <Button type="submit" disabled={isPending}>
-          {isPending ? '...' : t.buttonCredentials}
+          {isPending ? '...' : t('buttonCredentials')}
         </Button>
         <div className={styles.signinLinks}>
           <Link
             href={`/signup${callbackUrl !== '/' ? `?callbackUrl=${encodeURIComponent(callbackUrl)}` : ''}`}
-            className={styles.signinLink}
           >
-            {t.createAccount}
+            {t('createAccount')}
           </Link>
-          <Button type="button" className={styles.signinLinkButton} onClick={showForgot}>
-            {t.forgotPassword}
+          <Button type="button" onClick={showForgot}>
+            {t('forgotPassword')}
           </Button>
         </div>
       </form>
@@ -160,20 +156,20 @@ export function CredentialsForm({
         <Dialog.Content className={styles.errorDialog}>
           <Dialog.Title className={styles.errorDialogTitle}>
             {errorReason === 'locked'
-              ? t.tooManyAttemptsTitle
+              ? t('tooManyAttemptsTitle')
               : errorReason === 'rate_limit'
-                ? t.tooManyAttemptsTitle
-                : t.invalidCredentialsTitle}
+                ? t('tooManyAttemptsTitle')
+                : t('invalidCredentialsTitle')}
           </Dialog.Title>
           <Dialog.Description className={styles.errorDialogDescription}>
             {errorReason === 'locked'
-              ? t.tooManyAttempts
+              ? t('tooManyAttempts')
               : errorReason === 'rate_limit'
-                ? t.rateLimitError
-                : t.invalidCredentials}
+                ? t('rateLimitError')
+                : t('invalidCredentials')}
           </Dialog.Description>
           <Dialog.Close>
-            <Button className={styles.errorDialogCloseButton}>{t.errorDialogClose}</Button>
+            <Button type="button">{t('errorDialogClose')}</Button>
           </Dialog.Close>
         </Dialog.Content>
       </Dialog.Root>
