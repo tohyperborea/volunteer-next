@@ -6,6 +6,7 @@
   --color-panel-solid: rgb(89, 55, 239);
   --color-panel-contrast: white;
   --color-panel-gradient: linear-gradient(to bottom, #5937ef, rgba(89, 55, 239, 0.77));
+  --color-border-default: #d9d9d9;
 }
 
 /* Add theme-specific overrides here if values differ between light/dark themes */

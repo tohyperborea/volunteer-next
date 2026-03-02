@@ -6,6 +6,8 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { auth } from '@/auth';
+import { checkRateLimit, PASSWORD_RESET_LIMITS, AUTH_ENDPOINT_LIMITS } from '@/lib/rate-limit';
+import { getClientIp } from '@/lib/client-ip';
 
 const isLocalRequest = (request: NextRequest) => {
   const forwardedFor = request.headers.get('x-forwarded-for') || '';
@@ -15,13 +17,46 @@ const isLocalRequest = (request: NextRequest) => {
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Allow access to API routes
-  if (pathname.startsWith('/api')) {
-    return NextResponse.next();
+  // Set a custom header with the pathname so we can access it in server components
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set('x-pathname', pathname);
+
+  // Rate limit auth endpoints (POST only)
+  if (request.method === 'POST') {
+    const ip = await getClientIp();
+    if (pathname === '/signup') {
+      if (!checkRateLimit(ip, AUTH_ENDPOINT_LIMITS.signup)) {
+        const url = new URL(pathname, request.url);
+        url.searchParams.set('error', 'rate_limit');
+        return NextResponse.redirect(url);
+      }
+    } else if (pathname === '/forgot-password') {
+      if (!checkRateLimit(ip, PASSWORD_RESET_LIMITS.requestReset)) {
+        const url = new URL(pathname, request.url);
+        url.searchParams.set('error', 'rate_limit');
+        return NextResponse.redirect(url);
+      }
+    } else if (pathname === '/reset-password') {
+      if (!checkRateLimit(ip, PASSWORD_RESET_LIMITS.resetPassword)) {
+        const url = new URL(pathname, request.url);
+        url.searchParams.set('error', 'rate_limit');
+        return NextResponse.redirect(url);
+      }
+    }
   }
 
-  // Allow access to signin page
-  if (pathname === '/signin') {
+  // Allow access to API routes
+  if (pathname.startsWith('/api')) {
+    return NextResponse.next({
+      request: {
+        headers: requestHeaders
+      }
+    });
+  }
+
+  // Allow access to auth pages (no session required)
+  const publicAuthPaths = ['/signin', '/signup', '/forgot-password', '/reset-password'];
+  if (publicAuthPaths.includes(pathname)) {
     return NextResponse.next();
   }
 
@@ -32,7 +67,11 @@ export async function proxy(request: NextRequest) {
   ) {
     // In debug mode, bypass authentication
     // User will be set in session.ts::currentUser() based on the DEBUG_FORCE_ROLE env var
-    return NextResponse.next();
+    return NextResponse.next({
+      request: {
+        headers: requestHeaders
+      }
+    });
   }
 
   // Check authentication for all other routes
@@ -50,7 +89,11 @@ export async function proxy(request: NextRequest) {
   }
 
   // User is authenticated, allow the request
-  return NextResponse.next();
+  return NextResponse.next({
+    request: {
+      headers: requestHeaders
+    }
+  });
 }
 
 export const config = {

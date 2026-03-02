@@ -27,7 +27,7 @@ type UserRole =
   //Full control over all event specific data, users, and settings
   | { type: 'organiser'; eventId: EventId }
 
-  // Manage volunteers and shifts in assigned area
+  // Manage volunteers in assigned area
   | { type: 'team-lead'; eventId: EventId; teamId: TeamId };
 
 interface EventInfo {
