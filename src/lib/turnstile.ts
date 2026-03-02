@@ -5,7 +5,7 @@
 
 const SITEVERIFY_URL = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
 
-export type TurnstileVerifyResult = { success: true } | { success: false; errorCodes: string[] };
+type TurnstileVerifyResult = { success: true } | { success: false; errorCodes: string[] };
 
 export async function verifyTurnstile(
   token: string | null | undefined,

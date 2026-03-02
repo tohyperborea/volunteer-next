@@ -17,7 +17,7 @@ function prune() {
   }
 }
 
-export type RateLimitOptions = {
+type RateLimitOptions = {
   key: string; // logical prefix for this limiter, used in the in-memory key
   windowMs: number; // rolling time window for counting attempts (in milliseconds)
   max: number; // maximum allowed attempts within the time window

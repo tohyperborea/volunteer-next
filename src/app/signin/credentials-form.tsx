@@ -9,28 +9,9 @@ import { getTranslations } from 'next-intl/server';
 
 type View = 'signin' | 'forgot' | 'forgotSent';
 
-export type SignInResult =
+type SignInResult =
   | { ok: true }
   | { ok: false; reason: 'locked' | 'rate_limit' | 'invalid_credentials' };
-
-export type CredentialsFormTranslations = {
-  descriptionOne: string;
-  emailPlaceholder: string;
-  passwordPlaceholder: string;
-  buttonCredentials: string;
-  createAccount: string;
-  forgotPassword: string;
-  forgotDescription: string;
-  forgotButton: string;
-  forgotSuccessMessage: string;
-  backToSignIn: string;
-  invalidCredentialsTitle: string;
-  invalidCredentials: string;
-  tooManyAttemptsTitle: string;
-  tooManyAttempts: string;
-  rateLimitError: string;
-  errorDialogClose: string;
-};
 
 type Props = {
   callbackUrl: string;
