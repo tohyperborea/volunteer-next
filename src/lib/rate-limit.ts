@@ -18,9 +18,9 @@ function prune() {
 }
 
 export type RateLimitOptions = {
-  key: string;
-  windowMs: number;
-  max: number;
+  key: string; // logical prefix for this limiter, used in the in-memory key
+  windowMs: number; // rolling time window for counting attempts (in milliseconds)
+  max: number; // maximum allowed attempts within the time window
 };
 
 /**
@@ -32,11 +32,7 @@ export function checkRateLimit(identifier: string, options: RateLimitOptions): b
   const id = `${key}:${identifier}`;
   const now = Date.now();
   const entry = entries.get(id);
-  if (!entry) {
-    entries.set(id, { count: 1, resetAt: now + windowMs });
-    return true;
-  }
-  if (now >= entry.resetAt) {
+  if (!entry || now >= entry.resetAt) {
     entries.set(id, { count: 1, resetAt: now + windowMs });
     return true;
   }
@@ -46,11 +42,33 @@ export function checkRateLimit(identifier: string, options: RateLimitOptions): b
 }
 
 export const PASSWORD_RESET_LIMITS = {
-  requestReset: { key: 'forgot-password', windowMs: 15 * 60 * 1000, max: 3 },
-  resetPassword: { key: 'reset-password', windowMs: 15 * 60 * 1000, max: 5 }
+  requestReset: {
+    key: 'forgot-password',
+    windowMs: process.env.RESET_PASSWORD_WINDOW_MS
+      ? parseInt(process.env.RESET_PASSWORD_WINDOW_MS)
+      : 15 * 60 * 1000,
+    max: process.env.RESET_PASSWORD_MAX_ATTEMPTS
+      ? parseInt(process.env.RESET_PASSWORD_MAX_ATTEMPTS)
+      : 3
+  },
+  resetPassword: {
+    key: 'reset-password',
+    windowMs: process.env.RESET_PASSWORD_WINDOW_MS
+      ? parseInt(process.env.RESET_PASSWORD_WINDOW_MS)
+      : 15 * 60 * 1000,
+    max: process.env.RESET_PASSWORD_MAX_ATTEMPTS
+      ? parseInt(process.env.RESET_PASSWORD_MAX_ATTEMPTS)
+      : 5
+  }
 } as const;
 
 /** Per-IP rate limits for auth endpoints (signup, etc.). */
 export const AUTH_ENDPOINT_LIMITS = {
-  signup: { key: 'signup', windowMs: 15 * 60 * 1000, max: 5 }
+  signup: {
+    key: 'signup',
+    windowMs: process.env.SIGNUP_WINDOW_MS
+      ? parseInt(process.env.SIGNUP_WINDOW_MS)
+      : 15 * 60 * 1000,
+    max: process.env.SIGNUP_MAX_ATTEMPTS ? parseInt(process.env.SIGNUP_MAX_ATTEMPTS) : 5
+  }
 } as const;

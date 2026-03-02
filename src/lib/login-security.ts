@@ -7,9 +7,15 @@
 
 import { checkRateLimit } from './rate-limit';
 
-const LOCKOUT_THRESHOLD = 5;
-const LOCKOUT_DURATION_MS = 15 * 60 * 1000; // 15 minutes
-const PRUNE_INTERVAL_MS = 60_000;
+const LOCKOUT_THRESHOLD = process.env.LOCKOUT_THRESHOLD
+  ? parseInt(process.env.LOCKOUT_THRESHOLD)
+  : 5;
+const LOCKOUT_DURATION_MS = process.env.LOCKOUT_DURATION_MS
+  ? parseInt(process.env.LOCKOUT_DURATION_MS)
+  : 15 * 60 * 1000; // 15 minutes
+const PRUNE_INTERVAL_MS = process.env.PRUNE_INTERVAL_MS
+  ? parseInt(process.env.PRUNE_INTERVAL_MS)
+  : 60_000;
 
 export const SIGNIN_RATE_LIMITS = {
   /** Per-IP rate limit for sign-in attempts (any email). */

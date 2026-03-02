@@ -10,7 +10,7 @@ import '@radix-ui/themes/styles.css';
 import './theme-overrides.css';
 import { ThemeProvider } from 'next-themes';
 import { NextIntlClientProvider } from 'next-intl';
-import { Theme, Container } from '@radix-ui/themes';
+import { Theme, Container, Box, Flex } from '@radix-ui/themes';
 import NavBar from '@/ui/navbar';
 import { currentUser } from '@/session';
 import { getTranslations } from 'next-intl/server';
@@ -54,7 +54,13 @@ export default async function RootLayout({
   }
 
   const getChildrenBlock = () => {
-    const childrenWithWrapper = <div className={styles.pageWrapper}>{children}</div>;
+    const childrenWithWrapper = (
+      <main>
+        <Flex direction="column" align="start" justify="start" p="2rem">
+          {children}
+        </Flex>
+      </main>
+    );
     if (user) {
       return (
         <NavBar
