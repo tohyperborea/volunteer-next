@@ -34,18 +34,29 @@ jest.mock('next-intl/server', () => ({
     Promise.resolve((key: string) => {
       const translations: Record<string, string> = {
         title: 'Sign In',
+        signInToAccount: 'Sign in to your account to continue.',
+        usePretix: 'We use our ticket system, Pretix, to provide a single sign-on experience.',
+        clickButtonToRedirect: 'Clicking the button below will redirect you to the Pretix login page.',
+        afterLoggingIn: 'After logging in, you will be redirected back to this application.',
         button: 'Sign In with Pretix',
-        descriptionOne: 'Sign in to your account to continue.',
-        descriptionTwo: 'We use our ticket system, Pretix, to provide a single sign-on experience.',
-        descriptionThree: 'Clicking the button below will redirect you to the Pretix login page.',
-        descriptionFour: 'After logging in, you will be redirected back to this application.',
         emailPlaceholder: 'Email',
         passwordPlaceholder: 'Password',
         buttonCredentials: 'Sign In',
         createAccount: 'Create an account',
-        forgotPassword: 'Forgot password?'
+        forgotPassword: 'Forgot password?',
+        forgotDescription: "Enter your email and we'll send you a link to reset your password.",
+        forgotButton: 'Send reset link',
+        forgotSuccessMessage:
+          "If an account exists for that email, we've sent a reset link. Check your inbox.",
+        backToSignIn: 'Back to sign in',
+        invalidCredentialsTitle: 'Sign in failed',
+        invalidCredentials: 'Invalid email or password. Please try again.',
+        tooManyAttemptsTitle: 'Too many attempts',
+        tooManyAttempts: 'Too many failed sign-in attempts. Please try again in 15 minutes.',
+        rateLimitError: 'Too many requests from your connection. Please try again later.',
+        errorDialogClose: 'OK'
       };
-      return translations[key] || key;
+      return translations[key as string] || key;
     })
   )
 }));

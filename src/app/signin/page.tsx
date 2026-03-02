@@ -102,7 +102,7 @@ export default async function SignInPage({
             action={signInOAuth}
             style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '16px' }}
           >
-            <TextField.Root name="callbackUrl" value={callbackUrl ?? ''} hidden />
+            <TextField.Root name="callbackUrl" value={callbackUrl ?? ''} hidden readOnly />
             <Button type="submit">{t('button')}</Button>
           </form>
           <Text style={{ listStyleType: 'disc', paddingLeft: '20px' }}>
