@@ -11,3 +11,13 @@ export const getTeamShiftsPath = (eventSlug: string, teamSlug: string): string =
   `${getTeamInfoPath(eventSlug, teamSlug)}/shifts`;
 export const getTeamVolunteersPath = (eventSlug: string, teamSlug: string): string =>
   `${getTeamInfoPath(eventSlug, teamSlug)}/volunteers`;
+
+// Qualifications paths
+export const getQualificationsPath = (eventSlug: string) => `/event/${eventSlug}/qualification`;
+export const getQualificationDetailsPath = ({
+  eventSlug,
+  qualificationId
+}: {
+  eventSlug: string;
+  qualificationId: string;
+}) => `/event/${eventSlug}/qualification/${qualificationId}`;

@@ -10,6 +10,7 @@ type EventId = string;
 type TeamId = string;
 type ShiftId = string;
 type RequirementId = string;
+type QualificationId = string;
 type UrlSlug = string;
 type TimeString = string; // ISO 8601 time string, e.g. "14:30"
 type EventDay = number; // 0 for first day, 1 for second day, etc.
@@ -75,3 +76,11 @@ interface ShiftInfo {
 }
 
 type ThemeMode = 'light' | 'dark' | 'system';
+
+interface Qualification {
+  id: QualificationId;
+  name: string;
+  eventId: EventId;
+  teamId?: TeamId;
+  errorMessage: string;
+}

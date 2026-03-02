@@ -5,7 +5,7 @@ import { Flex, Heading, Text } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 
-const PAGE_KEY = 'EventPage';
+const PAGE_KEY = 'EventDashboardPage';
 
 export const generateMetadata = metadata(PAGE_KEY, {
   title: async (params) => {

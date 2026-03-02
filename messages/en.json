@@ -5,6 +5,7 @@
     "createEvent": "Create New Event"
   },
   "EventDashboardPage": {
+    "manageMy": "Manage My",
     "volunteers": "Volunteers",
     "yourHours": "Your Hours",
     "yourShifts": "Your Shifts",
@@ -20,11 +21,6 @@
   },
   "UpdateEventPage": {
     "title": "Update Event"
-  },
-  "EventPage": {
-    "manageMy": "Manage My",
-    "teams": "Teams",
-    "volunteers": "Volunteers"
   },
   "TeamsDashboardPage": {
     "teamsForEvent": "Teams for {eventName}",
@@ -112,6 +108,13 @@
     "missingToken": "Missing reset token. Please use the link from your email.",
     "rateLimitError": "Too many attempts. Please try again in 15 minutes.",
     "passwordMismatch": "Passwords do not match."
+  },
+  "QualificationsPage": {
+    "title": "Qualifications | {eventName}"
+  },
+  "QualificationDetailsPage": {
+    "title": "{qualificationName} | {eventName}",
+    "volunteers": "Volunteers with this qualification"
   },
 
   "MenuCard": {
@@ -219,7 +222,6 @@
   "Metadata": {
     "description": "A system to support the organisation of alternative arts events"
   },
-
   "ResetPasswordEmail": {
     "subject": "Reset your password",
     "text": "Click the link to reset your password: {url}"
@@ -255,5 +257,13 @@
     "maxVolunteersDescription": "Description",
     "active": "Active",
     "requirementId": "Requirement ID"
+  },
+  "QualificationList": {
+    "title": "Qualifications",
+    "add": "Add Qualification",
+    "searchPlaceholder": "Search..."
+  },
+  "QualificationDetails": {
+    "delete": "Delete Qualification"
   }
 }
