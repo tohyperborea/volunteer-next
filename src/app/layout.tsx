@@ -55,11 +55,9 @@ export default async function RootLayout({
 
   const getChildrenBlock = () => {
     const childrenWithWrapper = (
-      <main>
-        <Flex direction="column" align="start" justify="start" p="2rem">
-          {children}
-        </Flex>
-      </main>
+      <Flex asChild direction="column" p="4" flexGrow="1">
+        <main>{children}</main>
+      </Flex>
     );
     if (user) {
       return (

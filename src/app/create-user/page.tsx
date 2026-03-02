@@ -55,7 +55,7 @@ export default async function CreateUser() {
   const teams = await getAllTeams();
 
   return (
-    <Flex direction="column" gap="4" p="4">
+    <Flex direction="column" gap="4">
       <Heading my="4">{t('title')}</Heading>
       <Card>
         <UserForm onSubmit={onSubmit} events={events} teams={teams} />
