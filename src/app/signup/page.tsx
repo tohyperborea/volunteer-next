@@ -13,6 +13,10 @@ import {
 import { checkRateLimit, AUTH_ENDPOINT_LIMITS } from '@/lib/rate-limit';
 import { getClientIp } from '@/lib/client-ip';
 import SigninContainer from '@/ui/signin-container';
+import metadata from '@/i18n/metadata';
+
+const PAGE_KEY = 'SignUpPage';
+export const generateMetadata = metadata(PAGE_KEY);
 
 type SearchParams = {
   callbackUrl?: string;
@@ -100,7 +104,7 @@ export default async function SignUpPage({
     }
   };
 
-  const t = await getTranslations('SignUpPage');
+  const t = await getTranslations(PAGE_KEY);
   const errorName = params.errorName;
   const errorEmail = params.errorEmail;
   const errorPassword = params.errorPassword;
@@ -127,7 +131,7 @@ export default async function SignUpPage({
         action={signUp}
         style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '16px' }}
       >
-        <TextField.Root name="callbackUrl" value={callbackUrl} hidden />
+        <input type="hidden" name="callbackUrl" value={callbackUrl} />
         <div>
           <TextField.Root
             name="name"
@@ -147,6 +151,7 @@ export default async function SignUpPage({
         <div>
           <TextField.Root
             name="email"
+            type="email"
             placeholder={t('emailPlaceholder') ?? ''}
             autoComplete="email"
             required
@@ -162,6 +167,7 @@ export default async function SignUpPage({
         <div>
           <TextField.Root
             name="password"
+            type="password"
             placeholder={t('passwordPlaceholder') ?? ''}
             autoComplete="new-password"
             required
@@ -175,7 +181,7 @@ export default async function SignUpPage({
             </Text>
           )}
         </div>
-        <Button type="submit">{t('buttonSignUp')}</Button>
+        <Button type="submit">{t('button')}</Button>
         <Link
           href={`/signin${callbackUrl !== '/' ? `?callbackUrl=${encodeURIComponent(callbackUrl)}` : ''}`}
         >

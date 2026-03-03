@@ -5,7 +5,7 @@ import { useCallback, useRef, useState, useTransition } from 'react';
 import { Text, AlertDialog, Button, TextField } from '@radix-ui/themes';
 import { isRedirectError } from 'next/dist/client/components/redirect-error';
 import styles from './styles.module.css';
-import { getTranslations } from 'next-intl/server';
+import { useTranslations } from 'next-intl';
 
 type View = 'signin' | 'forgot' | 'forgotSent';
 
@@ -20,7 +20,7 @@ type Props = {
   requestResetAction: (formData: FormData) => Promise<void>;
 };
 
-export async function CredentialsForm({
+export function CredentialsForm({
   callbackUrl,
   forgotSent,
   signInAction,
@@ -33,7 +33,7 @@ export async function CredentialsForm({
   );
   const [isPending, startTransition] = useTransition();
   const passwordRef = useRef<HTMLInputElement>(null);
-  const t = await getTranslations('SignInPage');
+  const t = useTranslations('SignInPage');
   const showForgot = useCallback(() => setView('forgot'), []);
   const showSignIn = useCallback(() => setView('signin'), []);
 
@@ -97,9 +97,9 @@ export async function CredentialsForm({
 
   return (
     <>
-      <Text as="p">{t('descriptionOne')}</Text>
+      <Text as="p">{t('title')}</Text>
       <form onSubmit={handleSignIn} className={styles.signinForm}>
-        <TextField.Root name="callbackUrl" value={callbackUrl ?? ''} hidden />
+        <input type="hidden" name="callbackUrl" value={callbackUrl ?? ''} />
         <TextField.Root
           name="email"
           placeholder={t('emailPlaceholder') ?? ''}
@@ -108,6 +108,7 @@ export async function CredentialsForm({
         />
         <TextField.Root
           name="password"
+          type="password"
           placeholder={t('passwordPlaceholder') ?? ''}
           autoComplete="current-password"
           required

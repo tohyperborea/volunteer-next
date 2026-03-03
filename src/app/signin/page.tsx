@@ -8,6 +8,10 @@ import { getTranslations } from 'next-intl/server';
 import { VisuallyHidden } from '@radix-ui/themes';
 import SigninContainer from '@/ui/signin-container';
 import { CredentialsForm } from './credentials-form';
+import metadata from '@/i18n/metadata';
+
+const PAGE_KEY = 'SignInPage';
+export const generateMetadata = metadata(PAGE_KEY);
 
 const useOAuth = AUTH_MODE === 'oauth';
 
@@ -44,13 +48,13 @@ export default async function SignInPage({
     const email = (formData.get('email') as string)?.trim();
     const password = formData.get('password') as string;
     const url = getSafeCallbackUrl(formData.get('callbackUrl') as string | null);
-    if (!email || !password) return { ok: false, reason: 'invalid_credentials' };
+    if (!email || !password) {
+      return { ok: false, reason: 'invalid_credentials' };
+    }
     try {
       await auth.api.signInEmail({
         body: { email, password, callbackURL: url }
       });
-      redirect(url);
-      return { ok: true };
     } catch (err: unknown) {
       const status = (err as { status?: string }).status;
       const statusCode = (err as { statusCode?: number }).statusCode;
@@ -63,6 +67,7 @@ export default async function SignInPage({
       recordFailedLogin(email, ip);
       return { ok: false, reason: 'invalid_credentials' };
     }
+    redirect(url);
   };
 
   const requestReset = async (formData: FormData) => {
@@ -79,7 +84,7 @@ export default async function SignInPage({
     redirect('/signin?forgotSent=1');
   };
 
-  const t = await getTranslations('SignInPage');
+  const t = await getTranslations(PAGE_KEY);
   return (
     <SigninContainer>
       <VisuallyHidden>
