@@ -13,6 +13,10 @@ import {
 import { checkRateLimit, AUTH_ENDPOINT_LIMITS } from '@/lib/rate-limit';
 import { getClientIp } from '@/lib/client-ip';
 import SigninContainer from '@/ui/signin-container';
+import metadata from '@/i18n/metadata';
+
+const PAGE_KEY = 'SignUpPage';
+export const generateMetadata = metadata(PAGE_KEY);
 
 type SearchParams = {
   callbackUrl?: string;
@@ -100,7 +104,7 @@ export default async function SignUpPage({
     }
   };
 
-  const t = await getTranslations('SignUpPage');
+  const t = await getTranslations(PAGE_KEY);
   const errorName = params.errorName;
   const errorEmail = params.errorEmail;
   const errorPassword = params.errorPassword;

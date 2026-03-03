@@ -8,6 +8,10 @@ import { getTranslations } from 'next-intl/server';
 import { VisuallyHidden } from '@radix-ui/themes';
 import SigninContainer from '@/ui/signin-container';
 import { CredentialsForm } from './credentials-form';
+import metadata from '@/i18n/metadata';
+
+const PAGE_KEY = 'SignInPage';
+export const generateMetadata = metadata(PAGE_KEY);
 
 const useOAuth = AUTH_MODE === 'oauth';
 
@@ -80,7 +84,7 @@ export default async function SignInPage({
     redirect('/signin?forgotSent=1');
   };
 
-  const t = await getTranslations('SignInPage');
+  const t = await getTranslations(PAGE_KEY);
   return (
     <SigninContainer>
       <VisuallyHidden>
