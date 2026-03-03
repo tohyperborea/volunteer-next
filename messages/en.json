@@ -14,7 +14,10 @@
     "teams": "Teams",
     "qualifications": "Qualifications",
     "findShifts": "Find Shifts",
-    "eventSettings": "Event Settings"
+    "eventSettings": "Event Settings",
+    "createQualifications": "Create Qualifications",
+    "assignQualifications": "Assign Qualifications",
+    "requests": "Requests"
   },
   "CreateEventPage": {
     "title": "Create Event"

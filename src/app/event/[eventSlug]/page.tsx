@@ -1,7 +1,9 @@
 import metadata from '@/i18n/metadata';
 import { getEventBySlug } from '@/service/event-service';
-import LinkCard, { LinkCardContent, LinkCardList } from '@/ui/link-card';
-import { Flex, Heading, Text } from '@radix-ui/themes';
+import LinkCard, { LinkCardList, LinkCardContent } from '@/ui/link-card';
+import LinkMenu, { SubLinkMenu } from '@/ui/link-menu';
+import { getQualificationsPath } from '@/utils/path';
+import { Flex, Heading, Link } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 
@@ -39,6 +41,22 @@ export default async function EventPage({ params }: Props) {
           <LinkCardContent pretext={t('manageMy')} text={t('volunteers')} />
         </LinkCard>
       </LinkCardList>
+      <LinkMenu>
+        <SubLinkMenu title="TODO: TEAMS">
+          <Link color="gray">TODO: VIEW ALL TEAMS</Link>
+          <Link color="gray">TODO: MY TEAM</Link>
+        </SubLinkMenu>
+        <SubLinkMenu title={t('qualifications')}>
+          <Link href={getQualificationsPath(eventSlug)}>{t('createQualifications')}</Link>
+          <Link color="gray">{t('assignQualifications')}</Link>
+          <Link color="gray">{t('requests')}</Link>
+        </SubLinkMenu>
+        <SubLinkMenu title="TODO: EVENTS">
+          <Link color="gray">TODO: 2026</Link>
+          <Link color="gray">TODO: 2025</Link>
+          <Link color="gray">TODO: VIEW ALL EVENTS</Link>
+        </SubLinkMenu>
+      </LinkMenu>
     </Flex>
   );
 }
