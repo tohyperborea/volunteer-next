@@ -3,14 +3,6 @@
   margin: 0;
 }
 
-.sublist {
-  display: none;
-}
-
-.open .sublist {
-  display: flex;
-}
-
 .icon {
   transition: transform 0.2s ease;
 }
