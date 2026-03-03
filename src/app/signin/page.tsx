@@ -44,13 +44,13 @@ export default async function SignInPage({
     const email = (formData.get('email') as string)?.trim();
     const password = formData.get('password') as string;
     const url = getSafeCallbackUrl(formData.get('callbackUrl') as string | null);
-    if (!email || !password) return { ok: false, reason: 'invalid_credentials' };
+    if (!email || !password) {
+      return { ok: false, reason: 'invalid_credentials' };
+    }
     try {
       await auth.api.signInEmail({
         body: { email, password, callbackURL: url }
       });
-      redirect(url);
-      return { ok: true };
     } catch (err: unknown) {
       const status = (err as { status?: string }).status;
       const statusCode = (err as { statusCode?: number }).statusCode;
@@ -63,6 +63,7 @@ export default async function SignInPage({
       recordFailedLogin(email, ip);
       return { ok: false, reason: 'invalid_credentials' };
     }
+    redirect(url);
   };
 
   const requestReset = async (formData: FormData) => {

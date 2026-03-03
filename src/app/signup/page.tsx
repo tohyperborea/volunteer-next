@@ -127,7 +127,7 @@ export default async function SignUpPage({
         action={signUp}
         style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '16px' }}
       >
-        <TextField.Root name="callbackUrl" value={callbackUrl} hidden />
+        <input type="hidden" name="callbackUrl" value={callbackUrl} />
         <div>
           <TextField.Root
             name="name"
@@ -147,6 +147,7 @@ export default async function SignUpPage({
         <div>
           <TextField.Root
             name="email"
+            type="email"
             placeholder={t('emailPlaceholder') ?? ''}
             autoComplete="email"
             required
@@ -162,6 +163,7 @@ export default async function SignUpPage({
         <div>
           <TextField.Root
             name="password"
+            type="password"
             placeholder={t('passwordPlaceholder') ?? ''}
             autoComplete="new-password"
             required
@@ -175,7 +177,7 @@ export default async function SignUpPage({
             </Text>
           )}
         </div>
-        <Button type="submit">{t('buttonSignUp')}</Button>
+        <Button type="submit">{t('button')}</Button>
         <Link
           href={`/signin${callbackUrl !== '/' ? `?callbackUrl=${encodeURIComponent(callbackUrl)}` : ''}`}
         >
