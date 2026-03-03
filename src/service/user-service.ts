@@ -270,3 +270,15 @@ export const undeleteUser = async (userId: UserId, client?: PoolClient): Promise
   const db = client || pool;
   await db.query('UPDATE "user" SET "deletedAt" = NULL WHERE id = $1', [userId]);
 };
+
+/**
+ * Fetches all users with a specific qualification.
+ * @param qualificationId - The ID of the qualification to filter users by.
+ * @returns An array of User objects that have the specified qualification.
+ */
+export const getUsersWithQualification = cache(
+  async (qualificationId: QualificationId): Promise<User[]> => {
+    console.log(`Fetching users with qualification ${qualificationId}`);
+    return []; // TODO
+  }
+);

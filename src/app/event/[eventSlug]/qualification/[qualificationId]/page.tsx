@@ -6,6 +6,7 @@ import {
   updateQualification
 } from '@/service/qualification-service';
 import { getTeamsForEvent } from '@/service/team-service';
+import { getUsersWithQualification } from '@/service/user-service';
 import { checkAuthorisation } from '@/session';
 import QualificationDetails from '@/ui/qualification-details';
 import VolunteerList from '@/ui/volunteer-list';
@@ -44,6 +45,7 @@ export default async function QualificationsPage({ params }: Props) {
     return notFound();
   }
   const teams = await getTeamsForEvent(event.id);
+  const volunteers = await getUsersWithQualification(qualification.id);
 
   const editorRoles: UserRole[] = [
     {
@@ -100,7 +102,7 @@ export default async function QualificationsPage({ params }: Props) {
       <Heading size="3" as="h2">
         {t('volunteers')}
       </Heading>
-      <VolunteerList />
+      <VolunteerList volunteers={volunteers} />
     </Flex>
   );
 }

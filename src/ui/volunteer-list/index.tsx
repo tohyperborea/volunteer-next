@@ -6,6 +6,10 @@
 
 'use client';
 
-export default function VolunteerList() {
-  return <div>TODO</div>;
+interface Props {
+  volunteers: User[];
+}
+
+export default function VolunteerList({}: Props) {
+  return <div>TODO: VolunteerList</div>;
 }
