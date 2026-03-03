@@ -15,6 +15,7 @@ import styles from './styles.module.css';
 interface Props {
   eventId: EventId;
   teams: TeamInfo[];
+  requireTeam?: boolean;
   editing?: QualificationInfo;
   creating?: boolean;
   onClose?: () => void;
@@ -24,6 +25,7 @@ interface Props {
 export default function QualificationDialog({
   eventId,
   teams,
+  requireTeam,
   editing,
   creating,
   onClose,
@@ -33,6 +35,7 @@ export default function QualificationDialog({
   const open = creating || isEdit;
   const t = useTranslations('QualificationDialog');
   const title = creating ? t('add') : t('edit');
+  const defaultTeam = requireTeam ? teams[0]?.id : 'null';
   return (
     <Dialog.Root open={open} onOpenChange={(open) => !open && onClose?.()}>
       <Dialog.Description hidden>{title}</Dialog.Description>
@@ -40,7 +43,7 @@ export default function QualificationDialog({
         <form style={{ height: '100%' }}>
           <input type="hidden" name="eventId" value={eventId} />
           {editing && <input type="hidden" name="id" value={editing.id} />}
-          <Flex direction="column" gap="4" mt="6" height="100%" width="100%">
+          <Flex direction="column" gap="4" height="100%" width="100%">
             <Dialog.Title as="h2" mt="4" mb="6">
               {title}
             </Dialog.Title>
@@ -62,11 +65,13 @@ export default function QualificationDialog({
               name={t('team')}
               description={t('teamDescription')}
             >
-              <Select.Root name="teamId" defaultValue={editing?.teamId ?? 'null'}>
+              <Select.Root name="teamId" defaultValue={editing?.teamId ?? defaultTeam}>
                 <Select.Trigger placeholder={t('noTeam')} />
                 <Select.Content>
                   <Select.Group>
-                    <Select.Item value="null">{t('noTeam')}</Select.Item>
+                    <Select.Item disabled={requireTeam} value="null">
+                      {t('noTeam')}
+                    </Select.Item>
                   </Select.Group>
                   <Select.Separator />
                   <Select.Group>

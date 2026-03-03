@@ -63,7 +63,7 @@ export default async function QualificationsPage({ params }: Props) {
       teamId: qualification.teamId
     });
   }
-  const editable = await checkAuthorisation(editorRoles);
+  const editable = await checkAuthorisation(editorRoles, true);
 
   const onSave = async (data: FormData) => {
     'use server';

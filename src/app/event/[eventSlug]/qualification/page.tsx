@@ -6,7 +6,7 @@ import {
   updateQualification
 } from '@/service/qualification-service';
 import { getTeamsForEvent } from '@/service/team-service';
-import { checkAuthorisation } from '@/session';
+import { checkAuthorisation, getMatchingRoles } from '@/session';
 import QualificationList from '@/ui/qualification-list';
 import { getQualificationsPath } from '@/utils/path';
 import { validateNewQualification } from '@/validator/qualification-validator';
@@ -41,7 +41,13 @@ export default async function QualificationsPage({ params }: Props) {
     { type: 'admin' },
     { type: 'organiser', eventId: event.id }
   ];
-  const editable = await checkAuthorisation(editorRoles);
+  const canEditAll = await checkAuthorisation(editorRoles, true);
+  const editableTeams = canEditAll
+    ? undefined
+    : await getMatchingRoles({ type: 'team-lead', eventId: event.id }).then((roles) =>
+        roles.filter((role) => role.type === 'team-lead').map((role) => role.teamId)
+      );
+  const editable = Boolean(editableTeams?.length) || canEditAll;
 
   const teams = await getTeamsForEvent(event.id);
   const qualifications = await getQualificationsForEvent(event.id);
@@ -78,6 +84,7 @@ export default async function QualificationsPage({ params }: Props) {
         qualifications={qualifications}
         event={event}
         teams={teams}
+        editableTeams={editableTeams}
         onSave={editable ? onSave : undefined}
       />
     </Box>

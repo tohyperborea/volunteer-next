@@ -19,10 +19,17 @@ interface Props {
   qualifications: QualificationInfo[];
   event: EventInfo;
   teams: TeamInfo[];
+  editableTeams?: TeamId[];
   onSave?: (data: FormData) => Promise<never>;
 }
 
-export default function QualificationList({ qualifications, event, teams, onSave }: Props) {
+export default function QualificationList({
+  qualifications,
+  event,
+  teams,
+  editableTeams,
+  onSave
+}: Props) {
   const t = useTranslations('QualificationList');
   const canEdit = Boolean(onSave);
   const [creating, setCreating] = useState(false);
@@ -34,6 +41,7 @@ export default function QualificationList({ qualifications, event, teams, onSave
     }),
     {} as Record<TeamId, string>
   );
+  const editableSet = editableTeams ? new Set(editableTeams) : null;
   return (
     <Flex direction="column" gap="4">
       <TextField.Root placeholder={t('searchPlaceholder')}>
@@ -58,25 +66,31 @@ export default function QualificationList({ qualifications, event, teams, onSave
       )}
       <Flex asChild direction="column" gap="4">
         <ul className={styles.list}>
-          {qualifications.map((qualification) => (
-            <Box asChild key={qualification.id}>
-              <li>
-                <QualificationCard
-                  asLink
-                  event={event}
-                  teamName={qualification.teamId && teamNames[qualification.teamId]}
-                  qualification={qualification}
-                  onEdit={canEdit ? () => setEditing(qualification) : undefined}
-                />
-              </li>
-            </Box>
-          ))}
+          {qualifications.map((qualification) => {
+            const isEditable =
+              canEdit &&
+              (!editableSet || (qualification.teamId && editableSet.has(qualification.teamId)));
+            return (
+              <Box asChild key={qualification.id}>
+                <li>
+                  <QualificationCard
+                    asLink
+                    event={event}
+                    teamName={qualification.teamId && teamNames[qualification.teamId]}
+                    qualification={qualification}
+                    onEdit={isEditable ? () => setEditing(qualification) : undefined}
+                  />
+                </li>
+              </Box>
+            );
+          })}
         </ul>
       </Flex>
       {canEdit && (
         <QualificationDialog
           eventId={event.id}
-          teams={teams}
+          teams={editableSet ? teams.filter((team) => editableSet.has(team.id)) : teams}
+          requireTeam={Boolean(editableSet)}
           editing={editing}
           creating={creating}
           onClose={() => {

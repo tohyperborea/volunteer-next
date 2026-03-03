@@ -30,14 +30,25 @@ export const currentUser = cache(async (): Promise<User | null> => {
           id: 'debug-organiser',
           name: 'Debug Organiser',
           email: 'organiser@localhost',
-          roles: [{ type: 'organiser', eventId: 'debug-event' }]
+          roles: [
+            {
+              type: 'organiser',
+              eventId: process.env.DEBUG_FORCE_ROLE_EVENTID ?? 'debug-event'
+            }
+          ]
         };
       case 'team-lead':
         return {
           id: 'debug-team-lead',
           name: 'Debug Team Lead',
           email: 'teamlead@localhost',
-          roles: [{ type: 'team-lead', eventId: 'debug-event', teamId: 'debug-team' }]
+          roles: [
+            {
+              type: 'team-lead',
+              eventId: process.env.DEBUG_FORCE_ROLE_EVENTID ?? 'debug-event',
+              teamId: process.env.DEBUG_FORCE_ROLE_TEAMID ?? 'debug-team'
+            }
+          ]
         };
       case 'volunteer':
         return {
@@ -84,4 +95,17 @@ export const checkAuthorisation = async (
     unauthorized();
   }
   return false;
+};
+
+/**
+ * Finds and returns the user's roles that match any of the provided criteria.
+ * @param toMatch - A UserRoleMatchCriteria to match against the user's roles.
+ * @returns An array of UserRole objects from the user's roles that match any of the provided criteria.
+ */
+export const getMatchingRoles = async (toMatch: UserRoleMatchCriteria): Promise<UserRole[]> => {
+  const user = await currentUser();
+  if (!user) {
+    return [];
+  }
+  return user.roles.filter((userRole) => roleMatches(userRole, toMatch));
 };
