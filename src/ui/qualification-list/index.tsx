@@ -63,7 +63,7 @@ export default function QualificationList({ qualifications, event, teams, onSave
               <li>
                 <QualificationCard
                   asLink
-                  eventName={event.name}
+                  event={event}
                   teamName={qualification.teamId && teamNames[qualification.teamId]}
                   qualification={qualification}
                   onEdit={canEdit ? () => setEditing(qualification) : undefined}

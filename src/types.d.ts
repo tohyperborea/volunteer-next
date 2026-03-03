@@ -5,6 +5,8 @@
  * @since 2025-11-10
  */
 
+type PartialWithRequired<T, R extends keyof T> = Partial<T> & Pick<T, R>;
+
 type UserId = string;
 type EventId = string;
 type TeamId = string;
@@ -39,6 +41,8 @@ type UserRole =
 
   // Manage volunteers in assigned area
   | { type: 'team-lead'; eventId: EventId; teamId: TeamId };
+
+type UserRoleMatchCriteria = PartialWithRequired<UserRole, 'type'>;
 
 interface EventInfo {
   id: EventId;

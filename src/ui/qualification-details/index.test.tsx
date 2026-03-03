@@ -45,7 +45,7 @@ describe('QualificationDetails', () => {
     expect(QualificationCard).toHaveBeenCalledWith(
       expect.objectContaining({
         qualification: mockQualification,
-        eventName: mockEvent.name,
+        event: mockEvent,
         teamName: 'Team One'
       }),
       undefined

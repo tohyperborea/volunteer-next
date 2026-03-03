@@ -8,7 +8,7 @@
 
 'use client';
 
-import { Button, Dialog, Select, Flex, Heading, Text, TextField } from '@radix-ui/themes';
+import { Button, Dialog, Select, Flex, Heading, Text, TextField, TextArea } from '@radix-ui/themes';
 import { useTranslations } from 'next-intl';
 import styles from './styles.module.css';
 
@@ -38,8 +38,8 @@ export default function QualificationDialog({
       <Dialog.Description hidden>{title}</Dialog.Description>
       <Dialog.Content className={styles.fullScreenDialog}>
         <form style={{ height: '100%' }}>
-          <input type="hidden" name="id" value={editing?.id ?? ''} />
           <input type="hidden" name="eventId" value={eventId} />
+          {editing && <input type="hidden" name="id" value={editing.id} />}
           <Flex direction="column" gap="4" mt="6" height="100%" width="100%">
             <Dialog.Title as="h2" mt="4" mb="6">
               {title}
@@ -62,7 +62,7 @@ export default function QualificationDialog({
               name={t('team')}
               description={t('teamDescription')}
             >
-              <Select.Root name="team" defaultValue={editing?.teamId ?? 'null'}>
+              <Select.Root name="teamId" defaultValue={editing?.teamId ?? 'null'}>
                 <Select.Trigger placeholder={t('noTeam')} />
                 <Select.Content>
                   <Select.Group>
@@ -84,7 +84,7 @@ export default function QualificationDialog({
               name={t('errorMessage')}
               description={t('errorMessageDescription')}
             >
-              <TextField.Root
+              <TextArea
                 defaultValue={editing?.errorMessage}
                 aria-labelledby="qualification-errorMessage"
                 placeholder={t('errorMessagePlaceholder')}

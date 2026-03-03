@@ -38,7 +38,7 @@ export default function QualificationDetails({
     <Flex direction="column" gap="4">
       <QualificationCard
         qualification={qualification}
-        eventName={event.name}
+        event={event}
         teamName={teamName}
         onEdit={canEdit ? () => setEditing(qualification) : undefined}
       />

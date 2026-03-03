@@ -7,15 +7,22 @@ jest.mock('@/utils/path', () => ({
 }));
 
 describe('QualificationCard', () => {
-  const mockQualification = {
+  const mockEvent: EventInfo = {
+    id: 'event-id',
+    name: 'Event Name',
+    slug: 'event-slug',
+    startDate: new Date(),
+    endDate: new Date()
+  };
+  const mockQualification: QualificationInfo = {
     id: 'qualification-id',
     name: 'Qualification Name',
-    eventId: 'event-id',
+    eventId: mockEvent.id,
     errorMessage: 'Error Message'
   };
 
   it('renders the qualification name and event name', () => {
-    render(<QualificationCard qualification={mockQualification} eventName="Event Name" />);
+    render(<QualificationCard qualification={mockQualification} event={mockEvent} />);
 
     expect(screen.getByRole('heading', { name: /Qualification Name/i })).toBeInTheDocument();
     expect(screen.getByText(/Event Name/i)).toBeInTheDocument();
@@ -23,11 +30,7 @@ describe('QualificationCard', () => {
 
   it('renders the team name if provided', () => {
     render(
-      <QualificationCard
-        qualification={mockQualification}
-        eventName="Event Name"
-        teamName="Team Name"
-      />
+      <QualificationCard qualification={mockQualification} event={mockEvent} teamName="Team Name" />
     );
 
     expect(screen.getByText(/Team Name/i)).toBeInTheDocument();
@@ -37,11 +40,7 @@ describe('QualificationCard', () => {
     const onEditMock = jest.fn();
 
     render(
-      <QualificationCard
-        qualification={mockQualification}
-        eventName="Event Name"
-        onEdit={onEditMock}
-      />
+      <QualificationCard qualification={mockQualification} event={mockEvent} onEdit={onEditMock} />
     );
 
     const editButton = screen.getByRole('button');
@@ -54,14 +53,14 @@ describe('QualificationCard', () => {
   it('renders as a link when asLink is true', () => {
     (getQualificationDetailsPath as jest.Mock).mockReturnValue('/qualification-details');
 
-    render(<QualificationCard qualification={mockQualification} eventName="Event Name" asLink />);
+    render(<QualificationCard qualification={mockQualification} event={mockEvent} asLink />);
 
     const link = screen.getByRole('link');
     expect(link).toHaveAttribute('href', '/qualification-details');
   });
 
   it('does not render the edit button if onEdit is not provided', () => {
-    render(<QualificationCard qualification={mockQualification} eventName="Event Name" />);
+    render(<QualificationCard qualification={mockQualification} event={mockEvent} />);
 
     expect(screen.queryByRole('button')).not.toBeInTheDocument();
   });

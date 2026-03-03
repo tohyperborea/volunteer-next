@@ -14,7 +14,7 @@ import { getQualificationDetailsPath } from '@/utils/path';
 
 interface Props {
   qualification: QualificationInfo;
-  eventName: string;
+  event: EventInfo;
   teamName?: string;
   onEdit?: () => void;
   asLink?: boolean;
@@ -24,7 +24,7 @@ export default function QualificationCard({
   qualification,
   onEdit,
   asLink,
-  eventName,
+  event,
   teamName
 }: Props) {
   const Inner = () => (
@@ -45,7 +45,7 @@ export default function QualificationCard({
           </IconButton>
         )}
       </Flex>
-      <Text color="gray">{eventName}</Text>
+      <Text color="gray">{event.name}</Text>
       {teamName && <Text color="gray">{teamName}</Text>}
     </Flex>
   );
@@ -55,7 +55,7 @@ export default function QualificationCard({
       {asLink ? (
         <Link
           href={getQualificationDetailsPath({
-            eventSlug: qualification.eventId,
+            eventSlug: event.slug,
             qualificationId: qualification.id
           })}
         >

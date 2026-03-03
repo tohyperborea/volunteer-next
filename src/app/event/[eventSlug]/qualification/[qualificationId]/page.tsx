@@ -1,31 +1,35 @@
 import metadata from '@/i18n/metadata';
 import { getEventBySlug } from '@/service/event-service';
-import { getTeamById, getTeamsForEvent } from '@/service/team-service';
+import {
+  deleteQualification,
+  getQualificationById,
+  updateQualification
+} from '@/service/qualification-service';
+import { getTeamsForEvent } from '@/service/team-service';
+import { checkAuthorisation } from '@/session';
 import QualificationDetails from '@/ui/qualification-details';
 import VolunteerList from '@/ui/volunteer-list';
 import { getQualificationDetailsPath, getQualificationsPath } from '@/utils/path';
+import { validateExistingQualification } from '@/validator/qualification-validator';
 import { Flex, Heading } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
+import { revalidatePath } from 'next/cache';
 import { notFound, redirect } from 'next/navigation';
 
 const PAGE_KEY = 'QualificationDetailsPage';
 
 export const generateMetadata = metadata(PAGE_KEY, {
   title: async (params) => {
-    const { eventSlug } = params;
+    const { eventSlug, qualificationId } = params;
     const event = eventSlug ? await getEventBySlug(eventSlug) : null;
+    const qualification = qualificationId ? await getQualificationById(qualificationId) : null;
     const t = await getTranslations(PAGE_KEY);
-    return t('title', { qualificationName: MOCK_QUAL.name, eventName: event?.name ?? '' });
+    return t('title', {
+      qualificationName: qualification?.name ?? '',
+      eventName: event?.name ?? ''
+    });
   }
 });
-
-const MOCK_QUAL: QualificationInfo = {
-  id: 'qual-1',
-  name: 'First Aid Training',
-  eventId: 'event-1',
-  teamId: '847ccf19-0072-486b-8c3f-81a36d5c8d94',
-  errorMessage: 'You must have a valid first aid certificate to qualify for this role.'
-};
 
 interface Props {
   params: Promise<{ eventSlug: string; qualificationId: QualificationId }>;
@@ -35,30 +39,53 @@ export default async function QualificationsPage({ params }: Props) {
   const { eventSlug, qualificationId } = await params;
   const t = await getTranslations(PAGE_KEY);
   const event = await getEventBySlug(eventSlug);
-  if (!event) {
+  const qualification = await getQualificationById(qualificationId);
+  if (!event || !qualification || qualification.eventId !== event.id) {
     return notFound();
   }
-  const qualification = MOCK_QUAL; // TODO fetch qualification by ID
   const teams = await getTeamsForEvent(event.id);
 
-  // TODO: Authorisation for editors
+  const editorRoles: UserRole[] = [
+    {
+      type: 'admin'
+    },
+    {
+      type: 'organiser',
+      eventId: event.id
+    }
+  ];
+  if (qualification.teamId) {
+    editorRoles.push({
+      type: 'team-lead',
+      eventId: event.id,
+      teamId: qualification.teamId
+    });
+  }
+  const editable = await checkAuthorisation(editorRoles);
 
   const onSave = async (data: FormData) => {
     'use server';
-    console.log('Saving qualification with data:', Object.fromEntries(data.entries()));
-    // TODO authorisation
-    // TODO validation
-    // TODO persistence
-    redirect(getQualificationDetailsPath({ eventSlug, qualificationId }));
+    await checkAuthorisation(editorRoles);
+    const updatedQualification = validateExistingQualification(data);
+    await updateQualification(updatedQualification);
+
+    const path = getQualificationDetailsPath({ eventSlug, qualificationId });
+    revalidatePath(path);
+    redirect(path);
   };
 
   const onDelete = async (data: FormData) => {
     'use server';
-    console.log('Deleting qualification with data:', Object.fromEntries(data.entries()));
-    // TODO authorisation
-    // TODO validation
-    // TODO persistence
-    redirect(getQualificationsPath(eventSlug));
+    await checkAuthorisation(editorRoles);
+    const id = data.get('id')?.toString();
+    if (!id) {
+      throw new Error('Qualification ID is required');
+    }
+    await deleteQualification(id);
+
+    const path = getQualificationsPath(event.slug);
+    revalidatePath(path);
+    redirect(path);
   };
 
   return (
@@ -67,8 +94,8 @@ export default async function QualificationsPage({ params }: Props) {
         qualification={qualification}
         event={event}
         teams={teams}
-        onSave={onSave}
-        onDelete={onDelete}
+        onSave={editable ? onSave : undefined}
+        onDelete={editable ? onDelete : undefined}
       />
       <Heading size="3" as="h2">
         {t('volunteers')}

@@ -1,4 +1,4 @@
-import { rolesEq } from './roles';
+import { roleMatches, rolesEq } from './roles';
 
 type UserRole =
   | { type: 'admin' }
@@ -60,5 +60,69 @@ describe('rolesEq', () => {
     const roleB: UserRole = { type: 'team-lead', eventId: 'event-1', teamId: 'team-1' };
 
     expect(rolesEq(roleA, roleB)).toBe(false);
+  });
+});
+
+describe('roleMatches', () => {
+  it('should return true for matching admin roles', () => {
+    const userRole: UserRole = { type: 'admin' };
+    const acceptedRole: UserRoleMatchCriteria = { type: 'admin' };
+    expect(roleMatches(userRole, acceptedRole)).toBe(true);
+  });
+
+  it('should return false for non-matching admin roles', () => {
+    const userRole: UserRole = { type: 'organiser', eventId: '1' };
+    const acceptedRole: UserRoleMatchCriteria = { type: 'admin' };
+    expect(roleMatches(userRole, acceptedRole)).toBe(false);
+  });
+
+  it('should return true for organiser roles matching eventId', () => {
+    const userRole: UserRole = { type: 'organiser', eventId: '1' };
+    const acceptedRole: UserRoleMatchCriteria = { type: 'organiser', eventId: '1' };
+    expect(roleMatches(userRole, acceptedRole)).toBe(true);
+  });
+
+  it('should return true for organiser roles with no eventId in acceptedRole', () => {
+    const userRole: UserRole = { type: 'organiser', eventId: '1' };
+    const acceptedRole: UserRoleMatchCriteria = { type: 'organiser' };
+    expect(roleMatches(userRole, acceptedRole)).toBe(true);
+  });
+
+  it('should return false for organiser roles with non-matching eventId', () => {
+    const userRole: UserRole = { type: 'organiser', eventId: '1' };
+    const acceptedRole: UserRoleMatchCriteria = { type: 'organiser', eventId: '2' };
+    expect(roleMatches(userRole, acceptedRole)).toBe(false);
+  });
+
+  it('should return true for team-lead roles matching eventId and teamId', () => {
+    const userRole: UserRole = { type: 'team-lead', eventId: '1', teamId: 'A' };
+    const acceptedRole: UserRoleMatchCriteria = { type: 'team-lead', eventId: '1', teamId: 'A' };
+    expect(roleMatches(userRole, acceptedRole)).toBe(true);
+  });
+
+  it('should return true for team-lead roles with matching eventId and no teamId in acceptedRole', () => {
+    const userRole: UserRole = { type: 'team-lead', eventId: '1', teamId: 'A' };
+    const acceptedRole: UserRoleMatchCriteria = { type: 'team-lead', eventId: '1' };
+    expect(roleMatches(userRole, acceptedRole)).toBe(true);
+  });
+
+  it('should return true for team-lead roles with matching teamId and no eventId in acceptedRole', () => {
+    const userRole: UserRole = { type: 'team-lead', eventId: '1', teamId: 'A' };
+    const acceptedRole: UserRoleMatchCriteria = { type: 'team-lead', teamId: 'A' };
+    expect(roleMatches(userRole, acceptedRole)).toBe(true);
+  });
+
+  it('should return true for team-lead roles with no eventId or teamId in acceptedRole', () => {
+    const userRole: UserRole = { type: 'team-lead', eventId: '1', teamId: 'A' };
+    const acceptedRole: UserRoleMatchCriteria = { type: 'team-lead' };
+    expect(roleMatches(userRole, acceptedRole)).toBe(true);
+  });
+
+  it('should return false for team-lead roles with non-matching eventId or teamId', () => {
+    const userRole: UserRole = { type: 'team-lead', eventId: '1', teamId: 'A' };
+    const acceptedRole1: UserRoleMatchCriteria = { type: 'team-lead', eventId: '2', teamId: 'A' };
+    const acceptedRole2: UserRoleMatchCriteria = { type: 'team-lead', eventId: '1', teamId: 'B' };
+    expect(roleMatches(userRole, acceptedRole1)).toBe(false);
+    expect(roleMatches(userRole, acceptedRole2)).toBe(false);
   });
 });
