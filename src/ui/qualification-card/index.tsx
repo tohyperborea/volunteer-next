@@ -27,6 +27,7 @@ export default function QualificationCard({
   event,
   teamName
 }: Props) {
+  const cardId = `qualification-card-${qualification.id}`;
   const Inner = () => (
     <Flex p="3" direction="column" gap="1">
       <Flex justify="between" align="center">
@@ -51,7 +52,7 @@ export default function QualificationCard({
   );
 
   return (
-    <Card className={styles.card} asChild={asLink}>
+    <Card className={styles.card} asChild={asLink} id={cardId}>
       {asLink ? (
         <Link
           href={getQualificationDetailsPath({

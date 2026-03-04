@@ -121,7 +121,43 @@ describe('QualificationDialog', () => {
       />
     );
 
-    fireEvent.click(screen.getAllByText('noTeam')[0]);
+    fireEvent.click(screen.getByRole('combobox'));
+    expect(screen.getByRole('option', { name: 'Team 1' })).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: 'Team 2' })).toBeInTheDocument();
+  });
+
+  it('disables the "no team" option when requireTeam is true', () => {
+    render(
+      <QualificationDialog
+        eventId={mockEventId}
+        teams={mockTeams}
+        creating={true}
+        requireTeam={true}
+        onClose={mockOnClose}
+        onSave={mockOnSave}
+      />
+    );
+
+    fireEvent.click(screen.getByRole('combobox'));
+    expect(screen.getByRole('option', { name: 'noTeam' })).toHaveAttribute('aria-disabled', 'true');
+    expect(screen.getByRole('option', { name: 'Team 1' })).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: 'Team 2' })).toBeInTheDocument();
+  });
+
+  it('allows the "no team" option when requireTeam is false', () => {
+    render(
+      <QualificationDialog
+        eventId={mockEventId}
+        teams={mockTeams}
+        creating={true}
+        requireTeam={false}
+        onClose={mockOnClose}
+        onSave={mockOnSave}
+      />
+    );
+
+    fireEvent.click(screen.getByRole('combobox'));
+    expect(screen.getByRole('option', { name: 'noTeam' })).not.toHaveAttribute('aria-disabled');
     expect(screen.getByRole('option', { name: 'Team 1' })).toBeInTheDocument();
     expect(screen.getByRole('option', { name: 'Team 2' })).toBeInTheDocument();
   });

@@ -21,6 +21,12 @@ describe('QualificationCard', () => {
     errorMessage: 'Error Message'
   };
 
+  it('renders the card with the correct id', () => {
+    render(<QualificationCard qualification={mockQualification} event={mockEvent} />);
+    const card = document.getElementById(`qualification-card-${mockQualification.id}`);
+    expect(card).toBeInTheDocument();
+  });
+
   it('renders the qualification name and event name', () => {
     render(<QualificationCard qualification={mockQualification} event={mockEvent} />);
 
