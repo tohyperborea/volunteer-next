@@ -1,7 +1,7 @@
 #!/bin/sh
 # Run Liquibase migrations against a remote Postgres (e.g. Neon).
 # Requires POSTGRES_URL in .env.local (or exported).
-# Usage: ./db/migrate-neon.sh   or   npm run migrate:neon
+# Usage: ./db/migrate-neon.sh   or   npm run neon:migrate
 
 set -e
 

@@ -20,8 +20,8 @@ A system to support the organisation of alternative arts festivals.
 3. Create an AUTH_SECRET token: `npx auth secret`
 4. Fill in all the `.env.local` placeholder values
 5. Set up your database:
-   - **Option A (Local Docker)**: Start the database: `npm run start:db`
-   - **Option B (Neon or other hosted Postgres)**: Set `POSTGRES_URL` in `.env.local` (e.g. `postgresql://user:password@host/dbname?sslmode=require`) and run migrations: `npm run migrate:neon`
+   - **Option A (Local Docker)**: Start the database: `npm run db:start`
+   - **Option B (Neon or other hosted Postgres)**: Set `POSTGRES_URL` in `.env.local` (e.g. `postgresql://user:password@host/dbname?sslmode=require`) and run migrations: `npm run neon:migrate`
 6. Run development server: `npm run dev`
 7. Visit http://localhost:3000
 
@@ -52,14 +52,16 @@ Sideburn uses its Pretix instance as the authentication provider for volunteerin
 7. Set the value of `OAUTH_DISCOVERY_URL` in `.env.local` to `{PRETIX_URI}/ORG_NAME/.well-known/openid-configuration` where `{PRETIX_URI}` is the URI of your Pretix instance. For local pretix as configured in step 1, this would be `http://localhost:8000`
 8. Profit!
 
-## Deploying (e.g. Vercel + Neon)
+## Production
 
-Migrations are run via Liquibase. For local development with Docker, Liquibase runs automatically when you start the database (`npm run start:db`).
+### Deploying without docker (e.g. Vercel + Neon)
+
+Migrations are run via Liquibase. For local development with Docker, Liquibase runs automatically when you start the database (`npm run db:start`).
 
 For a hosted Postgres (e.g. Neon), run migrations with:
 
 ```bash
-npm run migrate:neon
+npm run neon:migrate
 ```
 
 Ensure `POSTGRES_URL` is set in `.env.local` (e.g. `postgresql://user:password@host/dbname?sslmode=require`). The script connects to the remote database and applies any pending migrations.
@@ -67,3 +69,9 @@ Ensure `POSTGRES_URL` is set in `.env.local` (e.g. `postgresql://user:password@h
 **Note**: When `POSTGRES_URL` is set, it overrides individual `POSTGRES_*` environment variables (like `POSTGRES_HOST`, `POSTGRES_USER`, etc.). This is the recommended approach for Neon and other hosted Postgres services.
 
 Then set `POSTGRES_URL` (or the individual `POSTGRES_*` vars) in your deployment (e.g. Vercel env).
+
+### Deploying with docker
+
+1. Create `.env.production` from `.env.example`
+2. Build the production docker images: `npm run prod:build`
+3. Start production docker containers: `npm run prod:up`
