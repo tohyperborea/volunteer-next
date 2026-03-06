@@ -57,7 +57,7 @@ export default async function CreateTeam({ params }: Props) {
   };
 
   return (
-    <Flex direction="column" gap="4" p="4">
+    <Flex direction="column" gap="4">
       <Heading my="4">{t('title', { eventName: event?.name ?? '' })}</Heading>
       <Card>
         <TeamForm eventId={event.id} onSubmit={onSubmit} backOnCancel teamleadOptions={users} />

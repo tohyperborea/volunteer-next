@@ -15,6 +15,7 @@
     "db:logs": "docker compose --env-file .env.local logs -f db",
     "liquibase:logs": "docker compose --env-file .env.local logs -f liquibase",
     "neon:migrate": "./db/migrate-neon.sh",
+    "neon:sync": "./db/migrate-neon.sh changelogSync",
     "prepare": "husky",
     "prod:build": "docker compose --env-file .env.production build",
     "prod:up": "docker compose --env-file .env.production up -d",

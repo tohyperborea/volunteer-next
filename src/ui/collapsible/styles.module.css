@@ -1,0 +1,22 @@
+.button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.content {
+  display: none;
+}
+
+.open .content {
+  display: block;
+}
+
+.icon {
+  transition: transform 0.2s ease;
+}
+
+.open .icon {
+  transform: rotate(180deg);
+}

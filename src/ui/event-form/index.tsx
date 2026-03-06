@@ -6,11 +6,11 @@
 
 'use client';
 
-import { Flex, Text, TextField, Select, Box, Button } from '@radix-ui/themes';
+import { Flex, Text, TextField, Select, Button } from '@radix-ui/themes';
 import { useTranslations } from 'next-intl';
-import styles from './styles.module.css';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import DatePicker from '../datepicker';
 
 const FormItem = ({ children }: { children: React.ReactNode }) => (
   <Flex direction="column" gap="1">
@@ -75,16 +75,14 @@ export default function EventForm({
           <Text as="label" id="start-date-label" htmlFor="start-date" size="2" weight="bold">
             {t('startDate')}
           </Text>
-          <TextField.Root
-            className={styles.dateInput}
+          <DatePicker
             name="startDate"
             id="start-date"
             aria-labelledby="start-date-label"
-            type="date"
             placeholder={t('startDate')}
             min={today}
             max={endDate}
-            onChange={(e) => setStartDate(e.target.value)}
+            onChange={(value) => setStartDate(value)}
             defaultValue={editingEvent?.startDate.toISOString().split('T')[0]}
             required
           />
@@ -93,15 +91,13 @@ export default function EventForm({
           <Text as="label" id="end-date-label" htmlFor="end-date" size="2" weight="bold">
             {t('endDate')}
           </Text>
-          <TextField.Root
-            className={styles.dateInput}
+          <DatePicker
             name="endDate"
             id="end-date"
             aria-labelledby="end-date-label"
-            type="date"
             placeholder={t('endDate')}
             min={minEndDate}
-            onChange={(e) => setEndDate(e.target.value)}
+            onChange={(value) => setEndDate(value)}
             defaultValue={editingEvent?.endDate.toISOString().split('T')[0]}
             required
           />
