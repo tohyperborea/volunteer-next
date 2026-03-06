@@ -10,7 +10,7 @@ import { Button, Dialog, Flex, TextField, Text, Checkbox, Select } from '@radix-
 import { useTranslations } from 'next-intl';
 import { EventDayTimePicker } from '../datepicker';
 import FormDialog, { FormField } from '../form-dialog';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface Props {
   startDate: Date;
@@ -38,6 +38,11 @@ export default function ShiftDialog({
   const t = useTranslations('ShiftDialog');
   const title = t(editing ? 'editShift' : 'addShift');
   const [currentMin, setCurrentMin] = useState<number>(editing?.minVolunteers ?? 0);
+  useEffect(() => {
+    if (open) {
+      setCurrentMin(editing?.minVolunteers ?? 0);
+    }
+  }, [open]);
   return (
     <FormDialog description={title} open={open} onClose={onClose}>
       <input type="hidden" name="id" value={editing?.id ?? ''} />

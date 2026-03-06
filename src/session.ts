@@ -98,7 +98,7 @@ export const checkAuthorisation = async (
 };
 
 /**
- * Finds and returns the user's roles that match any of the provided criteria.
+ * Finds and returns the user's roles that match the provided criteria.
  * @param toMatch - A UserRoleMatchCriteria to match against the user's roles.
  * @returns An array of UserRole objects from the user's roles that match any of the provided criteria.
  */

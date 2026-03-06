@@ -11,6 +11,7 @@ import styles from './styles.module.css';
 import { Pencil2Icon } from '@radix-ui/react-icons';
 import Link from 'next/link';
 import { getQualificationDetailsPath } from '@/utils/path';
+import { useTranslations } from 'next-intl';
 
 interface Props {
   qualification: QualificationInfo;
@@ -27,6 +28,7 @@ export default function QualificationCard({
   event,
   teamName
 }: Props) {
+  const t = useTranslations('QualificationCard');
   const cardId = `qualification-card-${qualification.id}`;
   const Inner = () => (
     <Flex p="3" direction="column" gap="1">
@@ -37,6 +39,7 @@ export default function QualificationCard({
         {onEdit && (
           <IconButton
             variant="ghost"
+            aria-label={t('edit')}
             onClick={(e) => {
               e.preventDefault();
               onEdit();

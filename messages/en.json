@@ -272,6 +272,9 @@
   "QualificationDetails": {
     "delete": "Delete Qualification"
   },
+  "QualificationCard": {
+    "edit": "Edit Qualification"
+  },
   "QualificationDialog": {
     "edit": "Edit Qualification",
     "add": "Add Qualification",

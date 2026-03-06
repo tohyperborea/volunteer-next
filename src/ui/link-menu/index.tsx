@@ -37,7 +37,7 @@ export function SubLinkMenu({ title, children }: SubLinkMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const childList = Array.isArray(children) ? children : [children];
   return (
-    <Flex direction={'column'}>
+    <Flex direction={'column'} className={isOpen ? styles.open : styles.closed}>
       <Flex asChild justify="between">
         <Button color="gray" variant="soft" size="3" onClick={() => setIsOpen((open) => !open)}>
           {title}

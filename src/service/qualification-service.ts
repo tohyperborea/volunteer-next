@@ -23,7 +23,7 @@ const rowToQualification = (row: any): QualificationInfo => ({
  */
 export const getQualificationsForEvent = cache(
   async (eventId: EventId): Promise<QualificationInfo[]> => {
-    console.log(`Fetching qualifications for event ${eventId}`);
+    console.info(`Fetching qualifications for event ${eventId}`);
     const res = await pool.query(
       `
         SELECT
@@ -48,7 +48,7 @@ export const getQualificationsForEvent = cache(
  */
 export const getQualificationsForTeams = cache(
   async (teamIds: TeamId[]): Promise<QualificationInfo[]> => {
-    console.log(`Fetching qualifications for teams ${teamIds.toString()}`);
+    console.info(`Fetching qualifications for teams ${teamIds.toString()}`);
     const res = await pool.query(
       `
         SELECT
@@ -73,7 +73,7 @@ export const getQualificationsForTeams = cache(
  */
 export const getQualificationById = cache(
   async (qualificationId: QualificationId): Promise<QualificationInfo | null> => {
-    console.log(`Fetching qualification with id ${qualificationId}`);
+    console.info(`Fetching qualification with id ${qualificationId}`);
     const res = await pool.query(
       `
         SELECT
@@ -104,7 +104,7 @@ export const createQualification = async (
   qual: Omit<QualificationInfo, 'id'>,
   client?: PoolClient
 ): Promise<QualificationInfo> => {
-  console.log('Creating qualification with data:', qual);
+  console.info('Creating qualification with data:', qual);
   const db = client || pool;
   const res = await db.query(
     `
@@ -137,7 +137,7 @@ export const updateQualification = async (
   qualification: QualificationInfo,
   client?: PoolClient
 ): Promise<QualificationInfo> => {
-  console.log(`Updating qualification ${qualification.id} with data:`, qualification);
+  console.info(`Updating qualification ${qualification.id} with data:`, qualification);
   const db = client || pool;
   const res = await db.query(
     `
@@ -176,10 +176,10 @@ export const deleteQualification = async (
   qualificationId: QualificationId,
   client?: PoolClient
 ): Promise<void> => {
-  console.log(`Deleting qualification with id ${qualificationId}`);
+  console.info(`Deleting qualification with id ${qualificationId}`);
   const db = client || pool;
   await db.query('DELETE FROM qualification WHERE id = $1', [qualificationId]);
 
-  // TODO: Remove any shift requirements for this qualification
+  // Shift requirement removal handled by DELETE CASCADE
   // TODO: Remove any user assignments for this qualification
 };

@@ -2,6 +2,12 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import QualificationCard from './index';
 import { getQualificationDetailsPath } from '@/utils/path';
 
+jest.mock('next-intl', () => ({
+  useTranslations: () => (key: string) => key,
+  useFormatter: () => ({}),
+  useLocale: () => 'en'
+}));
+
 jest.mock('@/utils/path', () => ({
   getQualificationDetailsPath: jest.fn()
 }));
