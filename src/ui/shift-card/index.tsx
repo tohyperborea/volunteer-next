@@ -6,25 +6,32 @@
 
 'use client';
 
-import { Badge, Box, Card, Flex, Heading, IconButton, Text } from '@radix-ui/themes';
+import { Badge, Box, Card, Flex, Heading, IconButton, Link, Text } from '@radix-ui/themes';
 import TimeSpan from '../time-span';
 import { useTranslations } from 'next-intl';
 import styles from './styles.module.css';
 import Collapsible from '../collapsible';
 import { Pencil2Icon } from '@radix-ui/react-icons';
 import { addHoursToTimeString } from '@/utils/datetime';
+import { getQualificationDetailsPath } from '@/utils/path';
 
 interface Props {
+  event: EventInfo;
   shift: ShiftInfo;
+  qualification?: QualificationInfo;
   volunteerNames: string[];
   onEdit?: () => void;
 }
 
-export default function ShiftCard({ shift, volunteerNames, onEdit }: Props) {
+export default function ShiftCard({ event, shift, volunteerNames, qualification, onEdit }: Props) {
   const t = useTranslations('ShiftCard');
   const startTime = shift.startTime;
   const endTime = addHoursToTimeString(shift.startTime, shift.durationHours);
   const volunteerCount = volunteerNames.length;
+  const requirementLabel =
+    shift.requirement && qualification && qualification.id === shift.requirement
+      ? qualification.name
+      : null;
   return (
     <Card>
       <Flex direction="column" gap="3" align="start">
@@ -43,7 +50,19 @@ export default function ShiftCard({ shift, volunteerNames, onEdit }: Props) {
           </Badge>
         </Flex>
         <Badge color="teal">{t('status').toUpperCase()}</Badge>
-        <Badge color="orange">{t('requirement')}</Badge>
+        {requirementLabel && (
+          <Badge asChild>
+            <Link
+              color="orange"
+              href={getQualificationDetailsPath({
+                eventSlug: event.slug,
+                qualificationId: shift.requirement!
+              })}
+            >
+              {t('requires')}: {requirementLabel}
+            </Link>
+          </Badge>
+        )}
         <ShiftProgress filled={volunteerCount} total={shift.maxVolunteers} />
         <Collapsible header={<Text>{t('volunteers')}</Text>}>
           <Flex direction="column" gap="1">
@@ -54,7 +73,12 @@ export default function ShiftCard({ shift, volunteerNames, onEdit }: Props) {
         </Collapsible>
       </Flex>
       {onEdit && (
-        <IconButton className={styles.editButton} variant="ghost" onClick={onEdit}>
+        <IconButton
+          aria-label={t('editShift')}
+          className={styles.editButton}
+          variant="ghost"
+          onClick={onEdit}
+        >
           <Pencil2Icon width={20} height={20} />
         </IconButton>
       )}

@@ -80,9 +80,10 @@ export const validateNewShift = (data: FormData): Omit<ShiftInfo, 'id'> => {
   const isActiveStr = data.get('isActive')?.toString() ?? null;
   const isActive = isActiveStr === 'on';
 
-  const requirements: RequirementId[] = []; // TODO
+  // The form submits the string "null" when no requirement is selected, so that will be our default
+  const requirement = data.get('requirement')?.toString() ?? 'null';
 
-  return {
+  const shift: Omit<ShiftInfo, 'id'> = {
     teamId,
     title,
     eventDay,
@@ -90,7 +91,10 @@ export const validateNewShift = (data: FormData): Omit<ShiftInfo, 'id'> => {
     durationHours,
     minVolunteers,
     maxVolunteers,
-    requirements,
     isActive
   };
+  if (requirement && requirement.toLowerCase() !== 'null') {
+    shift.requirement = requirement;
+  }
+  return shift;
 };

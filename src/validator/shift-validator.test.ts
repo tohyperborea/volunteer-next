@@ -20,7 +20,8 @@ describe('validateNewShift', () => {
       durationHours: '4',
       minVolunteers: '2',
       maxVolunteers: '5',
-      isActive: 'on'
+      isActive: 'on',
+      requirement: 'qualification-id'
     });
 
     const result = validateNewShift(formData);
@@ -33,8 +34,8 @@ describe('validateNewShift', () => {
       durationHours: 4,
       minVolunteers: 2,
       maxVolunteers: 5,
-      requirements: [],
-      isActive: true
+      isActive: true,
+      requirement: 'qualification-id'
     });
   });
 
@@ -203,6 +204,24 @@ describe('validateNewShift', () => {
 
     expect(result.isActive).toBe(false);
   });
+
+  it('sets requirement to undefined if the value is "null"', () => {
+    const formData = createFormData({
+      teamId: 'team-123',
+      title: 'Morning Shift',
+      'startTime-day': '1',
+      'startTime-time': '08:00',
+      durationHours: '4',
+      minVolunteers: '2',
+      maxVolunteers: '5',
+      requirement: 'null',
+      isActive: 'on'
+    });
+
+    const result = validateNewShift(formData);
+
+    expect(result.requirement).toBeUndefined();
+  });
 });
 
 describe('validateExistingShift', () => {
@@ -230,7 +249,6 @@ describe('validateExistingShift', () => {
       durationHours: 4,
       minVolunteers: 2,
       maxVolunteers: 5,
-      requirements: [],
       isActive: true
     });
   });
