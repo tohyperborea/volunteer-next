@@ -1,6 +1,9 @@
 CREATE EXTENSION IF NOT EXISTS pg_cron;
 
-SELECT cron.unschedule('remove_deleted_users');
+SELECT cron.unschedule(jobid)
+FROM cron.job
+WHERE jobname = 'remove_deleted_users';
+
 SELECT cron.schedule(
     'remove_deleted_users',
     -- schedule: every day at midnight

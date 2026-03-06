@@ -1,7 +1,7 @@
-FROM postgres:17
+FROM postgres:18
 
 # Install pg_cron package
 RUN apt-get update && \
-    apt-get -y install postgresql-17-cron && \
+    apt-get -y install postgresql-18-cron && \
     rm -rf /var/lib/apt/lists/*
 
