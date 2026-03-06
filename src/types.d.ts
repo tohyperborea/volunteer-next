@@ -69,14 +69,14 @@ interface UserFilters {
 interface ShiftInfo {
   id: ShiftId;
   teamId: TeamId;
+  isActive: boolean;
   title: string;
   eventDay: EventDay;
   startTime: TimeString;
   durationHours: number;
   minVolunteers: number;
   maxVolunteers: number;
-  requirements?: RequirementId[];
-  isActive: boolean;
+  requirement?: QualificationId;
 }
 
 type ThemeMode = 'light' | 'dark' | 'system';
@@ -87,4 +87,9 @@ interface QualificationInfo {
   eventId: EventId;
   teamId?: TeamId;
   errorMessage: string;
+}
+
+interface ShiftRequirement {
+  shiftId: ShiftId;
+  qualificationId: QualificationId;
 }

@@ -6,7 +6,16 @@
 
 'use client';
 
-import { Button, Dialog, Flex, TextField, Text, Checkbox, DropdownMenu } from '@radix-ui/themes';
+import {
+  Button,
+  Dialog,
+  Flex,
+  TextField,
+  Text,
+  Checkbox,
+  DropdownMenu,
+  Select
+} from '@radix-ui/themes';
 import { useTranslations } from 'next-intl';
 import { EventDayTimePicker } from '../datepicker';
 import FormDialog, { FormField } from '../form-dialog';
@@ -14,6 +23,7 @@ import FormDialog, { FormField } from '../form-dialog';
 interface Props {
   startDate: Date;
   teamId: TeamId;
+  qualifications: QualificationInfo[];
   editing?: ShiftInfo;
   creating?: boolean;
   onClose?: () => void;
@@ -24,6 +34,7 @@ interface Props {
 export default function ShiftDialog({
   startDate,
   teamId,
+  qualifications,
   creating = false,
   editing = undefined,
   onClose,
@@ -50,6 +61,12 @@ export default function ShiftDialog({
         )}
 
         <Flex direction="column" gap="4" mt="6" width="100%">
+          <Text as="label">
+            <Flex gap="2" align="center">
+              <Checkbox name="isActive" defaultChecked={editing?.isActive ?? true} />
+              {t('active')}
+            </Flex>
+          </Text>
           <FormField ariaId="shift-title" name={t('title')} description={t('titleDescription')}>
             <TextField.Root
               defaultValue={editing?.title}
@@ -108,27 +125,30 @@ export default function ShiftDialog({
               required
             />
           </FormField>
-          <Text as="label">
-            <Flex gap="2" align="center">
-              <Checkbox name="isActive" defaultChecked={editing?.isActive ?? true} />
-              {t('active')}
-            </Flex>
-          </Text>
-          <DropdownMenu.Root>
-            <DropdownMenu.Trigger>
-              <Button
-                variant="soft"
-                color="gray"
-                style={{ justifyContent: 'space-between' }}
-                onClick={() => console.log('TODO')}
-              >
-                {t('requirementId')}
-                <DropdownMenu.TriggerIcon />
-              </Button>
-            </DropdownMenu.Trigger>
-          </DropdownMenu.Root>
+          <FormField
+            ariaId="shift-requirements"
+            name={t('requirements')}
+            description={t('requirementsDescription')}
+          >
+            <Select.Root name="requirement" defaultValue={editing?.requirement ?? 'null'}>
+              <Select.Trigger />
+              <Select.Content>
+                <Select.Group>
+                  <Select.Item value="null">{t('none')}</Select.Item>
+                </Select.Group>
+                <Select.Separator />
+                <Select.Group>
+                  {qualifications.map((q) => (
+                    <Select.Item key={q.id} value={q.id}>
+                      {q.name}
+                    </Select.Item>
+                  ))}
+                </Select.Group>
+              </Select.Content>
+            </Select.Root>
+          </FormField>
         </Flex>
-        <Flex gap="4" mt="auto" mb="6">
+        <Flex gap="4" mt="auto" py="4">
           <Dialog.Close>
             <Button color="gray" variant="soft">
               {t('cancel')}

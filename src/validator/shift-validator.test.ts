@@ -33,7 +33,6 @@ describe('validateNewShift', () => {
       durationHours: 4,
       minVolunteers: 2,
       maxVolunteers: 5,
-      requirements: [],
       isActive: true
     });
   });
@@ -230,7 +229,6 @@ describe('validateExistingShift', () => {
       durationHours: 4,
       minVolunteers: 2,
       maxVolunteers: 5,
-      requirements: [],
       isActive: true
     });
   });

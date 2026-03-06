@@ -237,7 +237,7 @@
     "max": "Max",
     "min": "Min",
     "status": "Status",
-    "requirement": "Requirement",
+    "requires": "Requires",
     "spots": "Spots",
     "volunteers": "Volunteers"
   },
@@ -259,7 +259,9 @@
     "maxVolunteers": "Maximum Volunteers Needed",
     "maxVolunteersDescription": "Description",
     "active": "Active",
-    "requirementId": "Requirement ID"
+    "requirements": "Shift Requirements",
+    "requirementsDescription": "Qualifications that volunteers must have to sign up for this shift. Optional.",
+    "none": "None"
   },
   "QualificationList": {
     "title": "Qualifications",

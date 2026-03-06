@@ -16,17 +16,21 @@ import { useState } from 'react';
 import { eventDayToDate } from '@/utils/datetime';
 
 interface Props {
+  event: EventInfo;
   startDate: Date;
   teamId: TeamId;
   shifts: ShiftInfo[];
+  qualifications: QualificationInfo[];
   onSaveShift?: (data: FormData) => Promise<never>;
   onDeleteShift?: (data: FormData) => Promise<never>;
 }
 
 export default function ShiftList({
+  event,
   startDate,
   teamId,
   shifts,
+  qualifications,
   onSaveShift,
   onDeleteShift
 }: Props) {
@@ -34,6 +38,7 @@ export default function ShiftList({
   const canEdit = Boolean(onSaveShift);
   const [creatingShift, setCreatingShift] = useState(false);
   const [editingShift, setEditingShift] = useState<ShiftInfo | undefined>(undefined);
+  const qualificationMap = new Map(qualifications.map((q) => [q.id, q]));
   return (
     <Flex direction="column" gap="6">
       {canEdit && (
@@ -56,7 +61,9 @@ export default function ShiftList({
         getDate={(shift) => eventDayToDate(startDate, shift.eventDay)}
         renderItem={(shift) => (
           <ShiftCard
+            event={event}
             shift={shift}
+            qualification={shift.requirement ? qualificationMap.get(shift.requirement) : undefined}
             volunteerNames={[] /* TODO */}
             key={shift.id}
             onEdit={canEdit ? () => setEditingShift(shift) : undefined}
@@ -67,6 +74,7 @@ export default function ShiftList({
         <ShiftDialog
           startDate={startDate}
           teamId={teamId}
+          qualifications={qualifications}
           creating={creatingShift}
           editing={editingShift}
           onSubmit={onSaveShift}
