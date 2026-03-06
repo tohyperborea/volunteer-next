@@ -3,9 +3,7 @@
 .github
 node_modules
 .next
-.env.example
-.env.local
-.env.development
+.env.*
 .env*.local
 README.md
 *.md

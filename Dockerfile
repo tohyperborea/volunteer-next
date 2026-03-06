@@ -38,9 +38,6 @@ COPY --from=dependencies /app/node_modules ./node_modules
 # Copy application source code
 COPY . .
 
-# Use .env.production for the build
-COPY .env.production .env.production
-
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
@@ -50,7 +47,8 @@ ENV NEXT_TELEMETRY_DISABLED=1
 # This caches the .next/cache directory across builds, but it also prevents
 # .next/cache/fetch-cache from being included in the final image, meaning
 # cached fetch responses from the build won't be available at runtime.
-RUN if [ -f package-lock.json ]; then \
+RUN --mount=type=secret,id=env_production,dst=.env.production \
+  if [ -f package-lock.json ]; then \
     npm run build; \
   else \
     echo "No lockfile found." && exit 1; \
@@ -80,7 +78,6 @@ RUN chown node:node .next
 
 # Automatically leverage output traces to reduce image size
 # https://nextjs.org/docs/advanced-features/output-file-tracing
-COPY --from=builder /app/public ./public
 COPY --from=builder --chown=node:node /app/.next/standalone ./
 COPY --from=builder --chown=node:node /app/.next/static ./.next/static
 

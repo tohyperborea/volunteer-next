@@ -33,6 +33,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      secrets:
+        - env_production
     image: volunteer-next:latest
     container_name: volunteer-next
     env_file:
@@ -48,3 +50,7 @@ services:
 
 volumes:
   pgdata:
+
+secrets:
+  env_production:
+    file: .env.production
