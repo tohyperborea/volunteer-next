@@ -1,0 +1,26 @@
+.shiftProgress {
+  position: relative;
+  width: 70%;
+  height: 2rem;
+  background-color: var(--accent-a5);
+  border-radius: var(--radius-1);
+  overflow: hidden;
+}
+
+.shiftProgressFilled {
+  height: 100%;
+  background-color: var(--accent-9);
+}
+
+.shiftProgressLabel {
+  position: absolute;
+  top: 0;
+  left: 0.5rem;
+  line-height: 2rem;
+}
+
+.editButton {
+  position: absolute;
+  top: var(--card-padding);
+  right: var(--card-padding);
+}
