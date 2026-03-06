@@ -141,10 +141,10 @@
   },
   "SignInPage": {
     "title": "Sign In",
-    "descriptionOne": "Sign in to your account to continue.",
-    "descriptionTwo": "We use our ticket system, Pretix, to provide a single sign-on experience.",
-    "descriptionThree": "Clicking the button below will redirect you to the Pretix login page.",
-    "descriptionFour": "After logging in, you will be redirected back to this application.",
+    "signInToAccount": "Sign in to your account to continue.",
+    "usePretix": "We use our ticket system, Pretix, to provide a single sign-on experience.",
+    "clickButtonToRedirect": "Clicking the button below will redirect you to the Pretix login page.",
+    "afterLoggingIn": "After logging in, you will be redirected back to this application.",
     "button": "Sign In with Pretix",
     "emailPlaceholder": "Email",
     "passwordPlaceholder": "Password",
@@ -200,5 +200,9 @@
     "missingToken": "Missing reset token. Please use the link from your email.",
     "rateLimitError": "Too many attempts. Please try again in 15 minutes.",
     "passwordMismatch": "Passwords do not match."
+  },
+  "ResetPasswordEmail": {
+    "subject": "Reset your password",
+    "text": "Click the link to reset your password: {url}"
   }
 }

@@ -7,7 +7,7 @@ import { VisuallyHidden } from '@radix-ui/themes';
 import { checkRateLimit, PASSWORD_RESET_LIMITS } from '@/lib/rate-limit';
 import { getClientIp } from '@/lib/client-ip';
 import { ResetPasswordForm } from './reset-password-form';
-import styles from '../signin/styles.module.css';
+import SigninContainer from '@/ui/signin-container';
 
 export default async function ResetPasswordPage({
   searchParams
@@ -44,7 +44,7 @@ export default async function ResetPasswordPage({
 
   const t = await getTranslations('ResetPasswordPage');
   return (
-    <Flex direction="column" gap="2" align="center" className={styles.signinContainerOuter}>
+    <SigninContainer>
       <VisuallyHidden>
         <Heading>{t('title')}</Heading>
       </VisuallyHidden>
@@ -72,9 +72,7 @@ export default async function ResetPasswordPage({
       ) : (
         <Text as="p">{t('missingToken')}</Text>
       )}
-      <Link href="/signin" className={styles.signinLink}>
-        {t('signInLink')}
-      </Link>
-    </Flex>
+      <Link href="/signin">{t('signInLink')}</Link>
+    </SigninContainer>
   );
 }

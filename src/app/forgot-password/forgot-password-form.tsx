@@ -1,7 +1,7 @@
 'use client';
 
 import Script from 'next/script';
-import styles from '../signin/styles.module.css';
+import { Button, TextField } from '@radix-ui/themes';
 
 const TURNSTILE_SCRIPT = 'https://challenges.cloudflare.com/turnstile/v0/api.js';
 
@@ -16,28 +16,21 @@ export function ForgotPasswordForm({ requestReset, emailPlaceholder, buttonText 
 
   return (
     <>
-      {siteKey && (
-        <Script src={TURNSTILE_SCRIPT} strategy="lazyOnload" />
-      )}
-      <form action={requestReset} className={styles.signinForm}>
-        <input
-          type="email"
+      {siteKey && <Script src={TURNSTILE_SCRIPT} strategy="lazyOnload" />}
+      <form
+        action={requestReset}
+        style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '16px' }}
+      >
+        <TextField.Root
           name="email"
+          aria-labelledby="email-label"
+          id="email"
           placeholder={emailPlaceholder}
-          className={styles.signinInput}
           autoComplete="email"
           required
         />
-        {siteKey && (
-          <div
-            className="cf-turnstile"
-            data-sitekey={siteKey}
-            data-size="normal"
-          />
-        )}
-        <button type="submit" className={styles.signinButton}>
-          {buttonText}
-        </button>
+        {siteKey && <div className="cf-turnstile" data-sitekey={siteKey} data-size="normal" />}
+        <Button type="submit">{buttonText}</Button>
       </form>
     </>
   );

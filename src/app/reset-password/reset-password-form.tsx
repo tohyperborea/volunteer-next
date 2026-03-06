@@ -1,8 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Text } from '@radix-ui/themes';
-import styles from '../signin/styles.module.css';
+import { Button, Text, TextField } from '@radix-ui/themes';
 
 type Props = {
   action: (formData: FormData) => Promise<void>;
@@ -35,14 +34,15 @@ export function ResetPasswordForm({
   }
 
   return (
-    <form action={handleSubmit} className={styles.signinForm}>
-      <input type="hidden" name="token" value={token} />
+    <form
+      action={handleSubmit}
+      style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '16px' }}
+    >
+      <TextField.Root name="token" value={token} hidden />
       <div>
-        <input
-          type="password"
+        <TextField.Root
           name="password"
           placeholder={passwordPlaceholder}
-          className={styles.signinInput}
           autoComplete="new-password"
           required
           minLength={8}
@@ -51,11 +51,9 @@ export function ResetPasswordForm({
         />
       </div>
       <div>
-        <input
-          type="password"
+        <TextField.Root
           name="confirmPassword"
           placeholder={confirmPlaceholder}
-          className={styles.signinInput}
           autoComplete="new-password"
           required
           minLength={8}
@@ -68,9 +66,7 @@ export function ResetPasswordForm({
           </Text>
         )}
       </div>
-      <button type="submit" className={styles.signinButton}>
-        {buttonLabel}
-      </button>
+      <Button type="submit">{buttonLabel}</Button>
     </form>
   );
 }

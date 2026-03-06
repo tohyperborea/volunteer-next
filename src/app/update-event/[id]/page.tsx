@@ -66,7 +66,7 @@ export default async function UpdateEvent({ params }: Props) {
     const organiser = (await getUsersWithRole({ type: 'organiser', eventId: event.id }))[0];
 
     return (
-      <Flex direction="column" gap="4" p="4">
+      <Flex direction="column" gap="4">
         <Heading my="4">{t('title')}</Heading>
         <Card>
           <EventForm

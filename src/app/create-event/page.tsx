@@ -35,7 +35,7 @@ export default async function CreateEvent() {
   const users = await getUsers();
 
   return (
-    <Flex direction="column" gap="4" p="4">
+    <Flex direction="column" gap="4">
       <Heading my="4">{t('title')}</Heading>
       <Card>
         <EventForm onSubmit={onSubmit} backOnCancel organiserOptions={users} />

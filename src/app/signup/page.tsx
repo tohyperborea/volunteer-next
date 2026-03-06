@@ -1,7 +1,7 @@
 import { auth, AUTH_MODE } from '@/auth';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import { Flex, Heading, Text } from '@radix-ui/themes';
+import { Button, Heading, Text, TextField } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
 import { VisuallyHidden } from '@radix-ui/themes';
 import {
@@ -12,7 +12,11 @@ import {
 } from '@/lib/signup-validation';
 import { checkRateLimit, AUTH_ENDPOINT_LIMITS } from '@/lib/rate-limit';
 import { getClientIp } from '@/lib/client-ip';
-import styles from '../signin/styles.module.css';
+import SigninContainer from '@/ui/signin-container';
+import metadata from '@/i18n/metadata';
+
+const PAGE_KEY = 'SignUpPage';
+export const generateMetadata = metadata(PAGE_KEY);
 
 type SearchParams = {
   callbackUrl?: string;
@@ -25,7 +29,13 @@ type SearchParams = {
 
 function buildSignupSearchParams(
   safeCallbackUrl: string,
-  errors: { name?: string; email?: string; password?: string; account?: string; rateLimit?: boolean }
+  errors: {
+    name?: string;
+    email?: string;
+    password?: string;
+    account?: string;
+    rateLimit?: boolean;
+  }
 ): string {
   const p = new URLSearchParams();
   if (safeCallbackUrl !== '/') p.set('callbackUrl', safeCallbackUrl);
@@ -94,7 +104,7 @@ export default async function SignUpPage({
     }
   };
 
-  const t = await getTranslations('SignUpPage');
+  const t = await getTranslations(PAGE_KEY);
   const errorName = params.errorName;
   const errorEmail = params.errorEmail;
   const errorPassword = params.errorPassword;
@@ -102,7 +112,7 @@ export default async function SignUpPage({
   const rateLimited = params.error === 'rate_limit';
 
   return (
-    <Flex direction="column" gap="2" align="center" className={styles.signinContainerOuter}>
+    <SigninContainer>
       <VisuallyHidden>
         <Heading>{t('title')}</Heading>
       </VisuallyHidden>
@@ -117,14 +127,15 @@ export default async function SignUpPage({
           {t(`errorAccount_${errorAccount}`)}
         </Text>
       )}
-      <form action={signUp} className={styles.signinForm}>
+      <form
+        action={signUp}
+        style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '16px' }}
+      >
         <input type="hidden" name="callbackUrl" value={callbackUrl} />
         <div>
-          <input
-            type="text"
+          <TextField.Root
             name="name"
             placeholder={t('namePlaceholder') ?? ''}
-            className={styles.signinInput}
             autoComplete="name"
             required
             maxLength={255}
@@ -138,11 +149,10 @@ export default async function SignUpPage({
           )}
         </div>
         <div>
-          <input
-            type="email"
+          <TextField.Root
             name="email"
+            type="email"
             placeholder={t('emailPlaceholder') ?? ''}
-            className={styles.signinInput}
             autoComplete="email"
             required
             aria-invalid={!!errorEmail}
@@ -155,11 +165,10 @@ export default async function SignUpPage({
           )}
         </div>
         <div>
-          <input
-            type="password"
+          <TextField.Root
             name="password"
+            type="password"
             placeholder={t('passwordPlaceholder') ?? ''}
-            className={styles.signinInput}
             autoComplete="new-password"
             required
             minLength={8}
@@ -172,13 +181,13 @@ export default async function SignUpPage({
             </Text>
           )}
         </div>
-        <button type="submit" className={styles.signinButton}>
-          {t('button')}
-        </button>
-        <Link href={`/signin${callbackUrl !== '/' ? `?callbackUrl=${encodeURIComponent(callbackUrl)}` : ''}`} className={styles.signinLink}>
+        <Button type="submit">{t('button')}</Button>
+        <Link
+          href={`/signin${callbackUrl !== '/' ? `?callbackUrl=${encodeURIComponent(callbackUrl)}` : ''}`}
+        >
           {t('signInLink')}
         </Link>
       </form>
-    </Flex>
+    </SigninContainer>
   );
 }

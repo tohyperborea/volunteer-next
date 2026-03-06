@@ -2,56 +2,38 @@
 
 import Link from 'next/link';
 import { useCallback, useRef, useState, useTransition } from 'react';
-import { Text, Dialog, Button } from '@radix-ui/themes';
+import { Text, AlertDialog, Button, TextField } from '@radix-ui/themes';
 import { isRedirectError } from 'next/dist/client/components/redirect-error';
 import styles from './styles.module.css';
+import { useTranslations } from 'next-intl';
 
 type View = 'signin' | 'forgot' | 'forgotSent';
 
-export type SignInResult =
+type SignInResult =
   | { ok: true }
   | { ok: false; reason: 'locked' | 'rate_limit' | 'invalid_credentials' };
-
-export type CredentialsFormTranslations = {
-  descriptionOne: string;
-  emailPlaceholder: string;
-  passwordPlaceholder: string;
-  buttonCredentials: string;
-  createAccount: string;
-  forgotPassword: string;
-  forgotDescription: string;
-  forgotButton: string;
-  forgotSuccessMessage: string;
-  backToSignIn: string;
-  invalidCredentialsTitle: string;
-  invalidCredentials: string;
-  tooManyAttemptsTitle: string;
-  tooManyAttempts: string;
-  rateLimitError: string;
-  errorDialogClose: string;
-};
 
 type Props = {
   callbackUrl: string;
   forgotSent: boolean;
   signInAction: (formData: FormData) => Promise<SignInResult>;
   requestResetAction: (formData: FormData) => Promise<void>;
-  translations: CredentialsFormTranslations;
 };
 
 export function CredentialsForm({
   callbackUrl,
   forgotSent,
   signInAction,
-  requestResetAction,
-  translations: t
+  requestResetAction
 }: Props) {
   const [view, setView] = useState<View>(forgotSent ? 'forgotSent' : 'signin');
   const [showErrorDialog, setShowErrorDialog] = useState(false);
-  const [errorReason, setErrorReason] = useState<'locked' | 'rate_limit' | 'invalid_credentials'>('invalid_credentials');
+  const [errorReason, setErrorReason] = useState<'locked' | 'rate_limit' | 'invalid_credentials'>(
+    'invalid_credentials'
+  );
   const [isPending, startTransition] = useTransition();
   const passwordRef = useRef<HTMLInputElement>(null);
-
+  const t = useTranslations('SignInPage');
   const showForgot = useCallback(() => setView('forgot'), []);
   const showSignIn = useCallback(() => setView('signin'), []);
 
@@ -86,11 +68,9 @@ export function CredentialsForm({
     return (
       <>
         <Text as="p" size="2">
-          {t.forgotSuccessMessage}
+          {t('forgotSuccessMessage')}
         </Text>
-        <Link href="/signin" className={styles.signinLink}>
-          {t.backToSignIn}
-        </Link>
+        <Link href="/signin">{t('backToSignIn')}</Link>
       </>
     );
   }
@@ -98,22 +78,18 @@ export function CredentialsForm({
   if (view === 'forgot') {
     return (
       <>
-        <Text as="p">{t.forgotDescription}</Text>
+        <Text as="p">{t('forgotDescription')}</Text>
         <form action={requestResetAction} className={styles.signinForm}>
-          <input
-            type="email"
+          <TextField.Root
             name="email"
-            placeholder={t.emailPlaceholder ?? ''}
-            className={styles.signinInput}
+            placeholder={t('emailPlaceholder') ?? ''}
             autoComplete="email"
             required
           />
-          <button type="submit" className={styles.signinButton}>
-            {t.forgotButton}
-          </button>
-          <button type="button" className={styles.signinLinkButton} onClick={showSignIn}>
-            {t.backToSignIn}
-          </button>
+          <Button type="submit">{t('forgotButton')}</Button>
+          <Button type="button" onClick={showSignIn}>
+            {t('backToSignIn')}
+          </Button>
         </form>
       </>
     );
@@ -121,62 +97,64 @@ export function CredentialsForm({
 
   return (
     <>
-      <Text as="p">{t.descriptionOne}</Text>
+      <Text as="p">{t('title')}</Text>
       <form onSubmit={handleSignIn} className={styles.signinForm}>
-        <input type="hidden" name="callbackUrl" defaultValue={callbackUrl ?? ''} />
-        <input
-          type="email"
+        <input type="hidden" name="callbackUrl" value={callbackUrl ?? ''} />
+        <TextField.Root
           name="email"
-          placeholder={t.emailPlaceholder ?? ''}
-          className={styles.signinInput}
+          placeholder={t('emailPlaceholder') ?? ''}
           autoComplete="email"
           required
         />
-        <input
-          ref={passwordRef}
-          type="password"
+        <TextField.Root
           name="password"
-          placeholder={t.passwordPlaceholder ?? ''}
-          className={styles.signinInput}
+          type="password"
+          placeholder={t('passwordPlaceholder') ?? ''}
           autoComplete="current-password"
           required
         />
-        <button type="submit" className={styles.signinButton} disabled={isPending}>
-          {isPending ? '...' : t.buttonCredentials}
-        </button>
+        <Button type="submit" disabled={isPending}>
+          {isPending ? '...' : t('buttonCredentials')}
+        </Button>
         <div className={styles.signinLinks}>
-          <Link href={`/signup${callbackUrl !== '/' ? `?callbackUrl=${encodeURIComponent(callbackUrl)}` : ''}`} className={styles.signinLink}>
-            {t.createAccount}
+          <Link
+            href={`/signup${callbackUrl !== '/' ? `?callbackUrl=${encodeURIComponent(callbackUrl)}` : ''}`}
+          >
+            {t('createAccount')}
           </Link>
-          <button type="button" className={styles.signinLinkButton} onClick={showForgot}>
-            {t.forgotPassword}
-          </button>
+          <Button type="button" onClick={showForgot}>
+            {t('forgotPassword')}
+          </Button>
         </div>
       </form>
 
-      <Dialog.Root
+      <AlertDialog.Root
         open={showErrorDialog}
         onOpenChange={(open) => {
           if (!open) passwordRef.current && (passwordRef.current.value = '');
           setShowErrorDialog(open);
         }}
       >
-        <Dialog.Content className={styles.errorDialog}>
-          <Dialog.Title className={styles.errorDialogTitle}>
-            {errorReason === 'locked' ? t.tooManyAttemptsTitle : errorReason === 'rate_limit' ? t.tooManyAttemptsTitle : t.invalidCredentialsTitle}
-          </Dialog.Title>
-          <Dialog.Description className={styles.errorDialogDescription}>
+        <AlertDialog.Content className={styles.errorDialog}>
+          <AlertDialog.Title className={styles.errorDialogTitle}>
             {errorReason === 'locked'
-              ? t.tooManyAttempts
+              ? t('tooManyAttemptsTitle')
               : errorReason === 'rate_limit'
-                ? t.rateLimitError
-                : t.invalidCredentials}
-          </Dialog.Description>
-          <Dialog.Close>
-            <Button className={styles.errorDialogCloseButton}>{t.errorDialogClose}</Button>
-          </Dialog.Close>
-        </Dialog.Content>
-      </Dialog.Root>
+                ? t('tooManyAttemptsTitle')
+                : t('invalidCredentialsTitle')}
+          </AlertDialog.Title>
+          <AlertDialog.Description className={styles.errorDialogDescription}>
+            {errorReason === 'locked'
+              ? t('tooManyAttempts')
+              : errorReason === 'rate_limit'
+                ? t('rateLimitError')
+                : t('invalidCredentials')}
+          </AlertDialog.Description>
+          <AlertDialog.Action>
+            <Button type="button">{t('errorDialogClose')}</Button>
+          </AlertDialog.Action>
+        </AlertDialog.Content>
+      </AlertDialog.Root>
     </>
   );
 }

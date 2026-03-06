@@ -3,11 +3,15 @@ import { getClientIp } from '@/lib/client-ip';
 import { recordFailedLogin } from '@/lib/login-security';
 import { getSafeCallbackUrl } from '@/lib/signup-validation';
 import { redirect } from 'next/navigation';
-import { Flex, Heading, Text } from '@radix-ui/themes';
-import styles from './styles.module.css';
+import { Button, Heading, Text, TextField } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
 import { VisuallyHidden } from '@radix-ui/themes';
+import SigninContainer from '@/ui/signin-container';
 import { CredentialsForm } from './credentials-form';
+import metadata from '@/i18n/metadata';
+
+const PAGE_KEY = 'SignInPage';
+export const generateMetadata = metadata(PAGE_KEY);
 
 const useOAuth = AUTH_MODE === 'oauth';
 
@@ -37,18 +41,20 @@ export default async function SignInPage({
 
   const signInCredentials = async (
     formData: FormData
-  ): Promise<{ ok: true } | { ok: false; reason: 'locked' | 'rate_limit' | 'invalid_credentials' }> => {
+  ): Promise<
+    { ok: true } | { ok: false; reason: 'locked' | 'rate_limit' | 'invalid_credentials' }
+  > => {
     'use server';
     const email = (formData.get('email') as string)?.trim();
     const password = formData.get('password') as string;
     const url = getSafeCallbackUrl(formData.get('callbackUrl') as string | null);
-    if (!email || !password) return { ok: false, reason: 'invalid_credentials' };
+    if (!email || !password) {
+      return { ok: false, reason: 'invalid_credentials' };
+    }
     try {
       await auth.api.signInEmail({
         body: { email, password, callbackURL: url }
       });
-      redirect(url);
-      return { ok: true };
     } catch (err: unknown) {
       const status = (err as { status?: string }).status;
       const statusCode = (err as { statusCode?: number }).statusCode;
@@ -61,6 +67,7 @@ export default async function SignInPage({
       recordFailedLogin(email, ip);
       return { ok: false, reason: 'invalid_credentials' };
     }
+    redirect(url);
   };
 
   const requestReset = async (formData: FormData) => {
@@ -77,32 +84,33 @@ export default async function SignInPage({
     redirect('/signin?forgotSent=1');
   };
 
-  const t = await getTranslations('SignInPage');
+  const t = await getTranslations(PAGE_KEY);
   return (
-    <Flex direction="column" gap="2" align="center" className={styles.signinContainerOuter}>
+    <SigninContainer>
       <VisuallyHidden>
         <Heading>{t('title')}</Heading>
       </VisuallyHidden>
       {useOAuth ? (
         <>
-          <form action={signInOAuth} className={styles.signinForm}>
-            <input type="hidden" name="callbackUrl" value={callbackUrl ?? ''} />
-            <button type="submit" className={styles.signinButton}>
-              {t('button')}
-            </button>
+          <form
+            action={signInOAuth}
+            style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '16px' }}
+          >
+            <TextField.Root name="callbackUrl" value={callbackUrl ?? ''} hidden readOnly />
+            <Button type="submit">{t('button')}</Button>
           </form>
           <Text style={{ listStyleType: 'disc', paddingLeft: '20px' }}>
             <li>
-              <Text as="span">{t('descriptionOne')}</Text>
+              <Text as="span">{t('signInToAccount')}</Text>
             </li>
             <li>
-              <Text as="span">{t('descriptionTwo')}</Text>
+              <Text as="span">{t('usePretix')}</Text>
             </li>
             <li>
-              <Text as="span">{t('descriptionThree')}</Text>
+              <Text as="span">{t('clickButtonToRedirect')}</Text>
             </li>
             <li>
-              <Text as="span">{t('descriptionFour')}</Text>
+              <Text as="span">{t('afterLoggingIn')}</Text>
             </li>
           </Text>
         </>
@@ -112,26 +120,8 @@ export default async function SignInPage({
           forgotSent={forgotSent}
           signInAction={signInCredentials}
           requestResetAction={requestReset}
-          translations={{
-            descriptionOne: t('descriptionOne'),
-            emailPlaceholder: t('emailPlaceholder'),
-            passwordPlaceholder: t('passwordPlaceholder'),
-            buttonCredentials: t('buttonCredentials'),
-            createAccount: t('createAccount'),
-            forgotPassword: t('forgotPassword'),
-            forgotDescription: t('forgotDescription'),
-            forgotButton: t('forgotButton'),
-            forgotSuccessMessage: t('forgotSuccessMessage'),
-            backToSignIn: t('backToSignIn'),
-            invalidCredentialsTitle: t('invalidCredentialsTitle'),
-            invalidCredentials: t('invalidCredentials'),
-            tooManyAttemptsTitle: t('tooManyAttemptsTitle'),
-            tooManyAttempts: t('tooManyAttempts'),
-            rateLimitError: t('rateLimitError'),
-            errorDialogClose: t('errorDialogClose')
-          }}
         />
       )}
-    </Flex>
+    </SigninContainer>
   );
 }
