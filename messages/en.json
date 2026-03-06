@@ -239,7 +239,8 @@
     "status": "Status",
     "requires": "Requires",
     "spots": "Spots",
-    "volunteers": "Volunteers"
+    "volunteers": "Volunteers",
+    "editShift": "Edit Shift"
   },
   "ShiftDialog": {
     "cancel": "Cancel",

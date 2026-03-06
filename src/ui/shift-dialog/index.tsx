@@ -6,19 +6,11 @@
 
 'use client';
 
-import {
-  Button,
-  Dialog,
-  Flex,
-  TextField,
-  Text,
-  Checkbox,
-  DropdownMenu,
-  Select
-} from '@radix-ui/themes';
+import { Button, Dialog, Flex, TextField, Text, Checkbox, Select } from '@radix-ui/themes';
 import { useTranslations } from 'next-intl';
 import { EventDayTimePicker } from '../datepicker';
 import FormDialog, { FormField } from '../form-dialog';
+import { useState } from 'react';
 
 interface Props {
   startDate: Date;
@@ -45,6 +37,7 @@ export default function ShiftDialog({
   const open = creating || isEdit;
   const t = useTranslations('ShiftDialog');
   const title = t(editing ? 'editShift' : 'addShift');
+  const [currentMin, setCurrentMin] = useState<number>(editing?.minVolunteers ?? 0);
   return (
     <FormDialog description={title} open={open} onClose={onClose}>
       <input type="hidden" name="id" value={editing?.id ?? ''} />
@@ -108,6 +101,14 @@ export default function ShiftDialog({
               aria-labelledby="min-volunteers"
               name="minVolunteers"
               type="number"
+              min={0}
+              onChange={(e) => {
+                const value = Number(e.currentTarget.value);
+                if (isNaN(value)) {
+                  return;
+                }
+                setCurrentMin(value);
+              }}
               defaultValue={editing?.minVolunteers ?? 0}
               required
             />
@@ -121,6 +122,7 @@ export default function ShiftDialog({
               aria-labelledby="max-volunteers"
               name="maxVolunteers"
               type="number"
+              min={Math.max(1, currentMin)}
               defaultValue={editing?.maxVolunteers ?? 0}
               required
             />

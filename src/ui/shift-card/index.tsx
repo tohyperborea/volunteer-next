@@ -73,7 +73,12 @@ export default function ShiftCard({ event, shift, volunteerNames, qualification,
         </Collapsible>
       </Flex>
       {onEdit && (
-        <IconButton className={styles.editButton} variant="ghost" onClick={onEdit}>
+        <IconButton
+          aria-label={t('editShift')}
+          className={styles.editButton}
+          variant="ghost"
+          onClick={onEdit}
+        >
           <Pencil2Icon width={20} height={20} />
         </IconButton>
       )}
