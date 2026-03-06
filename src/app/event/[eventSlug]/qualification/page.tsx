@@ -79,7 +79,7 @@ export default async function QualificationsPage({ params }: Props) {
   };
 
   return (
-    <Box p="4">
+    <Box>
       <QualificationList
         qualifications={qualifications}
         event={event}

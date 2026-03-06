@@ -91,7 +91,7 @@ export default async function QualificationsPage({ params }: Props) {
   };
 
   return (
-    <Flex p="4" direction="column" gap="6">
+    <Flex direction="column" gap="6">
       <QualificationDetails
         qualification={qualification}
         event={event}
