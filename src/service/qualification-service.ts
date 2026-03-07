@@ -183,3 +183,50 @@ export const deleteQualification = async (
   // Shift requirement removal handled by DELETE CASCADE
   // TODO: Remove any user assignments for this qualification
 };
+
+/**
+ * Assigns a qualification to multiple users in the database.
+ * @param qualificationId - The ID of the qualification to assign
+ * @param userIds - The IDs of the users to assign the qualification to
+ * @param client - Optional database client to use for the transaction
+ * @returns A promise that resolves when the assignment is complete
+ */
+export const assignQualificationToUsers = async (
+  qualificationId: QualificationId,
+  userIds: UserId[],
+  client?: PoolClient
+): Promise<void> => {
+  console.info(`Assigning qualification ${qualificationId} to users ${userIds.toString()}`);
+  const db = client || pool;
+  const values = userIds.map((userId) => `('${userId}', '${qualificationId}')`).join(', ');
+  await db.query(
+    `
+      INSERT INTO "user_qualification" ("userId", "qualificationId")
+      VALUES ${values}
+      ON CONFLICT ("userId", "qualificationId") DO NOTHING
+    `
+  );
+};
+
+/**
+ * Removes a qualification assignment from a user in the database.
+ * @param qualificationId - The ID of the qualification to remove
+ * @param userId - The ID of the user to remove the qualification from
+ * @param client - Optional database client to use for the transaction
+ * @returns A promise that resolves when the removal is complete
+ */
+export const removeQualificationFromUser = async (
+  qualificationId: QualificationId,
+  userId: UserId,
+  client?: PoolClient
+): Promise<void> => {
+  console.info(`Removing qualification ${qualificationId} from user ${userId}`);
+  const db = client || pool;
+  await db.query(
+    `
+      DELETE FROM "user_qualification"
+      WHERE "userId" = $1 AND "qualificationId" = $2
+    `,
+    [userId, qualificationId]
+  );
+};

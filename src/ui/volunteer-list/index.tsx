@@ -6,10 +6,50 @@
 
 'use client';
 
+import { Flex, IconButton, Text } from '@radix-ui/themes';
+import SearchBar from '../search-bar';
+import styles from './styles.module.css';
+import { useTranslations } from 'next-intl';
+import VolunteerCard from '../volunteer-card';
+import { Cross1Icon } from '@radix-ui/react-icons';
+
 interface Props {
   volunteers: User[];
+  onRemove?: ServerAction;
 }
 
-export default function VolunteerList({}: Props) {
-  return <div>TODO: VolunteerList</div>;
+export default function VolunteerList({ volunteers, onRemove }: Props) {
+  const t = useTranslations('VolunteerList');
+  return (
+    <Flex direction="column" gap="4">
+      <SearchBar />
+      {volunteers.length === 0 ? <Text>{t('empty')}</Text> : null}
+      <Flex asChild p="0" m="0" direction="column" gap="2">
+        <ul className={styles.list}>
+          {volunteers.map((volunteer) => (
+            <li key={volunteer.id}>
+              <VolunteerCard
+                volunteer={volunteer}
+                actions={
+                  onRemove ? (
+                    <form>
+                      <input type="hidden" name="volunteerId" value={volunteer.id} />
+                      <IconButton
+                        variant="ghost"
+                        color="red"
+                        formAction={onRemove}
+                        title={t('remove', { name: volunteer.name })}
+                      >
+                        <Cross1Icon height={20} width={20} />
+                      </IconButton>
+                    </form>
+                  ) : null
+                }
+              />
+            </li>
+          ))}
+        </ul>
+      </Flex>
+    </Flex>
+  );
 }

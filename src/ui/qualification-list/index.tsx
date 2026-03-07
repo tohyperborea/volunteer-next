@@ -14,6 +14,7 @@ import QualificationCard from '../qualification-card';
 import styles from './styles.module.css';
 import { useState } from 'react';
 import QualificationDialog from '../qualification-dialog';
+import SearchBar from '../search-bar';
 
 interface Props {
   qualifications: QualificationInfo[];
@@ -44,11 +45,7 @@ export default function QualificationList({
   const editableSet = editableTeams ? new Set(editableTeams) : null;
   return (
     <Flex direction="column" gap="4">
-      <TextField.Root placeholder={t('searchPlaceholder')}>
-        <TextField.Slot>
-          <MagnifyingGlassIcon />
-        </TextField.Slot>
-      </TextField.Root>
+      <SearchBar />
       <Divider />
       <Heading size="5" as="h1">
         {t('title')}

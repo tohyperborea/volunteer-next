@@ -3,7 +3,8 @@ import {
   getTeamShiftsPath,
   getTeamVolunteersPath,
   getQualificationsPath,
-  getQualificationDetailsPath
+  getQualificationDetailsPath,
+  getUserApiPath
 } from './path';
 
 describe('getTeamInfoPath', () => {
@@ -47,5 +48,30 @@ describe('getQualificationDetailsPath', () => {
     const qualificationId = '12345';
     const result = getQualificationDetailsPath({ eventSlug, qualificationId });
     expect(result).toBe('/event/test-event/qualification/12345');
+  });
+});
+
+describe('getUserApiPath', () => {
+  it('should return the correct API path without filters', () => {
+    const result = getUserApiPath();
+    expect(result).toBe('/api/user');
+  });
+
+  it('should return the correct API path with a single filter', () => {
+    const filter: UserFilters = { roleType: 'admin' };
+    const result = getUserApiPath(filter);
+    expect(result).toBe('/api/user?roleType=admin');
+  });
+
+  it('should return the correct API path with multiple filters', () => {
+    const filter: UserFilters = { roleType: 'admin', withQualification: 'qual-id' };
+    const result = getUserApiPath(filter);
+    expect(result).toBe('/api/user?roleType=admin&withQualification=qual-id');
+  });
+
+  it('should encode special characters in filter values', () => {
+    const filter: UserFilters = { searchQuery: 'John Doe & Co.' };
+    const result = getUserApiPath(filter);
+    expect(result).toBe('/api/user?searchQuery=John+Doe+%26+Co.');
   });
 });

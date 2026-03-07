@@ -21,3 +21,7 @@ export const getQualificationDetailsPath = ({
   eventSlug: string;
   qualificationId: string;
 }) => `/event/${eventSlug}/qualification/${qualificationId}`;
+
+// API paths
+export const getUserApiPath = (filter?: UserFilters): string =>
+  `/api/user${filter ? `?${new URLSearchParams(filter as Record<string, string>).toString()}` : ''}`;

@@ -33,7 +33,7 @@ export default function QualificationCard({
   const Inner = () => (
     <Flex p="3" direction="column" gap="1">
       <Flex justify="between" align="center">
-        <Heading size="4" as="h2">
+        <Heading size="4" as="h3" weight="medium">
           {qualification.name}
         </Heading>
         {onEdit && (

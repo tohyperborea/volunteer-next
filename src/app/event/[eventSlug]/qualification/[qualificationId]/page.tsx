@@ -1,13 +1,16 @@
 import metadata from '@/i18n/metadata';
 import { getEventBySlug } from '@/service/event-service';
 import {
+  assignQualificationToUsers,
   deleteQualification,
   getQualificationById,
+  removeQualificationFromUser,
   updateQualification
 } from '@/service/qualification-service';
 import { getTeamsForEvent } from '@/service/team-service';
-import { getUsersWithQualification } from '@/service/user-service';
+import { getFilteredUsers } from '@/service/user-service';
 import { checkAuthorisation } from '@/session';
+import AssignQualification from '@/ui/assign-qualification';
 import QualificationDetails from '@/ui/qualification-details';
 import VolunteerList from '@/ui/volunteer-list';
 import { getQualificationDetailsPath, getQualificationsPath } from '@/utils/path';
@@ -45,7 +48,7 @@ export default async function QualificationsPage({ params }: Props) {
     return notFound();
   }
   const teams = await getTeamsForEvent(event.id);
-  const volunteers = await getUsersWithQualification(qualification.id);
+  const volunteers = await getFilteredUsers({ withQualification: qualification.id });
 
   const editorRoles: UserRole[] = [
     {
@@ -90,6 +93,31 @@ export default async function QualificationsPage({ params }: Props) {
     redirect(path);
   };
 
+  const onAssignQualification = async (data: FormData) => {
+    'use server';
+    const volunteerIds = data.getAll('volunteers') as UserId[];
+    console.log('Assigning qualification with data:', volunteerIds);
+    await checkAuthorisation(editorRoles);
+    await assignQualificationToUsers(qualification.id, volunteerIds);
+    const path = getQualificationDetailsPath({ eventSlug, qualificationId });
+    revalidatePath(path);
+    redirect(path);
+  };
+
+  const onRemoveQualification = async (data: FormData) => {
+    'use server';
+    const volunteerId = data.get('volunteerId')?.toString();
+    console.log('Removing qualification with data:', volunteerId);
+    if (!volunteerId) {
+      throw new Error('Volunteer ID is required');
+    }
+    await checkAuthorisation(editorRoles);
+    await removeQualificationFromUser(qualification.id, volunteerId);
+    const path = getQualificationDetailsPath({ eventSlug, qualificationId });
+    revalidatePath(path);
+    redirect(path);
+  };
+
   return (
     <Flex direction="column" gap="6">
       <QualificationDetails
@@ -102,7 +130,10 @@ export default async function QualificationsPage({ params }: Props) {
       <Heading size="3" as="h2">
         {t('volunteers')}
       </Heading>
-      <VolunteerList volunteers={volunteers} />
+      {editable && (
+        <AssignQualification qualification={qualification} onSubmit={onAssignQualification} />
+      )}
+      <VolunteerList volunteers={volunteers} onRemove={onRemoveQualification} />
     </Flex>
   );
 }
