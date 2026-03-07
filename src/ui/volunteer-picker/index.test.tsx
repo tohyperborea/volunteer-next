@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import VolunteerPicker from './index';
 
 jest.mock('next-intl', () => ({
@@ -82,5 +82,37 @@ describe('VolunteerPicker', () => {
     });
 
     consoleErrorSpy.mockRestore();
+  });
+
+  it('updates the volunteer list based on the search input', async () => {
+    (fetch as jest.Mock).mockResolvedValueOnce({
+      ok: true,
+      json: async () => [
+        { id: 'id-1', name: 'Volunteer 1' },
+        { id: 'id-2', name: 'Volunteer 2' }
+      ]
+    });
+
+    render(<VolunteerPicker title="Select Volunteers" open={true} />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Volunteer 1')).toBeInTheDocument();
+      expect(screen.getByText('Volunteer 2')).toBeInTheDocument();
+    });
+
+    (fetch as jest.Mock).mockResolvedValueOnce({
+      ok: true,
+      json: async () => [{ id: 'id-3', name: 'Volunteer 3' }]
+    });
+
+    fireEvent.change(screen.getByPlaceholderText('placeholder'), {
+      target: { value: 'Volunteer 3' }
+    });
+
+    await waitFor(() => {
+      expect(screen.queryByText('Volunteer 1')).not.toBeInTheDocument();
+      expect(screen.queryByText('Volunteer 2')).not.toBeInTheDocument();
+      expect(screen.getByText('Volunteer 3')).toBeInTheDocument();
+    });
   });
 });

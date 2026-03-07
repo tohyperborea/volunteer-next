@@ -12,6 +12,7 @@ import styles from './styles.module.css';
 import { useTranslations } from 'next-intl';
 import VolunteerCard from '../volunteer-card';
 import { Cross1Icon } from '@radix-ui/react-icons';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 interface Props {
   volunteers: User[];
@@ -20,9 +21,21 @@ interface Props {
 
 export default function VolunteerList({ volunteers, onRemove }: Props) {
   const t = useTranslations('VolunteerList');
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const { replace } = useRouter();
+  const onSearch = (search: string) => {
+    const params = new URLSearchParams(searchParams);
+    if (search) {
+      params.set('searchQuery', search);
+    } else {
+      params.delete('searchQuery');
+    }
+    replace(`${pathname}${search ? `?${params.toString()}` : ''}`);
+  };
   return (
     <Flex direction="column" gap="4">
-      <SearchBar />
+      <SearchBar onChange={onSearch} />
       {volunteers.length === 0 ? <Text>{t('empty')}</Text> : null}
       <Flex asChild p="0" m="0" direction="column" gap="2">
         <ul className={styles.list}>

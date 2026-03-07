@@ -197,6 +197,9 @@ export const assignQualificationToUsers = async (
   client?: PoolClient
 ): Promise<void> => {
   console.info(`Assigning qualification ${qualificationId} to users ${userIds.toString()}`);
+  if (userIds.length === 0) {
+    return;
+  }
   const db = client || pool;
   const values = userIds.map((userId) => `('${userId}', '${qualificationId}')`).join(', ');
   await db.query(

@@ -25,9 +25,11 @@ interface Props {
 export default function VolunteerPicker({ title, open, onClose, onSubmit, filter }: Props) {
   const t = useTranslations('VolunteerPicker');
   const [volunteers, setVolunteers] = useState<User[]>([]);
+  const [search, setSearch] = useState<string | undefined>(undefined);
 
-  const fetchVolunteers = async () => {
-    const response = await fetch(getUserApiPath(filter));
+  const fetchVolunteers = async (searchQuery: string | undefined) => {
+    const requestFilter: UserFilters | undefined = search ? { ...filter, searchQuery } : filter;
+    const response = await fetch(getUserApiPath(requestFilter));
     if (!response.ok) {
       console.error('Failed to fetch volunteers:', response.statusText);
       return [];
@@ -38,9 +40,9 @@ export default function VolunteerPicker({ title, open, onClose, onSubmit, filter
 
   useEffect(() => {
     if (open) {
-      fetchVolunteers().then(setVolunteers);
+      fetchVolunteers(search).then(setVolunteers);
     }
-  }, [filter, open]);
+  }, [filter, search, open]);
 
   return (
     <FormDialog description={title} open={open} onClose={onClose}>
@@ -48,7 +50,11 @@ export default function VolunteerPicker({ title, open, onClose, onSubmit, filter
         <Dialog.Title as="h2" mt="4" mb="6">
           {title}
         </Dialog.Title>
-        <SearchBar />
+        <SearchBar
+          onChange={(value) => {
+            setSearch(value);
+          }}
+        />
         <CheckboxCards.Root defaultValue={['id-1', 'id-2']} mt="4" name="volunteers">
           {volunteers.map((volunteer) => (
             <CheckboxCards.Item key={volunteer.id} value={volunteer.id}>

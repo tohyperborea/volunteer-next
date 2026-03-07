@@ -37,10 +37,16 @@ export const generateMetadata = metadata(PAGE_KEY, {
 
 interface Props {
   params: Promise<{ eventSlug: string; qualificationId: QualificationId }>;
+  searchParams?: Promise<{
+    searchQuery?: string;
+    page?: string;
+  }>;
 }
 
-export default async function QualificationsPage({ params }: Props) {
-  const { eventSlug, qualificationId } = await params;
+export default async function QualificationsPage(props: Props) {
+  const { eventSlug, qualificationId } = await props.params;
+  const searchParams = await props.searchParams;
+  const query = searchParams?.searchQuery;
   const t = await getTranslations(PAGE_KEY);
   const event = await getEventBySlug(eventSlug);
   const qualification = await getQualificationById(qualificationId);
@@ -48,7 +54,10 @@ export default async function QualificationsPage({ params }: Props) {
     return notFound();
   }
   const teams = await getTeamsForEvent(event.id);
-  const volunteers = await getFilteredUsers({ withQualification: qualification.id });
+  const volunteers = await getFilteredUsers({
+    withQualification: qualification.id,
+    searchQuery: query
+  });
 
   const editorRoles: UserRole[] = [
     {

@@ -9,19 +9,22 @@
 import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
 import { TextField } from '@radix-ui/themes';
 import { useTranslations } from 'next-intl';
+import { useDebouncedCallback } from 'use-debounce';
 
 interface Props {
   defaultValue?: string;
   onChange?: (value: string) => void;
+  debounceDelay?: number;
 }
 
-export default function SearchBar({ defaultValue, onChange }: Props) {
+export default function SearchBar({ defaultValue, onChange, debounceDelay = 500 }: Props) {
   const t = useTranslations('SearchBar');
+  const debouncedOnChange = onChange ? useDebouncedCallback(onChange, debounceDelay) : undefined;
   return (
     <TextField.Root
       placeholder={t('placeholder')}
       defaultValue={defaultValue}
-      onChange={(e) => onChange?.(e.currentTarget.value)}
+      onChange={(e) => debouncedOnChange?.(e.currentTarget.value)}
     >
       <TextField.Slot>
         <MagnifyingGlassIcon role="img" />
