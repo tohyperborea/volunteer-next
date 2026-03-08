@@ -1,10 +1,6 @@
 'use client';
 
-import {
-  IconButton,
-  Dialog,
-  VisuallyHidden
-} from '@radix-ui/themes';
+import { IconButton, Dialog, VisuallyHidden } from '@radix-ui/themes';
 import { Cross1Icon, HamburgerMenuIcon } from '@radix-ui/react-icons';
 import styles from './styles.module.css';
 import { useTranslations } from 'next-intl';
@@ -18,7 +14,7 @@ interface MobileMenuProps {
 
 export default function MobileMenu({ dialogOpen, setDialogOpen, title }: MobileMenuProps) {
   const t = useTranslations('NavBar');
-  
+
   return (
     <Dialog.Root open={dialogOpen} onOpenChange={setDialogOpen}>
       <Dialog.Trigger>
@@ -33,7 +29,12 @@ export default function MobileMenu({ dialogOpen, setDialogOpen, title }: MobileM
       </Dialog.Trigger>
       <Dialog.Content className={styles.dialogContent}>
         <Dialog.Close className={styles.dialogCloseButton}>
-          <IconButton variant="ghost" size="3" aria-label="Close">
+          <IconButton
+            variant="ghost"
+            size="3"
+            aria-label="Close"
+            onClick={(e) => e.stopPropagation()}
+          >
             <Cross1Icon />
           </IconButton>
         </Dialog.Close>
