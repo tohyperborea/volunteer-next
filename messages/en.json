@@ -119,6 +119,26 @@
     "title": "{qualificationName} | {eventName}",
     "volunteers": "Volunteers with this qualification"
   },
+  "UsersDashboardPage": {
+    "title": "Users Dashboard"
+  },
+  "CreateUserPage": {
+    "title": "Create User",
+    "errors": {
+      "userNameRequired": "User name is required",
+      "userEmailRequired": "User email is required",
+      "eventIdRequiredForOrganiser": "Event ID is required for organiser role",
+      "eventIdRequiredForTeamLead": "Event ID is required for team-lead role",
+      "teamIdRequiredForTeamLead": "Team ID is required for team-lead role"
+    }
+  },
+  "EditUserPage": {
+    "title": "Edit User"
+  },
+  "UserProfilePage": {
+    "title": "{userName}",
+    "qualifications": "Assigned Qualifications"
+  },
 
   "MenuCard": {
     "update": "Update",
@@ -143,9 +163,6 @@
   "TeamCard": {
     "noTeams": "No teams yet!"
   },
-  "UsersDashboard": {
-    "title": "Users Dashboard"
-  },
   "UsersList": {
     "noUsers": "No users yet!",
     "email": "Email",
@@ -168,19 +185,6 @@
     "teamLead": "Team Lead",
     "applyFilters": "Apply Filters",
     "clear": "Clear"
-  },
-  "CreateUser": {
-    "title": "Create User",
-    "errors": {
-      "userNameRequired": "User name is required",
-      "userEmailRequired": "User email is required",
-      "eventIdRequiredForOrganiser": "Event ID is required for organiser role",
-      "eventIdRequiredForTeamLead": "Event ID is required for team-lead role",
-      "teamIdRequiredForTeamLead": "Team ID is required for team-lead role"
-    }
-  },
-  "EditUser": {
-    "title": "Edit User"
   },
   "UserForm": {
     "userName": "User Name",

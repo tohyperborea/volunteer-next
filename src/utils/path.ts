@@ -4,6 +4,12 @@
  * @author Michael Townsend <@continuities>
  */
 
+// Users paths
+export const getUsersDashboardPath = (): string => '/user';
+export const getCreateUserPath = (): string => '/create-user';
+export const getEditUserPath = (userId: string): string => `/update-user/${userId}`;
+export const getUserProfilePath = (userId: string): string => `/user/${userId}`;
+
 // Teams paths
 export const getTeamInfoPath = (eventSlug: string, teamSlug: string): string =>
   `/event/${eventSlug}/team/${teamSlug}`;

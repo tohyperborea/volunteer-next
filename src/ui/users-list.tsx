@@ -6,11 +6,12 @@ import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { Pencil1Icon, TrashIcon } from '@radix-ui/react-icons';
 import Filters from './user-filters';
+import { getUserProfilePath } from '@/utils/path';
 
 interface UsersListProps {
   users: User[];
-  onDeleteUser: (userId: string) => Promise<void>;
-  onUndeleteUser: (userId: string) => Promise<void>;
+  onDeleteUser?: (userId: string) => Promise<void>;
+  onUndeleteUser?: (userId: string) => Promise<void>;
   currentUser: User;
 }
 
@@ -55,16 +56,22 @@ export default function UsersList({
     });
   }, [users, filters]);
 
-  const handleDelete = async (userId: string) => {
-    await onDeleteUser(userId);
-    setUserToDelete(null);
-    router.refresh();
-  };
+  const handleDelete =
+    onDeleteUser &&
+    (async (userId: string) => {
+      await onDeleteUser(userId);
+      setUserToDelete(null);
+      router.refresh();
+    });
 
-  const handleUndelete = async (userId: string) => {
-    await onUndeleteUser(userId);
-    router.refresh();
-  };
+  const handleUndelete =
+    onUndeleteUser &&
+    (async (userId: string) => {
+      await onUndeleteUser(userId);
+      router.refresh();
+    });
+
+  const canEdit = handleDelete && handleUndelete;
 
   const hasAccessToShowDeleted = currentUser.roles.some((role) => role.type === 'admin'); // TODO: Add setting to allow event creator to determine access level
 
@@ -84,9 +91,11 @@ export default function UsersList({
       {filteredUsers.map((user) => (
         <Card key={user.id}>
           {/* Name */}
-          <Heading size="4" mb="2">
-            {user.name}
-          </Heading>
+          <Link href={getUserProfilePath(user.id)}>
+            <Heading as="h3" size="4" mb="2">
+              {user.name}
+            </Heading>
+          </Link>
           <Flex direction="row" gap="2" width="100%">
             <Flex direction={{ initial: 'column', sm: 'row' }} gap="2" width="100%">
               {/* Email */}
@@ -104,9 +113,7 @@ export default function UsersList({
                 <Box>{user.roles.map((role) => role.type).join(', ') || 'volunteer'}</Box>
               </Flex>
             </Flex>
-            {currentUser.roles.some(
-              (role) => role.type === 'admin' || role.type === 'organiser'
-            ) && (
+            {canEdit && (
               <>
                 <Link href={`/update-user/${user.id}`}>
                   <Button variant="outline">

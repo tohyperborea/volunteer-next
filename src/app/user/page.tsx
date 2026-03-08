@@ -5,29 +5,32 @@ import { checkAuthorisation, currentUser } from '@/session';
 import { getUsers } from '@/service/user-service';
 import { markUserAsDeleted, undeleteUser } from '@/service/user-service';
 import { revalidatePath } from 'next/cache';
-import UsersList from '../../ui/users-list';
+import UsersList from '@/ui/users-list';
+import { getUsersDashboardPath } from '@/utils/path';
 
-export const generateMetadata = metadata('UsersDashboard');
+const PAGE_KEY = 'UsersDashboardPage';
+export const generateMetadata = metadata(PAGE_KEY);
 
-export default async function UsersDashboard() {
-  await checkAuthorisation([{ type: 'admin' }]);
+export default async function UsersDashboardPage() {
+  const editors: UserRole[] = [{ type: 'admin' }];
+  const canEdit = await checkAuthorisation(editors, true);
 
-  const t = await getTranslations('UsersDashboard');
+  const t = await getTranslations(PAGE_KEY);
   const users = await getUsers();
   const user = await currentUser();
 
   const handleDeleteUser = async (userId: string) => {
     'use server';
-    await checkAuthorisation([{ type: 'admin' }]);
+    await checkAuthorisation(editors);
     await markUserAsDeleted(userId);
-    revalidatePath('/users');
+    revalidatePath(getUsersDashboardPath());
   };
 
   const handleUndeleteUser = async (userId: string) => {
     'use server';
-    await checkAuthorisation([{ type: 'admin' }]);
+    await checkAuthorisation(editors);
     await undeleteUser(userId);
-    revalidatePath('/users');
+    revalidatePath(getUsersDashboardPath());
   };
 
   return (
@@ -35,8 +38,8 @@ export default async function UsersDashboard() {
       <Heading my="4">{t('title')}</Heading>
       <UsersList
         users={users}
-        onDeleteUser={handleDeleteUser}
-        onUndeleteUser={handleUndeleteUser}
+        onDeleteUser={canEdit ? handleDeleteUser : undefined}
+        onUndeleteUser={canEdit ? handleUndeleteUser : undefined}
         currentUser={user as User}
       />
     </Flex>
