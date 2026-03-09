@@ -24,6 +24,7 @@ export default function SearchBar({ defaultValue, onChange, debounceDelay = 500 
     <TextField.Root
       placeholder={t('placeholder')}
       defaultValue={defaultValue}
+      disabled={!onChange}
       onChange={(e) => debouncedOnChange?.(e.currentTarget.value)}
     >
       <TextField.Slot>

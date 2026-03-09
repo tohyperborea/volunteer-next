@@ -53,7 +53,7 @@ export default function VolunteerList({ volunteers, onRemove }: Props) {
                         formAction={onRemove}
                         title={t('remove', { name: volunteer.name })}
                       >
-                        <Cross1Icon height={20} width={20} />
+                        <Cross1Icon />
                       </IconButton>
                     </form>
                   ) : null

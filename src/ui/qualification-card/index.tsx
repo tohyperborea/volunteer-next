@@ -6,8 +6,7 @@
 
 'use client';
 
-import { Card, Flex, Heading, IconButton, Text } from '@radix-ui/themes';
-import styles from './styles.module.css';
+import { Card, Flex, Heading, Text } from '@radix-ui/themes';
 import Link from 'next/link';
 import { getQualificationDetailsPath } from '@/utils/path';
 
@@ -28,7 +27,7 @@ export default function QualificationCard({
 }: Props) {
   const cardId = `qualification-card-${qualification.id}`;
   const Inner = () => (
-    <Flex p="3" direction="column" gap="1">
+    <Flex direction="column" gap="1">
       <Flex justify="between" align="center">
         <Heading size="4" as="h3" weight="medium">
           {qualification.name}
@@ -41,7 +40,7 @@ export default function QualificationCard({
   );
 
   return (
-    <Card className={styles.card} asChild={asLink} data-testid={cardId}>
+    <Card asChild={asLink} data-testid={cardId}>
       {asLink ? (
         <Link
           href={getQualificationDetailsPath({

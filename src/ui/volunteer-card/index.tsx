@@ -14,9 +14,9 @@ interface Props {
 export default function VolunteerCard({ volunteer, actions }: Props) {
   return (
     <Card>
-      <Flex align="center" justify="between">
+      <Flex justify="between">
         <VolunteerCardContent volunteer={volunteer} />
-        {actions ? <Flex mt="2">{actions}</Flex> : null}
+        {actions}
       </Flex>
     </Card>
   );

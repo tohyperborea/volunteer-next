@@ -7,10 +7,8 @@
 'use client';
 
 import { Box, Flex } from '@radix-ui/themes';
-import { useTranslations } from 'next-intl';
 import QualificationCard from '../qualification-card';
 import styles from './styles.module.css';
-import SearchBar from '../search-bar';
 
 interface Props {
   qualifications: QualificationInfo[];
@@ -37,27 +35,24 @@ export default function QualificationList({ qualifications, events, teams, itemA
   );
 
   return (
-    <Flex direction="column" gap="4">
-      <SearchBar />
-      <Flex asChild direction="column" gap="4">
-        <ul className={styles.list}>
-          {qualifications.map((qualification) => {
-            return (
-              <Box asChild key={qualification.id}>
-                <li>
-                  <QualificationCard
-                    asLink
-                    event={eventsById[qualification.eventId]}
-                    teamName={qualification.teamId && teamNames[qualification.teamId]}
-                    qualification={qualification}
-                    actions={itemActions ? itemActions(qualification) : undefined}
-                  />
-                </li>
-              </Box>
-            );
-          })}
-        </ul>
-      </Flex>
+    <Flex asChild direction="column" gap="4">
+      <ul className={styles.list}>
+        {qualifications.map((qualification) => {
+          return (
+            <Box asChild key={qualification.id}>
+              <li>
+                <QualificationCard
+                  asLink
+                  event={eventsById[qualification.eventId]}
+                  teamName={qualification.teamId && teamNames[qualification.teamId]}
+                  qualification={qualification}
+                  actions={itemActions ? itemActions(qualification) : undefined}
+                />
+              </li>
+            </Box>
+          );
+        })}
+      </ul>
     </Flex>
   );
 }
