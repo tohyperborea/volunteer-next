@@ -42,6 +42,31 @@ export const getQualificationsForEvent = cache(
 );
 
 /**
+ * Fetches a list of qualifications associated with specific events.
+ * @param eventIds - List of EventIds to fetch qualifications for
+ * @returns A list of qualifications associated with the specified events
+ */
+export const getQualificationsForEvents = cache(
+  async (eventIds: EventId[]): Promise<QualificationInfo[]> => {
+    console.info(`Fetching qualifications for events ${eventIds.toString()}`);
+    const res = await pool.query(
+      `
+        SELECT
+          "id",
+          "eventId",
+          "teamId",
+          "name",
+          "errorMessage"
+        FROM qualification
+        WHERE "eventId" = ANY($1)
+     `,
+      [eventIds]
+    );
+    return res.rows.map(rowToQualification);
+  }
+);
+
+/**
  * Fetches a list of qualifications associated with specific teams
  * @param teamIds - List of TeamIds to fetch qualifications for
  * @returns A list of qualifications associated with the specified teams

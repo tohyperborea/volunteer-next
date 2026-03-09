@@ -1,6 +1,7 @@
 import metadata from '@/i18n/metadata';
 import { getEventsById } from '@/service/event-service';
 import {
+  assignQualificationToUsers,
   getQualificationById,
   getQualificationsForUser,
   removeQualificationFromUser
@@ -14,7 +15,8 @@ import { getUserProfilePath } from '@/utils/path';
 import { Flex, Heading } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
 import { revalidatePath } from 'next/cache';
-import { notFound, redirect } from 'next/navigation';
+import { notFound } from 'next/navigation';
+import AddQualificationField from './add-qualification-field';
 
 const PAGE_KEY = 'UserProfilePage';
 
@@ -45,17 +47,15 @@ export default async function UserProfilePage({ params }: PageProps<'/user/[user
     roles.filter((role) => role.type === 'team-lead').map((role) => role.teamId)
   );
 
+  const canAddQualifications = isAdmin || organisesEvents.length > 0 || leadsTeams.length > 0;
+
   const qualifications = await getQualificationsForUser(userId);
   const eventIds = [...new Set(qualifications.map((qualification) => qualification.eventId))];
   const events = await getEventsById(eventIds);
   const teams = await getTeamsForEvents(eventIds);
 
-  const onRemove = async (qualificationId: QualificationId) => {
+  const authoriseForQualification = async (qualification: QualificationInfo) => {
     'use server';
-    const qualification = await getQualificationById(qualificationId);
-    if (!qualification) {
-      throw new Error('Qualification not found');
-    }
     const authorisedRoles: UserRole[] = [
       {
         type: 'admin'
@@ -72,7 +72,31 @@ export default async function UserProfilePage({ params }: PageProps<'/user/[user
         eventId: qualification.eventId
       });
     }
-    await checkAuthorisation(authorisedRoles);
+    return checkAuthorisation(authorisedRoles, true);
+  };
+
+  const onAdd = async (data: FormData) => {
+    'use server';
+    const qualificationId = data.get('qualification-id');
+    if (typeof qualificationId !== 'string') {
+      throw new Error('Invalid qualification ID');
+    }
+    const qualification = await getQualificationById(qualificationId);
+    if (!qualification) {
+      throw new Error('Qualification not found');
+    }
+    await authoriseForQualification(qualification);
+    await assignQualificationToUsers(qualificationId, [userId]);
+    revalidatePath(getUserProfilePath(userId));
+  };
+
+  const onRemove = async (qualificationId: QualificationId) => {
+    'use server';
+    const qualification = await getQualificationById(qualificationId);
+    if (!qualification) {
+      throw new Error('Qualification not found');
+    }
+    await authoriseForQualification(qualification);
     await removeQualificationFromUser(qualificationId, userId);
     revalidatePath(getUserProfilePath(userId));
   };
@@ -92,6 +116,15 @@ export default async function UserProfilePage({ params }: PageProps<'/user/[user
         authorisedEvents={organisesEvents}
         authorisedTeams={leadsTeams}
       />
+      {canAddQualifications && (
+        <AddQualificationField
+          isAdmin={isAdmin}
+          organisedEventIds={organisesEvents}
+          leadTeamIds={leadsTeams}
+          hasQualifications={qualifications}
+          onAdd={onAdd}
+        />
+      )}
     </Flex>
   );
 }

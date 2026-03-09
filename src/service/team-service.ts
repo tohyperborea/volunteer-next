@@ -99,6 +99,24 @@ export const getTeamById = cache(async (id: TeamId): Promise<TeamInfo | null> =>
 });
 
 /**
+ * Get teams by their IDs
+ * @param teamIds - An array of team IDs
+ * @returns A list of teams matching the provided IDs
+ */
+export const getTeamsById = cache(async (teamIds: TeamId[]): Promise<TeamInfo[]> => {
+  if (teamIds.length === 0) {
+    return [];
+  }
+  const result = await pool.query(
+    `SELECT id, "eventId", slug, name, description
+       FROM team
+       WHERE id = ANY($1)`,
+    [teamIds]
+  );
+  return result.rows.map(rowToTeam);
+});
+
+/**
  * Create a new team in the database
  * @param team - The team information to create, minus id
  * @param client - Optional database client for transaction

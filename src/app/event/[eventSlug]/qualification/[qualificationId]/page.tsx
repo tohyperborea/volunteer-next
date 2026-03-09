@@ -142,7 +142,10 @@ export default async function QualificationsPage(props: Props) {
       {editable && (
         <AssignQualification qualification={qualification} onSubmit={onAssignQualification} />
       )}
-      <VolunteerList volunteers={volunteers} onRemove={onRemoveQualification} />
+      <VolunteerList
+        volunteers={volunteers}
+        onRemove={editable ? onRemoveQualification : undefined}
+      />
     </Flex>
   );
 }

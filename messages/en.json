@@ -137,7 +137,11 @@
   },
   "UserProfilePage": {
     "title": "{userName}",
-    "qualifications": "Assigned Qualifications"
+    "qualifications": "Assigned Qualifications",
+    "addQualification": "Add Qualification to User",
+    "addQualificationDescription": "Select a qualification",
+    "select": "Select...",
+    "assignQualification": "Assign Qualification"
   },
 
   "MenuCard": {
