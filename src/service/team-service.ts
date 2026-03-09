@@ -32,6 +32,24 @@ export const getTeamsForEvent = cache(async (eventId: EventId): Promise<TeamInfo
 });
 
 /**
+ * Get teams for multiple events at once
+ * @param eventIds - An array of event IDs
+ * @returns A list of teams associated with the events
+ */
+export const getTeamsForEvents = cache(async (eventIds: EventId[]): Promise<TeamInfo[]> => {
+  if (eventIds.length === 0) {
+    return [];
+  }
+  const res = await pool.query(
+    `SELECT id, "eventId", slug, name, description
+       FROM team
+       WHERE "eventId" = ANY($1)`,
+    [eventIds]
+  );
+  return res.rows.map(rowToTeam);
+});
+
+/**
  * Fetches a list of all teams from the database.
  * @return An array of TeamInfo objects.
  */

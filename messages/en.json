@@ -268,14 +268,12 @@
     "requirementsDescription": "Qualifications that volunteers must have to sign up for this shift. Optional.",
     "none": "None"
   },
-  "QualificationList": {
-    "title": "Qualifications",
-    "add": "Add Qualification"
+  "ManageQualifications": {
+    "add": "Add Qualification",
+    "edit": "Edit Qualification"
   },
   "QualificationDetails": {
-    "delete": "Delete Qualification"
-  },
-  "QualificationCard": {
+    "delete": "Delete Qualification",
     "edit": "Edit Qualification"
   },
   "QualificationDialog": {

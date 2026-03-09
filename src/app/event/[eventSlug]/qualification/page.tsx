@@ -7,10 +7,10 @@ import {
 } from '@/service/qualification-service';
 import { getTeamsForEvent } from '@/service/team-service';
 import { checkAuthorisation, getMatchingRoles } from '@/session';
-import QualificationList from '@/ui/qualification-list';
+import ManageQualifications from '@/ui/manage-qualifications';
 import { getQualificationsPath } from '@/utils/path';
 import { validateNewQualification } from '@/validator/qualification-validator';
-import { Box } from '@radix-ui/themes';
+import { Flex, Heading } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
 import { revalidatePath } from 'next/cache';
 import { notFound, redirect } from 'next/navigation';
@@ -31,6 +31,7 @@ interface Props {
 }
 
 export default async function QualificationsPage({ params }: Props) {
+  const t = await getTranslations(PAGE_KEY);
   const { eventSlug } = await params;
   const event = await getEventBySlug(eventSlug);
   if (!event) {
@@ -79,14 +80,18 @@ export default async function QualificationsPage({ params }: Props) {
   };
 
   return (
-    <Box>
-      <QualificationList
+    <Flex direction="column" gap="6">
+      <Heading size="5" as="h1">
+        {t('title', { eventName: event?.name ?? '' })}
+      </Heading>
+
+      <ManageQualifications
         qualifications={qualifications}
         event={event}
         teams={teams}
         editableTeams={editableTeams}
         onSave={editable ? onSave : undefined}
       />
-    </Box>
+    </Flex>
   );
 }
