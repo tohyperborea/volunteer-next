@@ -1,0 +1,16 @@
+.git
+.gitignore
+.github
+node_modules
+.next
+.env.*
+.env*.local
+README.md
+*.md
+.husky
+coverage
+__tests__
+*.test.ts
+*.test.tsx
+*.spec.ts
+*.spec.tsx
