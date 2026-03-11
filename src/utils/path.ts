@@ -24,3 +24,9 @@ export const getQualificationDetailsPath = ({
 
 // Event-level paths
 export const getEventShiftsPath = (eventSlug: string): string => `/event/${eventSlug}/shifts`;
+
+// API paths
+export const getEventShiftsApiPath = (
+  eventSlug: string,
+  params?: { format: 'csv' | 'json' }
+): string => `/api/event/${eventSlug}/shifts?format=${params?.format ?? 'json'}`;

@@ -121,7 +121,8 @@
   },
   "EventShiftsPage": {
     "title": "Shifts",
-    "allShifts": "All Current Shifts"
+    "allShifts": "All Current Shifts",
+    "export": "Export Shifts"
   },
 
   "MenuCard": {

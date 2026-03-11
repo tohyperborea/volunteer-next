@@ -1,4 +1,5 @@
 import {
+  getEventShiftsApiPath,
   getEventShiftsPath,
   getQualificationDetailsPath,
   getQualificationsPath,
@@ -56,5 +57,25 @@ describe('getEventShiftsPath', () => {
     const eventSlug = 'event-123';
     const result = getEventShiftsPath(eventSlug);
     expect(result).toBe('/event/event-123/shifts');
+  });
+});
+
+describe('getEventShiftsApiPath', () => {
+  it('should return the correct API path for event shifts with default format', () => {
+    const eventSlug = 'event-123';
+    const result = getEventShiftsApiPath(eventSlug);
+    expect(result).toBe('/api/event/event-123/shifts?format=json');
+  });
+
+  it('should return the correct API path for event shifts with CSV format', () => {
+    const eventSlug = 'event-123';
+    const result = getEventShiftsApiPath(eventSlug, { format: 'csv' });
+    expect(result).toBe('/api/event/event-123/shifts?format=csv');
+  });
+
+  it('should return the correct API path for event shifts with JSON format explicitly set', () => {
+    const eventSlug = 'event-123';
+    const result = getEventShiftsApiPath(eventSlug, { format: 'json' });
+    expect(result).toBe('/api/event/event-123/shifts?format=json');
   });
 });
