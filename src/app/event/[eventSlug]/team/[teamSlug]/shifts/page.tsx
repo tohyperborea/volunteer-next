@@ -5,7 +5,7 @@ import { createShift, updateShift, deleteShift, getShiftsForTeam } from '@/servi
 import { getTeamBySlug } from '@/service/team-service';
 import { checkAuthorisation } from '@/session';
 import ShiftList from '@/ui/shift-list';
-import { getTeamShiftsPath } from '@/utils/path';
+import { getTeamShiftsApiPath, getTeamShiftsPath } from '@/utils/path';
 import { validateNewShift } from '@/validator/shift-validator';
 import { getTranslations } from 'next-intl/server';
 import { revalidatePath } from 'next/cache';
@@ -91,6 +91,7 @@ export default async function TeamShifts({ params }: Props) {
       teamId={team.id}
       shifts={shifts}
       qualifications={qualifications}
+      exportLink={getTeamShiftsApiPath(eventSlug, teamSlug, { format: 'csv' })}
       onSaveShift={isEditable ? onSaveShift : undefined}
       onDeleteShift={isEditable ? onDeleteShift : undefined}
     />

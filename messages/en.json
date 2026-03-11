@@ -236,7 +236,7 @@
   },
   "ShiftList": {
     "addShift": "Add shift",
-    "importShift": "Import shift"
+    "export": "Export shifts"
   },
   "ShiftCard": {
     "max": "Max",

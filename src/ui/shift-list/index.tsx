@@ -6,14 +6,15 @@
 
 'use client';
 
-import { PlusIcon } from '@radix-ui/react-icons';
-import { Button, Flex } from '@radix-ui/themes';
+import { PlusIcon, Share2Icon } from '@radix-ui/react-icons';
+import { Button, Flex, Link } from '@radix-ui/themes';
 import DatedList from '../dated-list';
 import ShiftCard from '../shift-card';
 import ShiftDialog from '../shift-dialog';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { eventDayToDate } from '@/utils/datetime';
+import { getTeamShiftsApiPath } from '@/utils/path';
 
 interface Props {
   event: EventInfo;
@@ -21,6 +22,7 @@ interface Props {
   teamId: TeamId;
   shifts: ShiftInfo[];
   qualifications: QualificationInfo[];
+  exportLink: string;
   onSaveShift?: (data: FormData) => Promise<never>;
   onDeleteShift?: (data: FormData) => Promise<never>;
 }
@@ -31,6 +33,7 @@ export default function ShiftList({
   teamId,
   shifts,
   qualifications,
+  exportLink,
   onSaveShift,
   onDeleteShift
 }: Props) {
@@ -41,9 +44,10 @@ export default function ShiftList({
   const qualificationMap = new Map(qualifications.map((q) => [q.id, q]));
   return (
     <Flex direction="column" gap="6">
-      {canEdit && (
-        <Flex direction="row" gap="2">
+      <Flex direction="row" gap="2">
+        {canEdit && (
           <Button
+            variant="soft"
             onClick={() => {
               setEditingShift(undefined);
               setCreatingShift(true);
@@ -51,11 +55,15 @@ export default function ShiftList({
           >
             <PlusIcon /> {t('addShift')}
           </Button>
-          <Button>
-            <PlusIcon /> {t('importShift')}
+        )}
+        {exportLink && (
+          <Button variant="soft" asChild>
+            <Link href={exportLink} target="_blank">
+              <Share2Icon /> {t('export')}
+            </Link>
           </Button>
-        </Flex>
-      )}
+        )}
+      </Flex>
       <DatedList
         items={shifts}
         getDate={(shift) => eventDayToDate(startDate, shift.eventDay)}
