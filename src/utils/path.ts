@@ -35,3 +35,9 @@ export const getTeamShiftsApiPath = (
   teamSlug: string,
   params?: { format: 'csv' | 'json' }
 ): string => `/api/event/${eventSlug}/team/${teamSlug}/shifts?format=${params?.format ?? 'json'}`;
+export const getVolunteerShiftsApiPath = (
+  eventSlug: string,
+  userId: UserId,
+  params?: { format: 'csv' | 'json' }
+): string =>
+  `/api/event/${eventSlug}/volunteer/${userId}/shifts?format=${params?.format ?? 'json'}`;
