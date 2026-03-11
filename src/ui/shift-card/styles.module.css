@@ -19,8 +19,10 @@
   line-height: 2rem;
 }
 
-.editButton {
-  position: absolute;
-  top: var(--card-padding);
-  right: var(--card-padding);
+.collapse {
+  transition: transform 0.2s ease;
+}
+
+.expanded .collapse {
+  transform: rotate(180deg);
 }

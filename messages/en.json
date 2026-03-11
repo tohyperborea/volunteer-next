@@ -119,6 +119,10 @@
     "title": "{qualificationName} | {eventName}",
     "volunteers": "Volunteers with this qualification"
   },
+  "EventShiftsPage": {
+    "title": "Shifts",
+    "allShifts": "All Current Shifts"
+  },
 
   "MenuCard": {
     "update": "Update",
@@ -290,5 +294,8 @@
     "cancel": "Cancel",
     "save": "Save Changes",
     "create": "Create Qualification"
+  },
+  "SearchBar": {
+    "placeholder": "Search..."
   }
 }

@@ -1,9 +1,10 @@
 import {
+  getEventShiftsPath,
+  getQualificationDetailsPath,
+  getQualificationsPath,
   getTeamInfoPath,
   getTeamShiftsPath,
-  getTeamVolunteersPath,
-  getQualificationsPath,
-  getQualificationDetailsPath
+  getTeamVolunteersPath
 } from './path';
 
 describe('getTeamInfoPath', () => {
@@ -47,5 +48,13 @@ describe('getQualificationDetailsPath', () => {
     const qualificationId = '12345';
     const result = getQualificationDetailsPath({ eventSlug, qualificationId });
     expect(result).toBe('/event/test-event/qualification/12345');
+  });
+});
+
+describe('getEventShiftsPath', () => {
+  it('should return the correct path for event shifts', () => {
+    const eventSlug = 'event-123';
+    const result = getEventShiftsPath(eventSlug);
+    expect(result).toBe('/event/event-123/shifts');
   });
 });
