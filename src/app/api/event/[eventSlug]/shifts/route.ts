@@ -9,7 +9,7 @@
 import { getEventBySlug } from '@/service/event-service';
 import { getShiftsForEvent } from '@/service/shift-service';
 import { getTeamsForEvent } from '@/service/team-service';
-import { eventDayToDate } from '@/utils/datetime';
+import { shiftsToCSV } from '@/utils/csv-export';
 import { notFound } from 'next/navigation';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -26,28 +26,13 @@ export const GET = async (
     }
     const shifts = await getShiftsForEvent(event.id);
     const teams = await getTeamsForEvent(event.id);
-    const teamNames = teams.reduce<Record<TeamId, string>>(
-      (acc, team) => ({ ...acc, [team.id]: team.name }),
-      {}
-    );
     const shiftVolunteers: Record<ShiftId, User[]> = {}; // TODO
-    const csvContent = [
-      ['Date', 'Team', 'Start Time', 'Duration (Hours)', 'Volunteers'].join(','),
-      ...shifts.map((shift) => {
-        const volunteers = shiftVolunteers[shift.id] ?? [];
-        const volunteerRow =
-          volunteers.length === 0
-            ? ''
-            : `"${volunteers.map((v) => `${v.name} <${v.email}>`).join('\r')}"`;
-        return [
-          eventDayToDate(event.startDate, shift.eventDay).toISOString().split('T')[0],
-          teamNames[shift.teamId],
-          shift.startTime,
-          shift.durationHours,
-          volunteerRow
-        ].join(',');
-      })
-    ].join('\r\n');
+    const csvContent = shiftsToCSV({
+      event,
+      teams,
+      shifts,
+      shiftVolunteers
+    });
     return new NextResponse(csvContent, {
       headers: {
         'Content-Type': 'text/csv',
