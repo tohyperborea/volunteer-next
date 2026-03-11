@@ -4,13 +4,10 @@ import { eventDayToDate } from '@/utils/datetime';
 import { getEventBySlug } from '@/service/event-service';
 import { getShiftsForEvent } from '@/service/shift-service';
 import { getTeamsForEvent } from '@/service/team-service';
-import { notFound } from 'next/navigation';
 
 const mockGetEventBySlug = getEventBySlug as jest.MockedFunction<typeof getEventBySlug>;
 const mockGetShiftsForEvent = getShiftsForEvent as jest.MockedFunction<typeof getShiftsForEvent>;
 const mockGetTeamsForEvent = getTeamsForEvent as jest.MockedFunction<typeof getTeamsForEvent>;
-const mockNotFound = notFound as jest.MockedFunction<typeof notFound>;
-const MockNextResponse = NextResponse as jest.MockedClass<typeof NextResponse>;
 
 jest.mock('@/service/event-service', () => ({
   getEventBySlug: jest.fn()
@@ -20,11 +17,6 @@ jest.mock('@/service/shift-service', () => ({
 }));
 jest.mock('@/service/team-service', () => ({
   getTeamsForEvent: jest.fn()
-}));
-jest.mock('next/navigation', () => ({
-  notFound: jest.fn(() => {
-    throw new Error('NEXT_NOT_FOUND');
-  })
 }));
 jest.mock('next/server', () => ({
   NextResponse: jest.fn().mockImplementation((body, init) => ({
@@ -99,9 +91,10 @@ describe('GET /api/event/[eventSlug]/shifts', () => {
     } as unknown as NextRequest;
     const params = Promise.resolve({ eventSlug: 'non-existent-event' });
 
-    await expect(GET(request, { params })).rejects.toThrow('NEXT_NOT_FOUND');
+    const response = await GET(request, { params });
 
-    expect(mockNotFound).toHaveBeenCalled();
+    expect(response.status).toBe(404);
+    expect(response.body).toBe('Not Found');
   });
 
   it('should return 501 for unsupported formats', async () => {

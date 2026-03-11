@@ -1,6 +1,6 @@
 /**
- * API endpoint for event shift information
- * @since 2026-03-10
+ * API endpoint for team shift information
+ * @since 2026-03-11
  * @author Michael Townsend <@continuities>
  */
 
@@ -8,32 +8,32 @@
 
 import { CSVResponse, NotFoundResponse, NotImplementedResponse } from '@/lib/response';
 import { getEventBySlug } from '@/service/event-service';
-import { getShiftsForEvent } from '@/service/shift-service';
-import { getTeamsForEvent } from '@/service/team-service';
+import { getShiftsForTeam } from '@/service/shift-service';
+import { getTeamBySlug } from '@/service/team-service';
 import { shiftsToCSV } from '@/utils/csv-export';
 import { NextRequest, NextResponse } from 'next/server';
 
 export const GET = async (
   request: NextRequest,
-  { params }: RouteContext<'/api/event/[eventSlug]/shifts'>
+  { params }: RouteContext<'/api/event/[eventSlug]/team/[teamSlug]/shifts'>
 ): Promise<NextResponse> => {
   const format = request.nextUrl.searchParams.get('format') ?? 'json';
   if (format === 'csv') {
-    const eventSlug = (await params).eventSlug;
+    const { eventSlug, teamSlug } = await params;
     const event = await getEventBySlug(eventSlug);
-    if (!event) {
+    const team = await getTeamBySlug(eventSlug, teamSlug);
+    if (!event || !team) {
       return NotFoundResponse();
     }
-    const shifts = await getShiftsForEvent(event.id);
-    const teams = await getTeamsForEvent(event.id);
+    const shifts = await getShiftsForTeam(team.id);
     const shiftVolunteers: Record<ShiftId, User[]> = {}; // TODO
     const csvContent = shiftsToCSV({
       event,
-      teams,
+      teams: [team],
       shifts,
       shiftVolunteers
     });
-    return CSVResponse(csvContent, `${eventSlug}-shifts`);
+    return CSVResponse(csvContent, `${teamSlug}-shifts`);
   }
   return NotImplementedResponse();
 };
