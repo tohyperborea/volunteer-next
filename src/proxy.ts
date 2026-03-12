@@ -8,6 +8,7 @@ import type { NextRequest } from 'next/server';
 import { auth } from '@/auth';
 import { checkRateLimit, PASSWORD_RESET_LIMITS, AUTH_ENDPOINT_LIMITS } from '@/lib/rate-limit';
 import { getClientIp } from '@/lib/client-ip';
+import { getActiveEvents } from './service/event-service';
 
 const isLocalRequest = (request: NextRequest) => {
   const forwardedFor = request.headers.get('x-forwarded-for') || '';
@@ -86,6 +87,14 @@ export async function proxy(request: NextRequest) {
     // Preserve the original URL as a query parameter for redirect after signin
     signInUrl.searchParams.set('callbackUrl', pathname);
     return NextResponse.redirect(signInUrl);
+  }
+
+  // Default the x-event-id header if not provided
+  if (!requestHeaders.get('x-event-id')) {
+    const activeEvents = await getActiveEvents();
+    if (activeEvents.length > 0) {
+      requestHeaders.set('x-event-id', activeEvents[0].id);
+    }
   }
 
   // User is authenticated, allow the request
