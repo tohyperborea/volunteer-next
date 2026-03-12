@@ -16,16 +16,13 @@ import { validateExistingEvent } from '@/validator/event-validator';
 import { validateUserId } from '@/validator/user-validator';
 import { usersToVolunteers, userToVolunteer } from '@/lib/volunteer';
 import { getPermissionsProfile } from '@/utils/permissions';
+import { getEventsPath } from '@/utils/path';
 
 const PAGE_KEY = 'UpdateEventPage';
 
 export const generateMetadata = metadata(PAGE_KEY);
 
-interface Props {
-  params: Promise<{ id: string }>;
-}
-
-export default async function UpdateEvent({ params }: Props) {
+export default async function UpdateEvent({ params }: PageProps<`/update-event/[id]`>) {
   const onSubmit = async (data: FormData) => {
     'use server';
 
@@ -52,7 +49,7 @@ export default async function UpdateEvent({ params }: Props) {
         await addRoleToUser(roleToAdd, organiser, client);
       }
     });
-    redirect('/event');
+    redirect(getEventsPath());
   };
 
   await checkAuthorisation([{ type: 'admin' }]);

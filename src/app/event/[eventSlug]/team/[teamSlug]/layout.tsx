@@ -7,7 +7,7 @@
 import { usersToVolunteers } from '@/lib/volunteer';
 import { getTeamBySlug } from '@/service/team-service';
 import { getTeamLeadsForTeam } from '@/service/user-service';
-import { checkAuthorisation, currentUser } from '@/session';
+import { checkAuthorisation, currentUser, getCurrentEventOrRedirect } from '@/session';
 import VolunteerCard from '@/ui/volunteer-card';
 import { getTeamShiftsPath, getTeamVolunteersPath } from '@/utils/path';
 import { getPermissionsProfile } from '@/utils/permissions';
@@ -19,13 +19,14 @@ import TeamTabs from '@/ui/team-tabs';
 const PAGE_KEY = 'TeamPage';
 
 interface Props {
-  params: Promise<{ eventSlug: string; teamSlug: string }>;
+  params: Promise<{ teamSlug: string }>;
   children: React.ReactNode;
 }
 
 export default async function TeamLayout({ params, children }: Props) {
-  const { eventSlug, teamSlug } = await params;
-  const team = eventSlug && teamSlug ? await getTeamBySlug(eventSlug, teamSlug) : null;
+  const { teamSlug } = await params;
+  const event = await getCurrentEventOrRedirect();
+  const team = teamSlug ? await getTeamBySlug(event.slug, teamSlug) : null;
 
   if (!team) {
     notFound();
@@ -43,8 +44,8 @@ export default async function TeamLayout({ params, children }: Props) {
   const permissionsProfile = getPermissionsProfile(await currentUser());
   const teamLeads = usersToVolunteers(await getTeamLeadsForTeam(team.id), permissionsProfile);
 
-  const shiftsPath = getTeamShiftsPath(eventSlug, teamSlug);
-  const volunteersPath = getTeamVolunteersPath(eventSlug, teamSlug);
+  const shiftsPath = getTeamShiftsPath(event.slug, teamSlug);
+  const volunteersPath = getTeamVolunteersPath(event.slug, teamSlug);
   return (
     <Flex direction="column">
       <Heading my="4" align="center">

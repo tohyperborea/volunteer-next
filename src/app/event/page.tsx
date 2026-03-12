@@ -5,8 +5,9 @@ import { getTranslations } from 'next-intl/server';
 import { PlusIcon } from '@radix-ui/react-icons';
 import { checkAuthorisation } from '@/session';
 import EventCard from '@/ui/event-card';
-import { redirect } from 'next/navigation';
 import NextLink from 'next/link';
+import { revalidatePath } from 'next/cache';
+import { getCreateEventPath, getEventPath, getEventsPath } from '@/utils/path';
 
 const PAGE_KEY = 'EventsManagementPage';
 
@@ -22,7 +23,7 @@ export default async function EventsDashboard() {
     'use server';
     await checkAuthorisation([{ type: 'admin' }]);
     await deleteEvent(id);
-    redirect('/event');
+    revalidatePath(getEventsPath());
   };
 
   return (
@@ -30,7 +31,7 @@ export default async function EventsDashboard() {
       <Heading my="4">{t('title')}</Heading>
       <Box>
         <Button asChild>
-          <NextLink href="/create-event">
+          <NextLink href={getCreateEventPath()}>
             <PlusIcon /> {t('createEvent')}
           </NextLink>
         </Button>
@@ -42,7 +43,7 @@ export default async function EventsDashboard() {
       )}
       {events.map((event) => (
         <Link asChild highContrast underline="none" key={event.id}>
-          <NextLink href={`/event/${event.slug}`}>
+          <NextLink href={getEventPath(event.slug)}>
             <EventCard event={event} onDelete={deleteAction} />
           </NextLink>
         </Link>

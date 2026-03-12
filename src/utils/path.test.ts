@@ -16,7 +16,9 @@ import {
   getCreateTeamPath,
   getTeamsPath,
   getTeamVolunteersApiPath,
-  getEventsPath
+  getEventsPath,
+  getCreateEventPath,
+  getEventPath
 } from './path';
 
 describe('getTeamsPath', () => {
@@ -76,6 +78,21 @@ describe('getQualificationDetailsPath', () => {
     const qualificationId = '12345';
     const result = getQualificationDetailsPath({ eventSlug, qualificationId });
     expect(result).toBe('/event/test-event/qualification/12345');
+  });
+});
+
+describe('getEventPath', () => {
+  it('should return the correct path for a given event slug', () => {
+    const eventSlug = 'event-123';
+    const result = getEventPath(eventSlug);
+    expect(result).toBe('/event/event-123');
+  });
+});
+
+describe('getCreateEventPath', () => {
+  it('should return the correct path for creating an event', () => {
+    const result = getCreateEventPath();
+    expect(result).toBe('/create-event');
   });
 });
 
