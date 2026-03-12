@@ -36,6 +36,7 @@ export const getQualificationDetailsPath = ({
 // Event-level paths
 export const getEventsPath = () => '/event';
 export const getCreateEventPath = () => '/create-event';
+export const getUpdateEventPath = (eventId: string) => `/update-event/${eventId}`;
 export const getEventPath = (eventSlug: string) => `/event/${eventSlug}`;
 export const getEventShiftsPath = (eventSlug: string): string => `/event/${eventSlug}/shifts`;
 

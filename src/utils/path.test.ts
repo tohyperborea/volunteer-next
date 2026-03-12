@@ -18,7 +18,8 @@ import {
   getTeamVolunteersApiPath,
   getEventsPath,
   getCreateEventPath,
-  getEventPath
+  getEventPath,
+  getUpdateEventPath
 } from './path';
 
 describe('getTeamsPath', () => {
@@ -93,6 +94,14 @@ describe('getCreateEventPath', () => {
   it('should return the correct path for creating an event', () => {
     const result = getCreateEventPath();
     expect(result).toBe('/create-event');
+  });
+});
+
+describe('getUpdateEventPath', () => {
+  it('should return the correct path for updating an event', () => {
+    const eventId = 'event-123';
+    const result = getUpdateEventPath(eventId);
+    expect(result).toBe('/update-event/event-123');
   });
 });
 

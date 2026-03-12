@@ -116,6 +116,11 @@ declare global {
 
   type ThemeMode = 'light' | 'dark' | 'system';
 
+  interface CookieConfig {
+    name: string;
+    maxAge?: number; // in seconds
+  }
+
   interface QualificationInfo {
     id: QualificationId;
     name: string;

@@ -9,6 +9,7 @@ import { auth } from '@/auth';
 import { checkRateLimit, PASSWORD_RESET_LIMITS, AUTH_ENDPOINT_LIMITS } from '@/lib/rate-limit';
 import { getClientIp } from '@/lib/client-ip';
 import { getActiveEvents } from './service/event-service';
+import { EventCookie } from './utils/cookie';
 
 const isLocalRequest = (request: NextRequest) => {
   const forwardedFor = request.headers.get('x-forwarded-for') || '';
@@ -89,7 +90,11 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(signInUrl);
   }
 
-  // Default the x-event-id header if not provided
+  // Set the x-event-id header
+  const eventIdFromCookie = request.cookies.get(EventCookie.name)?.value;
+  if (eventIdFromCookie) {
+    requestHeaders.set('x-event-id', eventIdFromCookie);
+  }
   if (!requestHeaders.get('x-event-id')) {
     const activeEvents = await getActiveEvents();
     if (activeEvents.length > 0) {

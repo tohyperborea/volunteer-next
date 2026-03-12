@@ -4,6 +4,7 @@ import { auth } from '@/auth';
 import { getActiveEvents } from './service/event-service';
 import { NextResponse, NextRequest } from 'next/server';
 import { isKeyObject } from 'util/types';
+import { EventCookie } from './utils/cookie';
 
 // Mock next/server to provide NextRequest and NextResponse for testing
 jest.mock('next/server', () => {
@@ -24,16 +25,33 @@ jest.mock('next/server', () => {
           }
         };
 
+  const CookiesImpl = class Cookies {
+    private map = new Map<string, { value: string }>();
+    get(name: string) {
+      return this.map.get(name) || null;
+    }
+    set(name: string, value: string) {
+      this.map.set(name, { value });
+    }
+  };
+
   class MockNextRequest {
     url: string;
     nextUrl: URL;
     headers: InstanceType<typeof HeadersImpl>;
+    cookies: InstanceType<typeof CookiesImpl>;
 
-    constructor(input: string | URL, init?: { headers?: InstanceType<typeof HeadersImpl> }) {
+    constructor(
+      input: string | URL,
+      init?: {
+        headers?: InstanceType<typeof HeadersImpl>;
+      }
+    ) {
       const url = typeof input === 'string' ? new URL(input, 'http://localhost:3000') : input;
       this.url = url.toString();
       this.nextUrl = url;
       this.headers = init?.headers || new HeadersImpl();
+      this.cookies = new CookiesImpl();
     }
   }
 
@@ -212,7 +230,28 @@ describe('proxy', () => {
       expect(response.status).toBe(200);
     });
 
-    it('defaults x-event-id header to first active event if not provided', async () => {
+    it('sets x-event-id header from EventCookie', async () => {
+      mockGetActiveEvents.mockResolvedValue([]);
+      mockGetSession.mockResolvedValue({
+        user: {
+          id: 'user-123',
+          email: 'test@example.com'
+        }
+      } as any);
+
+      const request = createMockRequest('/dashboard');
+      request.cookies.set(EventCookie.name, 'event-1');
+
+      const response = await proxy(request);
+      expect(mockGetActiveEvents).not.toHaveBeenCalled();
+      expect(NextResponse.next).toHaveBeenCalled();
+      const calledWith = (NextResponse.next as jest.Mock).mock.calls[0][0];
+      const headers: Headers = calledWith.request.headers;
+      expect(headers.get('x-event-id')).toBe('event-1');
+      expect(response.status).toBe(200);
+    });
+
+    it('defaults x-event-id header to first active event', async () => {
       mockGetActiveEvents.mockResolvedValue([
         {
           id: 'event-1',
