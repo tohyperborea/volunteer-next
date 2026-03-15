@@ -6,7 +6,7 @@
 
 'use client';
 
-import { TrashIcon } from '@radix-ui/react-icons';
+import { Pencil2Icon, TrashIcon } from '@radix-ui/react-icons';
 import QualificationCard from '../qualification-card';
 import { Flex, Button } from '@radix-ui/themes';
 import { useTranslations } from 'next-intl';
@@ -40,7 +40,20 @@ export default function QualificationDetails({
         qualification={qualification}
         event={event}
         teamName={teamName}
-        onEdit={canEdit ? () => setEditing(qualification) : undefined}
+        actions={
+          canEdit && (
+            <Button
+              variant="ghost"
+              aria-label={t('edit')}
+              onClick={(e) => {
+                e.preventDefault();
+                setEditing(qualification);
+              }}
+            >
+              <Pencil2Icon width={20} height={20} />
+            </Button>
+          )
+        }
       />
       {onDelete && (
         <form>
@@ -59,7 +72,7 @@ export default function QualificationDetails({
           onClose={() => {
             setEditing(undefined);
           }}
-          onSave={onSave}
+          onUpdate={onSave}
         />
       )}
     </Flex>

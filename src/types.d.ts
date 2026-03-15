@@ -5,6 +5,8 @@
  * @since 2025-11-10
  */
 
+type FormSubmitAction = (data: FormData) => Promise<void>;
+
 type PartialWithRequired<T, R extends keyof T> = Partial<T> & Pick<T, R>;
 
 type UserId = string;
@@ -32,6 +34,7 @@ interface User {
 
 /* These align with the role_type enum in the database
  * If you change this, you must also change the role_type enum in psql */
+type UserRoleType = 'admin' | 'organiser' | 'team-lead';
 type UserRole =
   // Global platform-wide control
   | { type: 'admin' }
@@ -61,9 +64,11 @@ interface TeamInfo {
 }
 
 interface UserFilters {
-  roleType?: string;
+  roleType?: UserRoleType;
   searchQuery?: string;
   showDeleted?: boolean;
+  withQualification?: QualificationId;
+  withoutQualification?: QualificationId;
 }
 
 interface ShiftInfo {

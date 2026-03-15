@@ -26,19 +26,19 @@ export const getEvents = cache(async (): Promise<EventInfo[]> => {
 });
 
 /**
- * Fetches a specific event by its ID.
- * @param eventId - The unique identifier of the event.
- * @return The EventInfo object if found, or null if not found.
+ * Fetches events by ID.
+ * @param eventIds - The event ids to fetch
+ * @return An array of EventInfo objects matching the provided IDs.
  */
-export const getEventById = cache(async (eventId: EventId): Promise<EventInfo | null> => {
-  const result = await pool.query(
-    'SELECT id, name, "slug", "startDate", "endDate" FROM event WHERE id = $1',
-    [eventId]
-  );
-  if (result.rows.length === 0) {
-    return null;
+export const getEventsById = cache(async (eventIds: EventId[]): Promise<EventInfo[]> => {
+  if (eventIds.length === 0) {
+    return [];
   }
-  return rowToEvent(result.rows[0]);
+  const result = await pool.query(
+    `SELECT id, name, "slug", "startDate", "endDate" FROM event WHERE id = ANY($1)`,
+    [eventIds]
+  );
+  return result.rows.map(rowToEvent);
 });
 
 /**

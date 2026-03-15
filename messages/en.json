@@ -124,6 +124,30 @@
     "allShifts": "All Current Shifts",
     "export": "Export Shifts"
   },
+  "UsersDashboardPage": {
+    "title": "Users Dashboard"
+  },
+  "CreateUserPage": {
+    "title": "Create User",
+    "errors": {
+      "userNameRequired": "User name is required",
+      "userEmailRequired": "User email is required",
+      "eventIdRequiredForOrganiser": "Event ID is required for organiser role",
+      "eventIdRequiredForTeamLead": "Event ID is required for team-lead role",
+      "teamIdRequiredForTeamLead": "Team ID is required for team-lead role"
+    }
+  },
+  "EditUserPage": {
+    "title": "Edit User"
+  },
+  "UserProfilePage": {
+    "title": "{userName}",
+    "qualifications": "Assigned Qualifications",
+    "addQualification": "Add Qualification to User",
+    "addQualificationDescription": "Select a qualification",
+    "select": "Select...",
+    "assignQualification": "Assign Qualification"
+  },
 
   "MenuCard": {
     "update": "Update",
@@ -148,9 +172,6 @@
   "TeamCard": {
     "noTeams": "No teams yet!"
   },
-  "UsersDashboard": {
-    "title": "Users Dashboard"
-  },
   "UsersList": {
     "noUsers": "No users yet!",
     "email": "Email",
@@ -173,19 +194,6 @@
     "teamLead": "Team Lead",
     "applyFilters": "Apply Filters",
     "clear": "Clear"
-  },
-  "CreateUser": {
-    "title": "Create User",
-    "errors": {
-      "userNameRequired": "User name is required",
-      "userEmailRequired": "User email is required",
-      "eventIdRequiredForOrganiser": "Event ID is required for organiser role",
-      "eventIdRequiredForTeamLead": "Event ID is required for team-lead role",
-      "teamIdRequiredForTeamLead": "Team ID is required for team-lead role"
-    }
-  },
-  "EditUser": {
-    "title": "Edit User"
   },
   "UserForm": {
     "userName": "User Name",
@@ -271,15 +279,17 @@
     "requirementsDescription": "Qualifications that volunteers must have to sign up for this shift. Optional.",
     "none": "None"
   },
+  "ManageQualifications": {
+    "add": "Add Qualification",
+    "edit": "Edit Qualification"
+  },
   "QualificationList": {
     "title": "Qualifications",
     "add": "Add Qualification",
     "searchPlaceholder": "Search..."
   },
   "QualificationDetails": {
-    "delete": "Delete Qualification"
-  },
-  "QualificationCard": {
+    "delete": "Delete Qualification",
     "edit": "Edit Qualification"
   },
   "QualificationDialog": {
@@ -300,5 +310,20 @@
   },
   "SearchBar": {
     "placeholder": "Search..."
+  },
+  "AssignQualification": {
+    "button": "Assign Qualification",
+    "title": "Assign Qualification: {qualificationName}"
+  },
+  "VolunteerPicker": {
+    "save": "Save Changes",
+    "cancel": "Cancel"
+  },
+  "VolunteerList": {
+    "empty": "No one yet",
+    "remove": "Remove qualification from {name}"
+  },
+  "UserQualifications": {
+    "remove": "Remove {qualification}"
   }
 }

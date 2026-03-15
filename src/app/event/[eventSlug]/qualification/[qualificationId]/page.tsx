@@ -1,13 +1,16 @@
 import metadata from '@/i18n/metadata';
 import { getEventBySlug } from '@/service/event-service';
 import {
+  assignQualificationToUsers,
   deleteQualification,
   getQualificationById,
+  removeQualificationFromUser,
   updateQualification
 } from '@/service/qualification-service';
 import { getTeamsForEvent } from '@/service/team-service';
-import { getUsersWithQualification } from '@/service/user-service';
+import { getFilteredUsers } from '@/service/user-service';
 import { checkAuthorisation } from '@/session';
+import AssignQualification from '@/ui/assign-qualification';
 import QualificationDetails from '@/ui/qualification-details';
 import VolunteerList from '@/ui/volunteer-list';
 import { getQualificationDetailsPath, getQualificationsPath } from '@/utils/path';
@@ -34,10 +37,16 @@ export const generateMetadata = metadata(PAGE_KEY, {
 
 interface Props {
   params: Promise<{ eventSlug: string; qualificationId: QualificationId }>;
+  searchParams?: Promise<{
+    searchQuery?: string;
+    page?: string;
+  }>;
 }
 
-export default async function QualificationsPage({ params }: Props) {
-  const { eventSlug, qualificationId } = await params;
+export default async function QualificationsPage(props: Props) {
+  const { eventSlug, qualificationId } = await props.params;
+  const searchParams = await props.searchParams;
+  const query = searchParams?.searchQuery;
   const t = await getTranslations(PAGE_KEY);
   const event = await getEventBySlug(eventSlug);
   const qualification = await getQualificationById(qualificationId);
@@ -45,7 +54,10 @@ export default async function QualificationsPage({ params }: Props) {
     return notFound();
   }
   const teams = await getTeamsForEvent(event.id);
-  const volunteers = await getUsersWithQualification(qualification.id);
+  const volunteers = await getFilteredUsers({
+    withQualification: qualification.id,
+    searchQuery: query
+  });
 
   const editorRoles: UserRole[] = [
     {
@@ -76,16 +88,35 @@ export default async function QualificationsPage({ params }: Props) {
     redirect(path);
   };
 
-  const onDelete = async (data: FormData) => {
+  const onDelete = async () => {
     'use server';
     await checkAuthorisation(editorRoles);
-    const id = data.get('id')?.toString();
-    if (!id) {
-      throw new Error('Qualification ID is required');
-    }
-    await deleteQualification(id);
+    await deleteQualification(qualification.id);
 
     const path = getQualificationsPath(event.slug);
+    revalidatePath(path);
+    redirect(path);
+  };
+
+  const onAssignQualification = async (data: FormData) => {
+    'use server';
+    const volunteerIds = data.getAll('volunteers') as UserId[];
+    await checkAuthorisation(editorRoles);
+    await assignQualificationToUsers(qualification.id, volunteerIds);
+    const path = getQualificationDetailsPath({ eventSlug, qualificationId });
+    revalidatePath(path);
+    redirect(path);
+  };
+
+  const onRemoveQualification = async (data: FormData) => {
+    'use server';
+    const volunteerId = data.get('volunteerId')?.toString();
+    if (!volunteerId) {
+      throw new Error('Volunteer ID is required');
+    }
+    await checkAuthorisation(editorRoles);
+    await removeQualificationFromUser(qualification.id, volunteerId);
+    const path = getQualificationDetailsPath({ eventSlug, qualificationId });
     revalidatePath(path);
     redirect(path);
   };
@@ -102,7 +133,13 @@ export default async function QualificationsPage({ params }: Props) {
       <Heading size="3" as="h2">
         {t('volunteers')}
       </Heading>
-      <VolunteerList volunteers={volunteers} />
+      {editable && (
+        <AssignQualification qualification={qualification} onSubmit={onAssignQualification} />
+      )}
+      <VolunteerList
+        volunteers={volunteers}
+        onRemove={editable ? onRemoveQualification : undefined}
+      />
     </Flex>
   );
 }

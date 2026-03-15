@@ -6,34 +6,26 @@
 
 'use client';
 
-import { MagnifyingGlassIcon, PlusIcon } from '@radix-ui/react-icons';
-import { Box, Button, Flex, Heading, TextField } from '@radix-ui/themes';
-import { useTranslations } from 'next-intl';
-import Divider from '../divider';
+import { Box, Flex } from '@radix-ui/themes';
 import QualificationCard from '../qualification-card';
 import styles from './styles.module.css';
-import { useState } from 'react';
-import QualificationDialog from '../qualification-dialog';
 
 interface Props {
   qualifications: QualificationInfo[];
-  event: EventInfo;
+  events: EventInfo[];
   teams: TeamInfo[];
-  editableTeams?: TeamId[];
-  onSave?: (data: FormData) => Promise<never>;
+  itemActions?: (qualification: QualificationInfo) => React.ReactNode;
 }
 
-export default function QualificationList({
-  qualifications,
-  event,
-  teams,
-  editableTeams,
-  onSave
-}: Props) {
-  const t = useTranslations('QualificationList');
-  const canEdit = Boolean(onSave);
-  const [creating, setCreating] = useState(false);
-  const [editing, setEditing] = useState<QualificationInfo | undefined>(undefined);
+export default function QualificationList({ qualifications, events, teams, itemActions }: Props) {
+  const eventsById = events.reduce<Record<EventId, EventInfo>>(
+    (acc, event) => ({
+      ...acc,
+      [event.id]: event
+    }),
+    {}
+  );
+
   const teamNames = teams.reduce(
     (acc, team) => ({
       ...acc,
@@ -41,65 +33,26 @@ export default function QualificationList({
     }),
     {} as Record<TeamId, string>
   );
-  const editableSet = editableTeams ? new Set(editableTeams) : null;
+
   return (
-    <Flex direction="column" gap="4">
-      <TextField.Root placeholder={t('searchPlaceholder')}>
-        <TextField.Slot>
-          <MagnifyingGlassIcon />
-        </TextField.Slot>
-      </TextField.Root>
-      <Divider />
-      <Heading size="5" as="h1">
-        {t('title')}
-      </Heading>
-      {canEdit && (
-        <Button
-          variant="ghost"
-          color="green"
-          style={{ alignSelf: 'flex-start' }}
-          onClick={() => setCreating(true)}
-        >
-          <PlusIcon />
-          {t('add')}
-        </Button>
-      )}
-      <Flex asChild direction="column" gap="4">
-        <ul className={styles.list}>
-          {qualifications.map((qualification) => {
-            const isEditable =
-              canEdit &&
-              (!editableSet || (qualification.teamId && editableSet.has(qualification.teamId)));
-            return (
-              <Box asChild key={qualification.id}>
-                <li>
-                  <QualificationCard
-                    asLink
-                    event={event}
-                    teamName={qualification.teamId && teamNames[qualification.teamId]}
-                    qualification={qualification}
-                    onEdit={isEditable ? () => setEditing(qualification) : undefined}
-                  />
-                </li>
-              </Box>
-            );
-          })}
-        </ul>
-      </Flex>
-      {canEdit && (
-        <QualificationDialog
-          eventId={event.id}
-          teams={editableSet ? teams.filter((team) => editableSet.has(team.id)) : teams}
-          requireTeam={Boolean(editableSet)}
-          editing={editing}
-          creating={creating}
-          onClose={() => {
-            setCreating(false);
-            setEditing(undefined);
-          }}
-          onSave={onSave}
-        />
-      )}
+    <Flex asChild direction="column" gap="4">
+      <ul className={styles.list}>
+        {qualifications.map((qualification) => {
+          return (
+            <Box asChild key={qualification.id}>
+              <li>
+                <QualificationCard
+                  asLink
+                  event={eventsById[qualification.eventId]}
+                  teamName={qualification.teamId && teamNames[qualification.teamId]}
+                  qualification={qualification}
+                  actions={itemActions ? itemActions(qualification) : undefined}
+                />
+              </li>
+            </Box>
+          );
+        })}
+      </ul>
     </Flex>
   );
 }

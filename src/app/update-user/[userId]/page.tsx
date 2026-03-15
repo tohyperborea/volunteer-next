@@ -9,8 +9,10 @@ import UserForm from '@/ui/user-form';
 import { getEvents } from '@/service/event-service';
 import { getAllTeams } from '@/service/team-service';
 import { validateExistingUser } from '@/validator/user-validator';
+import { getUsersDashboardPath } from '@/utils/path';
 
-export const generateMetadata = metadata('EditUser');
+const PAGE_KEY = 'EditUserPage';
+export const generateMetadata = metadata(PAGE_KEY);
 
 export default async function EditUser({ params }: { params: Promise<{ userId: string }> }) {
   const userId = (await params).userId;
@@ -40,7 +42,7 @@ export default async function EditUser({ params }: { params: Promise<{ userId: s
         client
       );
     });
-    redirect('/users');
+    redirect(getUsersDashboardPath());
   };
 
   const onDeleteRole = async (role: UserRole, roleUserId: string) => {
@@ -108,7 +110,7 @@ export default async function EditUser({ params }: { params: Promise<{ userId: s
 
   await checkAuthorisation([{ type: 'admin' }]);
   const current = await currentUser();
-  const t = await getTranslations('EditUser');
+  const t = await getTranslations(PAGE_KEY);
 
   return (
     <Flex direction="column" gap="4">

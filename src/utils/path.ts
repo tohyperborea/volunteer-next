@@ -4,6 +4,12 @@
  * @author Michael Townsend <@continuities>
  */
 
+// Users paths
+export const getUsersDashboardPath = (): string => '/user';
+export const getCreateUserPath = (): string => '/create-user';
+export const getEditUserPath = (userId: string): string => `/update-user/${userId}`;
+export const getUserProfilePath = (userId: string): string => `/user/${userId}`;
+
 // Teams paths
 export const getTeamInfoPath = (eventSlug: string, teamSlug: string): string =>
   `/event/${eventSlug}/team/${teamSlug}`;
@@ -41,3 +47,5 @@ export const getVolunteerShiftsApiPath = (
   params?: { format: 'csv' | 'json' }
 ): string =>
   `/api/event/${eventSlug}/volunteer/${userId}/shifts?format=${params?.format ?? 'json'}`;
+export const getUserApiPath = (filter?: UserFilters): string =>
+  `/api/user${filter ? `?${new URLSearchParams(filter as Record<string, string>).toString()}` : ''}`;

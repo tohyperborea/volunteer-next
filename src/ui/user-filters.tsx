@@ -31,7 +31,7 @@ export default function Filters({
 
   const handleApplyFilters = () => {
     onFiltersChange({
-      roleType: roleType === 'all' ? undefined : roleType,
+      roleType: roleType === 'all' ? undefined : (roleType as UserRoleType),
       searchQuery: searchQuery || undefined,
       showDeleted: showDeleted || undefined
     });

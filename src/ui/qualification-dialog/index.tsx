@@ -17,7 +17,8 @@ interface Props {
   editing?: QualificationInfo;
   creating?: boolean;
   onClose?: () => void;
-  onSave?: (data: FormData) => Promise<never>;
+  onCreate?: FormSubmitAction;
+  onUpdate?: FormSubmitAction;
 }
 
 export default function QualificationDialog({
@@ -27,7 +28,8 @@ export default function QualificationDialog({
   editing,
   creating,
   onClose,
-  onSave
+  onCreate,
+  onUpdate
 }: Props) {
   const isEdit = Boolean(editing);
   const open = creating || isEdit;
@@ -90,7 +92,7 @@ export default function QualificationDialog({
               {t('cancel')}
             </Button>
           </Dialog.Close>
-          <Button variant="soft" formAction={onSave}>
+          <Button variant="soft" formAction={creating ? onCreate : onUpdate}>
             {t(creating ? 'create' : 'save')}
           </Button>
         </Flex>
