@@ -36,14 +36,22 @@ export const shiftsToCSV = ({
     (acc, team) => ({ ...acc, [team.id]: team.name }),
     {}
   );
+  shifts.sort((a, b) => {
+    const dayDiff = a.eventDay - b.eventDay;
+    if (dayDiff !== 0) {
+      return dayDiff;
+    }
+    return a.startTime.localeCompare(b.startTime);
+  });
   return [
-    ['Date', 'Team', 'Start Time', 'Duration (Hours)', 'Volunteers'].join(','),
+    ['Date', 'Team', 'Shift Title', 'Start Time', 'Duration (Hours)', 'Volunteers'].join(','),
     ...shifts.map((shift) => {
       const volunteers = shiftVolunteers[shift.id] ?? [];
       const volunteerRow = volunteers.map((v) => `${v.name} <${v.email}>`).join('\r');
       return [
         eventDayToDate(event.startDate, shift.eventDay).toISOString().split('T')[0],
         escapeForCSV(teamNames[shift.teamId]),
+        escapeForCSV(shift.title),
         shift.startTime,
         shift.durationHours,
         escapeForCSV(volunteerRow)

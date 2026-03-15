@@ -51,8 +51,8 @@ describe('shiftsToCSV', () => {
     const result = shiftsToCSV({ event, teams, shifts, shiftVolunteers });
 
     const expectedCSV = [
-      'Date,Team,Start Time,Duration (Hours),Volunteers',
-      '2026-03-11,Team Alpha,08:00,4,John Doe <john.doe@example.com>'
+      'Date,Team,Shift Title,Start Time,Duration (Hours),Volunteers',
+      '2026-03-11,Team Alpha,Shift 1,08:00,4,John Doe <john.doe@example.com>'
     ].join('\r\n');
 
     expect(result).toBe(expectedCSV);
@@ -72,8 +72,8 @@ describe('shiftsToCSV', () => {
     const result = shiftsToCSV({ event, teams, shifts, shiftVolunteers });
 
     const expectedCSV = [
-      'Date,Team,Start Time,Duration (Hours),Volunteers',
-      '2026-03-11,Team Alpha,08:00,4,"Alice ""The Great"" O\'Connor <alice.o.conner@example.com>"'
+      'Date,Team,Shift Title,Start Time,Duration (Hours),Volunteers',
+      '2026-03-11,Team Alpha,Shift 1,08:00,4,"Alice ""The Great"" O\'Connor <alice.o.conner@example.com>"'
     ].join('\r\n');
 
     expect(result).toBe(expectedCSV);
@@ -85,8 +85,8 @@ describe('shiftsToCSV', () => {
     const result = shiftsToCSV({ event, teams, shifts, shiftVolunteers });
 
     const expectedCSV = [
-      'Date,Team,Start Time,Duration (Hours),Volunteers',
-      '2026-03-11,Team Alpha,08:00,4,'
+      'Date,Team,Shift Title,Start Time,Duration (Hours),Volunteers',
+      '2026-03-11,Team Alpha,Shift 1,08:00,4,'
     ].join('\r\n');
 
     expect(result).toBe(expectedCSV);
@@ -100,8 +100,8 @@ describe('shiftsToCSV', () => {
     const result = shiftsToCSV({ event, teams, shifts, shiftVolunteers });
 
     const expectedCSV = [
-      'Date,Team,Start Time,Duration (Hours),Volunteers',
-      '2026-03-11,Team Alpha,08:00,4,"John Doe <john.doe@example.com>\rJane Smith <jane.smith@example.com>"'
+      'Date,Team,Shift Title,Start Time,Duration (Hours),Volunteers',
+      '2026-03-11,Team Alpha,Shift 1,08:00,4,"John Doe <john.doe@example.com>\rJane Smith <jane.smith@example.com>"'
     ].join('\r\n');
 
     expect(result).toBe(expectedCSV);
@@ -126,7 +126,7 @@ describe('shiftsToCSV', () => {
         teamId: 'team2',
         startTime: '10:00',
         durationHours: 3,
-        title: 'Shift2',
+        title: 'Shift 2',
         minVolunteers: 1,
         maxVolunteers: 5,
         isActive: true
@@ -140,9 +140,9 @@ describe('shiftsToCSV', () => {
     const result = shiftsToCSV({ event, teams: twoTeams, shifts: twoShifts, shiftVolunteers });
 
     const expectedCSV = [
-      'Date,Team,Start Time,Duration (Hours),Volunteers',
-      '2026-03-11,Team Alpha,08:00,4,John Doe <john.doe@example.com>',
-      '2026-03-12,Team Beta,10:00,3,Jane Smith <jane.smith@example.com>'
+      'Date,Team,Shift Title,Start Time,Duration (Hours),Volunteers',
+      '2026-03-11,Team Alpha,Shift 1,08:00,4,John Doe <john.doe@example.com>',
+      '2026-03-12,Team Beta,Shift 2,10:00,3,Jane Smith <jane.smith@example.com>'
     ].join('\r\n');
 
     expect(result).toBe(expectedCSV);
@@ -154,7 +154,7 @@ describe('shiftsToCSV', () => {
 
     const result = shiftsToCSV({ event, teams, shifts, shiftVolunteers });
 
-    const expectedCSV = 'Date,Team,Start Time,Duration (Hours),Volunteers';
+    const expectedCSV = 'Date,Team,Shift Title,Start Time,Duration (Hours),Volunteers';
 
     expect(result).toBe(expectedCSV);
   });

@@ -1,14 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { GET } from './route';
-import { eventDayToDate } from '@/utils/datetime';
 import { getEventBySlug } from '@/service/event-service';
 import { getShiftsForEvent } from '@/service/shift-service';
 import { getTeamsForEvent } from '@/service/team-service';
+import { shiftsToCSV } from '@/utils/csv-export';
 
-const mockGetEventBySlug = getEventBySlug as jest.MockedFunction<typeof getEventBySlug>;
-const mockGetShiftsForEvent = getShiftsForEvent as jest.MockedFunction<typeof getShiftsForEvent>;
-const mockGetTeamsForEvent = getTeamsForEvent as jest.MockedFunction<typeof getTeamsForEvent>;
-
+jest.mock('@/utils/csv-export', () => ({
+  shiftsToCSV: jest.fn()
+}));
 jest.mock('@/service/event-service', () => ({
   getEventBySlug: jest.fn()
 }));
@@ -25,6 +24,11 @@ jest.mock('next/server', () => ({
     status: init?.status ?? 200
   }))
 }));
+
+const mockGetEventBySlug = getEventBySlug as jest.MockedFunction<typeof getEventBySlug>;
+const mockGetShiftsForEvent = getShiftsForEvent as jest.MockedFunction<typeof getShiftsForEvent>;
+const mockGetTeamsForEvent = getTeamsForEvent as jest.MockedFunction<typeof getTeamsForEvent>;
+const mockShiftsToCSV = shiftsToCSV as jest.MockedFunction<typeof shiftsToCSV>;
 
 describe('GET /api/event/[eventSlug]/shifts', () => {
   beforeEach(() => {
@@ -61,9 +65,12 @@ describe('GET /api/event/[eventSlug]/shifts', () => {
         description: 'description'
       }
     ];
+    const mockCSVContent = 'csv-content';
+
     mockGetEventBySlug.mockResolvedValue(mockEvent);
     mockGetShiftsForEvent.mockResolvedValue(mockShifts);
     mockGetTeamsForEvent.mockResolvedValue(mockTeams);
+    mockShiftsToCSV.mockReturnValue(mockCSVContent);
 
     const request = {
       nextUrl: { searchParams: new URLSearchParams({ format: 'csv' }) }
@@ -77,10 +84,7 @@ describe('GET /api/event/[eventSlug]/shifts', () => {
     expect(response.headers.get('Content-Disposition')).toBe(
       `attachment; filename="${mockEvent.slug}-shifts.csv"`
     );
-    expect(response.body).toContain('Date,Team,Start Time,Duration (Hours),Volunteers');
-    expect(response.body).toContain(
-      `${eventDayToDate(mockEvent.startDate, mockShifts[0].eventDay).toISOString().split('T')[0]},${mockTeams[0].name},${mockShifts[0].startTime},${mockShifts[0].durationHours},`
-    );
+    expect(response.body).toBe(mockCSVContent);
   });
 
   it('should return 404 when event does not exist', async () => {
