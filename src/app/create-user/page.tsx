@@ -9,8 +9,10 @@ import UserForm from '@/ui/user-form';
 import { getEvents } from '@/service/event-service';
 import { getAllTeams } from '@/service/team-service';
 import { validateNewUser } from '@/validator/user-validator';
+import { getUsersDashboardPath } from '@/utils/path';
 
-export const generateMetadata = metadata('CreateUser');
+const PAGE_KEY = 'CreateUserPage';
+export const generateMetadata = metadata(PAGE_KEY);
 
 export default async function CreateUser() {
   const onSubmit = async (data: FormData) => {
@@ -18,7 +20,7 @@ export default async function CreateUser() {
 
     await checkAuthorisation([{ type: 'admin' }]);
 
-    const t = await getTranslations('CreateUser');
+    const t = await getTranslations(PAGE_KEY);
 
     const validatedUser = validateNewUser(data);
     const role = data.get('role')?.toString() ?? null;
@@ -46,11 +48,11 @@ export default async function CreateUser() {
         await addRoleToUser({ type: 'team-lead', eventId, teamId }, newUser.id, client);
       }
     });
-    redirect('/users');
+    redirect(getUsersDashboardPath());
   };
 
   await checkAuthorisation([{ type: 'admin' }]);
-  const t = await getTranslations('CreateUser');
+  const t = await getTranslations(PAGE_KEY);
   const events = await getEvents();
   const teams = await getAllTeams();
 

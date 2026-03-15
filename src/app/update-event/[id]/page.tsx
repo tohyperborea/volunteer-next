@@ -2,7 +2,7 @@ import metadata from '@/i18n/metadata';
 import { notFound, redirect } from 'next/navigation';
 import { Flex, Heading, Card } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
-import { updateEvent, getEventById } from '@/service/event-service';
+import { updateEvent, getEventsById } from '@/service/event-service';
 import {
   addRoleToUser,
   getUsers,
@@ -57,7 +57,7 @@ export default async function UpdateEvent({ params }: Props) {
   const t = await getTranslations(PAGE_KEY);
   const { id } = await params;
   try {
-    const event = id ? await getEventById(id) : null;
+    const event = id ? (await getEventsById([id]))[0] : null;
     if (!event) {
       notFound();
     }

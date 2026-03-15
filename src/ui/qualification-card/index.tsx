@@ -6,48 +6,33 @@
 
 'use client';
 
-import { Card, Flex, Heading, IconButton, Text } from '@radix-ui/themes';
-import styles from './styles.module.css';
-import { Pencil2Icon } from '@radix-ui/react-icons';
+import { Card, Flex, Heading, Text } from '@radix-ui/themes';
 import Link from 'next/link';
 import { getQualificationDetailsPath } from '@/utils/path';
-import { useTranslations } from 'next-intl';
 
 interface Props {
   qualification: QualificationInfo;
   event: EventInfo;
   teamName?: string;
-  onEdit?: () => void;
   asLink?: boolean;
+  actions?: React.ReactNode;
 }
 
 export default function QualificationCard({
   qualification,
-  onEdit,
   asLink,
   event,
-  teamName
+  teamName,
+  actions
 }: Props) {
-  const t = useTranslations('QualificationCard');
   const cardId = `qualification-card-${qualification.id}`;
   const Inner = () => (
-    <Flex p="3" direction="column" gap="1">
+    <Flex direction="column" gap="1">
       <Flex justify="between" align="center">
-        <Heading size="4" as="h2">
+        <Heading size="4" as="h3" weight="medium">
           {qualification.name}
         </Heading>
-        {onEdit && (
-          <IconButton
-            variant="ghost"
-            aria-label={t('edit')}
-            onClick={(e) => {
-              e.preventDefault();
-              onEdit();
-            }}
-          >
-            <Pencil2Icon width={20} height={20} />
-          </IconButton>
-        )}
+        {actions}
       </Flex>
       <Text color="gray">{event.name}</Text>
       {teamName && <Text color="gray">{teamName}</Text>}
@@ -55,7 +40,7 @@ export default function QualificationCard({
   );
 
   return (
-    <Card className={styles.card} asChild={asLink} id={cardId}>
+    <Card asChild={asLink} data-testid={cardId}>
       {asLink ? (
         <Link
           href={getQualificationDetailsPath({

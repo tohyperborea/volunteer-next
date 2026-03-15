@@ -7,10 +7,14 @@ import {
 } from '@/service/qualification-service';
 import { getTeamsForEvent } from '@/service/team-service';
 import { checkAuthorisation, getMatchingRoles } from '@/session';
-import QualificationList from '@/ui/qualification-list';
+import ManageQualifications from '@/ui/manage-qualifications';
 import { getQualificationsPath } from '@/utils/path';
-import { validateNewQualification } from '@/validator/qualification-validator';
-import { Box } from '@radix-ui/themes';
+import {
+  parseTeamId,
+  validateExistingQualification,
+  validateNewQualification
+} from '@/validator/qualification-validator';
+import { Flex, Heading } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
 import { revalidatePath } from 'next/cache';
 import { notFound, redirect } from 'next/navigation';
@@ -31,6 +35,7 @@ interface Props {
 }
 
 export default async function QualificationsPage({ params }: Props) {
+  const t = await getTranslations(PAGE_KEY);
   const { eventSlug } = await params;
   const event = await getEventBySlug(eventSlug);
   if (!event) {
@@ -52,41 +57,53 @@ export default async function QualificationsPage({ params }: Props) {
   const teams = await getTeamsForEvent(event.id);
   const qualifications = await getQualificationsForEvent(event.id);
 
-  const onSave = async (data: FormData) => {
+  const checkQualificationAuthorisation = async (data: FormData) => {
     'use server';
-    const qualWithoutId = validateNewQualification(data);
+    const teamId = parseTeamId(data);
     const authorisedRoles: UserRole[] = [
       { type: 'admin' },
       { type: 'organiser', eventId: event.id }
     ];
-    if (qualWithoutId.teamId) {
-      authorisedRoles.push({ type: 'team-lead', eventId: event.id, teamId: qualWithoutId.teamId });
+    if (teamId) {
+      authorisedRoles.push({ type: 'team-lead', eventId: event.id, teamId });
     }
     await checkAuthorisation(authorisedRoles);
+  };
 
-    if (data.has('id')) {
-      await updateQualification({
-        id: data.get('id')!.toString(),
-        ...qualWithoutId
-      });
-    } else {
-      await createQualification(qualWithoutId);
-    }
+  const onCreate = async (data: FormData) => {
+    'use server';
+    await checkQualificationAuthorisation(data);
+    const qualification = validateNewQualification(data);
+    await createQualification(qualification);
+    const path = getQualificationsPath(event.slug);
+    revalidatePath(path);
+    redirect(path);
+  };
 
+  const onUpdate = async (data: FormData) => {
+    'use server';
+    await checkQualificationAuthorisation(data);
+    const qualification = validateExistingQualification(data);
+    await updateQualification(qualification);
     const path = getQualificationsPath(event.slug);
     revalidatePath(path);
     redirect(path);
   };
 
   return (
-    <Box>
-      <QualificationList
+    <Flex direction="column" gap="6">
+      <Heading size="5" as="h1">
+        {t('title', { eventName: event?.name ?? '' })}
+      </Heading>
+
+      <ManageQualifications
         qualifications={qualifications}
         event={event}
         teams={teams}
         editableTeams={editableTeams}
-        onSave={editable ? onSave : undefined}
+        onCreate={editable ? onCreate : undefined}
+        onUpdate={editable ? onUpdate : undefined}
       />
-    </Box>
+    </Flex>
   );
 }

@@ -42,6 +42,34 @@ export const getQualificationsForEvent = cache(
 );
 
 /**
+ * Fetches a list of qualifications associated with specific events.
+ * @param eventIds - List of EventIds to fetch qualifications for
+ * @returns A list of qualifications associated with the specified events
+ */
+export const getQualificationsForEvents = cache(
+  async (eventIds: EventId[]): Promise<QualificationInfo[]> => {
+    console.info(`Fetching qualifications for events ${eventIds.toString()}`);
+    if (eventIds.length === 0) {
+      return [];
+    }
+    const res = await pool.query(
+      `
+        SELECT
+          "id",
+          "eventId",
+          "teamId",
+          "name",
+          "errorMessage"
+        FROM qualification
+        WHERE "eventId" = ANY($1)
+     `,
+      [eventIds]
+    );
+    return res.rows.map(rowToQualification);
+  }
+);
+
+/**
  * Fetches a list of qualifications associated with specific teams
  * @param teamIds - List of TeamIds to fetch qualifications for
  * @returns A list of qualifications associated with the specified teams
@@ -91,6 +119,32 @@ export const getQualificationById = cache(
       return null;
     }
     return rowToQualification(res.rows[0]);
+  }
+);
+
+/**
+ * Fetches a list of qualifications assigned to a specific user.
+ * @param userId - The ID of the user to fetch qualifications for
+ * @returns A list of qualifications assigned to the specified user
+ */
+export const getQualificationsForUser = cache(
+  async (userId: UserId): Promise<QualificationInfo[]> => {
+    console.info(`Fetching qualifications for user ${userId}`);
+    const res = await pool.query(
+      `
+        SELECT
+          q."id",
+          q."eventId",
+          q."teamId",
+          q."name",
+          q."errorMessage"
+        FROM qualification q
+        JOIN "user_qualification" uq ON q.id = uq."qualificationId"
+        WHERE uq."userId" = $1
+     `,
+      [userId]
+    );
+    return res.rows.map(rowToQualification);
   }
 );
 
@@ -181,5 +235,62 @@ export const deleteQualification = async (
   await db.query('DELETE FROM qualification WHERE id = $1', [qualificationId]);
 
   // Shift requirement removal handled by DELETE CASCADE
-  // TODO: Remove any user assignments for this qualification
+  // User Qualification removal handled by DELETE CASCADE
+};
+
+/**
+ * Assigns a qualification to multiple users in the database.
+ * @param qualificationId - The ID of the qualification to assign
+ * @param userIds - The IDs of the users to assign the qualification to
+ * @param client - Optional database client to use for the transaction
+ * @returns A promise that resolves when the assignment is complete
+ */
+export const assignQualificationToUsers = async (
+  qualificationId: QualificationId,
+  userIds: UserId[],
+  client?: PoolClient
+): Promise<void> => {
+  console.info(`Assigning qualification ${qualificationId} to users ${userIds.toString()}`);
+  if (userIds.length === 0) {
+    return;
+  }
+  const db = client || pool;
+  const placeholders = userIds
+    .map((_, index) => {
+      const base = index * 2;
+      return `($${base + 1}, $${base + 2})`;
+    })
+    .join(', ');
+  const params = userIds.flatMap((userId) => [userId, qualificationId]);
+  await db.query(
+    `
+      INSERT INTO "user_qualification" ("userId", "qualificationId")
+      VALUES ${placeholders}
+      ON CONFLICT ("userId", "qualificationId") DO NOTHING
+    `,
+    params
+  );
+};
+
+/**
+ * Removes a qualification assignment from a user in the database.
+ * @param qualificationId - The ID of the qualification to remove
+ * @param userId - The ID of the user to remove the qualification from
+ * @param client - Optional database client to use for the transaction
+ * @returns A promise that resolves when the removal is complete
+ */
+export const removeQualificationFromUser = async (
+  qualificationId: QualificationId,
+  userId: UserId,
+  client?: PoolClient
+): Promise<void> => {
+  console.info(`Removing qualification ${qualificationId} from user ${userId}`);
+  const db = client || pool;
+  await db.query(
+    `
+      DELETE FROM "user_qualification"
+      WHERE "userId" = $1 AND "qualificationId" = $2
+    `,
+    [userId, qualificationId]
+  );
 };

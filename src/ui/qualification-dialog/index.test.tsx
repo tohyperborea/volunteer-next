@@ -9,7 +9,8 @@ jest.mock('next-intl', () => ({
 
 describe('QualificationDialog', () => {
   const mockOnClose = jest.fn();
-  const mockOnSave = jest.fn();
+  const mockOnCreate = jest.fn();
+  const mockOnUpdate = jest.fn();
   const mockEventId = 'event123';
   const mockTeams = [
     {
@@ -33,7 +34,8 @@ describe('QualificationDialog', () => {
         teams={mockTeams}
         creating={true}
         onClose={mockOnClose}
-        onSave={mockOnSave}
+        onCreate={mockOnCreate}
+        onUpdate={mockOnUpdate}
       />
     );
 
@@ -59,7 +61,8 @@ describe('QualificationDialog', () => {
         teams={mockTeams}
         editing={mockEditing}
         onClose={mockOnClose}
-        onSave={mockOnSave}
+        onCreate={mockOnCreate}
+        onUpdate={mockOnUpdate}
       />
     );
 
@@ -76,7 +79,8 @@ describe('QualificationDialog', () => {
         teams={mockTeams}
         creating={true}
         onClose={mockOnClose}
-        onSave={mockOnSave}
+        onCreate={mockOnCreate}
+        onUpdate={mockOnUpdate}
       />
     );
 
@@ -86,14 +90,15 @@ describe('QualificationDialog', () => {
     });
   });
 
-  it('calls onSave when the form is submitted', async () => {
+  it('calls onCreate when the form is submitted in create mode', async () => {
     render(
       <QualificationDialog
         eventId={mockEventId}
         teams={mockTeams}
         creating={true}
         onClose={mockOnClose}
-        onSave={mockOnSave}
+        onCreate={mockOnCreate}
+        onUpdate={mockOnUpdate}
       />
     );
 
@@ -106,7 +111,34 @@ describe('QualificationDialog', () => {
     fireEvent.click(screen.getByText('create'));
 
     await waitFor(() => {
-      expect(mockOnSave).toHaveBeenCalled();
+      expect(mockOnCreate).toHaveBeenCalled();
+    });
+  });
+
+  it('calls onUpdate when the form is submitted in edit mode', async () => {
+    const mockEditing: QualificationInfo = {
+      id: 'qual1',
+      eventId: mockEventId,
+      name: 'Qualification 1',
+      teamId: 'team1',
+      errorMessage: 'Error message'
+    };
+
+    render(
+      <QualificationDialog
+        eventId={mockEventId}
+        teams={mockTeams}
+        editing={mockEditing}
+        onClose={mockOnClose}
+        onCreate={mockOnCreate}
+        onUpdate={mockOnUpdate}
+      />
+    );
+
+    fireEvent.click(screen.getByText('save'));
+
+    await waitFor(() => {
+      expect(mockOnUpdate).toHaveBeenCalled();
     });
   });
 
@@ -117,7 +149,8 @@ describe('QualificationDialog', () => {
         teams={mockTeams}
         creating={true}
         onClose={mockOnClose}
-        onSave={mockOnSave}
+        onCreate={mockOnCreate}
+        onUpdate={mockOnUpdate}
       />
     );
 
@@ -134,7 +167,8 @@ describe('QualificationDialog', () => {
         creating={true}
         requireTeam={true}
         onClose={mockOnClose}
-        onSave={mockOnSave}
+        onCreate={mockOnCreate}
+        onUpdate={mockOnUpdate}
       />
     );
 
@@ -152,7 +186,8 @@ describe('QualificationDialog', () => {
         creating={true}
         requireTeam={false}
         onClose={mockOnClose}
-        onSave={mockOnSave}
+        onCreate={mockOnCreate}
+        onUpdate={mockOnUpdate}
       />
     );
 

@@ -1,5 +1,5 @@
-import { render, screen, fireEvent } from '@testing-library/react';
-import QualificationCard from './index';
+import { render, screen } from '@testing-library/react';
+import QualificationCard from '.';
 import { getQualificationDetailsPath } from '@/utils/path';
 
 jest.mock('next-intl', () => ({
@@ -29,7 +29,7 @@ describe('QualificationCard', () => {
 
   it('renders the card with the correct id', () => {
     render(<QualificationCard qualification={mockQualification} event={mockEvent} />);
-    const card = document.getElementById(`qualification-card-${mockQualification.id}`);
+    const card = screen.getByTestId(`qualification-card-${mockQualification.id}`);
     expect(card).toBeInTheDocument();
   });
 
@@ -48,18 +48,16 @@ describe('QualificationCard', () => {
     expect(screen.getByText(/Team Name/i)).toBeInTheDocument();
   });
 
-  it('renders the edit button and calls onEdit when clicked', () => {
-    const onEditMock = jest.fn();
-
+  it('renders actions when provided', () => {
     render(
-      <QualificationCard qualification={mockQualification} event={mockEvent} onEdit={onEditMock} />
+      <QualificationCard
+        qualification={mockQualification}
+        event={mockEvent}
+        actions={<div data-testid="test-action"></div>}
+      />
     );
 
-    const editButton = screen.getByRole('button');
-    expect(editButton).toBeInTheDocument();
-
-    fireEvent.click(editButton);
-    expect(onEditMock).toHaveBeenCalledTimes(1);
+    expect(screen.getByTestId('test-action')).toBeInTheDocument();
   });
 
   it('renders as a link when asLink is true', () => {
@@ -69,11 +67,5 @@ describe('QualificationCard', () => {
 
     const link = screen.getByRole('link');
     expect(link).toHaveAttribute('href', '/qualification-details');
-  });
-
-  it('does not render the edit button if onEdit is not provided', () => {
-    render(<QualificationCard qualification={mockQualification} event={mockEvent} />);
-
-    expect(screen.queryByRole('button')).not.toBeInTheDocument();
   });
 });

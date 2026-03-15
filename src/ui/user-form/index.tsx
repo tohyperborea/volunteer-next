@@ -12,6 +12,7 @@ import RolesEditForm from './roles-edit-form';
 import NewRoleForm from './new-role-form';
 
 import Link from 'next/link';
+import { getUsersDashboardPath } from '@/utils/path';
 
 const FormItem = ({ children }: { children: React.ReactNode }) => (
   <Flex direction="column" gap="1">
@@ -73,7 +74,7 @@ export default function UserForm({
           />
         </FormItem>
         <Flex direction="row" justify="between">
-          <Link href="/users">
+          <Link href={getUsersDashboardPath()}>
             <Button variant="outline">{t('cancelButton')}</Button>
           </Link>
           <Button type="submit">{t(editingUser ? 'updateButton' : 'createButton')}</Button>

@@ -21,8 +21,7 @@ export const validateNewQualification = (data: FormData): Omit<QualificationInfo
     throw new Error('Event ID is required');
   }
 
-  // The form submits the string "null" when no team is selected, so that will be our default
-  const teamId = data.get('teamId')?.toString() ?? 'null';
+  const teamId = parseTeamId(data);
 
   const errorMessage = data.get('errorMessage')?.toString() ?? null;
   if (!errorMessage) {
@@ -32,7 +31,7 @@ export const validateNewQualification = (data: FormData): Omit<QualificationInfo
   return {
     name,
     eventId,
-    teamId: teamId.toLowerCase() === 'null' ? undefined : teamId,
+    teamId,
     errorMessage
   };
 };
@@ -53,4 +52,14 @@ export const validateExistingQualification = (data: FormData): QualificationInfo
     id,
     ...qualificationWithoutId
   };
+};
+
+/**
+ * Parses the teamId from FormData, treating the string "null" (case-insensitive) as undefined.
+ * @param data - FormData containing a teamId field which may be "null" or a string
+ * @returns - The teamId as a string, or undefined if the value is "null" (case-insensitive)
+ */
+export const parseTeamId = (data: FormData): TeamId | undefined => {
+  const teamId = data.get('teamId')?.toString() ?? 'null';
+  return teamId.toLowerCase() === 'null' ? undefined : teamId;
 };

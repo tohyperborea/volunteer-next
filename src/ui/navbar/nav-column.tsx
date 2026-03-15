@@ -6,20 +6,17 @@
 
 'use client';
 
-import {
-  Text,
-  TabNav,
-  Box
-} from '@radix-ui/themes';
+import { Text, TabNav, Box } from '@radix-ui/themes';
 import { HomeIcon } from '@radix-ui/react-icons';
 import styles from './styles.module.css';
 import { useTranslations } from 'next-intl';
 import { usePathname, useRouter } from 'next/navigation';
+import { getUsersDashboardPath } from '@/utils/path';
 
 const navLinkMap = new Map<string, string>([
   ['/event', 'event'],
   ['../team', 'teams'],
-  ['/users', 'users'],
+  [getUsersDashboardPath(), 'users'],
   ['/settings', 'settings']
 ]);
 

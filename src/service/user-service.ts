@@ -95,6 +95,56 @@ export const getUsers = cache(async (): Promise<User[]> => {
 });
 
 /**
+ * Versatile fetch based on a UserFilters object
+ * @returns A promise that resolves to an array of users matching the filters.
+ * @throws {Error} If the database query fails.
+ */
+export const getFilteredUsers = cache(async (filters: UserFilters): Promise<User[]> => {
+  const queryParts: string[] = [];
+  const queryParams: any[] = [];
+
+  if (filters.searchQuery) {
+    queryParams.push(`%${filters.searchQuery}%`);
+    queryParts.push(`u.name ILIKE $${queryParams.length}`);
+  }
+  if (!filters.showDeleted) {
+    queryParts.push(`u."deletedAt" IS NULL`);
+  }
+  if (filters.roleType) {
+    queryParams.push(filters.roleType);
+    queryParts.push(
+      `EXISTS (SELECT 1 FROM role r WHERE r."userId" = u.id AND r.type = $${queryParams.length})`
+    );
+  }
+  if (filters.withQualification) {
+    queryParams.push(filters.withQualification);
+    queryParts.push(
+      `EXISTS (SELECT 1 FROM user_qualification uq WHERE uq."userId" = u.id AND uq."qualificationId" = $${queryParams.length})`
+    );
+  }
+  if (filters.withoutQualification) {
+    queryParams.push(filters.withoutQualification);
+    queryParts.push(
+      `NOT EXISTS (SELECT 1 FROM user_qualification uq WHERE uq."userId" = u.id AND uq."qualificationId" = $${queryParams.length})`
+    );
+  }
+
+  const whereClause = queryParts.length > 0 ? `WHERE ${queryParts.join(' AND ')}` : '';
+
+  const result = await pool.query(
+    `
+      SELECT u.id, u.name, u.email, u."deletedAt", r.type, r."eventId", r."teamId"
+      FROM "user" u
+      LEFT JOIN role r ON u.id = r."userId"
+      ${whereClause}
+    `,
+    queryParams
+  );
+
+  return usersFromRows(result.rows);
+});
+
+/**
  * Fetches all users with a specific role.
  * @param role - The role to filter users by.
  * @returns An array of User objects that have the specified role.
