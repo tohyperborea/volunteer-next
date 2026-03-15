@@ -7,8 +7,28 @@
 import { eventDayToDate } from '@/utils/datetime';
 
 const escapeForCSV = (value: string): string => {
-  if (value.includes('"') || value.includes(',') || value.includes('\r') || value.includes('\n')) {
+  if (
+    value.startsWith('\t') ||
+    value.includes('"') ||
+    value.includes(',') ||
+    value.includes('\r') ||
+    value.includes('\n')
+  ) {
     return `"${value.replace(/"/g, '""')}"`;
+  }
+  return value;
+};
+
+// https://owasp.org/www-community/attacks/CSV_Injection
+// https://georgemauer.net/2017/10/07/csv-injection.html
+const preventCSVInjection = (value: string): string => {
+  if (
+    value.startsWith('=') ||
+    value.startsWith('+') ||
+    value.startsWith('-') ||
+    value.startsWith('@')
+  ) {
+    return `\t${value}`;
   }
   return value;
 };
@@ -50,11 +70,11 @@ export const shiftsToCSV = ({
       const volunteerRow = volunteers.map((v) => `${v.name} <${v.email}>`).join('\r');
       return [
         eventDayToDate(event.startDate, shift.eventDay).toISOString().split('T')[0],
-        escapeForCSV(teamNames[shift.teamId]),
-        escapeForCSV(shift.title),
+        escapeForCSV(preventCSVInjection(teamNames[shift.teamId])),
+        escapeForCSV(preventCSVInjection(shift.title)),
         shift.startTime,
         shift.durationHours,
-        escapeForCSV(volunteerRow)
+        escapeForCSV(preventCSVInjection(volunteerRow))
       ].join(',');
     })
   ].join('\r\n');

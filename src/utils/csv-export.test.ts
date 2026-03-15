@@ -158,4 +158,25 @@ describe('shiftsToCSV', () => {
 
     expect(result).toBe(expectedCSV);
   });
+
+  it('should guard against CSV injection', () => {
+    const maliciousUser: User = {
+      id: 'user4',
+      name: "=CMD|' /C calc'!A0",
+      email: 'badguy@evil.com',
+      roles: []
+    };
+    const shiftVolunteers = {
+      shift1: [maliciousUser]
+    };
+
+    const result = shiftsToCSV({ event, teams, shifts, shiftVolunteers });
+
+    const expectedCSV = [
+      `Date,Team,Shift Title,Start Time,Duration (Hours),Volunteers`,
+      `2026-03-11,Team Alpha,Shift 1,08:00,4,"\t=CMD|' /C calc'!A0 <badguy@evil.com>"`
+    ].join('\r\n');
+
+    expect(result).toBe(expectedCSV);
+  });
 });
