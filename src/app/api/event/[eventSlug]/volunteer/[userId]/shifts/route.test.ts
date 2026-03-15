@@ -27,6 +27,9 @@ jest.mock('next/server', () => ({
     status: init?.status ?? 200
   }))
 }));
+jest.mock('@/session', () => ({
+  checkAuthorisation: jest.fn().mockResolvedValue(true)
+}));
 
 const mockGetEventBySlug = getEventBySlug as jest.MockedFunction<typeof getEventBySlug>;
 const mockGetUser = require('@/service/user-service').getUser as jest.MockedFunction<

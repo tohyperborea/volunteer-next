@@ -10,6 +10,7 @@ import { CSVResponse, NotFoundResponse, NotImplementedResponse } from '@/lib/res
 import { getEventBySlug } from '@/service/event-service';
 import { getTeamsForEvent } from '@/service/team-service';
 import { getUser } from '@/service/user-service';
+import { checkAuthorisation } from '@/session';
 import { shiftsToCSV } from '@/utils/csv-export';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -17,6 +18,7 @@ export const GET = async (
   request: NextRequest,
   { params }: RouteContext<'/api/event/[eventSlug]/volunteer/[userId]/shifts'>
 ): Promise<NextResponse> => {
+  await checkAuthorisation();
   const format = request.nextUrl.searchParams.get('format') ?? 'json';
   if (format === 'csv') {
     const { eventSlug, userId } = await params;
