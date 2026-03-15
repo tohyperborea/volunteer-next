@@ -5,7 +5,7 @@
  * @since 2025-11-10
  */
 
-type FormSubmitAction = (data: FormData) => Promise<never>;
+type FormSubmitAction = (data: FormData) => Promise<void>;
 
 type PartialWithRequired<T, R extends keyof T> = Partial<T> & Pick<T, R>;
 

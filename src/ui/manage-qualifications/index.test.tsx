@@ -55,7 +55,8 @@ describe('ManageQualifications', () => {
       }
     ],
     editableTeams: ['team1'],
-    onSave: jest.fn()
+    onCreate: jest.fn(),
+    onUpdate: jest.fn()
   };
 
   it('renders the add button when editable', () => {
@@ -64,7 +65,7 @@ describe('ManageQualifications', () => {
   });
 
   it('does not render the add button when not editable', () => {
-    render(<ManageQualifications {...defaultProps} onSave={undefined} />);
+    render(<ManageQualifications {...defaultProps} onCreate={undefined} />);
     expect(screen.queryByText('add')).not.toBeInTheDocument();
   });
 

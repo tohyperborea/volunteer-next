@@ -282,9 +282,7 @@
     "searchPlaceholder": "Search..."
   },
   "QualificationDetails": {
-    "delete": "Delete Qualification"
-  },
-  "QualificationCard": {
+    "delete": "Delete Qualification",
     "edit": "Edit Qualification"
   },
   "QualificationDialog": {

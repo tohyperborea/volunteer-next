@@ -88,14 +88,10 @@ export default async function QualificationsPage(props: Props) {
     redirect(path);
   };
 
-  const onDelete = async (data: FormData) => {
+  const onDelete = async () => {
     'use server';
     await checkAuthorisation(editorRoles);
-    const id = data.get('id')?.toString();
-    if (!id) {
-      throw new Error('Qualification ID is required');
-    }
-    await deleteQualification(id);
+    await deleteQualification(qualification.id);
 
     const path = getQualificationsPath(event.slug);
     revalidatePath(path);
@@ -105,7 +101,6 @@ export default async function QualificationsPage(props: Props) {
   const onAssignQualification = async (data: FormData) => {
     'use server';
     const volunteerIds = data.getAll('volunteers') as UserId[];
-    console.log('Assigning qualification with data:', volunteerIds);
     await checkAuthorisation(editorRoles);
     await assignQualificationToUsers(qualification.id, volunteerIds);
     const path = getQualificationDetailsPath({ eventSlug, qualificationId });
@@ -116,7 +111,6 @@ export default async function QualificationsPage(props: Props) {
   const onRemoveQualification = async (data: FormData) => {
     'use server';
     const volunteerId = data.get('volunteerId')?.toString();
-    console.log('Removing qualification with data:', volunteerId);
     if (!volunteerId) {
       throw new Error('Volunteer ID is required');
     }

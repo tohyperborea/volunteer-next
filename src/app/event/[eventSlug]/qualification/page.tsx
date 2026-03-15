@@ -9,7 +9,11 @@ import { getTeamsForEvent } from '@/service/team-service';
 import { checkAuthorisation, getMatchingRoles } from '@/session';
 import ManageQualifications from '@/ui/manage-qualifications';
 import { getQualificationsPath } from '@/utils/path';
-import { validateNewQualification } from '@/validator/qualification-validator';
+import {
+  parseTeamId,
+  validateExistingQualification,
+  validateNewQualification
+} from '@/validator/qualification-validator';
 import { Flex, Heading } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
 import { revalidatePath } from 'next/cache';
@@ -53,27 +57,34 @@ export default async function QualificationsPage({ params }: Props) {
   const teams = await getTeamsForEvent(event.id);
   const qualifications = await getQualificationsForEvent(event.id);
 
-  const onSave = async (data: FormData) => {
+  const checkQualificationAuthorisation = async (data: FormData) => {
     'use server';
-    const qualWithoutId = validateNewQualification(data);
+    const teamId = parseTeamId(data);
     const authorisedRoles: UserRole[] = [
       { type: 'admin' },
       { type: 'organiser', eventId: event.id }
     ];
-    if (qualWithoutId.teamId) {
-      authorisedRoles.push({ type: 'team-lead', eventId: event.id, teamId: qualWithoutId.teamId });
+    if (teamId) {
+      authorisedRoles.push({ type: 'team-lead', eventId: event.id, teamId });
     }
     await checkAuthorisation(authorisedRoles);
+  };
 
-    if (data.has('id')) {
-      await updateQualification({
-        id: data.get('id')!.toString(),
-        ...qualWithoutId
-      });
-    } else {
-      await createQualification(qualWithoutId);
-    }
+  const onCreate = async (data: FormData) => {
+    'use server';
+    await checkQualificationAuthorisation(data);
+    const qualification = validateNewQualification(data);
+    await createQualification(qualification);
+    const path = getQualificationsPath(event.slug);
+    revalidatePath(path);
+    redirect(path);
+  };
 
+  const onUpdate = async (data: FormData) => {
+    'use server';
+    await checkQualificationAuthorisation(data);
+    const qualification = validateExistingQualification(data);
+    await updateQualification(qualification);
     const path = getQualificationsPath(event.slug);
     revalidatePath(path);
     redirect(path);
@@ -90,7 +101,8 @@ export default async function QualificationsPage({ params }: Props) {
         event={event}
         teams={teams}
         editableTeams={editableTeams}
-        onSave={editable ? onSave : undefined}
+        onCreate={editable ? onCreate : undefined}
+        onUpdate={editable ? onUpdate : undefined}
       />
     </Flex>
   );

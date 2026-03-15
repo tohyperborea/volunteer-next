@@ -19,7 +19,8 @@ interface Props {
   event: EventInfo;
   teams: TeamInfo[];
   editableTeams?: TeamId[];
-  onSave?: FormSubmitAction;
+  onCreate?: FormSubmitAction;
+  onUpdate?: FormSubmitAction;
 }
 
 export default function ManageQualifications({
@@ -27,9 +28,10 @@ export default function ManageQualifications({
   event,
   teams,
   editableTeams,
-  onSave
+  onCreate,
+  onUpdate
 }: Props) {
-  const editable = Boolean(onSave);
+  const editable = Boolean(onCreate && onUpdate);
   const t = useTranslations('ManageQualifications');
   const [creating, setCreating] = useState(false);
   const [editing, setEditing] = useState<QualificationInfo | undefined>(undefined);
@@ -80,7 +82,8 @@ export default function ManageQualifications({
           setCreating(false);
           setEditing(undefined);
         }}
-        onSave={onSave}
+        onCreate={onCreate}
+        onUpdate={onUpdate}
       />
     </Flex>
   );
