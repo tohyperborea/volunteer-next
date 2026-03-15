@@ -8,7 +8,7 @@ jest.mock('next-intl', () => ({
 }));
 
 jest.mock('@/utils/path', () => ({
-  getUserApiPath: jest.fn(() => '/api/users')
+  getUserApiPath: jest.fn(() => '/api/user')
 }));
 
 global.fetch = jest.fn();
@@ -30,9 +30,9 @@ describe('VolunteerPicker', () => {
     jest.clearAllMocks();
   });
 
-  it('renders the dialog with the correct title', () => {
+  it('renders the dialog with the correct title', async () => {
     render(<VolunteerPicker title="Select Volunteers" open={true} />);
-    waitFor(() => {
+    await waitFor(() => {
       // This check is required to ensure the fetch has completed
       expect(screen.getByText('Volunteer 1')).toBeInTheDocument();
     });
@@ -41,7 +41,7 @@ describe('VolunteerPicker', () => {
   it('fetches and displays volunteers when open', async () => {
     render(<VolunteerPicker title="Select Volunteers" open={true} />);
     await waitFor(() => {
-      expect(fetch).toHaveBeenCalledWith('/api/users');
+      expect(fetch).toHaveBeenCalledWith('/api/user');
       expect(screen.getByText('Volunteer 1')).toBeInTheDocument();
       expect(screen.getByText('Volunteer 2')).toBeInTheDocument();
     });
@@ -52,10 +52,10 @@ describe('VolunteerPicker', () => {
     expect(fetch).not.toHaveBeenCalled();
   });
 
-  it('calls onClose when the cancel button is clicked', () => {
+  it('calls onClose when the cancel button is clicked', async () => {
     const onClose = jest.fn();
     render(<VolunteerPicker title="Select Volunteers" open={true} onClose={onClose} />);
-    waitFor(() => {
+    await waitFor(() => {
       // This check is required to ensure the fetch has completed
       expect(screen.getByText('Volunteer 1')).toBeInTheDocument();
     });

@@ -15,7 +15,7 @@ import { PlusIcon } from '@radix-ui/react-icons';
 
 interface Props {
   qualification: QualificationInfo;
-  onSubmit?: (data: FormData) => Promise<never>;
+  onSubmit?: FormSubmitAction;
 }
 
 export default function AssignQualification({ qualification, onSubmit }: Props) {

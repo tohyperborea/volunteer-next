@@ -18,7 +18,7 @@ interface Props {
   title: string;
   open?: boolean;
   onClose?: () => void;
-  onSubmit?: (data: FormData) => Promise<never>;
+  onSubmit?: FormSubmitAction;
   filter?: UserFilters;
 }
 
@@ -28,7 +28,9 @@ export default function VolunteerPicker({ title, open, onClose, onSubmit, filter
   const [search, setSearch] = useState<string | undefined>(undefined);
 
   const fetchVolunteers = async (searchQuery: string | undefined) => {
-    const requestFilter: UserFilters | undefined = search ? { ...filter, searchQuery } : filter;
+    const requestFilter: UserFilters | undefined = searchQuery
+      ? { ...filter, searchQuery }
+      : filter;
     const response = await fetch(getUserApiPath(requestFilter));
     if (!response.ok) {
       console.error('Failed to fetch volunteers:', response.statusText);
@@ -55,7 +57,7 @@ export default function VolunteerPicker({ title, open, onClose, onSubmit, filter
             setSearch(value);
           }}
         />
-        <CheckboxCards.Root defaultValue={['id-1', 'id-2']} mt="4" name="volunteers">
+        <CheckboxCards.Root mt="4" name="volunteers">
           {volunteers.map((volunteer) => (
             <CheckboxCards.Item key={volunteer.id} value={volunteer.id}>
               <VolunteerCardContent volunteer={volunteer} />

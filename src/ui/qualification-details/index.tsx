@@ -72,7 +72,7 @@ export default function QualificationDetails({
           onClose={() => {
             setEditing(undefined);
           }}
-          onSave={onSave}
+          onUpdate={onSave}
         />
       )}
     </Flex>

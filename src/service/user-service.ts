@@ -95,7 +95,7 @@ export const getUsers = cache(async (): Promise<User[]> => {
 });
 
 /**
- * Versitile fetch based on a UserFilters object
+ * Versatile fetch based on a UserFilters object
  * @returns A promise that resolves to an array of users matching the filters.
  * @throws {Error} If the database query fails.
  */

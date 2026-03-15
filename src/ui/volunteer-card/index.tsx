@@ -1,5 +1,5 @@
 /**
- * Simple card for repesenting a volunteer in a list or grid.
+ * Simple card for representing a volunteer in a list or grid.
  * @since 2026-03-07
  * @author Michael Townsend <@continuities>
  */

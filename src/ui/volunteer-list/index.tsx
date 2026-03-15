@@ -31,7 +31,7 @@ export default function VolunteerList({ volunteers, onRemove }: Props) {
     } else {
       params.delete('searchQuery');
     }
-    replace(`${pathname}${search ? `?${params.toString()}` : ''}`);
+    replace(`${pathname}${params.size > 0 ? `?${params.toString()}` : ''}`);
   };
   return (
     <Flex direction="column" gap="4">
@@ -51,6 +51,7 @@ export default function VolunteerList({ volunteers, onRemove }: Props) {
                         variant="ghost"
                         color="red"
                         formAction={onRemove}
+                        aria-label={t('remove', { name: volunteer.name })}
                         title={t('remove', { name: volunteer.name })}
                       >
                         <Cross1Icon />

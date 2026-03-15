@@ -49,6 +49,9 @@ export const getQualificationsForEvent = cache(
 export const getQualificationsForEvents = cache(
   async (eventIds: EventId[]): Promise<QualificationInfo[]> => {
     console.info(`Fetching qualifications for events ${eventIds.toString()}`);
+    if (eventIds.length === 0) {
+      return [];
+    }
     const res = await pool.query(
       `
         SELECT
@@ -252,13 +255,20 @@ export const assignQualificationToUsers = async (
     return;
   }
   const db = client || pool;
-  const values = userIds.map((userId) => `('${userId}', '${qualificationId}')`).join(', ');
+  const placeholders = userIds
+    .map((_, index) => {
+      const base = index * 2;
+      return `($${base + 1}, $${base + 2})`;
+    })
+    .join(', ');
+  const params = userIds.flatMap((userId) => [userId, qualificationId]);
   await db.query(
     `
       INSERT INTO "user_qualification" ("userId", "qualificationId")
-      VALUES ${values}
+      VALUES ${placeholders}
       ON CONFLICT ("userId", "qualificationId") DO NOTHING
-    `
+    `,
+    params
   );
 };
 

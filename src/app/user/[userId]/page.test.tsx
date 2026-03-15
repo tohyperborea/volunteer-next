@@ -323,7 +323,7 @@ describe('UserProfilePage', () => {
 
     const removeButton = screen.getByLabelText('remove');
     fireEvent.click(removeButton);
-    waitFor(() => {
+    await waitFor(() => {
       expect(mockRemoveQualificationFromUser).toHaveBeenCalled();
     });
   });
