@@ -78,7 +78,7 @@ describe('GET /api/event/[eventSlug]/volunteer/[userId]/shifts', () => {
     const response = await GET(request, { params });
 
     expect(response.status).toBe(200);
-    expect(response.headers.get('Content-Type')).toBe('text/csv');
+    expect(response.headers.get('Content-Type')).toBe('text/csv; charset=utf-8');
     expect(response.headers.get('Content-Disposition')).toContain(`my-shifts`);
     expect(response.body).toBe(mockCSVContent);
   });

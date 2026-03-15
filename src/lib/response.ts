@@ -12,13 +12,15 @@ import { NextResponse } from 'next/server';
  * @param filename - The desired filename for the downloaded CSV file (without extension)
  * @returns A NextResponse object configured to prompt the user to download a CSV file with the specified content and filename
  */
-export const CSVResponse = (csvContent: string, filename: string): NextResponse =>
-  new NextResponse(csvContent, {
+export const CSVResponse = (csvContent: string, filename: string): NextResponse => {
+  const sanitisedFilename = filename.replace(/["\r\n]/g, '_');
+  return new NextResponse(csvContent, {
     headers: {
-      'Content-Type': 'text/csv',
-      'Content-Disposition': `attachment; filename="${filename}.csv"`
+      'Content-Type': 'text/csv; charset=utf-8',
+      'Content-Disposition': `attachment; filename="${sanitisedFilename}.csv"`
     }
   });
+};
 
 /**
  * Creates a NextResponse object with a 501 Not Implemented status and a message body of 'Not Implemented'.

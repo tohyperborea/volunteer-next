@@ -6,22 +6,12 @@
 
 'use client';
 
-import {
-  Badge,
-  Box,
-  Card,
-  ChevronDownIcon,
-  Flex,
-  Heading,
-  IconButton,
-  Link,
-  Text
-} from '@radix-ui/themes';
+import { Badge, Box, Card, Flex, Heading, IconButton, Link, Text } from '@radix-ui/themes';
 import TimeSpan from '../time-span';
 import { useTranslations } from 'next-intl';
 import styles from './styles.module.css';
 import Collapsible from '../collapsible';
-import { Pencil2Icon } from '@radix-ui/react-icons';
+import { Pencil2Icon, ChevronDownIcon } from '@radix-ui/react-icons';
 import { addHoursToTimeString } from '@/utils/datetime';
 import { getQualificationDetailsPath } from '@/utils/path';
 import { useState } from 'react';
@@ -69,6 +59,8 @@ export default function ShiftCard({
               {collapsible && (
                 <IconButton
                   variant="ghost"
+                  aria-label={isExpanded ? t('collapse') : t('expand')}
+                  aria-expanded={isExpanded}
                   onClick={(e) => {
                     e.stopPropagation();
                     setIsExpanded((prev) => !prev);

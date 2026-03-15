@@ -14,7 +14,6 @@ import ShiftDialog from '../shift-dialog';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { eventDayToDate } from '@/utils/datetime';
-import { getTeamShiftsApiPath } from '@/utils/path';
 
 interface Props {
   event: EventInfo;
@@ -58,7 +57,7 @@ export default function ShiftList({
         )}
         {exportLink && (
           <Button variant="soft" asChild>
-            <Link href={exportLink} target="_blank">
+            <Link href={exportLink} rel="noopener noreferrer" target="_blank">
               <Share2Icon /> {t('export')}
             </Link>
           </Button>

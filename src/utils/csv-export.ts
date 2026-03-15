@@ -32,11 +32,11 @@ export const shiftsToCSV = ({
   shifts: ShiftInfo[];
   shiftVolunteers: Record<ShiftId, User[]>;
 }): string => {
-  const teamNames = teams.reduce<Record<TeamId, string>>(
-    (acc, team) => ({ ...acc, [team.id]: team.name }),
-    {}
-  );
-  shifts.sort((a, b) => {
+  const teamNames = teams.reduce<Record<TeamId, string>>((acc, team) => {
+    acc[team.id] = team.name;
+    return acc;
+  }, {});
+  const sortedShifts = [...shifts].sort((a, b) => {
     const dayDiff = a.eventDay - b.eventDay;
     if (dayDiff !== 0) {
       return dayDiff;
@@ -45,7 +45,7 @@ export const shiftsToCSV = ({
   });
   return [
     ['Date', 'Team', 'Shift Title', 'Start Time', 'Duration (Hours)', 'Volunteers'].join(','),
-    ...shifts.map((shift) => {
+    ...sortedShifts.map((shift) => {
       const volunteers = shiftVolunteers[shift.id] ?? [];
       const volunteerRow = volunteers.map((v) => `${v.name} <${v.email}>`).join('\r');
       return [

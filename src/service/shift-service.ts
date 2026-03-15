@@ -70,16 +70,18 @@ export const getShiftById = cache(async (shiftId: ShiftId): Promise<ShiftInfo | 
   const result = await pool.query(
     `
     SELECT 
-      "id",
-      "teamId", 
-      "title", 
-      "eventDay", 
-      "startTime", 
-      "durationHours",
-      "minVolunteers",
-      "maxVolunteers",
-      "isActive"
-    FROM shift
+      s."id",
+      s."teamId", 
+      s."title", 
+      s."eventDay", 
+      s."startTime", 
+      s."durationHours",
+      s."minVolunteers",
+      s."maxVolunteers",
+      s."isActive",
+      r."qualificationId"
+    FROM shift s
+    LEFT JOIN requirement r ON s.id = r."shiftId"
     WHERE id = $1`,
     [shiftId]
   );
@@ -133,15 +135,17 @@ export const getShiftsForEvent = cache(async (eventId: EventId): Promise<ShiftIn
       s."durationHours",
       s."minVolunteers",
       s."maxVolunteers",
-      s."isActive"
+      s."isActive",
+      r."qualificationId"
     FROM shift s
     JOIN team t ON s."teamId" = t.id
+    LEFT JOIN requirement r ON s.id = r."shiftId"
     WHERE t."eventId" = $1
     ORDER BY s."eventDay", s."startTime"
     `,
     [eventId]
   );
-  return result.rows.map(rowToShift);
+  return rowsToShifts(result.rows);
 });
 
 /**

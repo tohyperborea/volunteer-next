@@ -25,9 +25,19 @@ describe('CSVResponse', () => {
     const filename = 'test';
     const response = CSVResponse(csvContent, filename);
 
-    expect(response.headers.get('Content-Type')).toBe('text/csv');
+    expect(response.headers.get('Content-Type')).toBe('text/csv; charset=utf-8');
     expect(response.headers.get('Content-Disposition')).toBe('attachment; filename="test.csv"');
     expect(response.body).toBe(csvContent);
+  });
+
+  it('should sanitize filename by replacing invalid characters', () => {
+    const csvContent = 'name,age\nJohn,30';
+    const filename = 'test"file\nname';
+    const response = CSVResponse(csvContent, filename);
+
+    expect(response.headers.get('Content-Disposition')).toBe(
+      'attachment; filename="test_file_name.csv"'
+    );
   });
 });
 

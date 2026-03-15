@@ -245,7 +245,9 @@
     "requires": "Requires",
     "spots": "Spots",
     "volunteers": "Volunteers",
-    "editShift": "Edit Shift"
+    "editShift": "Edit Shift",
+    "expand": "Expand shift details",
+    "collapse": "Collapse shift details"
   },
   "ShiftDialog": {
     "cancel": "Cancel",

@@ -49,7 +49,11 @@ export default async function EventShifts({ params }: PageProps<'/event/[eventSl
       </Heading>
       <Flex direction="row" gap="2">
         <Button variant="soft" asChild>
-          <Link href={getEventShiftsApiPath(eventSlug, { format: 'csv' })} target="_blank">
+          <Link
+            href={getEventShiftsApiPath(eventSlug, { format: 'csv' })}
+            rel="noopener noreferrer"
+            target="_blank"
+          >
             <Share2Icon />
             {t('export')}
           </Link>
@@ -69,6 +73,7 @@ export default async function EventShifts({ params }: PageProps<'/event/[eventSl
                 <Flex direction="column" gap="2" mt="4">
                   {shifts.map((shift) => (
                     <ShiftCard
+                      event={event}
                       shift={shift}
                       volunteerNames={[] /* TODO */}
                       key={shift.id}
