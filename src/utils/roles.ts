@@ -22,3 +22,29 @@ export const rolesEq = (a: UserRole, b: UserRole): boolean => {
       return false;
   }
 };
+
+/**
+ * Checks if a user's role matches an accepted role criteria, which may be more general (e.g. organiser for any event).
+ * @param userRole - The user's role to check.
+ * @param acceptedRole - The role to check against, which may have optional eventId and teamId for more general matching.
+ * @returns True if the user's role matches the accepted role criteria, false otherwise.
+ */
+export const roleMatches = (userRole: UserRole, acceptedRole: UserRoleMatchCriteria): boolean => {
+  switch (acceptedRole.type) {
+    case 'admin':
+      return userRole.type === 'admin';
+    case 'organiser':
+      return (
+        userRole.type === 'organiser' &&
+        (!acceptedRole.eventId || userRole.eventId === acceptedRole.eventId)
+      );
+    case 'team-lead':
+      return (
+        userRole.type === 'team-lead' &&
+        (!acceptedRole.eventId || userRole.eventId === acceptedRole.eventId) &&
+        (!acceptedRole.teamId || userRole.teamId === acceptedRole.teamId)
+      );
+    default:
+      return false;
+  }
+};

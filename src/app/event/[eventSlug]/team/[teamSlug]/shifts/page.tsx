@@ -1,5 +1,6 @@
 import metadata from '@/i18n/metadata';
 import { getEventBySlug } from '@/service/event-service';
+import { getQualificationsForEvent } from '@/service/qualification-service';
 import { createShift, updateShift, deleteShift, getShifts } from '@/service/shift-service';
 import { getTeamBySlug } from '@/service/team-service';
 import { checkAuthorisation } from '@/session';
@@ -34,7 +35,9 @@ export default async function TeamShifts({ params }: Props) {
   }
 
   const shifts = await getShifts(team.id);
-
+  const qualifications = await getQualificationsForEvent(team.eventId).then((quals) =>
+    quals.filter((q) => !q.teamId || q.teamId === team.id)
+  );
   const editorRoles: UserRole[] = [
     { type: 'admin' },
     { type: 'organiser', eventId: team.eventId },
@@ -75,9 +78,11 @@ export default async function TeamShifts({ params }: Props) {
 
   return (
     <ShiftList
+      event={event}
       startDate={event.startDate}
       teamId={team.id}
       shifts={shifts}
+      qualifications={qualifications}
       onSaveShift={isEditable ? onSaveShift : undefined}
       onDeleteShift={isEditable ? onDeleteShift : undefined}
     />

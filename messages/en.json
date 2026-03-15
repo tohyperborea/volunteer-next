@@ -5,6 +5,7 @@
     "createEvent": "Create New Event"
   },
   "EventDashboardPage": {
+    "manageMy": "Manage My",
     "volunteers": "Volunteers",
     "yourHours": "Your Hours",
     "yourShifts": "Your Shifts",
@@ -13,18 +14,16 @@
     "teams": "Teams",
     "qualifications": "Qualifications",
     "findShifts": "Find Shifts",
-    "eventSettings": "Event Settings"
+    "eventSettings": "Event Settings",
+    "createQualifications": "Create Qualifications",
+    "assignQualifications": "Assign Qualifications",
+    "requests": "Requests"
   },
   "CreateEventPage": {
     "title": "Create Event"
   },
   "UpdateEventPage": {
     "title": "Update Event"
-  },
-  "EventPage": {
-    "manageMy": "Manage My",
-    "teams": "Teams",
-    "volunteers": "Volunteers"
   },
   "TeamsDashboardPage": {
     "teamsForEvent": "Teams for {eventName}",
@@ -112,6 +111,13 @@
     "missingToken": "Missing reset token. Please use the link from your email.",
     "rateLimitError": "Too many attempts. Please try again in 15 minutes.",
     "passwordMismatch": "Passwords do not match."
+  },
+  "QualificationsPage": {
+    "title": "Qualifications | {eventName}"
+  },
+  "QualificationDetailsPage": {
+    "title": "{qualificationName} | {eventName}",
+    "volunteers": "Volunteers with this qualification"
   },
 
   "MenuCard": {
@@ -219,7 +225,6 @@
   "Metadata": {
     "description": "A system to support the organisation of alternative arts events"
   },
-
   "ResetPasswordEmail": {
     "subject": "Reset your password",
     "text": "Click the link to reset your password: {url}"
@@ -232,9 +237,10 @@
     "max": "Max",
     "min": "Min",
     "status": "Status",
-    "requirement": "Requirement",
+    "requires": "Requires",
     "spots": "Spots",
-    "volunteers": "Volunteers"
+    "volunteers": "Volunteers",
+    "editShift": "Edit Shift"
   },
   "ShiftDialog": {
     "cancel": "Cancel",
@@ -254,6 +260,35 @@
     "maxVolunteers": "Maximum Volunteers Needed",
     "maxVolunteersDescription": "Description",
     "active": "Active",
-    "requirementId": "Requirement ID"
+    "requirements": "Shift Requirements",
+    "requirementsDescription": "Qualifications that volunteers must have to sign up for this shift. Optional.",
+    "none": "None"
+  },
+  "QualificationList": {
+    "title": "Qualifications",
+    "add": "Add Qualification",
+    "searchPlaceholder": "Search..."
+  },
+  "QualificationDetails": {
+    "delete": "Delete Qualification"
+  },
+  "QualificationCard": {
+    "edit": "Edit Qualification"
+  },
+  "QualificationDialog": {
+    "edit": "Edit Qualification",
+    "add": "Add Qualification",
+    "name": "Name",
+    "nameDescription": "Please include the relevant event and year for the requirement, This way we can tell the difference between each year's Ranger Training's, etc.",
+    "namePlaceholder": "Qualification Name",
+    "team": "Associated Team",
+    "teamDescription": "The team associated with this qualification. Optional.",
+    "noTeam": "No Team",
+    "errorMessage": "Error Message",
+    "errorMessageDescription": "The error someone will see when attempting to sign up for a shift without this requirement.",
+    "errorMessagePlaceholder": "Message",
+    "cancel": "Cancel",
+    "save": "Save Changes",
+    "create": "Create Qualification"
   }
 }

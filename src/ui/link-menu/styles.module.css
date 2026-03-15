@@ -1,0 +1,12 @@
+.list {
+  list-style: none;
+  margin: 0;
+}
+
+.icon {
+  transition: transform 0.2s ease;
+}
+
+.open .icon {
+  transform: rotate(180deg);
+}

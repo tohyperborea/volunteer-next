@@ -9,7 +9,7 @@ import { auth } from './auth';
 import { headers } from 'next/headers';
 import { getUser } from './service/user-service';
 import { redirect, unauthorized } from 'next/navigation';
-import { rolesEq } from './utils/roles';
+import { roleMatches, rolesEq } from './utils/roles';
 
 /**
  * Retrieves the currently authenticated user based on the session.
@@ -30,14 +30,25 @@ export const currentUser = cache(async (): Promise<User | null> => {
           id: 'debug-organiser',
           name: 'Debug Organiser',
           email: 'organiser@localhost',
-          roles: [{ type: 'organiser', eventId: 'debug-event' }]
+          roles: [
+            {
+              type: 'organiser',
+              eventId: process.env.DEBUG_FORCE_ROLE_EVENTID ?? 'debug-event'
+            }
+          ]
         };
       case 'team-lead':
         return {
           id: 'debug-team-lead',
           name: 'Debug Team Lead',
           email: 'teamlead@localhost',
-          roles: [{ type: 'team-lead', eventId: 'debug-event', teamId: 'debug-team' }]
+          roles: [
+            {
+              type: 'team-lead',
+              eventId: process.env.DEBUG_FORCE_ROLE_EVENTID ?? 'debug-event',
+              teamId: process.env.DEBUG_FORCE_ROLE_TEAMID ?? 'debug-team'
+            }
+          ]
         };
       case 'volunteer':
         return {
@@ -60,12 +71,12 @@ export const currentUser = cache(async (): Promise<User | null> => {
 
 /**
  * Validates that the user is logged in and, optionally, has one of the accepted roles.
- * @param acceptedRoles - An optional array of UserRole objects that are accepted.
+ * @param acceptedRoles - An optional array of UserRoleMatchCriteria objects that are accepted.
  * @param checkOnly - If true, does not redirect on missing roles (default: false).
  * @returns True if the user is authorised, otherwise redirects.
  */
 export const checkAuthorisation = async (
-  acceptedRoles?: UserRole[],
+  acceptedRoles?: UserRoleMatchCriteria[],
   checkOnly = false
 ): Promise<boolean> => {
   const user = await currentUser();
@@ -76,7 +87,7 @@ export const checkAuthorisation = async (
     return true;
   }
   for (const role of acceptedRoles) {
-    if (user.roles.find((userRole) => rolesEq(userRole, role))) {
+    if (user.roles.find((userRole) => roleMatches(userRole, role))) {
       return true;
     }
   }
@@ -84,4 +95,17 @@ export const checkAuthorisation = async (
     unauthorized();
   }
   return false;
+};
+
+/**
+ * Finds and returns the user's roles that match the provided criteria.
+ * @param toMatch - A UserRoleMatchCriteria to match against the user's roles.
+ * @returns An array of UserRole objects from the user's roles that match any of the provided criteria.
+ */
+export const getMatchingRoles = async (toMatch: UserRoleMatchCriteria): Promise<UserRole[]> => {
+  const user = await currentUser();
+  if (!user) {
+    return [];
+  }
+  return user.roles.filter((userRole) => roleMatches(userRole, toMatch));
 };

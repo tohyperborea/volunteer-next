@@ -14,6 +14,13 @@
  * - createdAt: timestamptz
  * - updatedAt: timestamptz
  *
+ * 'requirement' table schema:
+ * - id: UUID (primary key)
+ * - shiftId: UUID (foreign key to shift)
+ * - qualificationId: UUID (foreign key to qualification)
+ * - createdAt: timestamptz
+ * - updatedAt: timestamptz
+ *
  * @since 2026-02-28
  * @author Michael Townsend <@continuities>
  */
@@ -35,6 +42,25 @@ const rowToShift = (row: any): ShiftInfo => ({
   isActive: row.isActive
 });
 
+const rowsToShifts = (rows: any[]): ShiftInfo[] => {
+  const shiftsMap = new Map<ShiftId, ShiftInfo>();
+
+  rows.forEach((row) => {
+    if (!shiftsMap.has(row.id)) {
+      shiftsMap.set(row.id, rowToShift(row));
+    }
+
+    const shift = shiftsMap.get(row.id)!;
+
+    if (row.qualificationId) {
+      // Right now, we only support one requirement per shift
+      shift.requirement = row.qualificationId;
+    }
+  });
+
+  return Array.from(shiftsMap.values());
+};
+
 /**
  * Fetches a list of all shifts from the database.
  * @param teamId - The ID of the team to fetch shifts for.
@@ -44,20 +70,22 @@ export const getShifts = cache(async (teamId: TeamId): Promise<ShiftInfo[]> => {
   const result = await pool.query(
     `
     SELECT 
-      "id",
-      "teamId", 
-      "title", 
-      "eventDay", 
-      "startTime", 
-      "durationHours",
-      "minVolunteers",
-      "maxVolunteers",
-      "isActive"
-    FROM shift
+      s."id",
+      s."teamId", 
+      s."title", 
+      s."eventDay", 
+      s."startTime", 
+      s."durationHours",
+      s."minVolunteers",
+      s."maxVolunteers",
+      s."isActive",
+      r."qualificationId"
+    FROM shift s
+    LEFT JOIN requirement r ON s.id = r."shiftId"
     WHERE "teamId" = $1`,
     [teamId]
   );
-  return result.rows.map(rowToShift);
+  return rowsToShifts(result.rows);
 });
 
 /**
@@ -106,6 +134,18 @@ export const createShift = async (
     ]
   );
   const newShift = rowToShift(result.rows[0]);
+  if (shift.requirement) {
+    await db.query(
+      `
+      INSERT INTO requirement (
+        "shiftId",
+        "qualificationId"
+      ) VALUES ($1, $2)
+      `,
+      [newShift.id, shift.requirement]
+    );
+    newShift.requirement = shift.requirement;
+  }
   console.info('Created new shift:', newShift);
   return newShift;
 };
@@ -153,6 +193,32 @@ export const updateShift = async (shift: ShiftInfo, client?: PoolClient): Promis
     ]
   );
   const updatedShift = rowToShift(result.rows[0]);
+  if (shift.requirement) {
+    // We currently only support one requirement per shift, so we can use an upsert to simplify logic
+    await db.query(
+      `
+      INSERT INTO requirement (
+        "shiftId",
+        "qualificationId"
+      ) VALUES ($1, $2)
+      ON CONFLICT ("shiftId")
+      DO UPDATE SET
+        "qualificationId" = EXCLUDED."qualificationId",
+        "updatedAt" = NOW()
+      `,
+      [updatedShift.id, shift.requirement]
+    );
+    updatedShift.requirement = shift.requirement;
+  } else {
+    // If no requirement is provided, delete any existing requirement for this shift
+    await db.query(
+      `
+      DELETE FROM requirement
+      WHERE "shiftId" = $1
+      `,
+      [updatedShift.id]
+    );
+  }
   console.info('Updated shift:', updatedShift);
   return updatedShift;
 };
@@ -164,6 +230,7 @@ export const updateShift = async (shift: ShiftInfo, client?: PoolClient): Promis
  */
 export const deleteShift = async (shiftId: ShiftId, client?: PoolClient): Promise<void> => {
   const db = client || pool;
+  // Requirements will be automatically deleted due to ON DELETE CASCADE
   await db.query('DELETE FROM shift WHERE id = $1', [shiftId]);
   console.info('Deleted shift with id:', shiftId);
 };
