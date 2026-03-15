@@ -62,11 +62,41 @@ const rowsToShifts = (rows: any[]): ShiftInfo[] => {
 };
 
 /**
+ * Fetches a shift by its ID from the database.
+ * @param shiftId - The ID of the shift to fetch.
+ * @return A ShiftInfo object if found, or null if no shift with the given ID exists.
+ */
+export const getShiftById = cache(async (shiftId: ShiftId): Promise<ShiftInfo | null> => {
+  const result = await pool.query(
+    `
+    SELECT 
+      s."id",
+      s."teamId", 
+      s."title", 
+      s."eventDay", 
+      s."startTime", 
+      s."durationHours",
+      s."minVolunteers",
+      s."maxVolunteers",
+      s."isActive",
+      r."qualificationId"
+    FROM shift s
+    LEFT JOIN requirement r ON s.id = r."shiftId"
+    WHERE id = $1`,
+    [shiftId]
+  );
+  if (result.rows.length === 0) {
+    return null;
+  }
+  return rowToShift(result.rows[0]);
+});
+
+/**
  * Fetches a list of all shifts from the database.
  * @param teamId - The ID of the team to fetch shifts for.
  * @return An array of ShiftInfo objects.
  */
-export const getShifts = cache(async (teamId: TeamId): Promise<ShiftInfo[]> => {
+export const getShiftsForTeam = cache(async (teamId: TeamId): Promise<ShiftInfo[]> => {
   const result = await pool.query(
     `
     SELECT 
@@ -84,6 +114,36 @@ export const getShifts = cache(async (teamId: TeamId): Promise<ShiftInfo[]> => {
     LEFT JOIN requirement r ON s.id = r."shiftId"
     WHERE "teamId" = $1`,
     [teamId]
+  );
+  return rowsToShifts(result.rows);
+});
+
+/**
+ * Fetches a list of all shifts for a given event
+ * @param eventId - The ID of the event to fetch shifts for.
+ * @return An array of ShiftInfo objects.
+ */
+export const getShiftsForEvent = cache(async (eventId: EventId): Promise<ShiftInfo[]> => {
+  const result = await pool.query(
+    `
+    SELECT 
+      s."id",
+      s."teamId", 
+      s."title",
+      s."eventDay",
+      s."startTime",
+      s."durationHours",
+      s."minVolunteers",
+      s."maxVolunteers",
+      s."isActive",
+      r."qualificationId"
+    FROM shift s
+    JOIN team t ON s."teamId" = t.id
+    LEFT JOIN requirement r ON s.id = r."shiftId"
+    WHERE t."eventId" = $1
+    ORDER BY s."eventDay", s."startTime"
+    `,
+    [eventId]
   );
   return rowsToShifts(result.rows);
 });

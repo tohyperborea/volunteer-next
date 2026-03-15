@@ -1,9 +1,13 @@
 import {
+  getEventShiftsApiPath,
+  getEventShiftsPath,
+  getQualificationDetailsPath,
+  getQualificationsPath,
   getTeamInfoPath,
+  getTeamShiftsApiPath,
   getTeamShiftsPath,
   getTeamVolunteersPath,
-  getQualificationsPath,
-  getQualificationDetailsPath,
+  getVolunteerShiftsApiPath,
   getUserApiPath,
   getCreateUserPath,
   getEditUserPath,
@@ -52,6 +56,80 @@ describe('getQualificationDetailsPath', () => {
     const qualificationId = '12345';
     const result = getQualificationDetailsPath({ eventSlug, qualificationId });
     expect(result).toBe('/event/test-event/qualification/12345');
+  });
+});
+
+describe('getEventShiftsPath', () => {
+  it('should return the correct path for event shifts', () => {
+    const eventSlug = 'event-123';
+    const result = getEventShiftsPath(eventSlug);
+    expect(result).toBe('/event/event-123/shifts');
+  });
+});
+
+describe('getEventShiftsApiPath', () => {
+  it('should return the correct API path for event shifts with default format', () => {
+    const eventSlug = 'event-123';
+    const result = getEventShiftsApiPath(eventSlug);
+    expect(result).toBe('/api/event/event-123/shifts?format=json');
+  });
+
+  it('should return the correct API path for event shifts with CSV format', () => {
+    const eventSlug = 'event-123';
+    const result = getEventShiftsApiPath(eventSlug, { format: 'csv' });
+    expect(result).toBe('/api/event/event-123/shifts?format=csv');
+  });
+
+  it('should return the correct API path for event shifts with JSON format explicitly set', () => {
+    const eventSlug = 'event-123';
+    const result = getEventShiftsApiPath(eventSlug, { format: 'json' });
+    expect(result).toBe('/api/event/event-123/shifts?format=json');
+  });
+});
+
+describe('getTeamShiftsApiPath', () => {
+  it('should return the correct API path for team shifts with default format', () => {
+    const eventSlug = 'event-123';
+    const teamSlug = 'team-123';
+    const result = getTeamShiftsApiPath(eventSlug, teamSlug);
+    expect(result).toBe('/api/event/event-123/team/team-123/shifts?format=json');
+  });
+
+  it('should return the correct API path for team shifts with CSV format', () => {
+    const eventSlug = 'event-123';
+    const teamSlug = 'team-123';
+    const result = getTeamShiftsApiPath(eventSlug, teamSlug, { format: 'csv' });
+    expect(result).toBe('/api/event/event-123/team/team-123/shifts?format=csv');
+  });
+
+  it('should return the correct API path for team shifts with JSON format explicitly set', () => {
+    const eventSlug = 'event-123';
+    const teamSlug = 'team-123';
+    const result = getTeamShiftsApiPath(eventSlug, teamSlug, { format: 'json' });
+    expect(result).toBe('/api/event/event-123/team/team-123/shifts?format=json');
+  });
+});
+
+describe('getVolunteerShiftsApiPath', () => {
+  it('should return the correct API path for volunteer shifts with default format', () => {
+    const eventSlug = 'event-123';
+    const userId = 'user-123';
+    const result = getVolunteerShiftsApiPath(eventSlug, userId);
+    expect(result).toBe('/api/event/event-123/volunteer/user-123/shifts?format=json');
+  });
+
+  it('should return the correct API path for volunteer shifts with CSV format', () => {
+    const eventSlug = 'event-123';
+    const userId = 'user-123';
+    const result = getVolunteerShiftsApiPath(eventSlug, userId, { format: 'csv' });
+    expect(result).toBe('/api/event/event-123/volunteer/user-123/shifts?format=csv');
+  });
+
+  it('should return the correct API path for volunteer shifts with JSON format explicitly set', () => {
+    const eventSlug = 'event-123';
+    const userId = 'user-123';
+    const result = getVolunteerShiftsApiPath(eventSlug, userId, { format: 'json' });
+    expect(result).toBe('/api/event/event-123/volunteer/user-123/shifts?format=json');
   });
 });
 

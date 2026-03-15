@@ -119,6 +119,11 @@
     "title": "{qualificationName} | {eventName}",
     "volunteers": "Volunteers with this qualification"
   },
+  "EventShiftsPage": {
+    "title": "Shifts",
+    "allShifts": "All Current Shifts",
+    "export": "Export Shifts"
+  },
   "UsersDashboardPage": {
     "title": "Users Dashboard"
   },
@@ -239,7 +244,7 @@
   },
   "ShiftList": {
     "addShift": "Add shift",
-    "importShift": "Import shift"
+    "export": "Export shifts"
   },
   "ShiftCard": {
     "max": "Max",
@@ -248,7 +253,9 @@
     "requires": "Requires",
     "spots": "Spots",
     "volunteers": "Volunteers",
-    "editShift": "Edit Shift"
+    "editShift": "Edit Shift",
+    "expand": "Expand shift details",
+    "collapse": "Collapse shift details"
   },
   "ShiftDialog": {
     "cancel": "Cancel",
@@ -301,6 +308,9 @@
     "save": "Save Changes",
     "create": "Create Qualification"
   },
+  "SearchBar": {
+    "placeholder": "Search..."
+  },
   "AssignQualification": {
     "button": "Assign Qualification",
     "title": "Assign Qualification: {qualificationName}"
@@ -308,9 +318,6 @@
   "VolunteerPicker": {
     "save": "Save Changes",
     "cancel": "Cancel"
-  },
-  "SearchBar": {
-    "placeholder": "Search..."
   },
   "VolunteerList": {
     "empty": "No one yet",

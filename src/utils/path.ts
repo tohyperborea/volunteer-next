@@ -28,6 +28,24 @@ export const getQualificationDetailsPath = ({
   qualificationId: string;
 }) => `/event/${eventSlug}/qualification/${qualificationId}`;
 
+// Event-level paths
+export const getEventShiftsPath = (eventSlug: string): string => `/event/${eventSlug}/shifts`;
+
 // API paths
+export const getEventShiftsApiPath = (
+  eventSlug: string,
+  params?: { format: 'csv' | 'json' }
+): string => `/api/event/${eventSlug}/shifts?format=${params?.format ?? 'json'}`;
+export const getTeamShiftsApiPath = (
+  eventSlug: string,
+  teamSlug: string,
+  params?: { format: 'csv' | 'json' }
+): string => `/api/event/${eventSlug}/team/${teamSlug}/shifts?format=${params?.format ?? 'json'}`;
+export const getVolunteerShiftsApiPath = (
+  eventSlug: string,
+  userId: UserId,
+  params?: { format: 'csv' | 'json' }
+): string =>
+  `/api/event/${eventSlug}/volunteer/${userId}/shifts?format=${params?.format ?? 'json'}`;
 export const getUserApiPath = (filter?: UserFilters): string =>
   `/api/user${filter ? `?${new URLSearchParams(filter as Record<string, string>).toString()}` : ''}`;
