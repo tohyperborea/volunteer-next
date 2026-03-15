@@ -19,7 +19,7 @@ interface Props {
   event: EventInfo;
   teams: TeamInfo[];
   editableTeams?: TeamId[];
-  onSave?: ServerAction;
+  onSave?: FormSubmitAction;
 }
 
 export default function ManageQualifications({

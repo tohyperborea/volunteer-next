@@ -276,8 +276,15 @@
     "add": "Add Qualification",
     "edit": "Edit Qualification"
   },
+  "QualificationList": {
+    "title": "Qualifications",
+    "add": "Add Qualification",
+    "searchPlaceholder": "Search..."
+  },
   "QualificationDetails": {
-    "delete": "Delete Qualification",
+    "delete": "Delete Qualification"
+  },
+  "QualificationCard": {
     "edit": "Edit Qualification"
   },
   "QualificationDialog": {

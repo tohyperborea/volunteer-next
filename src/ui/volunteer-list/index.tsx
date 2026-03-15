@@ -16,7 +16,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 interface Props {
   volunteers: User[];
-  onRemove?: ServerAction;
+  onRemove?: FormSubmitAction;
 }
 
 export default function VolunteerList({ volunteers, onRemove }: Props) {

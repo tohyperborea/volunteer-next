@@ -10,6 +10,14 @@ import { useTranslations } from 'next-intl';
 import { Text } from '@radix-ui/themes';
 import MenuCard from '@/ui/menu-card';
 
+const localeOptions: Intl.DateTimeFormatOptions = {
+  timeZone: 'UTC',
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+  weekday: 'short'
+};
+
 interface Props {
   event: EventInfo;
   onDelete: (id: EventId) => Promise<void>;
@@ -25,8 +33,8 @@ export default function EventCard({ event, onDelete }: Props) {
     >
       <Text size="1">
         {t('dateSpan', {
-          startDate: event.startDate.toDateString(),
-          endDate: event.endDate.toDateString()
+          startDate: event.startDate.toLocaleDateString(undefined, localeOptions),
+          endDate: event.endDate.toLocaleDateString(undefined, localeOptions)
         })}
       </Text>
     </MenuCard>

@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, within } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import QualificationList from '.';
 
 jest.mock('next-intl', () => ({

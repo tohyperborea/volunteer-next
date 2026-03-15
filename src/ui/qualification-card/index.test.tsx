@@ -1,5 +1,5 @@
-import { render, screen, fireEvent } from '@testing-library/react';
-import QualificationCard from './index';
+import { render, screen } from '@testing-library/react';
+import QualificationCard from '.';
 import { getQualificationDetailsPath } from '@/utils/path';
 
 jest.mock('next-intl', () => ({

@@ -232,7 +232,7 @@ export const deleteQualification = async (
   await db.query('DELETE FROM qualification WHERE id = $1', [qualificationId]);
 
   // Shift requirement removal handled by DELETE CASCADE
-  // TODO: Remove any user assignments for this qualification
+  // User Qualification removal handled by DELETE CASCADE
 };
 
 /**
