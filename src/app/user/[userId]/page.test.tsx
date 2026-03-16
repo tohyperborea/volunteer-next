@@ -1,6 +1,6 @@
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import UserProfilePage from './page';
-import { getVolunteer } from '@/lib/volunteer';
+import { getVolunteerById } from '@/lib/volunteer';
 import { getEvents, getEventsById } from '@/service/event-service';
 import {
   getQualificationsForUser,
@@ -27,7 +27,7 @@ jest.mock('@/service/event-service', () => ({
   getEventsById: jest.fn()
 }));
 jest.mock('@/lib/volunteer', () => ({
-  getVolunteer: jest.fn()
+  getVolunteerById: jest.fn()
 }));
 jest.mock('@/service/qualification-service', () => ({
   assignQualificationToUsers: jest.fn(),
@@ -60,7 +60,7 @@ jest.mock('next/navigation', () => ({
 const mockCheckAuthorisation = checkAuthorisation as jest.MockedFunction<typeof checkAuthorisation>;
 const mockGetMatchingRoles = getMatchingRoles as jest.MockedFunction<typeof getMatchingRoles>;
 const mockNotFound = notFound as jest.MockedFunction<typeof notFound>;
-const mockGetVolunteer = getVolunteer as jest.MockedFunction<typeof getVolunteer>;
+const mockGetVolunteer = getVolunteerById as jest.MockedFunction<typeof getVolunteerById>;
 const mockGetEvents = getEvents as jest.MockedFunction<typeof getEvents>;
 const mockGetEventsById = getEventsById as jest.MockedFunction<typeof getEventsById>;
 const mockGetQualificationsForUser = getQualificationsForUser as jest.MockedFunction<

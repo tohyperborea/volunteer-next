@@ -4,13 +4,13 @@ import { Flex, Heading, Card } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
 import { getEventBySlug } from '@/service/event-service';
 import { addRoleToUser, getUsers } from '@/service/user-service';
-import { checkAuthorisation } from '@/session';
+import { checkAuthorisation, currentUser } from '@/session';
 import { inTransaction } from '@/db';
 import TeamForm from '@/ui/team-form';
 import { validateUserId } from '@/validator/user-validator';
 import { validateNewTeam } from '@/validator/team-validator';
 import { createTeam } from '@/service/team-service';
-import Volunteer from '@/lib/volunteer';
+import { usersToVolunteers } from '@/lib/volunteer';
 
 const PAGE_KEY = 'CreateTeamPage';
 
@@ -36,8 +36,7 @@ export default async function CreateTeam({ params }: Props) {
 
   await checkAuthorisation([{ type: 'admin' }, { type: 'organiser', eventId: event.id }]);
   const t = await getTranslations(PAGE_KEY);
-  const users = await getUsers();
-  const volunteers = users.map(Volunteer);
+  const volunteers = usersToVolunteers(await getUsers(), await currentUser());
 
   const onSubmit = async (data: FormData) => {
     'use server';

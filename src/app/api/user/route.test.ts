@@ -1,6 +1,6 @@
-import Volunteer from '@/lib/volunteer';
+import { usersToVolunteers } from '@/lib/volunteer';
 import { getFilteredUsers } from '@/service/user-service';
-import { checkAuthorisation } from '@/session';
+import { checkAuthorisation, currentUser } from '@/session';
 import { paramsToUserFilters } from '@/utils/user-filters';
 import { NextRequest } from 'next/server';
 import { GET } from './route';
@@ -15,7 +15,8 @@ jest.mock('next/server', () => ({
   }
 }));
 jest.mock('@/session', () => ({
-  checkAuthorisation: jest.fn().mockResolvedValue(true)
+  checkAuthorisation: jest.fn().mockResolvedValue(true),
+  currentUser: jest.fn().mockResolvedValue({ id: 'currentUser' })
 }));
 jest.mock('@/service/user-service', () => ({
   getFilteredUsers: jest.fn()
@@ -25,14 +26,16 @@ jest.mock('@/utils/user-filters', () => ({
   paramsToUserFilters: jest.fn()
 }));
 
-jest.mock('@/lib/volunteer', () => jest.fn());
+jest.mock('@/lib/volunteer', () => ({
+  usersToVolunteers: jest.fn()
+}));
 
 const mockCheckAuthorisation = checkAuthorisation as jest.MockedFunction<typeof checkAuthorisation>;
 const mockGetFilteredUsers = getFilteredUsers as jest.MockedFunction<typeof getFilteredUsers>;
 const mockParamsToUserFilters = paramsToUserFilters as jest.MockedFunction<
   typeof paramsToUserFilters
 >;
-const mockVolunteer = Volunteer as jest.MockedFunction<typeof Volunteer>;
+const mockUsersToVolunteers = usersToVolunteers as jest.MockedFunction<typeof usersToVolunteers>;
 
 describe('GET /api/user', () => {
   beforeEach(() => {
@@ -62,10 +65,12 @@ describe('GET /api/user', () => {
 
     mockParamsToUserFilters.mockReturnValue(mockFilter);
     mockGetFilteredUsers.mockResolvedValue(mockUsers);
-    mockVolunteer.mockImplementation((user) => ({
-      id: user.id,
-      displayName: user.name
-    }));
+    mockUsersToVolunteers.mockImplementation((users) =>
+      users.map((user) => ({
+        id: user.id,
+        displayName: user.name
+      }))
+    );
 
     const request = {
       nextUrl: { searchParams: new URLSearchParams({ roleType: 'admin' }) }
@@ -75,7 +80,7 @@ describe('GET /api/user', () => {
     expect(mockParamsToUserFilters).toHaveBeenCalledWith(request.nextUrl.searchParams);
     expect(mockCheckAuthorisation).toHaveBeenCalled();
     expect(mockGetFilteredUsers).toHaveBeenCalledWith(mockFilter);
-    expect(mockVolunteer).toHaveBeenCalledTimes(mockUsers.length);
+    expect(mockUsersToVolunteers).toHaveBeenCalledWith(mockUsers, { id: 'currentUser' });
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual(JSON.stringify(mockVolunteers));

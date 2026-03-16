@@ -29,6 +29,7 @@ type EventDayTime = {
 interface User {
   id: UserId;
   name: string;
+  chosenName?: string;
   email: string;
   roles: UserRole[];
   deletedAt?: Date;

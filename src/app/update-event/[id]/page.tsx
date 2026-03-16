@@ -9,12 +9,12 @@ import {
   getUsersWithRole,
   removeRoleFromUsers
 } from '@/service/user-service';
-import { checkAuthorisation } from '@/session';
+import { checkAuthorisation, currentUser } from '@/session';
 import { inTransaction } from '@/db';
 import EventForm from '@/ui/event-form';
 import { validateExistingEvent } from '@/validator/event-validator';
 import { validateUserId } from '@/validator/user-validator';
-import Volunteer from '@/lib/volunteer';
+import { usersToVolunteers, userToVolunteer } from '@/lib/volunteer';
 
 const PAGE_KEY = 'UpdateEventPage';
 
@@ -63,10 +63,10 @@ export default async function UpdateEvent({ params }: Props) {
       notFound();
     }
 
-    const users = await getUsers();
-    const volunteers = users.map(Volunteer);
-    const organiser = Volunteer(
-      (await getUsersWithRole({ type: 'organiser', eventId: event.id }))[0]
+    const volunteers = usersToVolunteers(await getUsers(), await currentUser());
+    const organiser = userToVolunteer(
+      (await getUsersWithRole({ type: 'organiser', eventId: event.id }))[0],
+      await currentUser()
     );
 
     return (

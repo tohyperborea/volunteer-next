@@ -1,5 +1,5 @@
 import metadata from '@/i18n/metadata';
-import Volunteer from '@/lib/volunteer';
+import { usersToVolunteers } from '@/lib/volunteer';
 import { getEventBySlug } from '@/service/event-service';
 import {
   assignQualificationToUsers,
@@ -10,7 +10,7 @@ import {
 } from '@/service/qualification-service';
 import { getTeamsForEvent } from '@/service/team-service';
 import { getFilteredUsers } from '@/service/user-service';
-import { checkAuthorisation } from '@/session';
+import { checkAuthorisation, currentUser } from '@/session';
 import AssignQualification from '@/ui/assign-qualification';
 import QualificationDetails from '@/ui/qualification-details';
 import VolunteerList from '@/ui/volunteer-list';
@@ -56,11 +56,13 @@ export default async function QualificationsPage(props: Props) {
     return notFound();
   }
   const teams = await getTeamsForEvent(event.id);
-  const users = await getFilteredUsers({
-    withQualification: qualification.id,
-    searchQuery: query
-  });
-  const volunteers = users.map(Volunteer);
+  const volunteers = usersToVolunteers(
+    await getFilteredUsers({
+      withQualification: qualification.id,
+      searchQuery: query
+    }),
+    await currentUser()
+  );
 
   const editorRoles: UserRole[] = [
     {

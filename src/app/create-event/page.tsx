@@ -4,12 +4,12 @@ import { Flex, Heading, Card } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
 import { createEvent } from '@/service/event-service';
 import { addRoleToUser, getUsers } from '@/service/user-service';
-import { checkAuthorisation } from '@/session';
+import { checkAuthorisation, currentUser } from '@/session';
 import { inTransaction } from '@/db';
 import EventForm from '@/ui/event-form';
 import { validateNewEvent } from '@/validator/event-validator';
 import { validateUserId } from '@/validator/user-validator';
-import Volunteer from '@/lib/volunteer';
+import { usersToVolunteers } from '@/lib/volunteer';
 
 const PAGE_KEY = 'CreateEventPage';
 
@@ -33,8 +33,7 @@ export default async function CreateEvent() {
 
   await checkAuthorisation([{ type: 'admin' }]);
   const t = await getTranslations(PAGE_KEY);
-  const users = await getUsers();
-  const volunteers = users.map(Volunteer);
+  const volunteers = usersToVolunteers(await getUsers(), await currentUser());
 
   return (
     <Flex direction="column" gap="4">

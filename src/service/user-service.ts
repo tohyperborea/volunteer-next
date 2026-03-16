@@ -36,6 +36,7 @@ const usersFromRows = (rows: any[]): User[] => {
       usersMap.set(row.id, {
         id: row.id,
         name: row.name,
+        chosenName: row.chosenName,
         email: row.email,
         roles: [],
         deletedAt: row.deletedAt
@@ -64,7 +65,15 @@ const usersFromRows = (rows: any[]): User[] => {
 export const getUser = cache(async (userId: UserId): Promise<User | null> => {
   const result = await pool.query(
     `
-    SELECT u.id, u.name, u.email, u."deletedAt", r.type, r."eventId", r."teamId"
+    SELECT 
+      u.id,
+      u.name,
+      u."chosenName",
+      u.email,
+      u."deletedAt",
+      r.type,
+      r."eventId",
+      r."teamId"
     FROM "user" u
     LEFT JOIN role r ON u.id = r."userId"
     WHERE u.id = $1
@@ -86,7 +95,15 @@ export const getUser = cache(async (userId: UserId): Promise<User | null> => {
  */
 export const getUsers = cache(async (): Promise<User[]> => {
   const result = await pool.query(`
-    SELECT u.id, u.name, u.email, u."deletedAt", r.type, r."eventId", r."teamId"
+    SELECT
+      u.id,
+      u.name,
+      u."chosenName",
+      u.email,
+      u."deletedAt",
+      r.type,
+      r."eventId",
+      r."teamId"
     FROM "user" u
     LEFT JOIN role r ON u.id = r."userId"
   `);
@@ -133,7 +150,15 @@ export const getFilteredUsers = cache(async (filters: UserFilters): Promise<User
 
   const result = await pool.query(
     `
-      SELECT u.id, u.name, u.email, u."deletedAt", r.type, r."eventId", r."teamId"
+      SELECT
+        u.id,
+        u.name,
+        u."chosenName",
+        u.email,
+        u."deletedAt",
+        r.type,
+        r."eventId",
+        r."teamId"
       FROM "user" u
       LEFT JOIN role r ON u.id = r."userId"
       ${whereClause}
@@ -162,7 +187,15 @@ export const getUsersWithRole = cache(async (role: UserRole): Promise<User[]> =>
   }
   const result = await pool.query(
     `
-    SELECT u.id, u.name, u.email, u."deletedAt", r.type, r."eventId", r."teamId"
+    SELECT
+      u.id,
+      u.name,
+      u."chosenName",
+      u.email,
+      u."deletedAt",
+      r.type,
+      r."eventId",
+      r."teamId"
     FROM "user" u
     LEFT JOIN role r ON u.id = r."userId"
     WHERE EXISTS (${roleQuery.join(' AND ')})
@@ -199,13 +232,25 @@ export const createUser = async (
   const db = client || pool;
   const id = randomUUID();
   const result = await db.query(
-    'INSERT INTO "user" (id, name, email, "emailVerified") VALUES ($1, $2, $3, $4) RETURNING id, name, email',
-    [id, user.name, user.email, false]
+    `INSERT INTO "user" (
+      id,
+      name,
+      "chosenName",
+      email,
+      "emailVerified"
+    ) VALUES ($1, $2, $3, $4) 
+    RETURNING
+      id,
+      name,
+      "chosenName",
+      email`,
+    [id, user.name, user.chosenName, user.email, false]
   );
   const row = result.rows[0];
   const newUser: User = {
     id: row.id,
     name: row.name,
+    chosenName: row.chosenName,
     email: row.email,
     roles: []
   };
@@ -225,11 +270,16 @@ export const updateUser = async (
   client?: PoolClient
 ): Promise<void> => {
   const db = client || pool;
-  await db.query('UPDATE "user" SET name = $1, email = $2 WHERE id = $3', [
-    user.name,
-    user.email,
-    userId
-  ]);
+  await db.query(
+    `
+    UPDATE "user"
+    SET
+      name = $1,
+      "chosenName" = $2,
+      email = $3
+    WHERE id = $4`,
+    [user.name, user.chosenName, user.email, userId]
+  );
 };
 
 /**
@@ -320,15 +370,3 @@ export const undeleteUser = async (userId: UserId, client?: PoolClient): Promise
   const db = client || pool;
   await db.query('UPDATE "user" SET "deletedAt" = NULL WHERE id = $1', [userId]);
 };
-
-/**
- * Fetches all users with a specific qualification.
- * @param qualificationId - The ID of the qualification to filter users by.
- * @returns An array of User objects that have the specified qualification.
- */
-export const getUsersWithQualification = cache(
-  async (qualificationId: QualificationId): Promise<User[]> => {
-    console.log(`Fetching users with qualification ${qualificationId}`);
-    return []; // TODO
-  }
-);

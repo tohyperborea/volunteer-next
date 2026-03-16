@@ -3,7 +3,7 @@ import { GET } from './route';
 import { getEventBySlug } from '@/service/event-service';
 import { getTeamsForEvent } from '@/service/team-service';
 import { shiftsToCSV } from '@/utils/csv-export';
-import { getVolunteer } from '@/lib/volunteer';
+import { getVolunteerById } from '@/lib/volunteer';
 
 jest.mock('@/utils/csv-export', () => ({
   shiftsToCSV: jest.fn()
@@ -18,7 +18,7 @@ jest.mock('@/service/team-service', () => ({
   getTeamsForEvent: jest.fn()
 }));
 jest.mock('@/lib/volunteer', () => ({
-  getVolunteer: jest.fn()
+  getVolunteerById: jest.fn()
 }));
 jest.mock('next/server', () => ({
   NextResponse: jest.fn().mockImplementation((body, init) => ({
@@ -28,11 +28,12 @@ jest.mock('next/server', () => ({
   }))
 }));
 jest.mock('@/session', () => ({
-  checkAuthorisation: jest.fn().mockResolvedValue(true)
+  checkAuthorisation: jest.fn().mockResolvedValue(true),
+  currentUser: jest.fn().mockResolvedValue({ id: 'current-user' })
 }));
 
 const mockGetEventBySlug = getEventBySlug as jest.MockedFunction<typeof getEventBySlug>;
-const mockGetVolunteer = getVolunteer as jest.MockedFunction<typeof getVolunteer>;
+const mockGetVolunteer = getVolunteerById as jest.MockedFunction<typeof getVolunteerById>;
 const mockGetTeamsForEvent = getTeamsForEvent as jest.MockedFunction<typeof getTeamsForEvent>;
 const mockShiftsToCSV = shiftsToCSV as jest.MockedFunction<typeof shiftsToCSV>;
 

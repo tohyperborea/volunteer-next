@@ -7,7 +7,7 @@ import { markUserAsDeleted, undeleteUser } from '@/service/user-service';
 import { revalidatePath } from 'next/cache';
 import { getCreateUserPath, getUsersDashboardPath } from '@/utils/path';
 import VolunteerList from '@/ui/volunteer-list';
-import Volunteer from '@/lib/volunteer';
+import { usersToVolunteers } from '@/lib/volunteer';
 import { Pencil1Icon, PlusIcon, TrashIcon } from '@radix-ui/react-icons';
 import DeleteButton from '@/ui/delete-button';
 import { recordToUserFilters } from '@/utils/user-filters';
@@ -18,11 +18,10 @@ export const generateMetadata = metadata(PAGE_KEY);
 export default async function UsersDashboardPage({ searchParams }: PageProps<'/user'>) {
   const editors: UserRole[] = [{ type: 'admin' }];
   const canEdit = await checkAuthorisation(editors, true);
-
   const t = await getTranslations(PAGE_KEY);
   const filters = recordToUserFilters(await searchParams);
   const users = await getFilteredUsers(filters);
-  const volunteers = users.map(Volunteer);
+  const volunteers = usersToVolunteers(users, await currentUser());
   const withFilters: (keyof UserFilters)[] = ['searchQuery', 'roleType'];
   if (canEdit) {
     withFilters.push('showDeleted');

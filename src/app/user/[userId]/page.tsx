@@ -19,7 +19,7 @@ import { notFound } from 'next/navigation';
 import { getManagedQualifications } from '@/lib/qualification';
 import { FormField } from '@/ui/form-dialog';
 import { PlusIcon } from '@radix-ui/react-icons';
-import { getVolunteer } from '@/lib/volunteer';
+import { getVolunteerById } from '@/lib/volunteer';
 
 const PAGE_KEY = 'VolunteerProfilePage';
 
@@ -27,7 +27,7 @@ export const generateMetadata = metadata(PAGE_KEY, {
   title: async (params) => {
     const { userId } = params;
     const t = await getTranslations(PAGE_KEY);
-    const user = await getVolunteer(userId ?? null);
+    const user = await getVolunteerById(userId ?? null);
     return t('title', {
       name: user?.displayName ?? ''
     });
@@ -37,7 +37,7 @@ export const generateMetadata = metadata(PAGE_KEY, {
 export default async function VolunteerProfilePage({ params }: PageProps<'/user/[userId]'>) {
   const { userId } = await params;
   const t = await getTranslations(PAGE_KEY);
-  const volunteer = await getVolunteer(userId);
+  const volunteer = await getVolunteerById(userId);
   if (!volunteer) {
     notFound();
   }

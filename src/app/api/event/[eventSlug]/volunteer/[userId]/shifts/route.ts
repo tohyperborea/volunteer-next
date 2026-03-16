@@ -7,10 +7,10 @@
 'use server';
 
 import { CSVResponse, NotFoundResponse, NotImplementedResponse } from '@/lib/response';
-import { getVolunteer } from '@/lib/volunteer';
+import { getVolunteerById } from '@/lib/volunteer';
 import { getEventBySlug } from '@/service/event-service';
 import { getTeamsForEvent } from '@/service/team-service';
-import { checkAuthorisation } from '@/session';
+import { checkAuthorisation, currentUser } from '@/session';
 import { shiftsToCSV } from '@/utils/csv-export';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -23,7 +23,7 @@ export const GET = async (
   if (format === 'csv') {
     const { eventSlug, userId } = await params;
     const event = await getEventBySlug(eventSlug);
-    const user = await getVolunteer(userId);
+    const user = await getVolunteerById(userId, await currentUser());
     if (!event || !user) {
       return NotFoundResponse();
     }
