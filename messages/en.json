@@ -117,7 +117,8 @@
   },
   "QualificationDetailsPage": {
     "title": "{qualificationName} | {eventName}",
-    "volunteers": "Volunteers with this qualification"
+    "volunteers": "Volunteers with this qualification",
+    "remove": "Remove qualification from {name}"
   },
   "EventShiftsPage": {
     "title": "Shifts",
@@ -125,7 +126,11 @@
     "export": "Export Shifts"
   },
   "UsersDashboardPage": {
-    "title": "Users Dashboard"
+    "title": "All Volunteers",
+    "createUser": "Create New User",
+    "confirmDeletion": "Confirm Deletion",
+    "confirmDeleteText": "Are you sure you want to delete \"{userName}\"? The record will be permanently deleted after 30 days.",
+    "undelete": "Undelete"
   },
   "CreateUserPage": {
     "title": "Create User",
@@ -172,27 +177,14 @@
   "TeamCard": {
     "noTeams": "No teams yet!"
   },
-  "UsersList": {
-    "noUsers": "No users yet!",
-    "email": "Email",
-    "role": "Role",
-    "undelete": "Undelete",
-    "confirmDeletion": "Confirm Deletion",
-    "confirmDeleteText": "Are you sure you want to delete \"{userName}\"? The record will be permanently deleted after 30 days.",
-    "delete": "Delete",
-    "cancel": "Cancel"
-  },
-  "UsersFilters": {
-    "createUser": "Create New User",
-    "filter": "Filter",
+  "VolunteerFilters": {
+    "filters": "Filters",
     "showDeleted": "Show Deleted",
-    "searchPlaceholder": "Search by name or email...",
-    "roleFilterPlaceholder": "Filter by role...",
+    "roleFilterLabel": "Filter by role",
     "allRoles": "All roles",
     "admin": "Admin",
     "organiser": "Organiser",
     "teamLead": "Team Lead",
-    "applyFilters": "Apply Filters",
     "clear": "Clear"
   },
   "UserForm": {
@@ -320,10 +312,18 @@
     "cancel": "Cancel"
   },
   "VolunteerList": {
-    "empty": "No one yet",
-    "remove": "Remove qualification from {name}"
+    "empty": "No one yet"
   },
   "UserQualifications": {
     "remove": "Remove {qualification}"
+  },
+  "RoleBadge": {
+    "admin": "Admin",
+    "organiser": "Organiser",
+    "team-lead": "Team Lead"
+  },
+  "DeleteButton": {
+    "cancel": "Cancel",
+    "delete": "Delete"
   }
 }

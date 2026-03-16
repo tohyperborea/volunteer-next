@@ -17,7 +17,7 @@ import { getTranslations } from 'next-intl/server';
 import { headers } from 'next/headers';
 import { getEventBySlug } from '@/service/event-service';
 import { getEventDateRangeDisplayText } from '@/utils/date';
-import styles from './styles.module.css';
+import Volunteer from '@/lib/volunteer';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('Metadata');
@@ -64,7 +64,7 @@ export default async function RootLayout({
         <NavBar
           title={navBarTitle}
           subtitle={navBarSubtitle}
-          user={user}
+          currentUser={Volunteer(user)}
           titlePathname={titlePathname}
         >
           {childrenWithWrapper}

@@ -16,7 +16,8 @@ import QualificationDetails from '@/ui/qualification-details';
 import VolunteerList from '@/ui/volunteer-list';
 import { getQualificationDetailsPath, getQualificationsPath } from '@/utils/path';
 import { validateExistingQualification } from '@/validator/qualification-validator';
-import { Flex, Heading } from '@radix-ui/themes';
+import { Cross1Icon } from '@radix-ui/react-icons';
+import { Flex, Heading, IconButton } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
 import { revalidatePath } from 'next/cache';
 import { notFound, redirect } from 'next/navigation';
@@ -110,9 +111,8 @@ export default async function QualificationsPage(props: Props) {
     redirect(path);
   };
 
-  const onRemoveQualification = async (data: FormData) => {
+  const onRemoveQualification = async (volunteerId: UserId) => {
     'use server';
-    const volunteerId = data.get('volunteerId')?.toString();
     if (!volunteerId) {
       throw new Error('Volunteer ID is required');
     }
@@ -120,8 +120,27 @@ export default async function QualificationsPage(props: Props) {
     await removeQualificationFromUser(qualification.id, volunteerId);
     const path = getQualificationDetailsPath({ eventSlug, qualificationId });
     revalidatePath(path);
-    redirect(path);
   };
+
+  const itemActions = editable
+    ? volunteers.reduce(
+        (actions, volunteer) => {
+          actions[volunteer.id] = (
+            <IconButton
+              variant="ghost"
+              color="red"
+              onClick={onRemoveQualification.bind(null, volunteer.id)}
+              aria-label={t('remove', { name: volunteer.displayName })}
+              title={t('remove', { name: volunteer.displayName })}
+            >
+              <Cross1Icon />
+            </IconButton>
+          );
+          return actions;
+        },
+        {} as Record<UserId, React.ReactNode>
+      )
+    : undefined;
 
   return (
     <Flex direction="column" gap="6">
@@ -140,7 +159,8 @@ export default async function QualificationsPage(props: Props) {
       )}
       <VolunteerList
         volunteers={volunteers}
-        onRemove={editable ? onRemoveQualification : undefined}
+        itemActions={itemActions}
+        withFilters={['searchQuery']}
       />
     </Flex>
   );

@@ -31,7 +31,7 @@ export default function FormDialog({ description, open, onClose, children }: Pro
 interface FormFieldProps {
   ariaId: string;
   name: string;
-  description: string;
+  description?: string;
   children: React.ReactNode;
 }
 
@@ -41,9 +41,11 @@ export function FormField({ ariaId, name, description, children }: FormFieldProp
       <Heading as="h3" size="3" id={ariaId}>
         {name}
       </Heading>
-      <Text size="1" color="gray">
-        {description}
-      </Text>
+      {description && (
+        <Text size="1" color="gray">
+          {description}
+        </Text>
+      )}
       {children}
     </Flex>
   );

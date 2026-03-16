@@ -1,6 +1,12 @@
 import { render, screen } from '@testing-library/react';
 import VolunteerCard from './index';
 
+jest.mock('next-intl', () => ({
+  useTranslations: () => (key: string) => key,
+  useFormatter: () => ({}),
+  useLocale: () => 'en'
+}));
+
 describe('VolunteerCard', () => {
   const mocks: VolunteerInfo[] = [
     {
