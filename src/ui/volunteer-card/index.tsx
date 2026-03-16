@@ -4,7 +4,8 @@
  * @author Michael Townsend <@continuities>
  */
 
-import { Badge, Card, Flex, Heading, Text } from '@radix-ui/themes';
+import { getUserProfilePath } from '@/utils/path';
+import { Badge, Card, Flex, Heading, Link, Text } from '@radix-ui/themes';
 import { useTranslations } from 'next-intl';
 
 interface Props {
@@ -28,9 +29,11 @@ export function VolunteerCardContent({ volunteer }: Props) {
   const roleTypes = [...new Set(roles.map((r) => r.type))];
   return (
     <Flex direction="column">
-      <Heading as="h3" size="4" weight="medium">
-        {displayName}
-      </Heading>
+      <Link highContrast underline="hover" href={getUserProfilePath(volunteer.id)}>
+        <Heading as="h3" size="4" weight="medium">
+          {displayName}
+        </Heading>
+      </Link>
       {fullName && fullName !== displayName && <Text color="gray">{fullName}</Text>}
       {email && <Text color="gray">{email}</Text>}
       {roles.length > 0 && (

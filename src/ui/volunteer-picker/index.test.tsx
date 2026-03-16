@@ -11,6 +11,13 @@ jest.mock('@/utils/path', () => ({
   getUserApiPath: jest.fn(() => '/api/user')
 }));
 
+jest.mock('@/ui/volunteer-card', () => ({
+  __esModule: true,
+  VolunteerCardContent: ({ volunteer }: { volunteer: VolunteerInfo }) => (
+    <div>{volunteer.displayName}</div>
+  )
+}));
+
 global.fetch = jest.fn();
 
 describe('VolunteerPicker', () => {

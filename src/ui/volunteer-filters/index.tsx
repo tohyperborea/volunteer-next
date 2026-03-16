@@ -1,3 +1,9 @@
+/**
+ * Component for filtering volunteers based on various criteria.
+ * @since 2026-03-16
+ * @author Michael Townsend <@continuities>
+ */
+
 import { MixerVerticalIcon } from '@radix-ui/react-icons';
 import { Flex, Button, Card, Select, Checkbox, Text, Box } from '@radix-ui/themes';
 import { useSearchParams, usePathname, useRouter } from 'next/navigation';

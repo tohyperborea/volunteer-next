@@ -23,8 +23,10 @@ export default async function UsersDashboardPage({ searchParams }: PageProps<'/u
   const filters = recordToUserFilters(await searchParams);
   const users = await getFilteredUsers(filters);
   const volunteers = users.map(Volunteer);
-  // checkAuthorisation will throw if not logged in, so we can be sure user is defined here
-  const user = (await currentUser())!;
+  const withFilters: (keyof UserFilters)[] = ['searchQuery', 'roleType'];
+  if (canEdit) {
+    withFilters.push('showDeleted');
+  }
 
   const handleDeleteUser = async (userId: string) => {
     'use server';
@@ -82,11 +84,7 @@ export default async function UsersDashboardPage({ searchParams }: PageProps<'/u
           </Button>
         </Link>
       )}
-      <VolunteerList
-        volunteers={volunteers}
-        withFilters={['searchQuery', 'roleType', 'showDeleted']}
-        itemActions={itemActions}
-      />
+      <VolunteerList volunteers={volunteers} withFilters={withFilters} itemActions={itemActions} />
     </Flex>
   );
 }
