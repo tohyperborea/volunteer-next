@@ -9,6 +9,7 @@ import { inTransaction } from '@/db';
 import EventForm from '@/ui/event-form';
 import { validateNewEvent } from '@/validator/event-validator';
 import { validateUserId } from '@/validator/user-validator';
+import Volunteer from '@/lib/volunteer';
 
 const PAGE_KEY = 'CreateEventPage';
 
@@ -33,12 +34,13 @@ export default async function CreateEvent() {
   await checkAuthorisation([{ type: 'admin' }]);
   const t = await getTranslations(PAGE_KEY);
   const users = await getUsers();
+  const volunteers = users.map(Volunteer);
 
   return (
     <Flex direction="column" gap="4">
       <Heading my="4">{t('title')}</Heading>
       <Card>
-        <EventForm onSubmit={onSubmit} backOnCancel organiserOptions={users} />
+        <EventForm onSubmit={onSubmit} backOnCancel organiserOptions={volunteers} />
       </Card>
     </Flex>
   );

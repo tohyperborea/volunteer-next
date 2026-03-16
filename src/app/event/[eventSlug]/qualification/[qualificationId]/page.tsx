@@ -1,4 +1,5 @@
 import metadata from '@/i18n/metadata';
+import Volunteer from '@/lib/volunteer';
 import { getEventBySlug } from '@/service/event-service';
 import {
   assignQualificationToUsers,
@@ -54,10 +55,11 @@ export default async function QualificationsPage(props: Props) {
     return notFound();
   }
   const teams = await getTeamsForEvent(event.id);
-  const volunteers = await getFilteredUsers({
+  const users = await getFilteredUsers({
     withQualification: qualification.id,
     searchQuery: query
   });
+  const volunteers = users.map(Volunteer);
 
   const editorRoles: UserRole[] = [
     {

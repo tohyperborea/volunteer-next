@@ -17,7 +17,8 @@ export default async function UsersDashboardPage() {
 
   const t = await getTranslations(PAGE_KEY);
   const users = await getUsers();
-  const user = await currentUser();
+  // checkAuthorisation will throw if not logged in, so we can be sure user is defined here
+  const user = (await currentUser())!;
 
   const handleDeleteUser = async (userId: string) => {
     'use server';
@@ -40,7 +41,7 @@ export default async function UsersDashboardPage() {
         users={users}
         onDeleteUser={canEdit ? handleDeleteUser : undefined}
         onUndeleteUser={canEdit ? handleUndeleteUser : undefined}
-        currentUser={user as User}
+        currentUser={user}
       />
     </Flex>
   );

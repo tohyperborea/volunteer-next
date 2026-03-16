@@ -140,10 +140,10 @@
   "EditUserPage": {
     "title": "Edit User"
   },
-  "UserProfilePage": {
-    "title": "{userName}",
+  "VolunteerProfilePage": {
+    "title": "{name}",
     "qualifications": "Assigned Qualifications",
-    "addQualification": "Add Qualification to User",
+    "addQualification": "Add Qualification to Volunteer",
     "addQualificationDescription": "Select a qualification",
     "select": "Select...",
     "assignQualification": "Assign Qualification"

@@ -30,15 +30,17 @@ describe('shiftsToCSV', () => {
       isActive: true
     }
   ];
-  const john: User = {
+  const john: VolunteerInfo = {
     id: 'user1',
-    name: 'John Doe',
+    displayName: 'John D.',
+    fullName: 'John Doe',
     email: 'john.doe@example.com',
     roles: []
   };
-  const jane: User = {
+  const jane: VolunteerInfo = {
     id: 'user2',
-    name: 'Jane Smith',
+    displayName: 'Jane S.',
+    fullName: 'Jane Smith',
     email: 'jane.smith@example.com',
     roles: []
   };
@@ -52,16 +54,34 @@ describe('shiftsToCSV', () => {
 
     const expectedCSV = [
       'Date,Team,Shift Title,Start Time,Duration (Hours),Volunteers',
-      '2026-03-11,Team Alpha,Shift 1,08:00,4,John Doe <john.doe@example.com>'
+      '2026-03-11,Team Alpha,Shift 1,08:00,4,John D. <john.doe@example.com>'
+    ].join('\r\n');
+
+    expect(result).toBe(expectedCSV);
+  });
+
+  it('should still work if fullName and email are not present', () => {
+    const volunteer: VolunteerInfo = {
+      id: 'user3',
+      displayName: 'Scooby'
+    };
+    const shiftVolunteers = {
+      shift1: [volunteer]
+    };
+
+    const result = shiftsToCSV({ event, teams, shifts, shiftVolunteers });
+    const expectedCSV = [
+      'Date,Team,Shift Title,Start Time,Duration (Hours),Volunteers',
+      '2026-03-11,Team Alpha,Shift 1,08:00,4,Scooby'
     ].join('\r\n');
 
     expect(result).toBe(expectedCSV);
   });
 
   it('should handle volunteers with special characters in their names', () => {
-    const specialUser: User = {
+    const specialUser: VolunteerInfo = {
       id: 'user3',
-      name: 'Alice "The Great" O\'Connor',
+      displayName: 'Alice "The Great" O\'Connor',
       email: 'alice.o.conner@example.com',
       roles: []
     };
@@ -101,7 +121,7 @@ describe('shiftsToCSV', () => {
 
     const expectedCSV = [
       'Date,Team,Shift Title,Start Time,Duration (Hours),Volunteers',
-      '2026-03-11,Team Alpha,Shift 1,08:00,4,"John Doe <john.doe@example.com>\rJane Smith <jane.smith@example.com>"'
+      '2026-03-11,Team Alpha,Shift 1,08:00,4,"John D. <john.doe@example.com>\rJane S. <jane.smith@example.com>"'
     ].join('\r\n');
 
     expect(result).toBe(expectedCSV);
@@ -141,8 +161,8 @@ describe('shiftsToCSV', () => {
 
     const expectedCSV = [
       'Date,Team,Shift Title,Start Time,Duration (Hours),Volunteers',
-      '2026-03-11,Team Alpha,Shift 1,08:00,4,John Doe <john.doe@example.com>',
-      '2026-03-12,Team Beta,Shift 2,10:00,3,Jane Smith <jane.smith@example.com>'
+      '2026-03-11,Team Alpha,Shift 1,08:00,4,John D. <john.doe@example.com>',
+      '2026-03-12,Team Beta,Shift 2,10:00,3,Jane S. <jane.smith@example.com>'
     ].join('\r\n');
 
     expect(result).toBe(expectedCSV);
@@ -160,9 +180,9 @@ describe('shiftsToCSV', () => {
   });
 
   it('should guard against CSV injection', () => {
-    const maliciousUser: User = {
+    const maliciousUser: VolunteerInfo = {
       id: 'user4',
-      name: "=CMD|' /C calc'!A0",
+      displayName: "=CMD|' /C calc'!A0",
       email: 'badguy@evil.com',
       roles: []
     };

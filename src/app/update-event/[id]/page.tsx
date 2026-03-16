@@ -14,6 +14,7 @@ import { inTransaction } from '@/db';
 import EventForm from '@/ui/event-form';
 import { validateExistingEvent } from '@/validator/event-validator';
 import { validateUserId } from '@/validator/user-validator';
+import Volunteer from '@/lib/volunteer';
 
 const PAGE_KEY = 'UpdateEventPage';
 
@@ -63,7 +64,10 @@ export default async function UpdateEvent({ params }: Props) {
     }
 
     const users = await getUsers();
-    const organiser = (await getUsersWithRole({ type: 'organiser', eventId: event.id }))[0];
+    const volunteers = users.map(Volunteer);
+    const organiser = Volunteer(
+      (await getUsersWithRole({ type: 'organiser', eventId: event.id }))[0]
+    );
 
     return (
       <Flex direction="column" gap="4">
@@ -72,7 +76,7 @@ export default async function UpdateEvent({ params }: Props) {
           <EventForm
             onSubmit={onSubmit}
             backOnCancel
-            organiserOptions={users}
+            organiserOptions={volunteers}
             editingEvent={event}
             editingOrganiser={organiser}
           />

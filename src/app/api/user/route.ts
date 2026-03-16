@@ -4,6 +4,7 @@
  * @author Michael Townsend <@continuities>
  */
 
+import Volunteer from '@/lib/volunteer';
 import { getFilteredUsers } from '@/service/user-service';
 import { checkAuthorisation } from '@/session';
 import { NextRequest } from 'next/server';
@@ -19,5 +20,6 @@ export const GET = async (request: NextRequest): Promise<Response> => {
   };
   await checkAuthorisation();
   const users = await getFilteredUsers(filter);
-  return Response.json(users);
+  const volunteers = users.map(Volunteer);
+  return Response.json(volunteers);
 };

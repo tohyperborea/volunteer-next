@@ -16,12 +16,12 @@ import { useRouter } from 'next/navigation';
 interface Props {
   title?: string;
   subtitle?: string;
-  user: User;
+  currentUser: VolunteerInfo;
   children: React.ReactNode;
   titlePathname: string;
 }
 
-export default function NavBar({ title, subtitle, user, titlePathname, children }: Props) {
+export default function NavBar({ title, subtitle, currentUser, titlePathname, children }: Props) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const router = useRouter();
   return (
@@ -43,7 +43,7 @@ export default function NavBar({ title, subtitle, user, titlePathname, children 
           <Text size="1">{subtitle}</Text>
         </Flex>
         <Box className={styles.navigationUserInitial}>
-          <Text>{(user?.name || user?.email)?.charAt(0).toUpperCase()}</Text>
+          <Text>{(currentUser?.displayName || currentUser?.email)?.charAt(0).toUpperCase()}</Text>
         </Box>
       </Flex>
 

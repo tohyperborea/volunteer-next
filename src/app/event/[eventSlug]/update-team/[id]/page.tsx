@@ -14,6 +14,7 @@ import TeamForm from '@/ui/team-form';
 import { validateExistingTeam } from '@/validator/team-validator';
 import { validateUserId } from '@/validator/user-validator';
 import { getTeamById, updateTeam } from '@/service/team-service';
+import Volunteer from '@/lib/volunteer';
 
 const PAGE_KEY = 'UpdateTeamPage';
 
@@ -64,8 +65,9 @@ export default async function UpdateTeam({ params }: Props) {
 
   try {
     const users = await getUsers();
+    const volunteers = users.map(Volunteer);
     const teamleadRole: UserRole = { type: 'team-lead', eventId: team.eventId, teamId: team.id };
-    const teamlead = (await getUsersWithRole(teamleadRole))[0];
+    const teamlead = Volunteer((await getUsersWithRole(teamleadRole))[0]);
 
     return (
       <Flex direction="column" gap="4">
@@ -75,7 +77,7 @@ export default async function UpdateTeam({ params }: Props) {
             eventId={team.eventId}
             onSubmit={onSubmit}
             backOnCancel
-            teamleadOptions={users}
+            teamleadOptions={volunteers}
             editingTeam={team}
             editingTeamlead={teamlead}
           />

@@ -19,24 +19,25 @@ import { notFound } from 'next/navigation';
 import { getManagedQualifications } from '@/lib/qualification';
 import { FormField } from '@/ui/form-dialog';
 import { PlusIcon } from '@radix-ui/react-icons';
+import { getVolunteer } from '@/lib/volunteer';
 
-const PAGE_KEY = 'UserProfilePage';
+const PAGE_KEY = 'VolunteerProfilePage';
 
 export const generateMetadata = metadata(PAGE_KEY, {
   title: async (params) => {
     const { userId } = params;
     const t = await getTranslations(PAGE_KEY);
-    const user = userId ? await getUser(userId) : null;
+    const user = await getVolunteer(userId ?? null);
     return t('title', {
-      userName: user?.name ?? ''
+      name: user?.displayName ?? ''
     });
   }
 });
 
-export default async function UserProfilePage({ params }: PageProps<'/user/[userId]'>) {
+export default async function VolunteerProfilePage({ params }: PageProps<'/user/[userId]'>) {
   const { userId } = await params;
   const t = await getTranslations(PAGE_KEY);
-  const volunteer = userId ? await getUser(userId) : null;
+  const volunteer = await getVolunteer(userId);
   if (!volunteer) {
     notFound();
   }

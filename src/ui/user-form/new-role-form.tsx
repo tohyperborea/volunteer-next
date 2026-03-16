@@ -1,5 +1,8 @@
 /**
  * NewRoleForm component for adding new roles to a user.
+ *
+ * TODO: Switch to VolunteerInfo type and ensure only necessary fields are sent to the client.
+ *
  * @since 2025-11-14
  * @author Jason Offet <@joffet>
  */

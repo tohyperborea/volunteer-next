@@ -24,6 +24,8 @@ type EventDayTime = {
   time: TimeString;
 };
 
+/* Objects of this type contain PII and should NEVER be sent to the client, with the exception of currentUser
+ * Convert to a VolunteerInfo object using @/lib/volunteer.ts */
 interface User {
   id: UserId;
   name: string;
@@ -97,4 +99,14 @@ interface QualificationInfo {
 interface ShiftRequirement {
   shiftId: ShiftId;
   qualificationId: QualificationId;
+}
+
+interface VolunteerInfo {
+  id: UserId;
+  displayName: string;
+
+  /* Only included if the requesting user has permission to see it */
+  roles?: UserRole[];
+  email?: string;
+  fullName?: string;
 }

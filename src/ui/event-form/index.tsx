@@ -21,9 +21,9 @@ const FormItem = ({ children }: { children: React.ReactNode }) => (
 interface Props {
   onSubmit: (data: FormData) => Promise<void>;
   backOnCancel?: boolean;
-  organiserOptions: User[];
+  organiserOptions: VolunteerInfo[];
   editingEvent?: EventInfo;
-  editingOrganiser?: User;
+  editingOrganiser?: VolunteerInfo;
 }
 
 export default function EventForm({
@@ -115,9 +115,9 @@ export default function EventForm({
           <Select.Root required name="organiserId" defaultValue={editingOrganiser?.id}>
             <Select.Trigger placeholder={t('eventOrganiser')} />
             <Select.Content>
-              {organiserOptions.map((user) => (
-                <Select.Item key={user.id} value={user.id}>
-                  {user.name}
+              {organiserOptions.map((volunteer) => (
+                <Select.Item key={volunteer.id} value={volunteer.id}>
+                  {volunteer.displayName}
                 </Select.Item>
               ))}
             </Select.Content>

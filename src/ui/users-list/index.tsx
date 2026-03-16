@@ -1,3 +1,10 @@
+/**
+ * TODO:
+ *  - Switch to VolunteerInfo type
+ *  - Rely on server for filtering instead of doing it client-side
+ *  - Maybe merge with VolunteerList
+ */
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -5,7 +12,7 @@ import { Heading, Flex, Card, Text, Button, Box, Link, Dialog } from '@radix-ui/
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { Pencil1Icon, TrashIcon } from '@radix-ui/react-icons';
-import Filters from './user-filters';
+import Filters from './filters';
 import { getUserProfilePath } from '@/utils/path';
 
 interface UsersListProps {

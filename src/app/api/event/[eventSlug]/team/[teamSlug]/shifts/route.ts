@@ -28,7 +28,7 @@ export const GET = async (
       return NotFoundResponse();
     }
     const shifts = await getShiftsForTeam(team.id);
-    const shiftVolunteers: Record<ShiftId, User[]> = {}; // TODO
+    const shiftVolunteers: Record<ShiftId, VolunteerInfo[]> = {}; // TODO
     const csvContent = shiftsToCSV({
       event,
       teams: [team],

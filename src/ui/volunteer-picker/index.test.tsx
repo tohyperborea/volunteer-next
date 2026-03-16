@@ -20,8 +20,8 @@ describe('VolunteerPicker', () => {
     (fetch as jest.Mock).mockResolvedValue({
       ok: true,
       json: async () => [
-        { id: 'id-1', name: 'Volunteer 1' },
-        { id: 'id-2', name: 'Volunteer 2' }
+        { id: 'id-1', displayName: 'Volunteer 1' },
+        { id: 'id-2', displayName: 'Volunteer 2' }
       ]
     });
   });
@@ -88,8 +88,8 @@ describe('VolunteerPicker', () => {
     (fetch as jest.Mock).mockResolvedValueOnce({
       ok: true,
       json: async () => [
-        { id: 'id-1', name: 'Volunteer 1' },
-        { id: 'id-2', name: 'Volunteer 2' }
+        { id: 'id-1', displayName: 'Volunteer 1' },
+        { id: 'id-2', displayName: 'Volunteer 2' }
       ]
     });
 
@@ -102,7 +102,7 @@ describe('VolunteerPicker', () => {
 
     (fetch as jest.Mock).mockResolvedValueOnce({
       ok: true,
-      json: async () => [{ id: 'id-3', name: 'Volunteer 3' }]
+      json: async () => [{ id: 'id-3', displayName: 'Volunteer 3' }]
     });
 
     fireEvent.change(screen.getByPlaceholderText('placeholder'), {

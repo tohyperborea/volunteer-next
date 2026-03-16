@@ -7,9 +7,9 @@
 'use server';
 
 import { CSVResponse, NotFoundResponse, NotImplementedResponse } from '@/lib/response';
+import { getVolunteer } from '@/lib/volunteer';
 import { getEventBySlug } from '@/service/event-service';
 import { getTeamsForEvent } from '@/service/team-service';
-import { getUser } from '@/service/user-service';
 import { checkAuthorisation } from '@/session';
 import { shiftsToCSV } from '@/utils/csv-export';
 import { NextRequest, NextResponse } from 'next/server';
@@ -23,13 +23,13 @@ export const GET = async (
   if (format === 'csv') {
     const { eventSlug, userId } = await params;
     const event = await getEventBySlug(eventSlug);
-    const user = await getUser(userId);
+    const user = await getVolunteer(userId);
     if (!event || !user) {
       return NotFoundResponse();
     }
     const teams = await getTeamsForEvent(event.id);
     const shifts: ShiftInfo[] = []; // TODO: Depends on volunteer signup implementation
-    const shiftVolunteers: Record<ShiftId, User[]> = {}; // TODO: Depends on volunteer signup implementation
+    const shiftVolunteers: Record<ShiftId, VolunteerInfo[]> = {}; // TODO: Depends on volunteer signup implementation
 
     const csvContent = shiftsToCSV({
       event,

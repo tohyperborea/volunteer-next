@@ -7,7 +7,7 @@
 import { Card, Flex, Heading, Text } from '@radix-ui/themes';
 
 interface Props {
-  volunteer: User;
+  volunteer: VolunteerInfo;
   actions?: React.ReactNode;
 }
 
@@ -23,13 +23,14 @@ export default function VolunteerCard({ volunteer, actions }: Props) {
 }
 
 export function VolunteerCardContent({ volunteer }: Props) {
+  const { displayName, fullName, email } = volunteer;
   return (
     <Flex direction="column">
       <Heading as="h3" size="4" weight="medium">
-        {volunteer.name}
+        {displayName}
       </Heading>
-      <Text color="gray">TODO: Burner Name</Text>
-      <Text color="gray">{volunteer.email}</Text>
+      {fullName && fullName !== displayName && <Text color="gray">{fullName}</Text>}
+      {email && <Text color="gray">{email}</Text>}
     </Flex>
   );
 }

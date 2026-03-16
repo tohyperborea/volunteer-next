@@ -24,7 +24,7 @@ interface Props {
 
 export default function VolunteerPicker({ title, open, onClose, onSubmit, filter }: Props) {
   const t = useTranslations('VolunteerPicker');
-  const [volunteers, setVolunteers] = useState<User[]>([]);
+  const [volunteers, setVolunteers] = useState<VolunteerInfo[]>([]);
   const [search, setSearch] = useState<string | undefined>(undefined);
 
   const fetchVolunteers = async (searchQuery: string | undefined) => {
@@ -37,7 +37,7 @@ export default function VolunteerPicker({ title, open, onClose, onSubmit, filter
       return [];
     }
     const data = await response.json();
-    return data as User[];
+    return data as VolunteerInfo[];
   };
 
   useEffect(() => {

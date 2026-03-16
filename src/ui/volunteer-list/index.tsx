@@ -15,7 +15,7 @@ import { Cross1Icon } from '@radix-ui/react-icons';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 interface Props {
-  volunteers: User[];
+  volunteers: VolunteerInfo[];
   onRemove?: FormSubmitAction;
 }
 
@@ -51,8 +51,8 @@ export default function VolunteerList({ volunteers, onRemove }: Props) {
                         variant="ghost"
                         color="red"
                         formAction={onRemove}
-                        aria-label={t('remove', { name: volunteer.name })}
-                        title={t('remove', { name: volunteer.name })}
+                        aria-label={t('remove', { name: volunteer.displayName })}
+                        title={t('remove', { name: volunteer.displayName })}
                       >
                         <Cross1Icon />
                       </IconButton>
