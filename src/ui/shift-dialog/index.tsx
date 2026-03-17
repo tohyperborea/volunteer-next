@@ -11,6 +11,7 @@ import { useTranslations } from 'next-intl';
 import { EventDayTimePicker } from '../datepicker';
 import FormDialog, { FormField } from '../form-dialog';
 import { useEffect, useState } from 'react';
+import DeleteButton from '../delete-button';
 
 interface Props {
   startDate: Date;
@@ -19,8 +20,8 @@ interface Props {
   editing?: ShiftInfo;
   creating?: boolean;
   onClose?: () => void;
-  onSubmit?: (data: FormData) => Promise<never>;
-  onDelete?: (data: FormData) => Promise<never>;
+  onSubmit?: (data: FormData) => Promise<void>;
+  onDelete?: (shiftId: ShiftId) => Promise<void>;
 }
 
 export default function ShiftDialog({
@@ -33,8 +34,7 @@ export default function ShiftDialog({
   onSubmit,
   onDelete
 }: Props) {
-  const isEdit = Boolean(editing);
-  const open = creating || isEdit;
+  const open = creating || Boolean(editing);
   const t = useTranslations('ShiftDialog');
   const title = t(editing ? 'editShift' : 'addShift');
   const [currentMin, setCurrentMin] = useState<number>(editing?.minVolunteers ?? 0);
@@ -52,10 +52,18 @@ export default function ShiftDialog({
           {title}
         </Dialog.Title>
 
-        {isEdit && onDelete && (
-          <Button variant="soft" color="red" formAction={onDelete}>
-            {t('deleteShift')}
-          </Button>
+        {editing && onDelete && (
+          <DeleteButton
+            title={t('deleteShift')}
+            variant="soft"
+            color="red"
+            onDelete={async () => {
+              await onDelete(editing.id);
+              onClose && onClose();
+            }}
+            description={t('deleteShiftConfirmation')}
+            withText
+          />
         )}
 
         <Flex direction="column" gap="4" mt="6" width="100%">

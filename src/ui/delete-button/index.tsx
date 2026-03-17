@@ -6,18 +6,26 @@
 
 'use client';
 
-import { Button, Dialog, Flex } from '@radix-ui/themes';
+import { Button, ButtonProps, Dialog, Flex } from '@radix-ui/themes';
 import { TrashIcon } from '@radix-ui/react-icons';
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 
-interface Props {
+type Props = {
   title: string;
   description: string;
   onDelete: () => Promise<void>;
-}
+  withText?: boolean;
+} & Pick<ButtonProps, 'variant' | 'color'>;
 
-export default function DeleteButton({ title, description, onDelete }: Props) {
+export default function DeleteButton({
+  title,
+  description,
+  onDelete,
+  variant = 'outline',
+  color = 'red',
+  withText = false
+}: Props) {
   const t = useTranslations('DeleteButton');
   const [confirming, setConfirming] = useState(false);
 
@@ -29,14 +37,9 @@ export default function DeleteButton({ title, description, onDelete }: Props) {
   return (
     <Dialog.Root open={confirming} onOpenChange={setConfirming}>
       <Dialog.Trigger>
-        <Button
-          variant="outline"
-          color="red"
-          aria-label={title}
-          title={title}
-          onClick={() => setConfirming(true)}
-        >
+        <Button variant={variant} color={color} aria-label={title} title={title}>
           <TrashIcon />
+          {withText && title}
         </Button>
       </Dialog.Trigger>
       <Dialog.Content>

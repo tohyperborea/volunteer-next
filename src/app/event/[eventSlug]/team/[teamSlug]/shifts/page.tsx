@@ -56,7 +56,7 @@ export default async function TeamShifts({ params }: Props) {
 
   const onSaveShift = async (data: FormData) => {
     'use server';
-    console.log('Saving shift with data:', Object.fromEntries(data.entries()));
+    console.info('Saving shift with data:', Object.fromEntries(data.entries()));
     await checkAuthorisation(editorRoles);
     const shift = validateNewShift(data);
     const shiftId = data.get('id')?.toString();
@@ -70,18 +70,16 @@ export default async function TeamShifts({ params }: Props) {
     redirect(path);
   };
 
-  const onDeleteShift = async (data: FormData) => {
+  const onDeleteShift = async (shiftId: ShiftId) => {
     'use server';
-    console.log('Deleting shift with data:', Object.fromEntries(data.entries()));
+    console.info('Deleting shiftId: ', shiftId);
     await checkAuthorisation(editorRoles);
-    const shiftId = data.get('id')?.toString();
     if (!shiftId) {
       throw new Error('Shift id is required for deletion');
     }
     await deleteShift(shiftId);
     const path = getTeamShiftsPath(eventSlug, teamSlug);
     revalidatePath(path);
-    redirect(path);
   };
 
   return (

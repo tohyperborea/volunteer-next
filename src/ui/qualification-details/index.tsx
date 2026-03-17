@@ -6,19 +6,20 @@
 
 'use client';
 
-import { Pencil2Icon, TrashIcon } from '@radix-ui/react-icons';
+import { Pencil2Icon } from '@radix-ui/react-icons';
 import QualificationCard from '../qualification-card';
-import { Flex, Button } from '@radix-ui/themes';
+import { Flex, Button, Box } from '@radix-ui/themes';
 import { useTranslations } from 'next-intl';
 import QualificationDialog from '../qualification-dialog';
 import { useState } from 'react';
+import DeleteButton from '../delete-button';
 
 interface Props {
   qualification: QualificationInfo;
   event: EventInfo;
   teams: TeamInfo[];
   onSave?: (data: FormData) => Promise<never>;
-  onDelete?: (data: FormData) => Promise<never>;
+  onDelete?: () => Promise<never>;
 }
 
 export default function QualificationDetails({
@@ -56,13 +57,16 @@ export default function QualificationDetails({
         }
       />
       {onDelete && (
-        <form>
-          <input type="hidden" name="id" value={qualification.id} />
-          <Button variant="ghost" color="red" formAction={onDelete}>
-            <TrashIcon />
-            {t('delete')}
-          </Button>
-        </form>
+        <Box>
+          <DeleteButton
+            variant="ghost"
+            color="red"
+            onDelete={onDelete}
+            title={t('delete')}
+            description={t('deleteConfirmation', { qualificationName: qualification.name })}
+            withText
+          />
+        </Box>
       )}
       {canEdit && (
         <QualificationDialog
