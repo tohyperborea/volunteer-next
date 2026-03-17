@@ -5,7 +5,7 @@
  */
 
 import { getUserProfilePath } from '@/utils/path';
-import { Badge, Card, Flex, Heading, Link, Text } from '@radix-ui/themes';
+import { Avatar, Badge, Card, Flex, Heading, Link, Text } from '@radix-ui/themes';
 import { useTranslations } from 'next-intl';
 
 interface Props {
@@ -28,21 +28,24 @@ export function VolunteerCardContent({ volunteer }: Props) {
   const { displayName, fullName, email, roles = [] } = volunteer;
   const roleTypes = [...new Set(roles.map((r) => r.type))];
   return (
-    <Flex direction="column">
-      <Link highContrast underline="hover" href={getUserProfilePath(volunteer.id)}>
-        <Heading as="h3" size="4" weight="medium">
-          {displayName}
-        </Heading>
-      </Link>
-      {fullName && fullName !== displayName && <Text color="gray">{fullName}</Text>}
-      {email && <Text color="gray">{email}</Text>}
-      {roles.length > 0 && (
-        <Flex wrap="wrap" gap="1" mt="2">
-          {roleTypes.map((type, i) => (
-            <RoleBadge key={`role-${i}`} type={type} />
-          ))}
-        </Flex>
-      )}
+    <Flex gap="3">
+      <Avatar fallback={displayName[0].toUpperCase()} radius="full" />
+      <Flex direction="column" justify="center">
+        <Link highContrast underline="hover" href={getUserProfilePath(volunteer.id)}>
+          <Heading as="h3" size="4" weight="medium">
+            {displayName}
+          </Heading>
+        </Link>
+        {fullName && fullName !== displayName && <Text color="gray">{fullName}</Text>}
+        {email && <Text color="gray">{email}</Text>}
+        {roles.length > 0 && (
+          <Flex wrap="wrap" gap="1" mt="2">
+            {roleTypes.map((type, i) => (
+              <RoleBadge key={`role-${i}`} type={type} />
+            ))}
+          </Flex>
+        )}
+      </Flex>
     </Flex>
   );
 }

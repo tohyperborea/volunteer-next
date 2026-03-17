@@ -157,7 +157,8 @@
     "addQualification": "Add Qualification to Volunteer",
     "addQualificationDescription": "Select a qualification",
     "select": "Select...",
-    "assignQualification": "Assign Qualification"
+    "assignQualification": "Assign Qualification",
+    "edit": "Edit Profile"
   },
 
   "AuthContainer": {
@@ -286,9 +287,7 @@
     "edit": "Edit Qualification"
   },
   "QualificationList": {
-    "title": "Qualifications",
-    "add": "Add Qualification",
-    "searchPlaceholder": "Search..."
+    "none": "No qualifications yet. To gain qualifications, reach out to your event organiser or team lead."
   },
   "QualificationDetails": {
     "delete": "Delete Qualification",

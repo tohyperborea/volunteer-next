@@ -6,9 +6,10 @@
 
 'use client';
 
-import { Box, Flex } from '@radix-ui/themes';
+import { Box, Flex, Text } from '@radix-ui/themes';
 import QualificationCard from '../qualification-card';
 import styles from './styles.module.css';
+import { useTranslations } from 'next-intl';
 
 interface Props {
   qualifications: QualificationInfo[];
@@ -18,6 +19,15 @@ interface Props {
 }
 
 export default function QualificationList({ qualifications, events, teams, itemActions }: Props) {
+  const t = useTranslations('QualificationList');
+  if (qualifications.length === 0) {
+    return (
+      <Text color="gray" size="2">
+        {t('none')}
+      </Text>
+    );
+  }
+
   const eventsById = events.reduce<Record<EventId, EventInfo>>(
     (acc, event) => ({
       ...acc,

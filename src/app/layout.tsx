@@ -42,7 +42,6 @@ export default async function RootLayout({
   // Extract event slug from pathname if it matches /event/[eventSlug] pattern
   let navBarTitle = process.env.APP_NAME;
   let navBarSubtitle = undefined;
-  let titlePathname = '/';
   const eventMatch = pathname.match(/^\/event\/([^\/]+)/);
   if (eventMatch) {
     const eventSlug = eventMatch[1];
@@ -50,7 +49,6 @@ export default async function RootLayout({
     if (event) {
       navBarTitle = event.name;
       navBarSubtitle = getEventDateRangeDisplayText({ event });
-      titlePathname = `/event/${eventSlug}`;
     }
   }
 
@@ -66,7 +64,6 @@ export default async function RootLayout({
           title={navBarTitle}
           subtitle={navBarSubtitle}
           currentUser={userToVolunteer(user, getPermissionsProfile(user))}
-          titlePathname={titlePathname}
         >
           {childrenWithWrapper}
         </NavBar>

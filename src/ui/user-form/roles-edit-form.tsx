@@ -24,7 +24,7 @@ interface Props {
   editingUser?: User;
   events: EventInfo[];
   teams: TeamInfo[];
-  currentUserId?: string;
+  permissionsProfile: PermissionsProfile;
 }
 
 export default function RolesEditForm({
@@ -33,7 +33,7 @@ export default function RolesEditForm({
   editingUser,
   events,
   teams,
-  currentUserId
+  permissionsProfile
 }: Props) {
   const t = useTranslations('UserForm');
 
@@ -91,7 +91,7 @@ export default function RolesEditForm({
                     <td className={styles.tableCellCenter}>
                       {onDeleteRole && editingUser && (
                         <>
-                          {currentUserId === editingUser.id && role.type === 'admin' ? (
+                          {permissionsProfile.userId === editingUser.id && role.type === 'admin' ? (
                             <Text size="2" color="gray">
                               <Tooltip content={t('cannotRemoveOwnAdminRole')}>
                                 <CircleBackslashIcon />

@@ -24,20 +24,22 @@ interface Props {
   onSubmit: (data: FormData) => Promise<void>;
   onDeleteRole?: (role: UserRole, userId: string) => Promise<void>;
   onAddRole?: (data: FormData) => Promise<void>;
+  callbackUrl?: string;
   editingUser?: User;
   events: EventInfo[];
   teams: TeamInfo[];
-  currentUserId?: string;
+  permissionsProfile: PermissionsProfile;
 }
 
 export default function UserForm({
   onSubmit,
   onDeleteRole,
   onAddRole,
+  callbackUrl = getUsersDashboardPath(),
   editingUser,
   events,
   teams,
-  currentUserId
+  permissionsProfile
 }: Props) {
   const t = useTranslations('UserForm');
 
@@ -89,28 +91,30 @@ export default function UserForm({
             type="email"
             placeholder={t('userEmail')}
             defaultValue={editingUser?.email}
+            readOnly={editingUser && !permissionsProfile.admin}
             required
           />
         </FormItem>
         <Flex direction="row" justify="between">
-          <Link href={getUsersDashboardPath()}>
+          <Link href={callbackUrl}>
             <Button variant="outline">{t('cancelButton')}</Button>
           </Link>
           <Button type="submit">{t(editingUser ? 'updateButton' : 'createButton')}</Button>
         </Flex>
         {/* Roles */}
-        {editingUser ? (
-          <RolesEditForm
-            onDeleteRole={onDeleteRole}
-            onAddRole={onAddRole}
-            editingUser={editingUser}
-            events={events}
-            teams={teams}
-            currentUserId={currentUserId}
-          />
-        ) : (
-          <NewRoleForm events={events} teams={teams} />
-        )}
+        {permissionsProfile.admin &&
+          (editingUser ? (
+            <RolesEditForm
+              onDeleteRole={onDeleteRole}
+              onAddRole={onAddRole}
+              editingUser={editingUser}
+              events={events}
+              teams={teams}
+              permissionsProfile={permissionsProfile}
+            />
+          ) : (
+            <NewRoleForm events={events} teams={teams} />
+          ))}
       </Flex>
     </form>
   );
