@@ -93,6 +93,16 @@ const signInEmailAfterHook = createAuthMiddleware(async (ctx) => {
 export const auth = betterAuth({
   plugins,
   database: db,
+  user: {
+    additionalFields: {
+      chosenName: {
+        type: 'string',
+        required: false,
+        defaultValue: null,
+        input: true
+      }
+    }
+  },
   hooks: useOAuth
     ? undefined
     : {

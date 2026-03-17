@@ -25,7 +25,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER trigger_set_chosen_name
-BEFORE INSERT ON "user"
+BEFORE INSERT OR UPDATE ON "user"
 FOR EACH ROW EXECUTE FUNCTION set_chosen_name();
 
 -- Backfill old rows

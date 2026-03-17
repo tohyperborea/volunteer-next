@@ -60,6 +60,25 @@ export default function UserForm({
           />
         </FormItem>
         <FormItem>
+          <Text
+            as="label"
+            id="user-displayname-label"
+            htmlFor="user-displayname"
+            size="2"
+            weight="bold"
+          >
+            {t('displayName')}
+          </Text>
+          <TextField.Root
+            name="chosenName"
+            aria-labelledby="user-displayname-label"
+            id="user-displayname"
+            placeholder={t('displayName')}
+            autoComplete="off"
+            defaultValue={editingUser?.chosenName}
+          />
+        </FormItem>
+        <FormItem>
           <Text as="label" id="user-email-label" htmlFor="user-email" size="2" weight="bold">
             {t('userEmail')}
           </Text>

@@ -33,14 +33,7 @@ export default async function EditUser({ params }: { params: Promise<{ userId: s
     }
 
     await inTransaction(async (client) => {
-      await updateUser(
-        validatedUser.id,
-        {
-          name: validatedUser.name,
-          email: validatedUser.email
-        },
-        client
-      );
+      await updateUser(validatedUser.id, validatedUser, client);
     });
     redirect(getUsersDashboardPath());
   };

@@ -37,6 +37,9 @@ interface User {
   roles: UserRole[];
   deletedAt?: Date;
 }
+type UserCreationModel = Omit<User, 'id' | 'roles' | 'chosenName'> &
+  Partial<Pick<User, 'chosenName'>>;
+type UserUpdateModel = Omit<User, 'roles' | 'chosenName'> & Partial<Pick<User, 'chosenName'>>;
 
 /* These align with the role_type enum in the database
  * If you change this, you must also change the role_type enum in psql */

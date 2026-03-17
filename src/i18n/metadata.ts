@@ -16,7 +16,7 @@ interface MetadataProps {
 }
 
 interface MetadataGeneratorOptions {
-  title?: (params: Params) => Promise<string>;
+  title?: (params: Params) => Promise<string | null>;
 }
 
 export default (namespace: string, options?: MetadataGeneratorOptions) =>
@@ -24,7 +24,8 @@ export default (namespace: string, options?: MetadataGeneratorOptions) =>
     const { locale } = await params;
     const t = await getTranslations({ locale: locale ?? '', namespace });
     const title = options?.title ? await options.title(await params) : t('title');
+    const titlePrefix = title ? `${title} | ` : '';
     return {
-      title: `${title} | ${process.env.APP_NAME}`
+      title: `${titlePrefix}${process.env.APP_NAME}`
     };
   };

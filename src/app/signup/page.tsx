@@ -1,7 +1,7 @@
 import { auth, AUTH_MODE } from '@/auth';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import { Button, Heading, Text, TextField } from '@radix-ui/themes';
+import { Button, Flex, Heading, Text, TextField } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
 import { VisuallyHidden } from '@radix-ui/themes';
 import {
@@ -14,6 +14,8 @@ import { checkRateLimit, AUTH_ENDPOINT_LIMITS } from '@/lib/rate-limit';
 import { getClientIp } from '@/lib/client-ip';
 import SigninContainer from '@/ui/signin-container';
 import metadata from '@/i18n/metadata';
+import { validateNewUser } from '@/validator/user-validator';
+import { FormField } from '@/ui/form-dialog';
 
 const PAGE_KEY = 'SignUpPage';
 export const generateMetadata = metadata(PAGE_KEY);
@@ -21,6 +23,7 @@ export const generateMetadata = metadata(PAGE_KEY);
 type SearchParams = {
   callbackUrl?: string;
   errorName?: string;
+  errorChosenName?: string;
   errorEmail?: string;
   errorPassword?: string;
   errorAccount?: string;
@@ -31,6 +34,7 @@ function buildSignupSearchParams(
   safeCallbackUrl: string,
   errors: {
     name?: string;
+    chosenName?: string;
     email?: string;
     password?: string;
     account?: string;
@@ -40,6 +44,7 @@ function buildSignupSearchParams(
   const p = new URLSearchParams();
   if (safeCallbackUrl !== '/') p.set('callbackUrl', safeCallbackUrl);
   if (errors.name) p.set('errorName', errors.name);
+  if (errors.chosenName) p.set('errorChosenName', errors.chosenName);
   if (errors.email) p.set('errorEmail', errors.email);
   if (errors.password) p.set('errorPassword', errors.password);
   if (errors.account) p.set('errorAccount', errors.account);
@@ -68,8 +73,7 @@ export default async function SignUpPage({
       const url = getSafeCallbackUrl(rawUrl);
       redirect(`/signup${buildSignupSearchParams(url, { rateLimit: true })}`);
     }
-    const name = (formData.get('name') as string)?.trim() ?? '';
-    const email = (formData.get('email') as string)?.trim() ?? '';
+    const { name, email, chosenName } = validateNewUser(formData);
     const password = (formData.get('password') as string) ?? '';
     const rawUrl = formData.get('callbackUrl') as string | null;
     const url = getSafeCallbackUrl(rawUrl);
@@ -77,6 +81,12 @@ export default async function SignUpPage({
     const nameResult = validateName(name);
     if (!nameResult.valid) {
       redirect(`/signup${buildSignupSearchParams(url, { name: nameResult.error })}`);
+    }
+    if (chosenName) {
+      const chosenNameResult = validateName(chosenName);
+      if (!chosenNameResult.valid) {
+        redirect(`/signup${buildSignupSearchParams(url, { chosenName: chosenNameResult.error })}`);
+      }
     }
     if (!isValidEmail(email)) {
       redirect(`/signup${buildSignupSearchParams(url, { email: 'invalid' })}`);
@@ -88,7 +98,7 @@ export default async function SignUpPage({
 
     try {
       await auth.api.signUpEmail({
-        body: { name, email, password, callbackURL: url }
+        body: { name, chosenName, email, password, callbackURL: url }
       });
       redirect(url);
     } catch (err: unknown) {
@@ -106,88 +116,123 @@ export default async function SignUpPage({
 
   const t = await getTranslations(PAGE_KEY);
   const errorName = params.errorName;
+  const errorChosenName = params.errorChosenName;
   const errorEmail = params.errorEmail;
   const errorPassword = params.errorPassword;
   const errorAccount = params.errorAccount;
   const rateLimited = params.error === 'rate_limit';
 
   return (
-    <SigninContainer>
-      <VisuallyHidden>
-        <Heading>{t('title')}</Heading>
-      </VisuallyHidden>
-      <Text as="p">{t('description')}</Text>
-      {rateLimited && (
-        <Text as="p" color="red" size="1">
-          {t('rateLimitError')}
-        </Text>
-      )}
-      {errorAccount && (
-        <Text as="p" color="red" size="1">
-          {t(`errorAccount_${errorAccount}`)}
-        </Text>
-      )}
-      <form
-        action={signUp}
-        style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '16px' }}
-      >
-        <input type="hidden" name="callbackUrl" value={callbackUrl} />
-        <div>
-          <TextField.Root
-            name="name"
-            placeholder={t('namePlaceholder') ?? ''}
-            autoComplete="name"
-            required
-            maxLength={255}
-            aria-invalid={!!errorName}
-            aria-describedby={errorName ? 'name-error' : undefined}
-          />
-          {errorName && (
-            <Text id="name-error" as="p" color="red" size="1">
-              {t(`errorName_${errorName}`)}
-            </Text>
-          )}
-        </div>
-        <div>
-          <TextField.Root
-            name="email"
-            type="email"
-            placeholder={t('emailPlaceholder') ?? ''}
-            autoComplete="email"
-            required
-            aria-invalid={!!errorEmail}
-            aria-describedby={errorEmail ? 'email-error' : undefined}
-          />
-          {errorEmail && (
-            <Text id="email-error" as="p" color="red" size="1">
-              {t(`errorEmail_${errorEmail}`)}
-            </Text>
-          )}
-        </div>
-        <div>
-          <TextField.Root
-            name="password"
-            type="password"
-            placeholder={t('passwordPlaceholder') ?? ''}
-            autoComplete="new-password"
-            required
-            minLength={8}
-            aria-invalid={!!errorPassword}
-            aria-describedby={errorPassword ? 'password-error' : undefined}
-          />
-          {errorPassword && (
-            <Text id="password-error" as="p" color="red" size="1">
-              {t(`errorPassword_${errorPassword}`)}
-            </Text>
-          )}
-        </div>
-        <Button type="submit">{t('button')}</Button>
-        <Link
-          href={`/signin${callbackUrl !== '/' ? `?callbackUrl=${encodeURIComponent(callbackUrl)}` : ''}`}
-        >
-          {t('signInLink')}
-        </Link>
-      </form>
-    </SigninContainer>
+    <Flex direction="column">
+      <SigninContainer title={t('title')}>
+        <Text as="p">{t('description')}</Text>
+        {rateLimited && (
+          <Text as="p" color="red" size="1">
+            {t('rateLimitError')}
+          </Text>
+        )}
+        {errorAccount && (
+          <Text as="p" color="red" size="1">
+            {t(`errorAccount_${errorAccount}`)}
+          </Text>
+        )}
+        <Flex asChild direction="column" gap="4" align="center">
+          <form action={signUp} style={{ width: '100%' }}>
+            <input type="hidden" name="callbackUrl" value={callbackUrl} />
+            <FormField
+              name={t('namePlaceholder')}
+              description={t('nameDescription')}
+              ariaId="legal-name-field"
+            >
+              <TextField.Root
+                name="name"
+                placeholder={t('namePlaceholder') ?? ''}
+                autoComplete="name"
+                required
+                maxLength={255}
+                aria-labelledby="legal-name-field"
+                aria-invalid={!!errorName}
+                aria-describedby={errorName ? 'name-error' : undefined}
+              />
+              {errorName && (
+                <Text id="name-error" as="p" color="red" size="1">
+                  {t(`errorName_${errorName}`)}
+                </Text>
+              )}
+            </FormField>
+            <FormField
+              name={t('chosenNamePlaceholder')}
+              description={t('chosenNameDescription')}
+              ariaId="chosen-name-field"
+            >
+              <TextField.Root
+                name="chosenName"
+                placeholder={t('chosenNamePlaceholder') ?? ''}
+                maxLength={255}
+                aria-labelledby="chosen-name-field"
+                aria-invalid={!!errorChosenName}
+                aria-describedby={errorChosenName ? 'chosenName-error' : undefined}
+              />
+              {errorChosenName && (
+                <Text id="chosenName-error" as="p" color="red" size="1">
+                  {t(`errorChosenName_${errorChosenName}`)}
+                </Text>
+              )}
+            </FormField>
+            <FormField
+              name={t('emailPlaceholder')}
+              description={t('emailDescription')}
+              ariaId="email-field"
+            >
+              <TextField.Root
+                name="email"
+                type="email"
+                placeholder={t('emailPlaceholder') ?? ''}
+                autoComplete="email"
+                required
+                aria-labelledby="email-field"
+                aria-invalid={!!errorEmail}
+                aria-describedby={errorEmail ? 'email-error' : undefined}
+              />
+              {errorEmail && (
+                <Text id="email-error" as="p" color="red" size="1">
+                  {t(`errorEmail_${errorEmail}`)}
+                </Text>
+              )}
+            </FormField>
+            <FormField
+              name={t('passwordPlaceholder')}
+              description={t('passwordDescription')}
+              ariaId="password-field"
+            >
+              <TextField.Root
+                name="password"
+                type="password"
+                placeholder={t('passwordPlaceholder') ?? ''}
+                autoComplete="new-password"
+                required
+                minLength={8}
+                aria-labelledby="password-field"
+                aria-invalid={!!errorPassword}
+                aria-describedby={errorPassword ? 'password-error' : undefined}
+              />
+              {errorPassword && (
+                <Text id="password-error" as="p" color="red" size="1">
+                  {t(`errorPassword_${errorPassword}`)}
+                </Text>
+              )}
+            </FormField>
+            <Button style={{ width: '100%' }} type="submit">
+              {t('button')}
+            </Button>
+            <Link
+              href={`/signin${callbackUrl !== '/' ? `?callbackUrl=${encodeURIComponent(callbackUrl)}` : ''}`}
+            >
+              {t('signInLink')}
+            </Link>
+          </form>
+        </Flex>
+      </SigninContainer>
+    </Flex>
   );
 }

@@ -1,7 +1,7 @@
 import { auth, AUTH_MODE } from '@/auth';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import { Flex, Heading, Text } from '@radix-ui/themes';
+import { Heading, Text } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
 import { VisuallyHidden } from '@radix-ui/themes';
 import { checkRateLimit, PASSWORD_RESET_LIMITS } from '@/lib/rate-limit';
@@ -55,10 +55,7 @@ export default async function ForgotPasswordPage({
 
   const t = await getTranslations('ForgotPasswordPage');
   return (
-    <SigninContainer>
-      <VisuallyHidden>
-        <Heading>{t('title')}</Heading>
-      </VisuallyHidden>
+    <SigninContainer title={t('title')}>
       <Text as="p">{t('description')}</Text>
       {error === 'rate_limit' && (
         <Text as="p" size="2" color="red">
@@ -81,7 +78,9 @@ export default async function ForgotPasswordPage({
           buttonText={t('button')}
         />
       )}
-      <Link href="/signin">{t('signInLink')}</Link>
+      <Link href="/signin" style={{ alignSelf: 'center' }}>
+        {t('signInLink')}
+      </Link>
     </SigninContainer>
   );
 }

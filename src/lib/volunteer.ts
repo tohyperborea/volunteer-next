@@ -7,11 +7,12 @@ const stripPII = (user: User, profile: PermissionsProfile): VolunteerInfo => {
     displayName: user.chosenName
   };
 
+  const isSelf = user.id === profile.userId;
   // If the currentUser can access the email, we can skip the extra getPermissionsProfile call
-  const canAccessEmail = canAccess('VolunteerInfo', 'email', profile);
+  const canAccessEmail = isSelf || canAccess('VolunteerInfo', 'email', profile);
   const userPermissionsProfile = canAccessEmail ? null : getPermissionsProfile(user);
 
-  if (canAccess('VolunteerInfo', 'fullName', profile)) {
+  if (isSelf || canAccess('VolunteerInfo', 'fullName', profile)) {
     volunteer.fullName = user.name;
     if (!user.chosenName) {
       volunteer.displayName = user.name;
@@ -27,7 +28,7 @@ const stripPII = (user: User, profile: PermissionsProfile): VolunteerInfo => {
     volunteer.email = user.email;
   }
 
-  if (canAccess('VolunteerInfo', 'roles', profile)) {
+  if (isSelf || canAccess('VolunteerInfo', 'roles', profile)) {
     volunteer.roles = user.roles;
   }
 

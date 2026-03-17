@@ -51,7 +51,8 @@
     }
   },
   "SignInPage": {
-    "title": "Sign In",
+    "title": "Sign in",
+    "description": "volunteer-next",
     "signInToAccount": "Sign in to your account to continue.",
     "usePretix": "We use our ticket system, Pretix, to provide a single sign-on experience.",
     "clickButtonToRedirect": "Clicking the button below will redirect you to the Pretix login page.",
@@ -76,9 +77,14 @@
   "SignUpPage": {
     "title": "Create account",
     "description": "Enter your details to create an account.",
-    "namePlaceholder": "Name",
+    "namePlaceholder": "Legal Name",
+    "nameDescription": "Please use your full legal name. This will not be shared with anyone except team leads, and will only be used in emergencies.",
+    "chosenNamePlaceholder": "Chosen Name",
+    "chosenNameDescription": "This is the name that will be displayed to other volunteers. It can be your real name, a nickname, or anything you choose.",
     "emailPlaceholder": "Email",
+    "emailDescription": "Your email will only be shared with team leads, and will be used to communicate important information.",
     "passwordPlaceholder": "Password",
+    "passwordDescription": "Your password must be at least 8 characters long and include both letters and numbers.",
     "button": "Create account",
     "signInLink": "Already have an account? Sign in",
     "errorName_empty": "Please enter your name.",
@@ -154,6 +160,9 @@
     "assignQualification": "Assign Qualification"
   },
 
+  "AuthContainer": {
+    "logo": "Logo image"
+  },
   "MenuCard": {
     "update": "Update",
     "delete": "Delete",
@@ -188,7 +197,8 @@
     "clear": "Clear"
   },
   "UserForm": {
-    "userName": "User Name",
+    "userName": "Real Name",
+    "displayName": "Chosen Name",
     "userEmail": "User Email",
     "createButton": "Create User",
     "updateButton": "Update User",

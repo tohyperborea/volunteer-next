@@ -3,9 +3,8 @@ import { getClientIp } from '@/lib/client-ip';
 import { recordFailedLogin } from '@/lib/login-security';
 import { getSafeCallbackUrl } from '@/lib/signup-validation';
 import { redirect } from 'next/navigation';
-import { Button, Heading, Text, TextField } from '@radix-ui/themes';
+import { Button, Flex, Heading, Text, TextField } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
-import { VisuallyHidden } from '@radix-ui/themes';
 import SigninContainer from '@/ui/signin-container';
 import { CredentialsForm } from './credentials-form';
 import metadata from '@/i18n/metadata';
@@ -86,34 +85,23 @@ export default async function SignInPage({
 
   const t = await getTranslations(PAGE_KEY);
   return (
-    <SigninContainer>
-      <VisuallyHidden>
-        <Heading>{t('title')}</Heading>
-      </VisuallyHidden>
+    <SigninContainer title={t('description')}>
       {useOAuth ? (
-        <>
+        <Flex direction="column" gap="4" asChild>
           <form
             action={signInOAuth}
             style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '16px' }}
           >
-            <TextField.Root name="callbackUrl" value={callbackUrl ?? ''} hidden readOnly />
-            <Button type="submit">{t('button')}</Button>
+            <Text>{t('usePretix')}</Text>
+            <Text>{t('clickButtonToRedirect')}</Text>
+            <Text>{t('afterLoggingIn')}</Text>
+            <Text>{t('signInToAccount')}</Text>
+            <input type="hidden" name="callbackUrl" value={callbackUrl ?? ''} />
+            <Button type="submit" mt="4">
+              {t('button')}
+            </Button>
           </form>
-          <Text style={{ listStyleType: 'disc', paddingLeft: '20px' }}>
-            <li>
-              <Text as="span">{t('signInToAccount')}</Text>
-            </li>
-            <li>
-              <Text as="span">{t('usePretix')}</Text>
-            </li>
-            <li>
-              <Text as="span">{t('clickButtonToRedirect')}</Text>
-            </li>
-            <li>
-              <Text as="span">{t('afterLoggingIn')}</Text>
-            </li>
-          </Text>
-        </>
+        </Flex>
       ) : (
         <CredentialsForm
           callbackUrl={callbackUrl}
