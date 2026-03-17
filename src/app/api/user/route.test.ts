@@ -1,0 +1,103 @@
+import { usersToVolunteers } from '@/lib/volunteer';
+import { getFilteredUsers } from '@/service/user-service';
+import { checkAuthorisation } from '@/session';
+import { paramsToUserFilters } from '@/utils/user-filters';
+import { NextRequest } from 'next/server';
+import { GET } from './route';
+
+jest.mock('next/server', () => ({
+  NextResponse: {
+    json: jest.fn().mockImplementation((data, init) => ({
+      body: JSON.stringify(data),
+      status: init?.status ?? 200,
+      headers: new Headers(init?.headers)
+    }))
+  }
+}));
+jest.mock('@/session', () => ({
+  checkAuthorisation: jest.fn().mockResolvedValue(true),
+  currentUser: jest.fn().mockResolvedValue({ id: 'currentUser' })
+}));
+jest.mock('@/service/user-service', () => ({
+  getFilteredUsers: jest.fn()
+}));
+
+jest.mock('@/utils/user-filters', () => ({
+  paramsToUserFilters: jest.fn()
+}));
+
+jest.mock('@/lib/volunteer', () => ({
+  usersToVolunteers: jest.fn()
+}));
+
+jest.mock('@/utils/permissions', () => ({
+  getPermissionsProfile: jest.fn().mockReturnValue({ id: 'permissionsProfile' })
+}));
+
+const mockCheckAuthorisation = checkAuthorisation as jest.MockedFunction<typeof checkAuthorisation>;
+const mockGetFilteredUsers = getFilteredUsers as jest.MockedFunction<typeof getFilteredUsers>;
+const mockParamsToUserFilters = paramsToUserFilters as jest.MockedFunction<
+  typeof paramsToUserFilters
+>;
+const mockUsersToVolunteers = usersToVolunteers as jest.MockedFunction<typeof usersToVolunteers>;
+
+describe('GET /api/user', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should fetch users and return a JSON response', async () => {
+    const mockFilter: UserFilters = { roleType: 'admin' };
+    const mockUsers: User[] = [
+      {
+        id: 'user1',
+        name: 'John',
+        chosenName: 'Johnny',
+        email: 'john@example.com',
+        roles: []
+      },
+      {
+        id: 'user2',
+        name: 'Jane',
+        chosenName: 'Janey',
+        email: 'jane@example.com',
+        roles: []
+      }
+    ];
+    const mockVolunteers: VolunteerInfo[] = [
+      { id: 'user1', displayName: 'Johnny' },
+      { id: 'user2', displayName: 'Janey' }
+    ];
+
+    mockParamsToUserFilters.mockReturnValue(mockFilter);
+    mockGetFilteredUsers.mockResolvedValue(mockUsers);
+    mockUsersToVolunteers.mockImplementation((users) =>
+      users.map((user) => ({
+        id: user.id,
+        displayName: user.chosenName
+      }))
+    );
+
+    const request = {
+      nextUrl: { searchParams: new URLSearchParams({ roleType: 'admin' }) }
+    } as unknown as NextRequest;
+    const response = await GET(request);
+
+    expect(mockParamsToUserFilters).toHaveBeenCalledWith(request.nextUrl.searchParams);
+    expect(mockCheckAuthorisation).toHaveBeenCalled();
+    expect(mockGetFilteredUsers).toHaveBeenCalledWith(mockFilter, { id: 'permissionsProfile' });
+    expect(mockUsersToVolunteers).toHaveBeenCalledWith(mockUsers, { id: 'permissionsProfile' });
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual(JSON.stringify(mockVolunteers));
+  });
+
+  it('should throw an error if authorisation fails', async () => {
+    mockCheckAuthorisation.mockRejectedValue(new Error('Unauthorised'));
+
+    await expect(GET({} as NextRequest)).rejects.toThrow('Unauthorised');
+
+    expect(mockCheckAuthorisation).toHaveBeenCalled();
+    expect(mockGetFilteredUsers).not.toHaveBeenCalled();
+  });
+});

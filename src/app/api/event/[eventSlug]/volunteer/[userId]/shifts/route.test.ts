@@ -3,7 +3,7 @@ import { GET } from './route';
 import { getEventBySlug } from '@/service/event-service';
 import { getTeamsForEvent } from '@/service/team-service';
 import { shiftsToCSV } from '@/utils/csv-export';
-import { getUser } from '@/service/user-service';
+import { getVolunteerById } from '@/lib/volunteer';
 
 jest.mock('@/utils/csv-export', () => ({
   shiftsToCSV: jest.fn()
@@ -17,8 +17,8 @@ jest.mock('@/service/shift-service', () => ({
 jest.mock('@/service/team-service', () => ({
   getTeamsForEvent: jest.fn()
 }));
-jest.mock('@/service/user-service', () => ({
-  getUser: jest.fn()
+jest.mock('@/lib/volunteer', () => ({
+  getVolunteerById: jest.fn()
 }));
 jest.mock('next/server', () => ({
   NextResponse: jest.fn().mockImplementation((body, init) => ({
@@ -28,22 +28,19 @@ jest.mock('next/server', () => ({
   }))
 }));
 jest.mock('@/session', () => ({
-  checkAuthorisation: jest.fn().mockResolvedValue(true)
+  checkAuthorisation: jest.fn().mockResolvedValue(true),
+  currentUser: jest.fn().mockResolvedValue({ id: 'current-user' })
 }));
 
 const mockGetEventBySlug = getEventBySlug as jest.MockedFunction<typeof getEventBySlug>;
-const mockGetUser = require('@/service/user-service').getUser as jest.MockedFunction<
-  typeof getUser
->;
+const mockGetVolunteer = getVolunteerById as jest.MockedFunction<typeof getVolunteerById>;
 const mockGetTeamsForEvent = getTeamsForEvent as jest.MockedFunction<typeof getTeamsForEvent>;
 const mockShiftsToCSV = shiftsToCSV as jest.MockedFunction<typeof shiftsToCSV>;
 
 describe('GET /api/event/[eventSlug]/volunteer/[userId]/shifts', () => {
-  const mockUser: User = {
+  const mockVolunteer: VolunteerInfo = {
     id: 'test-user',
-    name: 'Test User',
-    email: 'test.user@example.com',
-    roles: []
+    displayName: 'Test User'
   };
   const mockEvent: EventInfo = {
     id: 'event1',
@@ -66,7 +63,7 @@ describe('GET /api/event/[eventSlug]/volunteer/[userId]/shifts', () => {
   });
 
   it('should return a CSV response when format is csv and event, volunteer exist', async () => {
-    mockGetUser.mockResolvedValue(mockUser);
+    mockGetVolunteer.mockResolvedValue(mockVolunteer);
     mockGetEventBySlug.mockResolvedValue(mockEvent);
     mockGetTeamsForEvent.mockResolvedValue([mockTeam]);
     mockShiftsToCSV.mockReturnValue(mockCSVContent);
@@ -84,7 +81,7 @@ describe('GET /api/event/[eventSlug]/volunteer/[userId]/shifts', () => {
   });
 
   it('should return a 404 response when event or user is not found', async () => {
-    mockGetUser.mockResolvedValue(null);
+    mockGetVolunteer.mockResolvedValue(null);
     mockGetEventBySlug.mockResolvedValue(null);
 
     const request = {

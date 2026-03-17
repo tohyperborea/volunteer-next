@@ -7,41 +7,45 @@ import {
   removeQualificationFromUser
 } from '@/service/qualification-service';
 import { getTeamsById, getTeamsForEvents } from '@/service/team-service';
-import { getUser } from '@/service/user-service';
-import { checkAuthorisation, getMatchingRoles } from '@/session';
+import { checkAuthorisation, currentUser, getMatchingRoles } from '@/session';
 import UserQualifications from '@/ui/user-qualifications';
 import VolunteerCard from '@/ui/volunteer-card';
-import { getUserProfilePath } from '@/utils/path';
-import { Button, Flex, Heading, Select } from '@radix-ui/themes';
+import { getEditUserPath, getUserProfilePath } from '@/utils/path';
+import { Button, Flex, Heading, IconButton, Link, Select } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
 import { revalidatePath } from 'next/cache';
 import { notFound } from 'next/navigation';
 import { getManagedQualifications } from '@/lib/qualification';
 import { FormField } from '@/ui/form-dialog';
-import { PlusIcon } from '@radix-ui/react-icons';
+import { Pencil2Icon, PlusIcon } from '@radix-ui/react-icons';
+import { getVolunteerById } from '@/lib/volunteer';
+import { getPermissionsProfile } from '@/utils/permissions';
 
-const PAGE_KEY = 'UserProfilePage';
+const PAGE_KEY = 'VolunteerProfilePage';
 
 export const generateMetadata = metadata(PAGE_KEY, {
   title: async (params) => {
     const { userId } = params;
     const t = await getTranslations(PAGE_KEY);
-    const user = userId ? await getUser(userId) : null;
+    const permissionsProfile = getPermissionsProfile(await currentUser());
+    const user = await getVolunteerById(userId ?? null, permissionsProfile);
     return t('title', {
-      userName: user?.name ?? ''
+      name: user?.displayName ?? ''
     });
   }
 });
 
-export default async function UserProfilePage({ params }: PageProps<'/user/[userId]'>) {
+export default async function VolunteerProfilePage({ params }: PageProps<'/user/[userId]'>) {
   const { userId } = await params;
   const t = await getTranslations(PAGE_KEY);
-  const volunteer = userId ? await getUser(userId) : null;
+  const permissionsProfile = getPermissionsProfile(await currentUser());
+  const volunteer = await getVolunteerById(userId, permissionsProfile);
   if (!volunteer) {
     notFound();
   }
 
   const isAdmin = await checkAuthorisation([{ type: 'admin' }], true);
+  const isOwnProfile = volunteer.id === permissionsProfile.userId;
   const organisesEvents = await getMatchingRoles({ type: 'organiser' }).then((roles) =>
     roles.filter((role) => role.type === 'organiser').map((role) => role.eventId)
   );
@@ -125,9 +129,20 @@ export default async function UserProfilePage({ params }: PageProps<'/user/[user
   };
 
   return (
-    <Flex direction="column" gap="4">
-      <VolunteerCard volunteer={volunteer} />
-      <Heading as="h2" size="4">
+    <Flex direction="column" gap="4" my="4">
+      <VolunteerCard
+        volunteer={volunteer}
+        actions={
+          (isOwnProfile || isAdmin) && (
+            <IconButton asChild variant="ghost" aria-label={t('edit')} title={t('edit')}>
+              <Link href={getEditUserPath(volunteer.id, getUserProfilePath(volunteer.id))}>
+                <Pencil2Icon width={20} height={20} />
+              </Link>
+            </IconButton>
+          )
+        }
+      />
+      <Heading as="h2" size="4" mt="4">
         {t('qualifications')}
       </Heading>
       <UserQualifications

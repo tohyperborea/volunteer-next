@@ -4,20 +4,21 @@
  * @author Michael Townsend <@continuities>
  */
 
+import { usersToVolunteers } from '@/lib/volunteer';
 import { getFilteredUsers } from '@/service/user-service';
-import { checkAuthorisation } from '@/session';
-import { NextRequest } from 'next/server';
+import { checkAuthorisation, currentUser } from '@/session';
+import { getPermissionsProfile } from '@/utils/permissions';
+import { paramsToUserFilters } from '@/utils/user-filters';
+import { NextRequest, NextResponse } from 'next/server';
 
 export const GET = async (request: NextRequest): Promise<Response> => {
-  const searchParams = request.nextUrl.searchParams;
-  const filter: UserFilters = {
-    roleType: (searchParams.get('roleType') as UserRoleType) || undefined,
-    searchQuery: searchParams.get('searchQuery') || undefined,
-    showDeleted: searchParams.get('showDeleted') === 'true' || false,
-    withQualification: searchParams.get('withQualification') || undefined,
-    withoutQualification: searchParams.get('withoutQualification') || undefined
-  };
   await checkAuthorisation();
-  const users = await getFilteredUsers(filter);
-  return Response.json(users);
+  const searchParams = request.nextUrl.searchParams;
+  const filter = paramsToUserFilters(searchParams);
+  const permissionsProfile = getPermissionsProfile(await currentUser());
+  const volunteers = usersToVolunteers(
+    await getFilteredUsers(filter, permissionsProfile),
+    permissionsProfile
+  );
+  return NextResponse.json(volunteers);
 };

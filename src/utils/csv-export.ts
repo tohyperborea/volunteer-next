@@ -33,6 +33,8 @@ const preventCSVInjection = (value: string): string => {
   return value;
 };
 
+const volunteerToCSVString = (volunteer: VolunteerInfo): string =>
+  `${volunteer.displayName}${volunteer.email ? ` <${volunteer.email}>` : ''}`;
 /**
  * Exports shift data to CSV format
  * @param props.event The event information
@@ -50,7 +52,7 @@ export const shiftsToCSV = ({
   event: EventInfo;
   teams: TeamInfo[];
   shifts: ShiftInfo[];
-  shiftVolunteers: Record<ShiftId, User[]>;
+  shiftVolunteers: Record<ShiftId, VolunteerInfo[]>;
 }): string => {
   const teamNames = teams.reduce<Record<TeamId, string>>((acc, team) => {
     acc[team.id] = team.name;
@@ -67,7 +69,7 @@ export const shiftsToCSV = ({
     ['Date', 'Team', 'Shift Title', 'Start Time', 'Duration (Hours)', 'Volunteers'].join(','),
     ...sortedShifts.map((shift) => {
       const volunteers = shiftVolunteers[shift.id] ?? [];
-      const volunteerRow = volunteers.map((v) => `${v.name} <${v.email}>`).join('\r');
+      const volunteerRow = volunteers.map(volunteerToCSVString).join('\r');
       return [
         eventDayToDate(event.startDate, shift.eventDay).toISOString().split('T')[0],
         escapeForCSV(preventCSVInjection(teamNames[shift.teamId])),

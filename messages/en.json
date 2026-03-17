@@ -51,7 +51,8 @@
     }
   },
   "SignInPage": {
-    "title": "Sign In",
+    "title": "Sign in",
+    "description": "{appName}",
     "signInToAccount": "Sign in to your account to continue.",
     "usePretix": "We use our ticket system, Pretix, to provide a single sign-on experience.",
     "clickButtonToRedirect": "Clicking the button below will redirect you to the Pretix login page.",
@@ -76,9 +77,14 @@
   "SignUpPage": {
     "title": "Create account",
     "description": "Enter your details to create an account.",
-    "namePlaceholder": "Name",
+    "namePlaceholder": "Legal Name",
+    "nameDescription": "Please use your full legal name. This will not be shared with anyone except team leads, and will only be used in emergencies.",
+    "chosenNamePlaceholder": "Chosen Name",
+    "chosenNameDescription": "This is the name that will be displayed to other volunteers. It can be your real name, a nickname, or anything you choose.",
     "emailPlaceholder": "Email",
+    "emailDescription": "Your email will only be shared with team leads, and will be used to communicate important information.",
     "passwordPlaceholder": "Password",
+    "passwordDescription": "Your password must be at least 8 characters long and include both letters and numbers.",
     "button": "Create account",
     "signInLink": "Already have an account? Sign in",
     "errorName_empty": "Please enter your name.",
@@ -117,7 +123,8 @@
   },
   "QualificationDetailsPage": {
     "title": "{qualificationName} | {eventName}",
-    "volunteers": "Volunteers with this qualification"
+    "volunteers": "Volunteers with this qualification",
+    "remove": "Remove qualification from {name}"
   },
   "EventShiftsPage": {
     "title": "Shifts",
@@ -125,7 +132,11 @@
     "export": "Export Shifts"
   },
   "UsersDashboardPage": {
-    "title": "Users Dashboard"
+    "title": "All Volunteers",
+    "createUser": "Create New User",
+    "confirmDeletion": "Confirm Deletion",
+    "confirmDeleteText": "Are you sure you want to delete \"{userName}\"? The record will be permanently deleted after 30 days.",
+    "undelete": "Undelete"
   },
   "CreateUserPage": {
     "title": "Create User",
@@ -140,15 +151,19 @@
   "EditUserPage": {
     "title": "Edit User"
   },
-  "UserProfilePage": {
-    "title": "{userName}",
+  "VolunteerProfilePage": {
+    "title": "{name}",
     "qualifications": "Assigned Qualifications",
-    "addQualification": "Add Qualification to User",
+    "addQualification": "Add Qualification to Volunteer",
     "addQualificationDescription": "Select a qualification",
     "select": "Select...",
-    "assignQualification": "Assign Qualification"
+    "assignQualification": "Assign Qualification",
+    "edit": "Edit Profile"
   },
 
+  "AuthContainer": {
+    "logo": "Logo image"
+  },
   "MenuCard": {
     "update": "Update",
     "delete": "Delete",
@@ -172,31 +187,19 @@
   "TeamCard": {
     "noTeams": "No teams yet!"
   },
-  "UsersList": {
-    "noUsers": "No users yet!",
-    "email": "Email",
-    "role": "Role",
-    "undelete": "Undelete",
-    "confirmDeletion": "Confirm Deletion",
-    "confirmDeleteText": "Are you sure you want to delete \"{userName}\"? The record will be permanently deleted after 30 days.",
-    "delete": "Delete",
-    "cancel": "Cancel"
-  },
-  "UsersFilters": {
-    "createUser": "Create New User",
-    "filter": "Filter",
+  "VolunteerFilters": {
+    "filters": "Filters",
     "showDeleted": "Show Deleted",
-    "searchPlaceholder": "Search by name or email...",
-    "roleFilterPlaceholder": "Filter by role...",
+    "roleFilterLabel": "Filter by role",
     "allRoles": "All roles",
     "admin": "Admin",
     "organiser": "Organiser",
     "teamLead": "Team Lead",
-    "applyFilters": "Apply Filters",
     "clear": "Clear"
   },
   "UserForm": {
-    "userName": "User Name",
+    "userName": "Real Name",
+    "displayName": "Chosen Name",
     "userEmail": "User Email",
     "createButton": "Create User",
     "updateButton": "Update User",
@@ -284,9 +287,7 @@
     "edit": "Edit Qualification"
   },
   "QualificationList": {
-    "title": "Qualifications",
-    "add": "Add Qualification",
-    "searchPlaceholder": "Search..."
+    "none": "No qualifications yet. To gain qualifications, reach out to your event organiser or team lead."
   },
   "QualificationDetails": {
     "delete": "Delete Qualification",
@@ -320,10 +321,18 @@
     "cancel": "Cancel"
   },
   "VolunteerList": {
-    "empty": "No one yet",
-    "remove": "Remove qualification from {name}"
+    "empty": "No one yet"
   },
   "UserQualifications": {
     "remove": "Remove {qualification}"
+  },
+  "RoleBadge": {
+    "admin": "Admin",
+    "organiser": "Organiser",
+    "team-lead": "Team Lead"
+  },
+  "DeleteButton": {
+    "cancel": "Cancel",
+    "delete": "Delete"
   }
 }

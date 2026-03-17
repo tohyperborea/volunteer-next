@@ -3,13 +3,14 @@ import { redirect } from 'next/navigation';
 import { Flex, Heading, Card } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
 import { createUser, addRoleToUser } from '@/service/user-service';
-import { checkAuthorisation } from '@/session';
+import { checkAuthorisation, currentUser } from '@/session';
 import { inTransaction } from '@/db';
 import UserForm from '@/ui/user-form';
 import { getEvents } from '@/service/event-service';
 import { getAllTeams } from '@/service/team-service';
 import { validateNewUser } from '@/validator/user-validator';
 import { getUsersDashboardPath } from '@/utils/path';
+import { getPermissionsProfile } from '@/utils/permissions';
 
 const PAGE_KEY = 'CreateUserPage';
 export const generateMetadata = metadata(PAGE_KEY);
@@ -52,6 +53,7 @@ export default async function CreateUser() {
   };
 
   await checkAuthorisation([{ type: 'admin' }]);
+  const permissionsProfile = getPermissionsProfile(await currentUser());
   const t = await getTranslations(PAGE_KEY);
   const events = await getEvents();
   const teams = await getAllTeams();
@@ -60,7 +62,12 @@ export default async function CreateUser() {
     <Flex direction="column" gap="4">
       <Heading my="4">{t('title')}</Heading>
       <Card>
-        <UserForm onSubmit={onSubmit} events={events} teams={teams} />
+        <UserForm
+          onSubmit={onSubmit}
+          events={events}
+          teams={teams}
+          permissionsProfile={permissionsProfile}
+        />
       </Card>
     </Flex>
   );

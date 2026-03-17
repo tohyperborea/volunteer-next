@@ -25,18 +25,20 @@ export const validateUserId = (data: FormData, fieldName?: string): string => {
  * @returns - Validated user data without ID
  * @throws - Error if validation fails
  */
-export const validateNewUser = (data: FormData): Omit<User, 'id' | 'roles' | 'deletedAt'> => {
-  const name = data.get('name')?.toString() ?? null;
+export const validateNewUser = (data: FormData): UserCreationModel => {
+  const name = data.get('name')?.toString().trim() ?? null;
   if (!name) {
     throw new Error('User name is required');
   }
-  const email = data.get('email')?.toString() ?? null;
+  const email = data.get('email')?.toString().trim() ?? null;
   if (!email) {
     throw new Error('User email is required');
   }
+  const chosenName = data.get('chosenName')?.toString().trim() ?? undefined;
   return {
     name,
-    email
+    email,
+    chosenName: (chosenName?.length ?? 0) ? chosenName : undefined
   };
 };
 
@@ -46,7 +48,7 @@ export const validateNewUser = (data: FormData): Omit<User, 'id' | 'roles' | 'de
  * @returns - Validated user data with ID
  * @throws - Error if validation fails
  */
-export const validateExistingUser = (data: FormData): Pick<User, 'id' | 'name' | 'email'> => {
+export const validateExistingUser = (data: FormData): UserUpdateModel => {
   const id = data.get('id')?.toString() ?? null;
   if (!id) {
     throw new Error('User ID is required');

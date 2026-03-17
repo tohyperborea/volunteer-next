@@ -44,10 +44,7 @@ export default async function ResetPasswordPage({
 
   const t = await getTranslations('ResetPasswordPage');
   return (
-    <SigninContainer>
-      <VisuallyHidden>
-        <Heading>{t('title')}</Heading>
-      </VisuallyHidden>
+    <SigninContainer title={t('title')}>
       {rateLimited && (
         <Text as="p" color="red">
           {t('rateLimitError')}

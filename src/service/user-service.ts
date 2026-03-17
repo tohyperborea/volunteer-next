@@ -8,6 +8,7 @@ import pool from '@/db';
 import { PoolClient } from 'pg';
 import { cache } from 'react';
 import { randomUUID } from 'node:crypto';
+import { canAccess } from '@/utils/permissions';
 
 const roleFromRow = (row: any): UserRole => {
   switch (row.type) {
@@ -36,6 +37,7 @@ const usersFromRows = (rows: any[]): User[] => {
       usersMap.set(row.id, {
         id: row.id,
         name: row.name,
+        chosenName: row.chosenName,
         email: row.email,
         roles: [],
         deletedAt: row.deletedAt
@@ -64,7 +66,15 @@ const usersFromRows = (rows: any[]): User[] => {
 export const getUser = cache(async (userId: UserId): Promise<User | null> => {
   const result = await pool.query(
     `
-    SELECT u.id, u.name, u.email, u."deletedAt", r.type, r."eventId", r."teamId"
+    SELECT 
+      u.id,
+      u.name,
+      u."chosenName",
+      u.email,
+      u."deletedAt",
+      r.type,
+      r."eventId",
+      r."teamId"
     FROM "user" u
     LEFT JOIN role r ON u.id = r."userId"
     WHERE u.id = $1
@@ -86,7 +96,15 @@ export const getUser = cache(async (userId: UserId): Promise<User | null> => {
  */
 export const getUsers = cache(async (): Promise<User[]> => {
   const result = await pool.query(`
-    SELECT u.id, u.name, u.email, u."deletedAt", r.type, r."eventId", r."teamId"
+    SELECT
+      u.id,
+      u.name,
+      u."chosenName",
+      u.email,
+      u."deletedAt",
+      r.type,
+      r."eventId",
+      r."teamId"
     FROM "user" u
     LEFT JOIN role r ON u.id = r."userId"
   `);
@@ -99,50 +117,71 @@ export const getUsers = cache(async (): Promise<User[]> => {
  * @returns A promise that resolves to an array of users matching the filters.
  * @throws {Error} If the database query fails.
  */
-export const getFilteredUsers = cache(async (filters: UserFilters): Promise<User[]> => {
-  const queryParts: string[] = [];
-  const queryParams: any[] = [];
+export const getFilteredUsers = cache(
+  async (filters: UserFilters, permissionsProfile: PermissionsProfile): Promise<User[]> => {
+    const queryParts: string[] = [];
+    const queryParams: any[] = [];
 
-  if (filters.searchQuery) {
-    queryParams.push(`%${filters.searchQuery}%`);
-    queryParts.push(`u.name ILIKE $${queryParams.length}`);
-  }
-  if (!filters.showDeleted) {
-    queryParts.push(`u."deletedAt" IS NULL`);
-  }
-  if (filters.roleType) {
-    queryParams.push(filters.roleType);
-    queryParts.push(
-      `EXISTS (SELECT 1 FROM role r WHERE r."userId" = u.id AND r.type = $${queryParams.length})`
-    );
-  }
-  if (filters.withQualification) {
-    queryParams.push(filters.withQualification);
-    queryParts.push(
-      `EXISTS (SELECT 1 FROM user_qualification uq WHERE uq."userId" = u.id AND uq."qualificationId" = $${queryParams.length})`
-    );
-  }
-  if (filters.withoutQualification) {
-    queryParams.push(filters.withoutQualification);
-    queryParts.push(
-      `NOT EXISTS (SELECT 1 FROM user_qualification uq WHERE uq."userId" = u.id AND uq."qualificationId" = $${queryParams.length})`
-    );
-  }
+    if (filters.searchQuery) {
+      // This method of searching is slow, but will be fine for < 400k users
+      const canAccessName = canAccess('VolunteerInfo', 'fullName', permissionsProfile);
+      const canAccessEmail = canAccess('VolunteerInfo', 'email', permissionsProfile);
+      queryParams.push(`%${filters.searchQuery}%`);
+      const index = queryParams.length;
+      const matchers = [`u."chosenName" ILIKE $${index}`];
+      if (canAccessEmail) {
+        matchers.push(`u.email ILIKE $${index}`);
+      }
+      if (canAccessName) {
+        matchers.push(`u.name ILIKE $${index}`);
+      }
+      queryParts.push(`(${matchers.join(' OR ')})`);
+    }
+    if (!filters.showDeleted) {
+      queryParts.push(`u."deletedAt" IS NULL`);
+    }
+    if (filters.roleType) {
+      queryParams.push(filters.roleType);
+      queryParts.push(
+        `EXISTS (SELECT 1 FROM role r WHERE r."userId" = u.id AND r.type = $${queryParams.length})`
+      );
+    }
+    if (filters.withQualification) {
+      queryParams.push(filters.withQualification);
+      queryParts.push(
+        `EXISTS (SELECT 1 FROM user_qualification uq WHERE uq."userId" = u.id AND uq."qualificationId" = $${queryParams.length})`
+      );
+    }
+    if (filters.withoutQualification) {
+      queryParams.push(filters.withoutQualification);
+      queryParts.push(
+        `NOT EXISTS (SELECT 1 FROM user_qualification uq WHERE uq."userId" = u.id AND uq."qualificationId" = $${queryParams.length})`
+      );
+    }
 
-  const whereClause = queryParts.length > 0 ? `WHERE ${queryParts.join(' AND ')}` : '';
+    const whereClause = queryParts.length > 0 ? `WHERE ${queryParts.join(' AND ')}` : '';
 
-  const result = await pool.query(
-    `
-      SELECT u.id, u.name, u.email, u."deletedAt", r.type, r."eventId", r."teamId"
+    const result = await pool.query(
+      `
+      SELECT
+        u.id,
+        u.name,
+        u."chosenName",
+        u.email,
+        u."deletedAt",
+        r.type,
+        r."eventId",
+        r."teamId"
       FROM "user" u
       LEFT JOIN role r ON u.id = r."userId"
       ${whereClause}
     `,
-    queryParams
-  );
+      queryParams
+    );
 
-  return usersFromRows(result.rows);
-});
+    return usersFromRows(result.rows);
+  }
+);
 
 /**
  * Fetches all users with a specific role.
@@ -162,7 +201,15 @@ export const getUsersWithRole = cache(async (role: UserRole): Promise<User[]> =>
   }
   const result = await pool.query(
     `
-    SELECT u.id, u.name, u.email, u."deletedAt", r.type, r."eventId", r."teamId"
+    SELECT
+      u.id,
+      u.name,
+      u."chosenName",
+      u.email,
+      u."deletedAt",
+      r.type,
+      r."eventId",
+      r."teamId"
     FROM "user" u
     LEFT JOIN role r ON u.id = r."userId"
     WHERE EXISTS (${roleQuery.join(' AND ')})
@@ -192,20 +239,29 @@ export const getUserRoles = cache(async (userId: UserId): Promise<UserRole[]> =>
  * @param client - Optional database client for transaction support.
  * @return The newly created User object, including its ID.
  */
-export const createUser = async (
-  user: Omit<User, 'id' | 'roles'>,
-  client?: PoolClient
-): Promise<User> => {
+export const createUser = async (user: UserCreationModel, client?: PoolClient): Promise<User> => {
   const db = client || pool;
   const id = randomUUID();
   const result = await db.query(
-    'INSERT INTO "user" (id, name, email, "emailVerified") VALUES ($1, $2, $3, $4) RETURNING id, name, email',
-    [id, user.name, user.email, false]
+    `INSERT INTO "user" (
+      id,
+      name,
+      "chosenName",
+      email,
+      "emailVerified"
+    ) VALUES ($1, $2, $3, $4, $5) 
+    RETURNING
+      id,
+      name,
+      "chosenName",
+      email`,
+    [id, user.name, user.chosenName, user.email, false]
   );
   const row = result.rows[0];
   const newUser: User = {
     id: row.id,
     name: row.name,
+    chosenName: row.chosenName,
     email: row.email,
     roles: []
   };
@@ -221,15 +277,20 @@ export const createUser = async (
  */
 export const updateUser = async (
   userId: UserId,
-  user: Omit<User, 'id' | 'roles' | 'deletedAt'>,
+  user: UserUpdateModel,
   client?: PoolClient
 ): Promise<void> => {
   const db = client || pool;
-  await db.query('UPDATE "user" SET name = $1, email = $2 WHERE id = $3', [
-    user.name,
-    user.email,
-    userId
-  ]);
+  await db.query(
+    `
+    UPDATE "user"
+    SET
+      name = $1,
+      "chosenName" = $2,
+      email = $3
+    WHERE id = $4`,
+    [user.name, user.chosenName, user.email, userId]
+  );
 };
 
 /**
@@ -320,15 +381,3 @@ export const undeleteUser = async (userId: UserId, client?: PoolClient): Promise
   const db = client || pool;
   await db.query('UPDATE "user" SET "deletedAt" = NULL WHERE id = $1', [userId]);
 };
-
-/**
- * Fetches all users with a specific qualification.
- * @param qualificationId - The ID of the qualification to filter users by.
- * @returns An array of User objects that have the specified qualification.
- */
-export const getUsersWithQualification = cache(
-  async (qualificationId: QualificationId): Promise<User[]> => {
-    console.log(`Fetching users with qualification ${qualificationId}`);
-    return []; // TODO
-  }
-);

@@ -20,9 +20,9 @@ interface Props {
   eventId: EventId;
   onSubmit: (data: FormData) => Promise<void>;
   backOnCancel?: boolean;
-  teamleadOptions: User[];
+  teamleadOptions: VolunteerInfo[];
   editingTeam?: TeamInfo;
-  editingTeamlead?: User;
+  editingTeamlead?: VolunteerInfo;
 }
 
 export default function TeamForm({
@@ -94,9 +94,9 @@ export default function TeamForm({
           <Select.Root required name="teamleadId" defaultValue={editingTeamlead?.id}>
             <Select.Trigger placeholder={t('teamLead')} />
             <Select.Content>
-              {teamleadOptions.map((user) => (
-                <Select.Item key={user.id} value={user.id}>
-                  {user.name}
+              {teamleadOptions.map((volunteer) => (
+                <Select.Item key={volunteer.id} value={volunteer.id}>
+                  {volunteer.displayName}
                 </Select.Item>
               ))}
             </Select.Content>

@@ -6,60 +6,29 @@
 
 'use client';
 
-import { Flex, IconButton, Text } from '@radix-ui/themes';
-import SearchBar from '../search-bar';
+import { Flex, Text } from '@radix-ui/themes';
 import styles from './styles.module.css';
 import { useTranslations } from 'next-intl';
 import VolunteerCard from '../volunteer-card';
-import { Cross1Icon } from '@radix-ui/react-icons';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import VolunteerFilters from '../volunteer-filters';
 
 interface Props {
-  volunteers: User[];
-  onRemove?: FormSubmitAction;
+  volunteers: VolunteerInfo[];
+  withFilters?: (keyof UserFilters)[];
+  itemActions?: Record<UserId, React.ReactNode>;
 }
 
-export default function VolunteerList({ volunteers, onRemove }: Props) {
+export default function VolunteerList({ volunteers, withFilters = [], itemActions = {} }: Props) {
   const t = useTranslations('VolunteerList');
-  const searchParams = useSearchParams();
-  const pathname = usePathname();
-  const { replace } = useRouter();
-  const onSearch = (search: string) => {
-    const params = new URLSearchParams(searchParams);
-    if (search) {
-      params.set('searchQuery', search);
-    } else {
-      params.delete('searchQuery');
-    }
-    replace(`${pathname}${params.size > 0 ? `?${params.toString()}` : ''}`);
-  };
   return (
     <Flex direction="column" gap="4">
-      <SearchBar onChange={onSearch} />
+      <VolunteerFilters withFilters={withFilters} />
       {volunteers.length === 0 ? <Text>{t('empty')}</Text> : null}
       <Flex asChild p="0" m="0" direction="column" gap="2">
         <ul className={styles.list}>
           {volunteers.map((volunteer) => (
             <li key={volunteer.id}>
-              <VolunteerCard
-                volunteer={volunteer}
-                actions={
-                  onRemove ? (
-                    <form>
-                      <input type="hidden" name="volunteerId" value={volunteer.id} />
-                      <IconButton
-                        variant="ghost"
-                        color="red"
-                        formAction={onRemove}
-                        aria-label={t('remove', { name: volunteer.name })}
-                        title={t('remove', { name: volunteer.name })}
-                      >
-                        <Cross1Icon />
-                      </IconButton>
-                    </form>
-                  ) : null
-                }
-              />
+              <VolunteerCard volunteer={volunteer} actions={itemActions[volunteer.id]} />
             </li>
           ))}
         </ul>

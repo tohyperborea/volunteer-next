@@ -4,12 +4,14 @@ import { Flex, Heading, Card } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
 import { getEventBySlug } from '@/service/event-service';
 import { addRoleToUser, getUsers } from '@/service/user-service';
-import { checkAuthorisation } from '@/session';
+import { checkAuthorisation, currentUser } from '@/session';
 import { inTransaction } from '@/db';
 import TeamForm from '@/ui/team-form';
 import { validateUserId } from '@/validator/user-validator';
 import { validateNewTeam } from '@/validator/team-validator';
 import { createTeam } from '@/service/team-service';
+import { usersToVolunteers } from '@/lib/volunteer';
+import { getPermissionsProfile } from '@/utils/permissions';
 
 const PAGE_KEY = 'CreateTeamPage';
 
@@ -35,7 +37,8 @@ export default async function CreateTeam({ params }: Props) {
 
   await checkAuthorisation([{ type: 'admin' }, { type: 'organiser', eventId: event.id }]);
   const t = await getTranslations(PAGE_KEY);
-  const users = await getUsers();
+  const permissionsProfile = getPermissionsProfile(await currentUser());
+  const volunteers = usersToVolunteers(await getUsers(), permissionsProfile);
 
   const onSubmit = async (data: FormData) => {
     'use server';
@@ -60,7 +63,12 @@ export default async function CreateTeam({ params }: Props) {
     <Flex direction="column" gap="4">
       <Heading my="4">{t('title', { eventName: event?.name ?? '' })}</Heading>
       <Card>
-        <TeamForm eventId={event.id} onSubmit={onSubmit} backOnCancel teamleadOptions={users} />
+        <TeamForm
+          eventId={event.id}
+          onSubmit={onSubmit}
+          backOnCancel
+          teamleadOptions={volunteers}
+        />
       </Card>
     </Flex>
   );

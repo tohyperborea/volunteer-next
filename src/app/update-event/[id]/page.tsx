@@ -9,11 +9,13 @@ import {
   getUsersWithRole,
   removeRoleFromUsers
 } from '@/service/user-service';
-import { checkAuthorisation } from '@/session';
+import { checkAuthorisation, currentUser } from '@/session';
 import { inTransaction } from '@/db';
 import EventForm from '@/ui/event-form';
 import { validateExistingEvent } from '@/validator/event-validator';
 import { validateUserId } from '@/validator/user-validator';
+import { usersToVolunteers, userToVolunteer } from '@/lib/volunteer';
+import { getPermissionsProfile } from '@/utils/permissions';
 
 const PAGE_KEY = 'UpdateEventPage';
 
@@ -61,9 +63,12 @@ export default async function UpdateEvent({ params }: Props) {
     if (!event) {
       notFound();
     }
-
-    const users = await getUsers();
-    const organiser = (await getUsersWithRole({ type: 'organiser', eventId: event.id }))[0];
+    const permissionsProfile = getPermissionsProfile(await currentUser());
+    const volunteers = usersToVolunteers(await getUsers(), permissionsProfile);
+    const organiser = userToVolunteer(
+      (await getUsersWithRole({ type: 'organiser', eventId: event.id }))[0],
+      permissionsProfile
+    );
 
     return (
       <Flex direction="column" gap="4">
@@ -72,7 +77,7 @@ export default async function UpdateEvent({ params }: Props) {
           <EventForm
             onSubmit={onSubmit}
             backOnCancel
-            organiserOptions={users}
+            organiserOptions={volunteers}
             editingEvent={event}
             editingOrganiser={organiser}
           />

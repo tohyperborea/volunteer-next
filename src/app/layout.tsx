@@ -17,7 +17,8 @@ import { getTranslations } from 'next-intl/server';
 import { headers } from 'next/headers';
 import { getEventBySlug } from '@/service/event-service';
 import { getEventDateRangeDisplayText } from '@/utils/date';
-import styles from './styles.module.css';
+import { userToVolunteer } from '@/lib/volunteer';
+import { getPermissionsProfile } from '@/utils/permissions';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('Metadata');
@@ -41,7 +42,6 @@ export default async function RootLayout({
   // Extract event slug from pathname if it matches /event/[eventSlug] pattern
   let navBarTitle = process.env.APP_NAME;
   let navBarSubtitle = undefined;
-  let titlePathname = '/';
   const eventMatch = pathname.match(/^\/event\/([^\/]+)/);
   if (eventMatch) {
     const eventSlug = eventMatch[1];
@@ -49,7 +49,6 @@ export default async function RootLayout({
     if (event) {
       navBarTitle = event.name;
       navBarSubtitle = getEventDateRangeDisplayText({ event });
-      titlePathname = `/event/${eventSlug}`;
     }
   }
 
@@ -64,8 +63,7 @@ export default async function RootLayout({
         <NavBar
           title={navBarTitle}
           subtitle={navBarSubtitle}
-          user={user}
-          titlePathname={titlePathname}
+          currentUser={userToVolunteer(user, getPermissionsProfile(user))}
         >
           {childrenWithWrapper}
         </NavBar>

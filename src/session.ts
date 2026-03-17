@@ -22,6 +22,7 @@ export const currentUser = cache(async (): Promise<User | null> => {
         return {
           id: 'debug-admin',
           name: 'Debug Admin',
+          chosenName: 'Debug Admin',
           email: 'admin@localhost',
           roles: [{ type: 'admin' }]
         };
@@ -29,6 +30,7 @@ export const currentUser = cache(async (): Promise<User | null> => {
         return {
           id: 'debug-organiser',
           name: 'Debug Organiser',
+          chosenName: 'Debug Organiser',
           email: 'organiser@localhost',
           roles: [
             {
@@ -41,6 +43,7 @@ export const currentUser = cache(async (): Promise<User | null> => {
         return {
           id: 'debug-team-lead',
           name: 'Debug Team Lead',
+          chosenName: 'Debug Team Lead',
           email: 'teamlead@localhost',
           roles: [
             {
@@ -54,6 +57,7 @@ export const currentUser = cache(async (): Promise<User | null> => {
         return {
           id: 'debug-volunteer',
           name: 'Debug Volunteer',
+          chosenName: 'Debug Volunteer',
           email: 'volunteer@localhost',
           roles: []
         };

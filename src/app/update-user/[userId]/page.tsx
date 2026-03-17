@@ -1,5 +1,5 @@
 import metadata from '@/i18n/metadata';
-import { redirect } from 'next/navigation';
+import { notFound, redirect, unauthorized } from 'next/navigation';
 import { Flex, Heading, Card } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
 import { getUser, updateUser, removeRoleFromUsers, addRoleToUser } from '@/service/user-service';
@@ -9,21 +9,50 @@ import UserForm from '@/ui/user-form';
 import { getEvents } from '@/service/event-service';
 import { getAllTeams } from '@/service/team-service';
 import { validateExistingUser } from '@/validator/user-validator';
-import { getUsersDashboardPath } from '@/utils/path';
+import { getEditUserPath, getUsersDashboardPath } from '@/utils/path';
+import { getPermissionsProfile } from '@/utils/permissions';
+import { revalidatePath } from 'next/cache';
 
 const PAGE_KEY = 'EditUserPage';
 export const generateMetadata = metadata(PAGE_KEY);
 
-export default async function EditUser({ params }: { params: Promise<{ userId: string }> }) {
+interface SearchParams {
+  callbackUrl?: string;
+}
+
+export default async function EditUser({
+  params,
+  searchParams
+}: PagePropsWithSearch<'/update-user/[userId]', SearchParams>) {
   const userId = (await params).userId;
   if (!userId) {
-    throw new Error('User ID is required');
+    notFound();
   }
+
+  const isAdmin = await checkAuthorisation([{ type: 'admin' }], true);
+  const permissionsProfile = getPermissionsProfile(await currentUser());
+  if (!isAdmin && permissionsProfile.userId !== userId) {
+    unauthorized();
+  }
+
+  const user = await getUser(userId);
+  if (!user) {
+    throw new Error('User not found');
+  }
+
+  const { callbackUrl = getUsersDashboardPath() } = await searchParams;
+  const events = await getEvents();
+  const teams = await getAllTeams();
+  const t = await getTranslations(PAGE_KEY);
 
   const onSubmit = async (data: FormData) => {
     'use server';
 
-    await checkAuthorisation([{ type: 'admin' }]);
+    const isAdmin = await checkAuthorisation([{ type: 'admin' }], true);
+    const permissionsProfile = getPermissionsProfile(await currentUser());
+    if (!isAdmin && permissionsProfile.userId !== userId) {
+      unauthorized();
+    }
 
     const validatedUser = validateExistingUser(data);
 
@@ -32,17 +61,12 @@ export default async function EditUser({ params }: { params: Promise<{ userId: s
       throw new Error('User not found');
     }
 
-    await inTransaction(async (client) => {
-      await updateUser(
-        validatedUser.id,
-        {
-          name: validatedUser.name,
-          email: validatedUser.email
-        },
-        client
-      );
-    });
-    redirect(getUsersDashboardPath());
+    if (!isAdmin && existingUser.email !== validatedUser.email) {
+      unauthorized();
+    }
+
+    await updateUser(validatedUser.id, validatedUser);
+    redirect(callbackUrl);
   };
 
   const onDeleteRole = async (role: UserRole, roleUserId: string) => {
@@ -57,7 +81,7 @@ export default async function EditUser({ params }: { params: Promise<{ userId: s
     }
 
     await removeRoleFromUsers(role as UserRole, [roleUserId]);
-    redirect(`/update-user/${roleUserId}`);
+    revalidatePath(getEditUserPath(roleUserId));
   };
 
   const onAddRole = async (data: FormData) => {
@@ -97,20 +121,8 @@ export default async function EditUser({ params }: { params: Promise<{ userId: s
       }
     });
 
-    redirect(`/update-user/${roleUserId}`);
+    revalidatePath(getEditUserPath(roleUserId));
   };
-
-  const user = await getUser(userId);
-  if (!user) {
-    throw new Error('User not found');
-  }
-
-  const events = await getEvents();
-  const teams = await getAllTeams();
-
-  await checkAuthorisation([{ type: 'admin' }]);
-  const current = await currentUser();
-  const t = await getTranslations(PAGE_KEY);
 
   return (
     <Flex direction="column" gap="4">
@@ -123,7 +135,8 @@ export default async function EditUser({ params }: { params: Promise<{ userId: s
           editingUser={user}
           events={events}
           teams={teams}
-          currentUserId={current?.id}
+          permissionsProfile={permissionsProfile}
+          callbackUrl={callbackUrl}
         />
       </Card>
     </Flex>

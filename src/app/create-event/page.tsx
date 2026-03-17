@@ -4,11 +4,13 @@ import { Flex, Heading, Card } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
 import { createEvent } from '@/service/event-service';
 import { addRoleToUser, getUsers } from '@/service/user-service';
-import { checkAuthorisation } from '@/session';
+import { checkAuthorisation, currentUser } from '@/session';
 import { inTransaction } from '@/db';
 import EventForm from '@/ui/event-form';
 import { validateNewEvent } from '@/validator/event-validator';
 import { validateUserId } from '@/validator/user-validator';
+import { usersToVolunteers } from '@/lib/volunteer';
+import { getPermissionsProfile } from '@/utils/permissions';
 
 const PAGE_KEY = 'CreateEventPage';
 
@@ -32,13 +34,14 @@ export default async function CreateEvent() {
 
   await checkAuthorisation([{ type: 'admin' }]);
   const t = await getTranslations(PAGE_KEY);
-  const users = await getUsers();
+  const permissionsProfile = getPermissionsProfile(await currentUser());
+  const volunteers = usersToVolunteers(await getUsers(), permissionsProfile);
 
   return (
     <Flex direction="column" gap="4">
       <Heading my="4">{t('title')}</Heading>
       <Card>
-        <EventForm onSubmit={onSubmit} backOnCancel organiserOptions={users} />
+        <EventForm onSubmit={onSubmit} backOnCancel organiserOptions={volunteers} />
       </Card>
     </Flex>
   );

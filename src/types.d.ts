@@ -5,96 +5,127 @@
  * @since 2025-11-10
  */
 
-type FormSubmitAction = (data: FormData) => Promise<void>;
+import type { AppRoutes } from '../../../../.next/types/routes';
 
-type PartialWithRequired<T, R extends keyof T> = Partial<T> & Pick<T, R>;
+declare global {
+  type FormSubmitAction = (data: FormData) => Promise<void>;
+  type PagePropsWithSearch<T extends AppRoutes, S> = Omit<PageProps<T>, 'searchParams'> & {
+    searchParams: Promise<S>;
+  };
+  type PartialWithRequired<T, R extends keyof T> = Partial<T> & Pick<T, R>;
+  type OptionalKeys<T> = {
+    [K in keyof T]-?: undefined extends T[K] ? K : never;
+  }[keyof T];
 
-type UserId = string;
-type EventId = string;
-type TeamId = string;
-type ShiftId = string;
-type RequirementId = string;
-type QualificationId = string;
-type UrlSlug = string;
-type TimeString = string; // ISO 8601 time string, e.g. "14:30"
-type EventDay = number; // 0 for first day, 1 for second day, etc.
+  type UserId = string;
+  type EventId = string;
+  type TeamId = string;
+  type ShiftId = string;
+  type RequirementId = string;
+  type QualificationId = string;
+  type UrlSlug = string;
+  type TimeString = string; // ISO 8601 time string, e.g. "14:30"
+  type EventDay = number; // 0 for first day, 1 for second day, etc.
 
-type EventDayTime = {
-  day: EventDay;
-  time: TimeString;
-};
+  type EventDayTime = {
+    day: EventDay;
+    time: TimeString;
+  };
 
-interface User {
-  id: UserId;
-  name: string;
-  email: string;
-  roles: UserRole[];
-  deletedAt?: Date;
-}
+  /* Objects of this type contain PII and should NEVER be sent to the client, with the exception of currentUser
+   * Convert to a VolunteerInfo object using @/lib/volunteer.ts */
+  interface User {
+    id: UserId;
+    name: string;
+    chosenName: string;
+    email: string;
+    roles: UserRole[];
+    deletedAt?: Date;
+  }
+  type UserCreationModel = Omit<User, 'id' | 'roles' | 'chosenName'> &
+    Partial<Pick<User, 'chosenName'>>;
+  type UserUpdateModel = Omit<User, 'roles' | 'chosenName'> & Partial<Pick<User, 'chosenName'>>;
 
-/* These align with the role_type enum in the database
- * If you change this, you must also change the role_type enum in psql */
-type UserRoleType = 'admin' | 'organiser' | 'team-lead';
-type UserRole =
-  // Global platform-wide control
-  | { type: 'admin' }
+  /* These align with the role_type enum in the database
+   * If you change this, you must also change the role_type enum in psql */
+  type UserRoleType = 'admin' | 'organiser' | 'team-lead';
+  type UserRole =
+    // Global platform-wide control
+    | { type: 'admin' }
 
-  //Full control over all event specific data, users, and settings
-  | { type: 'organiser'; eventId: EventId }
+    //Full control over all event specific data, users, and settings
+    | { type: 'organiser'; eventId: EventId }
 
-  // Manage volunteers in assigned area
-  | { type: 'team-lead'; eventId: EventId; teamId: TeamId };
+    // Manage volunteers in assigned area
+    | { type: 'team-lead'; eventId: EventId; teamId: TeamId };
 
-type UserRoleMatchCriteria = PartialWithRequired<UserRole, 'type'>;
+  type PermissionsProfile = {
+    userId: UserId;
+  } & {
+    [K in UserRoleType]: boolean;
+  };
 
-interface EventInfo {
-  id: EventId;
-  name: string;
-  slug: UrlSlug;
-  startDate: Date;
-  endDate: Date;
-}
+  type UserRoleMatchCriteria = PartialWithRequired<UserRole, 'type'>;
 
-interface TeamInfo {
-  id: TeamId;
-  name: string;
-  eventId: EventId;
-  slug: UrlSlug;
-  description: string;
-}
+  interface EventInfo {
+    id: EventId;
+    name: string;
+    slug: UrlSlug;
+    startDate: Date;
+    endDate: Date;
+  }
 
-interface UserFilters {
-  roleType?: UserRoleType;
-  searchQuery?: string;
-  showDeleted?: boolean;
-  withQualification?: QualificationId;
-  withoutQualification?: QualificationId;
-}
+  interface TeamInfo {
+    id: TeamId;
+    name: string;
+    eventId: EventId;
+    slug: UrlSlug;
+    description: string;
+  }
 
-interface ShiftInfo {
-  id: ShiftId;
-  teamId: TeamId;
-  isActive: boolean;
-  title: string;
-  eventDay: EventDay;
-  startTime: TimeString;
-  durationHours: number;
-  minVolunteers: number;
-  maxVolunteers: number;
-  requirement?: QualificationId;
-}
+  interface UserFilters {
+    roleType?: UserRoleType;
+    searchQuery?: string;
+    showDeleted?: boolean;
+    withQualification?: QualificationId;
+    withoutQualification?: QualificationId;
+  }
 
-type ThemeMode = 'light' | 'dark' | 'system';
+  interface ShiftInfo {
+    id: ShiftId;
+    teamId: TeamId;
+    isActive: boolean;
+    title: string;
+    eventDay: EventDay;
+    startTime: TimeString;
+    durationHours: number;
+    minVolunteers: number;
+    maxVolunteers: number;
+    requirement?: QualificationId;
+  }
 
-interface QualificationInfo {
-  id: QualificationId;
-  name: string;
-  eventId: EventId;
-  teamId?: TeamId;
-  errorMessage: string;
-}
+  type ThemeMode = 'light' | 'dark' | 'system';
 
-interface ShiftRequirement {
-  shiftId: ShiftId;
-  qualificationId: QualificationId;
+  interface QualificationInfo {
+    id: QualificationId;
+    name: string;
+    eventId: EventId;
+    teamId?: TeamId;
+    errorMessage: string;
+  }
+
+  interface ShiftRequirement {
+    shiftId: ShiftId;
+    qualificationId: QualificationId;
+  }
+
+  interface VolunteerInfo {
+    id: UserId;
+    displayName: string;
+
+    /* Only included if the requesting user has permission to see it */
+    roles?: UserRole[];
+    email?: string;
+    fullName?: string;
+  }
 }

@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useCallback, useRef, useState, useTransition } from 'react';
-import { Text, AlertDialog, Button, TextField } from '@radix-ui/themes';
+import { Text, AlertDialog, Button, TextField, Flex } from '@radix-ui/themes';
 import { isRedirectError } from 'next/dist/client/components/redirect-error';
 import styles from './styles.module.css';
 import { useTranslations } from 'next-intl';
@@ -77,56 +77,62 @@ export function CredentialsForm({
 
   if (view === 'forgot') {
     return (
-      <>
+      <Flex direction="column" gap="4">
         <Text as="p">{t('forgotDescription')}</Text>
         <form action={requestResetAction} className={styles.signinForm}>
-          <TextField.Root
-            name="email"
-            placeholder={t('emailPlaceholder') ?? ''}
-            autoComplete="email"
-            required
-          />
-          <Button type="submit">{t('forgotButton')}</Button>
-          <Button type="button" onClick={showSignIn}>
-            {t('backToSignIn')}
-          </Button>
+          <Flex direction="column" gap="4">
+            <TextField.Root
+              name="email"
+              placeholder={t('emailPlaceholder') ?? ''}
+              autoComplete="email"
+              required
+            />
+            <Button type="submit">{t('forgotButton')}</Button>
+            <Button variant="ghost" onClick={showSignIn}>
+              {t('backToSignIn')}
+            </Button>
+          </Flex>
         </form>
-      </>
+      </Flex>
     );
   }
 
   return (
-    <>
-      <Text as="p">{t('title')}</Text>
-      <form onSubmit={handleSignIn} className={styles.signinForm}>
-        <input type="hidden" name="callbackUrl" value={callbackUrl ?? ''} />
-        <TextField.Root
-          name="email"
-          placeholder={t('emailPlaceholder') ?? ''}
-          autoComplete="email"
-          required
-        />
-        <TextField.Root
-          name="password"
-          type="password"
-          placeholder={t('passwordPlaceholder') ?? ''}
-          autoComplete="current-password"
-          required
-        />
-        <Button type="submit" disabled={isPending}>
-          {isPending ? '...' : t('buttonCredentials')}
-        </Button>
-        <div className={styles.signinLinks}>
-          <Link
-            href={`/signup${callbackUrl !== '/' ? `?callbackUrl=${encodeURIComponent(callbackUrl)}` : ''}`}
-          >
-            {t('createAccount')}
-          </Link>
-          <Button type="button" onClick={showForgot}>
-            {t('forgotPassword')}
+    <Flex direction="column" gap="4">
+      <Text as="p">{t('signInToAccount')}</Text>
+      <Flex asChild direction="column" gap="5">
+        <form onSubmit={handleSignIn}>
+          <input type="hidden" name="callbackUrl" value={callbackUrl ?? ''} />
+          <Flex direction="column" gap="2">
+            <TextField.Root
+              name="email"
+              placeholder={t('emailPlaceholder') ?? ''}
+              autoComplete="email"
+              required
+            />
+            <TextField.Root
+              name="password"
+              type="password"
+              placeholder={t('passwordPlaceholder') ?? ''}
+              autoComplete="current-password"
+              required
+            />
+          </Flex>
+          <Button type="submit" disabled={isPending}>
+            {isPending ? '...' : t('buttonCredentials')}
           </Button>
-        </div>
-      </form>
+          <Flex direction="column" gap="2" align="center">
+            <Link
+              href={`/signup${callbackUrl !== '/' ? `?callbackUrl=${encodeURIComponent(callbackUrl)}` : ''}`}
+            >
+              {t('createAccount')}
+            </Link>
+            <Button type="button" variant="soft" color="gray" onClick={showForgot}>
+              {t('forgotPassword')}
+            </Button>
+          </Flex>
+        </form>
+      </Flex>
 
       <AlertDialog.Root
         open={showErrorDialog}
@@ -155,6 +161,6 @@ export function CredentialsForm({
           </AlertDialog.Action>
         </AlertDialog.Content>
       </AlertDialog.Root>
-    </>
+    </Flex>
   );
 }
