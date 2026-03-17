@@ -6,7 +6,7 @@
 
 'use client';
 
-import { Pencil2Icon, TrashIcon } from '@radix-ui/react-icons';
+import { Pencil2Icon } from '@radix-ui/react-icons';
 import QualificationCard from '../qualification-card';
 import { Flex, Button, Box } from '@radix-ui/themes';
 import { useTranslations } from 'next-intl';

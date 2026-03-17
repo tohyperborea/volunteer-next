@@ -2,6 +2,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import QualificationDetails from './index';
 import QualificationCard from '../qualification-card';
 import QualificationDialog from '../qualification-dialog';
+import DeleteButton from '@/ui/delete-button';
 
 jest.mock('next-intl', () => ({
   useTranslations: () => (key: string) => key,
@@ -11,6 +12,7 @@ jest.mock('next-intl', () => ({
 
 jest.mock('../qualification-card', () => jest.fn(() => <div>Mocked QualificationCard</div>));
 jest.mock('../qualification-dialog', () => jest.fn(() => <div>Mocked QualificationDialog</div>));
+jest.mock('@/ui/delete-button', () => jest.fn(() => <div data-testid="delete-button"></div>));
 
 describe('QualificationDetails', () => {
   const mockQualification = {
@@ -36,6 +38,7 @@ describe('QualificationDetails', () => {
 
   const mockOnSave = jest.fn();
   const mockOnDelete = jest.fn();
+  const mockDeleteButton = DeleteButton as jest.MockedFunction<typeof DeleteButton>;
 
   it('renders QualificationCard with correct props', () => {
     render(
@@ -62,7 +65,21 @@ describe('QualificationDetails', () => {
       />
     );
 
-    expect(screen.getByText('delete')).toBeInTheDocument();
+    expect(screen.getByTestId('delete-button')).toBeInTheDocument();
+    expect(mockDeleteButton).toHaveBeenCalledWith(
+      expect.objectContaining({
+        onDelete: mockOnDelete
+      }),
+      undefined
+    );
+  });
+
+  it('does not render delete button when onDelete is not provided', () => {
+    render(
+      <QualificationDetails qualification={mockQualification} event={mockEvent} teams={mockTeams} />
+    );
+
+    expect(screen.queryByTestId('delete-button')).not.toBeInTheDocument();
   });
 
   it('renders QualificationDialog when canEdit is true', () => {
@@ -97,5 +114,13 @@ describe('QualificationDetails', () => {
 
     fireEvent.click(screen.getByText('Mocked QualificationCard'));
     expect(QualificationDialog).toHaveBeenCalled();
+  });
+
+  it('does not render QualificationDialog when canEdit is false', () => {
+    render(
+      <QualificationDetails qualification={mockQualification} event={mockEvent} teams={mockTeams} />
+    );
+
+    expect(screen.queryByText('Mocked QualificationDialog')).not.toBeInTheDocument();
   });
 });

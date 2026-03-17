@@ -8,7 +8,7 @@
 
 import { Button, ButtonProps, Dialog, Flex } from '@radix-ui/themes';
 import { TrashIcon } from '@radix-ui/react-icons';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 
 type Props = {
