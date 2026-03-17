@@ -26,9 +26,9 @@
     "title": "Update Event"
   },
   "TeamsDashboardPage": {
-    "teamsForEvent": "Teams for {eventName}",
-    "noTeams": "No teams yet!",
-    "createTeam": "Create New Team"
+    "title": "All teams",
+    "createTeam": "Add Team",
+    "edit": "Edit Team: {teamName}"
   },
   "CreateTeamPage": {
     "title": "Create Team for {eventName}"
@@ -220,6 +220,9 @@
     "eventAndTeamRequired": "Event and team are required for team lead role",
     "cannotRemoveOwnAdminRole": "You cannot remove your own admin role",
     "addRole": "Add Role"
+  },
+  "TeamList": {
+    "noTeams": "No teams yet!"
   },
   "TeamForm": {
     "teamName": "Team Name",

@@ -6,26 +6,28 @@
 
 'use client';
 
-import { useTranslations } from 'next-intl';
-import { Text } from '@radix-ui/themes';
-import MenuCard from '@/ui/menu-card';
+import { getTeamInfoPath } from '@/utils/path';
+import { Card, Flex, Heading, Link, Text } from '@radix-ui/themes';
 
 interface Props {
   team: TeamInfo;
-  eventSlug: UrlSlug;
-  editable?: boolean;
-  onDelete?: (id: TeamId) => Promise<void>;
+  eventSlug: string;
+  actions?: React.ReactNode;
 }
-export default function TeamCard({ team, eventSlug, editable, onDelete }: Props) {
-  const t = useTranslations('TeamCard');
-
+export default function TeamCard({ team, eventSlug, actions }: Props) {
   return (
-    <MenuCard
-      title={team.name}
-      updateUri={editable ? `/event/${eventSlug}/update-team/${team.id}` : undefined}
-      onDelete={editable && onDelete ? () => onDelete(team.id) : undefined}
-    >
-      <Text>{team.description}</Text>
-    </MenuCard>
+    <Card>
+      <Flex justify="between" gap="4">
+        <Link highContrast underline="none" href={getTeamInfoPath(eventSlug, team.slug)}>
+          <Flex direction="column">
+            <Heading as="h3" size="4">
+              {team.name}
+            </Heading>
+            <Text>{team.description}</Text>
+          </Flex>
+        </Link>
+        <Flex>{actions}</Flex>
+      </Flex>
+    </Card>
   );
 }

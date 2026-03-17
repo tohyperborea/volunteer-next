@@ -1,23 +1,17 @@
 import metadata from '@/i18n/metadata';
 import { getEventBySlug } from '@/service/event-service';
-import { Heading, Flex, Card, Text, Button, Box, Link } from '@radix-ui/themes';
+import { Heading, Flex, Button, Box, Link, IconButton } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
-import { PlusIcon } from '@radix-ui/react-icons';
+import { Pencil2Icon, PlusIcon } from '@radix-ui/react-icons';
 import { checkAuthorisation } from '@/session';
-import TeamCard from '@/ui/team-card';
 import { notFound, redirect } from 'next/navigation';
 import { deleteTeam, getTeamsForEvent } from '@/service/team-service';
+import TeamList from '@/ui/team-list';
+import { getUpdateTeamPath } from '@/utils/path';
 
 const PAGE_KEY = 'TeamsDashboardPage';
 
-export const generateMetadata = metadata(PAGE_KEY, {
-  title: async (params) => {
-    const { locale, eventSlug } = params;
-    const t = await getTranslations({ locale: locale ?? '', namespace: PAGE_KEY });
-    const event = !eventSlug ? null : await getEventBySlug(eventSlug);
-    return t('teamsForEvent', { eventName: event?.name ?? '' });
-  }
-});
+export const generateMetadata = metadata(PAGE_KEY);
 
 interface Props {
   params: Promise<{ eventSlug: string }>;
@@ -45,38 +39,34 @@ export default async function EventsDashboard({ params }: Props) {
     redirect(`/event/${eventSlug}/team`);
   };
 
+  const itemActions = !isEditable
+    ? {}
+    : teams.reduce<Record<TeamId, React.ReactNode>>((actions, team) => {
+        actions[team.id] = (
+          <Link href={getUpdateTeamPath(eventSlug, team.id)}>
+            <IconButton variant="ghost" aria-label={t('edit', { teamName: team.name })}>
+              <Pencil2Icon width={20} height={20} />
+            </IconButton>
+          </Link>
+        );
+        return actions;
+      }, {});
+
   return (
     <Flex direction="column" gap="4">
-      <Heading my="4">{t('teamsForEvent', { eventName: event.name })}</Heading>
+      <Heading my="4" as="h1" align="center">
+        {t('title')}
+      </Heading>
       {isEditable && (
         <Box>
           <Link href={`/event/${eventSlug}/create-team`}>
-            <Button>
+            <Button variant="soft">
               <PlusIcon /> {t('createTeam')}
             </Button>
           </Link>
         </Box>
       )}
-      {teams.length === 0 && (
-        <Card>
-          <Text>{t('noTeams')}</Text>
-        </Card>
-      )}
-      {teams.map((team) => (
-        <Link
-          highContrast
-          underline="none"
-          href={`/event/${eventSlug}/team/${team.slug}`}
-          key={team.id}
-        >
-          <TeamCard
-            team={team}
-            editable={isEditable}
-            eventSlug={eventSlug}
-            onDelete={deleteAction}
-          />
-        </Link>
-      ))}
+      <TeamList teams={teams} eventSlug={eventSlug} itemActions={itemActions} />
     </Flex>
   );
 }

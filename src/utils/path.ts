@@ -18,6 +18,9 @@ export const getTeamShiftsPath = (eventSlug: string, teamSlug: string): string =
   `${getTeamInfoPath(eventSlug, teamSlug)}/shifts`;
 export const getTeamVolunteersPath = (eventSlug: string, teamSlug: string): string =>
   `${getTeamInfoPath(eventSlug, teamSlug)}/volunteers`;
+export const getUpdateTeamPath = (eventSlug: string, teamId: string): string =>
+  `/event/${eventSlug}/update-team/${teamId}`;
+export const getCreateTeamPath = (eventSlug: string): string => `/event/${eventSlug}/create-team`;
 
 // Qualifications paths
 export const getQualificationsPath = (eventSlug: string) => `/event/${eventSlug}/qualification`;
