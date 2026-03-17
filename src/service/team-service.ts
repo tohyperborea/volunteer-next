@@ -50,6 +50,32 @@ export const getTeamsForEvents = cache(async (eventIds: EventId[]): Promise<Team
 });
 
 /**
+ * Fetches a list of teams for a specific event, applying optional filters
+ * @param eventId - The ID of the event to fetch teams for
+ * @param filters - A TeamFilters object
+ * @return An array of TeamInfo objects matching the filters
+ */
+export const getFilteredTeamsForEvent = cache(
+  async (eventId: EventId, filters: TeamFilters): Promise<TeamInfo[]> => {
+    const { searchQuery } = filters;
+    const params = [eventId];
+    const whereClauses = [`"eventId" = $${params.length}`];
+    if (searchQuery) {
+      params.push(`%${searchQuery}%`);
+      whereClauses.push(`(name ILIKE $${params.length} OR description ILIKE $${params.length})`);
+    }
+
+    const res = await pool.query(
+      `SELECT id, "eventId", slug, name, description
+       FROM team
+       WHERE ${whereClauses.join(' AND ')}`,
+      params
+    );
+    return res.rows.map(rowToTeam);
+  }
+);
+
+/**
  * Fetches a list of all teams from the database.
  * @return An array of TeamInfo objects.
  */

@@ -185,7 +185,7 @@
     "dateSpan": "{startDate} to {endDate}"
   },
   "TeamCard": {
-    "noTeams": "No teams yet!"
+    "volunteers": "Volunteers"
   },
   "VolunteerFilters": {
     "filters": "Filters",
@@ -255,9 +255,7 @@
   "ShiftCard": {
     "max": "Max",
     "min": "Min",
-    "status": "Status",
     "requires": "Requires",
-    "spots": "Spots",
     "volunteers": "Volunteers",
     "editShift": "Edit Shift",
     "expand": "Expand shift details",
@@ -339,5 +337,8 @@
   "DeleteButton": {
     "cancel": "Cancel",
     "delete": "Delete"
+  },
+  "ProgressBar": {
+    "label": "{filled}/{total} Spots"
   }
 }

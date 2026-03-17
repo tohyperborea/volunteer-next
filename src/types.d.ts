@@ -104,6 +104,10 @@ declare global {
     requirement?: QualificationId;
   }
 
+  interface TeamFilters {
+    searchQuery?: string;
+  }
+
   type ThemeMode = 'light' | 'dark' | 'system';
 
   interface QualificationInfo {
