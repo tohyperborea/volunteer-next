@@ -7,8 +7,7 @@ import {
   removeQualificationFromUser
 } from '@/service/qualification-service';
 import { getTeamsById, getTeamsForEvents } from '@/service/team-service';
-import { getUser } from '@/service/user-service';
-import { checkAuthorisation, getMatchingRoles } from '@/session';
+import { checkAuthorisation, currentUser, getMatchingRoles } from '@/session';
 import UserQualifications from '@/ui/user-qualifications';
 import VolunteerCard from '@/ui/volunteer-card';
 import { getUserProfilePath } from '@/utils/path';
@@ -20,6 +19,7 @@ import { getManagedQualifications } from '@/lib/qualification';
 import { FormField } from '@/ui/form-dialog';
 import { PlusIcon } from '@radix-ui/react-icons';
 import { getVolunteerById } from '@/lib/volunteer';
+import { getPermissionsProfile } from '@/utils/permissions';
 
 const PAGE_KEY = 'VolunteerProfilePage';
 
@@ -27,7 +27,8 @@ export const generateMetadata = metadata(PAGE_KEY, {
   title: async (params) => {
     const { userId } = params;
     const t = await getTranslations(PAGE_KEY);
-    const user = await getVolunteerById(userId ?? null);
+    const permissionsProfile = getPermissionsProfile(await currentUser());
+    const user = await getVolunteerById(userId ?? null, permissionsProfile);
     return t('title', {
       name: user?.displayName ?? ''
     });
@@ -37,7 +38,8 @@ export const generateMetadata = metadata(PAGE_KEY, {
 export default async function VolunteerProfilePage({ params }: PageProps<'/user/[userId]'>) {
   const { userId } = await params;
   const t = await getTranslations(PAGE_KEY);
-  const volunteer = await getVolunteerById(userId);
+  const permissionsProfile = getPermissionsProfile(await currentUser());
+  const volunteer = await getVolunteerById(userId, permissionsProfile);
   if (!volunteer) {
     notFound();
   }

@@ -42,6 +42,7 @@ jest.mock('@/service/team-service', () => ({
   getTeamsForEvents: jest.fn()
 }));
 jest.mock('@/session', () => ({
+  currentUser: jest.fn().mockResolvedValue({ id: 'currentUserId' }),
   checkAuthorisation: jest.fn(),
   getMatchingRoles: jest.fn()
 }));
@@ -55,6 +56,9 @@ jest.mock('next/navigation', () => ({
     throw new Error('NEXT_NOT_FOUND');
   }),
   redirect: jest.fn()
+}));
+jest.mock('@/utils/permissions', () => ({
+  getPermissionsProfile: jest.fn().mockReturnValue({ id: 'permissionsProfile' })
 }));
 
 const mockCheckAuthorisation = checkAuthorisation as jest.MockedFunction<typeof checkAuthorisation>;
@@ -123,7 +127,7 @@ describe('UserProfilePage', () => {
 
     const page = await UserProfilePage({ params: mockParams, searchParams: mockSearch });
     render(<Theme>{page}</Theme>);
-    expect(mockGetVolunteer).toHaveBeenCalledWith('1');
+    expect(mockGetVolunteer).toHaveBeenCalledWith('1', { id: 'permissionsProfile' });
     expect(screen.getByText('John Doe')).toBeInTheDocument();
   });
 
@@ -137,7 +141,7 @@ describe('UserProfilePage', () => {
       UserProfilePage({ params: mockParams, searchParams: mockSearch })
     ).rejects.toThrow();
 
-    expect(mockGetVolunteer).toHaveBeenCalledWith('2');
+    expect(mockGetVolunteer).toHaveBeenCalledWith('2', { id: 'permissionsProfile' });
     expect(mockNotFound).toHaveBeenCalled();
   });
 

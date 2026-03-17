@@ -8,6 +8,7 @@ import pool from '@/db';
 import { PoolClient } from 'pg';
 import { cache } from 'react';
 import { randomUUID } from 'node:crypto';
+import { canAccess } from '@/utils/permissions';
 
 const roleFromRow = (row: any): UserRole => {
   switch (row.type) {
@@ -116,40 +117,52 @@ export const getUsers = cache(async (): Promise<User[]> => {
  * @returns A promise that resolves to an array of users matching the filters.
  * @throws {Error} If the database query fails.
  */
-export const getFilteredUsers = cache(async (filters: UserFilters): Promise<User[]> => {
-  const queryParts: string[] = [];
-  const queryParams: any[] = [];
+export const getFilteredUsers = cache(
+  async (filters: UserFilters, permissionsProfile: PermissionsProfile): Promise<User[]> => {
+    const queryParts: string[] = [];
+    const queryParams: any[] = [];
 
-  if (filters.searchQuery) {
-    queryParams.push(`%${filters.searchQuery}%`);
-    queryParts.push(`u.name ILIKE $${queryParams.length}`);
-  }
-  if (!filters.showDeleted) {
-    queryParts.push(`u."deletedAt" IS NULL`);
-  }
-  if (filters.roleType) {
-    queryParams.push(filters.roleType);
-    queryParts.push(
-      `EXISTS (SELECT 1 FROM role r WHERE r."userId" = u.id AND r.type = $${queryParams.length})`
-    );
-  }
-  if (filters.withQualification) {
-    queryParams.push(filters.withQualification);
-    queryParts.push(
-      `EXISTS (SELECT 1 FROM user_qualification uq WHERE uq."userId" = u.id AND uq."qualificationId" = $${queryParams.length})`
-    );
-  }
-  if (filters.withoutQualification) {
-    queryParams.push(filters.withoutQualification);
-    queryParts.push(
-      `NOT EXISTS (SELECT 1 FROM user_qualification uq WHERE uq."userId" = u.id AND uq."qualificationId" = $${queryParams.length})`
-    );
-  }
+    if (filters.searchQuery) {
+      // This method of searching is slow, but will be fine for < 400k users
+      const canAccessName = canAccess('VolunteerInfo', 'fullName', permissionsProfile);
+      const canAccessEmail = canAccess('VolunteerInfo', 'email', permissionsProfile);
+      queryParams.push(`%${filters.searchQuery}%`);
+      const index = queryParams.length;
+      const matchers = [`u."chosenName" ILIKE $${index}`];
+      if (canAccessEmail) {
+        matchers.push(`u.email ILIKE $${index}`);
+      }
+      if (canAccessName) {
+        matchers.push(`u.name ILIKE $${index}`);
+      }
+      queryParts.push(`(${matchers.join(' OR ')})`);
+    }
+    if (!filters.showDeleted) {
+      queryParts.push(`u."deletedAt" IS NULL`);
+    }
+    if (filters.roleType) {
+      queryParams.push(filters.roleType);
+      queryParts.push(
+        `EXISTS (SELECT 1 FROM role r WHERE r."userId" = u.id AND r.type = $${queryParams.length})`
+      );
+    }
+    if (filters.withQualification) {
+      queryParams.push(filters.withQualification);
+      queryParts.push(
+        `EXISTS (SELECT 1 FROM user_qualification uq WHERE uq."userId" = u.id AND uq."qualificationId" = $${queryParams.length})`
+      );
+    }
+    if (filters.withoutQualification) {
+      queryParams.push(filters.withoutQualification);
+      queryParts.push(
+        `NOT EXISTS (SELECT 1 FROM user_qualification uq WHERE uq."userId" = u.id AND uq."qualificationId" = $${queryParams.length})`
+      );
+    }
 
-  const whereClause = queryParts.length > 0 ? `WHERE ${queryParts.join(' AND ')}` : '';
+    const whereClause = queryParts.length > 0 ? `WHERE ${queryParts.join(' AND ')}` : '';
 
-  const result = await pool.query(
-    `
+    const result = await pool.query(
+      `
       SELECT
         u.id,
         u.name,
@@ -163,11 +176,12 @@ export const getFilteredUsers = cache(async (filters: UserFilters): Promise<User
       LEFT JOIN role r ON u.id = r."userId"
       ${whereClause}
     `,
-    queryParams
-  );
+      queryParams
+    );
 
-  return usersFromRows(result.rows);
-});
+    return usersFromRows(result.rows);
+  }
+);
 
 /**
  * Fetches all users with a specific role.
@@ -238,7 +252,7 @@ export const createUser = async (
       "chosenName",
       email,
       "emailVerified"
-    ) VALUES ($1, $2, $3, $4) 
+    ) VALUES ($1, $2, $3, $4, $5) 
     RETURNING
       id,
       name,

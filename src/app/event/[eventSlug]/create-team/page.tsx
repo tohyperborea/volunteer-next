@@ -11,6 +11,7 @@ import { validateUserId } from '@/validator/user-validator';
 import { validateNewTeam } from '@/validator/team-validator';
 import { createTeam } from '@/service/team-service';
 import { usersToVolunteers } from '@/lib/volunteer';
+import { getPermissionsProfile } from '@/utils/permissions';
 
 const PAGE_KEY = 'CreateTeamPage';
 
@@ -36,7 +37,8 @@ export default async function CreateTeam({ params }: Props) {
 
   await checkAuthorisation([{ type: 'admin' }, { type: 'organiser', eventId: event.id }]);
   const t = await getTranslations(PAGE_KEY);
-  const volunteers = usersToVolunteers(await getUsers(), await currentUser());
+  const permissionsProfile = getPermissionsProfile(await currentUser());
+  const volunteers = usersToVolunteers(await getUsers(), permissionsProfile);
 
   const onSubmit = async (data: FormData) => {
     'use server';

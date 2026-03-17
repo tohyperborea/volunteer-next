@@ -15,6 +15,7 @@ import { validateExistingTeam } from '@/validator/team-validator';
 import { validateUserId } from '@/validator/user-validator';
 import { getTeamById, updateTeam } from '@/service/team-service';
 import { usersToVolunteers, userToVolunteer } from '@/lib/volunteer';
+import { getPermissionsProfile } from '@/utils/permissions';
 
 const PAGE_KEY = 'UpdateTeamPage';
 
@@ -63,31 +64,24 @@ export default async function UpdateTeam({ params }: Props) {
     redirect(`/event/${eventSlug}/team`);
   };
 
-  try {
-    const volunteers = usersToVolunteers(await getUsers(), await currentUser());
-    const teamleadRole: UserRole = { type: 'team-lead', eventId: team.eventId, teamId: team.id };
-    const teamlead = userToVolunteer(
-      (await getUsersWithRole(teamleadRole))[0],
-      await currentUser()
-    );
+  const permissionsProfile = getPermissionsProfile(await currentUser());
+  const volunteers = usersToVolunteers(await getUsers(), permissionsProfile);
+  const teamleadRole: UserRole = { type: 'team-lead', eventId: team.eventId, teamId: team.id };
+  const teamlead = userToVolunteer((await getUsersWithRole(teamleadRole))[0], permissionsProfile);
 
-    return (
-      <Flex direction="column" gap="4">
-        <Heading my="4">{t('title')}</Heading>
-        <Card>
-          <TeamForm
-            eventId={team.eventId}
-            onSubmit={onSubmit}
-            backOnCancel
-            teamleadOptions={volunteers}
-            editingTeam={team}
-            editingTeamlead={teamlead}
-          />
-        </Card>
-      </Flex>
-    );
-  } catch (error) {
-    console.error(error);
-    throw new Error('Invalid input');
-  }
+  return (
+    <Flex direction="column" gap="4">
+      <Heading my="4">{t('title')}</Heading>
+      <Card>
+        <TeamForm
+          eventId={team.eventId}
+          onSubmit={onSubmit}
+          backOnCancel
+          teamleadOptions={volunteers}
+          editingTeam={team}
+          editingTeamlead={teamlead}
+        />
+      </Card>
+    </Flex>
+  );
 }

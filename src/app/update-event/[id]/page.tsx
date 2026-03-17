@@ -15,6 +15,7 @@ import EventForm from '@/ui/event-form';
 import { validateExistingEvent } from '@/validator/event-validator';
 import { validateUserId } from '@/validator/user-validator';
 import { usersToVolunteers, userToVolunteer } from '@/lib/volunteer';
+import { getPermissionsProfile } from '@/utils/permissions';
 
 const PAGE_KEY = 'UpdateEventPage';
 
@@ -62,11 +63,11 @@ export default async function UpdateEvent({ params }: Props) {
     if (!event) {
       notFound();
     }
-
-    const volunteers = usersToVolunteers(await getUsers(), await currentUser());
+    const permissionsProfile = getPermissionsProfile(await currentUser());
+    const volunteers = usersToVolunteers(await getUsers(), permissionsProfile);
     const organiser = userToVolunteer(
       (await getUsersWithRole({ type: 'organiser', eventId: event.id }))[0],
-      await currentUser()
+      permissionsProfile
     );
 
     return (

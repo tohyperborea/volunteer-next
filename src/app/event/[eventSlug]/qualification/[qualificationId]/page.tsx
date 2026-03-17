@@ -15,6 +15,7 @@ import AssignQualification from '@/ui/assign-qualification';
 import QualificationDetails from '@/ui/qualification-details';
 import VolunteerList from '@/ui/volunteer-list';
 import { getQualificationDetailsPath, getQualificationsPath } from '@/utils/path';
+import { getPermissionsProfile } from '@/utils/permissions';
 import { validateExistingQualification } from '@/validator/qualification-validator';
 import { Cross1Icon } from '@radix-ui/react-icons';
 import { Flex, Heading, IconButton } from '@radix-ui/themes';
@@ -56,12 +57,16 @@ export default async function QualificationsPage(props: Props) {
     return notFound();
   }
   const teams = await getTeamsForEvent(event.id);
+  const permissionsProfile = getPermissionsProfile(await currentUser());
   const volunteers = usersToVolunteers(
-    await getFilteredUsers({
-      withQualification: qualification.id,
-      searchQuery: query
-    }),
-    await currentUser()
+    await getFilteredUsers(
+      {
+        withQualification: qualification.id,
+        searchQuery: query
+      },
+      permissionsProfile
+    ),
+    permissionsProfile
   );
 
   const editorRoles: UserRole[] = [

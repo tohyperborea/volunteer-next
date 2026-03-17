@@ -1,6 +1,6 @@
 import { usersToVolunteers } from '@/lib/volunteer';
 import { getFilteredUsers } from '@/service/user-service';
-import { checkAuthorisation, currentUser } from '@/session';
+import { checkAuthorisation } from '@/session';
 import { paramsToUserFilters } from '@/utils/user-filters';
 import { NextRequest } from 'next/server';
 import { GET } from './route';
@@ -30,6 +30,10 @@ jest.mock('@/lib/volunteer', () => ({
   usersToVolunteers: jest.fn()
 }));
 
+jest.mock('@/utils/permissions', () => ({
+  getPermissionsProfile: jest.fn().mockReturnValue({ id: 'permissionsProfile' })
+}));
+
 const mockCheckAuthorisation = checkAuthorisation as jest.MockedFunction<typeof checkAuthorisation>;
 const mockGetFilteredUsers = getFilteredUsers as jest.MockedFunction<typeof getFilteredUsers>;
 const mockParamsToUserFilters = paramsToUserFilters as jest.MockedFunction<
@@ -48,19 +52,21 @@ describe('GET /api/user', () => {
       {
         id: 'user1',
         name: 'John',
+        chosenName: 'Johnny',
         email: 'john@example.com',
         roles: []
       },
       {
         id: 'user2',
         name: 'Jane',
+        chosenName: 'Janey',
         email: 'jane@example.com',
         roles: []
       }
     ];
     const mockVolunteers: VolunteerInfo[] = [
-      { id: 'user1', displayName: 'John' },
-      { id: 'user2', displayName: 'Jane' }
+      { id: 'user1', displayName: 'Johnny' },
+      { id: 'user2', displayName: 'Janey' }
     ];
 
     mockParamsToUserFilters.mockReturnValue(mockFilter);
@@ -68,7 +74,7 @@ describe('GET /api/user', () => {
     mockUsersToVolunteers.mockImplementation((users) =>
       users.map((user) => ({
         id: user.id,
-        displayName: user.name
+        displayName: user.chosenName
       }))
     );
 
@@ -79,8 +85,8 @@ describe('GET /api/user', () => {
 
     expect(mockParamsToUserFilters).toHaveBeenCalledWith(request.nextUrl.searchParams);
     expect(mockCheckAuthorisation).toHaveBeenCalled();
-    expect(mockGetFilteredUsers).toHaveBeenCalledWith(mockFilter);
-    expect(mockUsersToVolunteers).toHaveBeenCalledWith(mockUsers, { id: 'currentUser' });
+    expect(mockGetFilteredUsers).toHaveBeenCalledWith(mockFilter, { id: 'permissionsProfile' });
+    expect(mockUsersToVolunteers).toHaveBeenCalledWith(mockUsers, { id: 'permissionsProfile' });
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual(JSON.stringify(mockVolunteers));

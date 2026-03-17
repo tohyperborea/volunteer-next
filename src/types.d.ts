@@ -8,6 +8,9 @@
 type FormSubmitAction = (data: FormData) => Promise<void>;
 
 type PartialWithRequired<T, R extends keyof T> = Partial<T> & Pick<T, R>;
+type OptionalKeys<T> = {
+  [K in keyof T]-?: undefined extends T[K] ? K : never;
+}[keyof T];
 
 type UserId = string;
 type EventId = string;
@@ -29,7 +32,7 @@ type EventDayTime = {
 interface User {
   id: UserId;
   name: string;
-  chosenName?: string;
+  chosenName: string;
   email: string;
   roles: UserRole[];
   deletedAt?: Date;
@@ -47,6 +50,12 @@ type UserRole =
 
   // Manage volunteers in assigned area
   | { type: 'team-lead'; eventId: EventId; teamId: TeamId };
+
+type PermissionsProfile = {
+  userId: UserId;
+} & {
+  [K in UserRoleType]: boolean;
+};
 
 type UserRoleMatchCriteria = PartialWithRequired<UserRole, 'type'>;
 

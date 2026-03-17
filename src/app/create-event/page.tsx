@@ -10,6 +10,7 @@ import EventForm from '@/ui/event-form';
 import { validateNewEvent } from '@/validator/event-validator';
 import { validateUserId } from '@/validator/user-validator';
 import { usersToVolunteers } from '@/lib/volunteer';
+import { getPermissionsProfile } from '@/utils/permissions';
 
 const PAGE_KEY = 'CreateEventPage';
 
@@ -33,7 +34,8 @@ export default async function CreateEvent() {
 
   await checkAuthorisation([{ type: 'admin' }]);
   const t = await getTranslations(PAGE_KEY);
-  const volunteers = usersToVolunteers(await getUsers(), await currentUser());
+  const permissionsProfile = getPermissionsProfile(await currentUser());
+  const volunteers = usersToVolunteers(await getUsers(), permissionsProfile);
 
   return (
     <Flex direction="column" gap="4">

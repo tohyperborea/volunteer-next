@@ -18,6 +18,7 @@ import { headers } from 'next/headers';
 import { getEventBySlug } from '@/service/event-service';
 import { getEventDateRangeDisplayText } from '@/utils/date';
 import { userToVolunteer } from '@/lib/volunteer';
+import { getPermissionsProfile } from '@/utils/permissions';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('Metadata');
@@ -64,7 +65,7 @@ export default async function RootLayout({
         <NavBar
           title={navBarTitle}
           subtitle={navBarSubtitle}
-          currentUser={userToVolunteer(user, user)}
+          currentUser={userToVolunteer(user, getPermissionsProfile(user))}
           titlePathname={titlePathname}
         >
           {childrenWithWrapper}
