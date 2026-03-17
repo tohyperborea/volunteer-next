@@ -85,7 +85,7 @@ export default async function SignInPage({
 
   const t = await getTranslations(PAGE_KEY);
   return (
-    <SigninContainer title={t('description')}>
+    <SigninContainer title={t('description', { appName: process.env.APP_NAME ?? '' })}>
       {useOAuth ? (
         <Flex direction="column" gap="4" asChild>
           <form
