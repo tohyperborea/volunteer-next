@@ -291,7 +291,8 @@
   },
   "QualificationDetails": {
     "delete": "Delete Qualification",
-    "edit": "Edit Qualification"
+    "edit": "Edit Qualification",
+    "deleteConfirmation": "Are you sure you want to delete the qualification \"{qualificationName}\"? This will remove the qualification from all volunteers and shifts. This action cannot be undone."
   },
   "QualificationDialog": {
     "edit": "Edit Qualification",

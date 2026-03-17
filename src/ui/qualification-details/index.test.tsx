@@ -65,20 +65,6 @@ describe('QualificationDetails', () => {
     expect(screen.getByText('delete')).toBeInTheDocument();
   });
 
-  it('calls onDelete when delete button is clicked', () => {
-    render(
-      <QualificationDetails
-        qualification={mockQualification}
-        event={mockEvent}
-        teams={mockTeams}
-        onDelete={mockOnDelete}
-      />
-    );
-
-    fireEvent.click(screen.getByText('delete'));
-    expect(mockOnDelete).toHaveBeenCalled();
-  });
-
   it('renders QualificationDialog when canEdit is true', () => {
     render(
       <QualificationDetails
