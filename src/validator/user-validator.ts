@@ -26,19 +26,19 @@ export const validateUserId = (data: FormData, fieldName?: string): string => {
  * @throws - Error if validation fails
  */
 export const validateNewUser = (data: FormData): UserCreationModel => {
-  const name = data.get('name')?.toString() ?? null;
+  const name = data.get('name')?.toString().trim() ?? null;
   if (!name) {
     throw new Error('User name is required');
   }
-  const email = data.get('email')?.toString() ?? null;
+  const email = data.get('email')?.toString().trim() ?? null;
   if (!email) {
     throw new Error('User email is required');
   }
-  const chosenName = data.get('chosenName')?.toString() ?? undefined;
+  const chosenName = data.get('chosenName')?.toString().trim() ?? undefined;
   return {
     name,
     email,
-    chosenName: (chosenName?.trim().length ?? 0) ? chosenName : undefined
+    chosenName: (chosenName?.length ?? 0) ? chosenName : undefined
   };
 };
 

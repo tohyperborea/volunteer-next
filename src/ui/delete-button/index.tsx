@@ -29,7 +29,13 @@ export default function DeleteButton({ title, description, onDelete }: Props) {
   return (
     <Dialog.Root open={confirming} onOpenChange={setConfirming}>
       <Dialog.Trigger>
-        <Button variant="outline" color="red" onClick={() => setConfirming(true)}>
+        <Button
+          variant="outline"
+          color="red"
+          aria-label={title}
+          title={title}
+          onClick={() => setConfirming(true)}
+        >
           <TrashIcon />
         </Button>
       </Dialog.Trigger>

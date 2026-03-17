@@ -5,7 +5,7 @@ import { checkAuthorisation, currentUser } from '@/session';
 import { getFilteredUsers, getUsers } from '@/service/user-service';
 import { markUserAsDeleted, undeleteUser } from '@/service/user-service';
 import { revalidatePath } from 'next/cache';
-import { getCreateUserPath, getUsersDashboardPath } from '@/utils/path';
+import { getCreateUserPath, getEditUserPath, getUsersDashboardPath } from '@/utils/path';
 import VolunteerList from '@/ui/volunteer-list';
 import { usersToVolunteers } from '@/lib/volunteer';
 import { Pencil1Icon, PlusIcon, TrashIcon } from '@radix-ui/react-icons';
@@ -48,7 +48,7 @@ export default async function UsersDashboardPage({ searchParams }: PageProps<'/u
     for (const user of users) {
       itemActions[user.id] = (
         <Flex gap="2">
-          <Link href={`/update-user/${user.id}`}>
+          <Link href={getEditUserPath(user.id)}>
             <Button variant="outline">
               <Pencil1Icon />
             </Button>

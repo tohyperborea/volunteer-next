@@ -240,7 +240,6 @@ export const getUserRoles = cache(async (userId: UserId): Promise<UserRole[]> =>
  * @return The newly created User object, including its ID.
  */
 export const createUser = async (user: UserCreationModel, client?: PoolClient): Promise<User> => {
-  console.info(`Creating user: `, user);
   const db = client || pool;
   const id = randomUUID();
   const result = await db.query(
@@ -281,7 +280,6 @@ export const updateUser = async (
   user: UserUpdateModel,
   client?: PoolClient
 ): Promise<void> => {
-  console.info(`Updating user: `, user);
   const db = client || pool;
   await db.query(
     `

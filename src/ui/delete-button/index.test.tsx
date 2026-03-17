@@ -19,7 +19,7 @@ describe('DeleteButton', () => {
       />
     );
 
-    expect(screen.getByRole('button', { name: '' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Delete Item' })).toBeInTheDocument();
   });
 
   it('opens the confirmation dialog when the delete button is clicked', () => {
@@ -31,7 +31,7 @@ describe('DeleteButton', () => {
       />
     );
 
-    fireEvent.click(screen.getByRole('button', { name: '' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Delete Item' }));
     expect(screen.getByText('Delete Item')).toBeInTheDocument();
     expect(screen.getByText('Are you sure you want to delete this item?')).toBeInTheDocument();
   });
@@ -45,7 +45,7 @@ describe('DeleteButton', () => {
       />
     );
 
-    fireEvent.click(screen.getByRole('button', { name: '' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Delete Item' }));
     const deleteButton = screen.getByRole('button', { name: 'delete' });
 
     fireEvent.click(deleteButton);
@@ -65,7 +65,7 @@ describe('DeleteButton', () => {
       />
     );
 
-    fireEvent.click(screen.getByRole('button', { name: '' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Delete Item' }));
     const cancelButton = screen.getByRole('button', { name: 'cancel' });
 
     fireEvent.click(cancelButton);

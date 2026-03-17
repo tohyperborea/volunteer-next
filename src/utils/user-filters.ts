@@ -19,6 +19,13 @@ export function paramsToUserFilters(searchParams: URLSearchParams): UserFilters 
   };
 }
 
+const normalise = <T extends string>(value: string | string[] | undefined): T | undefined => {
+  if (Array.isArray(value)) {
+    return value[0] as T;
+  }
+  return value as T;
+};
+
 /**
  * Converts a record of string values (like from Next.js page props) to a UserFilters object
  * @param record A searchParams record like nextjs pageprops provides
@@ -28,11 +35,11 @@ export function recordToUserFilters(
   record: Record<string, string | string[] | undefined>
 ): UserFilters {
   return {
-    roleType: record['roleType'] as UserRoleType | undefined,
-    searchQuery: record['searchQuery'] as string | undefined,
+    roleType: normalise(record['roleType']),
+    searchQuery: normalise(record['searchQuery']),
     showDeleted: record['showDeleted'] === 'true',
-    withQualification: record['withQualification'] as string | undefined,
-    withoutQualification: record['withoutQualification'] as string | undefined
+    withQualification: normalise(record['withQualification']),
+    withoutQualification: normalise(record['withoutQualification'])
   };
 }
 

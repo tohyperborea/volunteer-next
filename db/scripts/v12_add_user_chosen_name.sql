@@ -33,6 +33,6 @@ UPDATE "user"
 SET "chosenName" = derive_chosen_name(name)
 WHERE "chosenName" IS NULL;
 
--- Enfore NOT NULL constraint on chosenName
+-- Enforce NOT NULL constraint on chosenName
 ALTER TABLE "user"
 ALTER COLUMN "chosenName" SET NOT NULL;

@@ -56,7 +56,7 @@ export default function VolunteerFilters({ withFilters = [] }: Props) {
             <Button
               variant="outline"
               color="gray"
-              aria-expanded={showFilterPanel}
+              aria-expanded={filtersOpen}
               onClick={() => setFiltersOpen((v) => !v)}
             >
               <MixerVerticalIcon />

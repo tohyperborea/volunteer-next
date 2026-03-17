@@ -4,6 +4,8 @@
  * @author Michael Townsend <@continuities>
  */
 
+'use client';
+
 import { getUserProfilePath } from '@/utils/path';
 import { Avatar, Badge, Card, Flex, Heading, Link, Text } from '@radix-ui/themes';
 import { useTranslations } from 'next-intl';
