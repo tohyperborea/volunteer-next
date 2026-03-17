@@ -37,13 +37,7 @@ export default function DeleteButton({
   return (
     <Dialog.Root open={confirming} onOpenChange={setConfirming}>
       <Dialog.Trigger>
-        <Button
-          variant={variant}
-          color={color}
-          aria-label={title}
-          title={title}
-          onClick={() => setConfirming(true)}
-        >
+        <Button variant={variant} color={color} aria-label={title} title={title}>
           <TrashIcon />
           {withText && title}
         </Button>
