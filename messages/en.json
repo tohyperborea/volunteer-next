@@ -266,6 +266,7 @@
     "editShift": "Edit Shift",
     "addShift": "Add Shift",
     "deleteShift": "Delete Shift",
+    "deleteShiftConfirmation": "Are you sure you want to delete this shift? This action cannot be undone.",
     "title": "Title of Shift",
     "titleDescription": "Description",
     "titlePlaceholder": "Title",

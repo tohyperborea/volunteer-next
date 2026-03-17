@@ -22,8 +22,8 @@ interface Props {
   shifts: ShiftInfo[];
   qualifications: QualificationInfo[];
   exportLink: string;
-  onSaveShift?: (data: FormData) => Promise<never>;
-  onDeleteShift?: (data: FormData) => Promise<never>;
+  onSaveShift?: (data: FormData) => Promise<void>;
+  onDeleteShift?: (shiftId: ShiftId) => Promise<void>;
 }
 
 export default function ShiftList({
