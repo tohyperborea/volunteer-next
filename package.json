@@ -9,6 +9,7 @@
     "lint": "eslint",
     "test": "jest",
     "test:watch": "jest --watch",
+    "typecheck": "tsc --noEmit",
     "db:start": "docker compose --env-file .env.local up -d db liquibase",
     "db:stop": "docker compose --env-file .env.local down",
     "db:connect": "docker compose --env-file .env.local exec db psql -U postgres",

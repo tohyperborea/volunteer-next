@@ -12,6 +12,7 @@ import { getEventBySlug } from '@/service/event-service';
 import { getTeamsForEvent } from '@/service/team-service';
 import { checkAuthorisation, currentUser } from '@/session';
 import { shiftsToCSV } from '@/utils/csv-export';
+import { getPermissionsProfile } from '@/utils/permissions';
 import { NextRequest, NextResponse } from 'next/server';
 
 export const GET = async (
@@ -23,8 +24,8 @@ export const GET = async (
   if (format === 'csv') {
     const { eventSlug, userId } = await params;
     const event = await getEventBySlug(eventSlug);
-    const user = await getVolunteerById(userId, await currentUser());
-    if (!event || !user) {
+    const volunteer = await getVolunteerById(userId, getPermissionsProfile(await currentUser()));
+    if (!event || !volunteer) {
       return NotFoundResponse();
     }
     const teams = await getTeamsForEvent(event.id);
