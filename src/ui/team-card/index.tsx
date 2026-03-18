@@ -6,7 +6,7 @@
 
 'use client';
 
-import { getTeamInfoPath } from '@/utils/path';
+import { getTeamShiftsPath } from '@/utils/path';
 import { Box, Card, Flex, Heading, Link, Text } from '@radix-ui/themes';
 import ProgressBar from '../progress-bar';
 import Collapsible from '../collapsible';
@@ -27,7 +27,7 @@ export default function TeamCard({ team, shifts, eventSlug, actions }: Props) {
     <Card>
       <Flex direction="column" gap="3">
         <Flex justify="between" gap="4">
-          <Link highContrast underline="none" href={getTeamInfoPath(eventSlug, team.slug)}>
+          <Link highContrast underline="none" href={getTeamShiftsPath(eventSlug, team.slug)}>
             <Flex direction="column">
               <Heading as="h3" size="4">
                 {team.name}

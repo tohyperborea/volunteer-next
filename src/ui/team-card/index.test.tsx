@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import TeamCard from '.';
 import ProgressBar from '../progress-bar';
-import { getTeamInfoPath } from '@/utils/path';
+import { getTeamShiftsPath } from '@/utils/path';
 
 jest.mock('next-intl', () => ({
   useTranslations: () => (key: string) => key,
@@ -10,12 +10,12 @@ jest.mock('next-intl', () => ({
 }));
 
 jest.mock('@/utils/path', () => ({
-  getTeamInfoPath: jest.fn().mockReturnValue(`team-info-path`)
+  getTeamShiftsPath: jest.fn().mockReturnValue(`team-shifts-path`)
 }));
 jest.mock('@/ui/progress-bar', () => jest.fn().mockReturnValue(<div data-testid="progress-bar" />));
 
 const mockProgressBar = ProgressBar as jest.MockedFunction<typeof ProgressBar>;
-const mockGetTeamInfoPath = getTeamInfoPath as jest.MockedFunction<typeof getTeamInfoPath>;
+const mockGetTeamShiftsPath = getTeamShiftsPath as jest.MockedFunction<typeof getTeamShiftsPath>;
 
 describe('TeamCard', () => {
   it('renders team name and description', () => {
@@ -48,9 +48,9 @@ describe('TeamCard', () => {
 
     render(<TeamCard team={team} shifts={shifts} eventSlug={eventSlug} />);
 
-    expect(mockGetTeamInfoPath).toHaveBeenCalledWith(eventSlug, team.slug);
+    expect(getTeamShiftsPath).toHaveBeenCalledWith(eventSlug, team.slug);
     const link = screen.getByRole('link', { name: /team a/i });
-    expect(link).toHaveAttribute('href', 'team-info-path');
+    expect(link).toHaveAttribute('href', 'team-shifts-path');
   });
 
   it('renders the progress bar with correct values', () => {

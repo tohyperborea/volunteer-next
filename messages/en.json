@@ -37,6 +37,9 @@
     "title": "Update Team"
   },
   "TeamPage": {
+    "contact": "Contact",
+    "descriptionLabel": "Description",
+    "teamLeads": "Team Leads",
     "tabs": {
       "team": "Team",
       "shifts": "Shifts",
