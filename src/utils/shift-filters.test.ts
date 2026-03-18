@@ -1,7 +1,7 @@
 import { paramsToShiftFilters, recordToShiftFilters, shiftFiltersToParams } from './shift-filters';
 
 describe('shiftFiltersToParams', () => {
-  it('should convert a TeamFilters object to URLSearchParams', () => {
+  it('should convert a ShiftFilters object to URLSearchParams', () => {
     const filters = { searchQuery: 'test' };
     const result = shiftFiltersToParams(filters);
     expect(result.get('searchQuery')).toBe('test');
