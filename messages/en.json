@@ -34,7 +34,7 @@
     "title": "Create Team"
   },
   "UpdateTeamPage": {
-    "title": "Update Team"
+    "title": "Edit Team"
   },
   "TeamPage": {
     "contact": "Contact",
@@ -248,7 +248,9 @@
     "teamLeadDescription": "Select the lead for this team.",
     "createButton": "Add Team",
     "updateButton": "Save Changes",
-    "cancelButton": "Cancel"
+    "cancelButton": "Cancel",
+    "delete": "Delete Team",
+    "deleteConfirmation": "Are you sure you want to delete the team \"{teamName}\"? This will delete all shifts associated with the team and remove all volunteers from those shifts. This action cannot be undone."
   },
   "NavBar": {
     "home": "Home",

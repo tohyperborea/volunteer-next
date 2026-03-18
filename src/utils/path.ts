@@ -12,8 +12,9 @@ export const getEditUserPath = (userId: string, callbackUrl?: string): string =>
 export const getUserProfilePath = (userId: string): string => `/user/${userId}`;
 
 // Teams paths
+export const getTeamsPath = (eventSlug: string): string => `/event/${eventSlug}/team`;
 export const getTeamShiftsPath = (eventSlug: string, teamSlug: string): string =>
-  `/event/${eventSlug}/team/${teamSlug}`;
+  `${getTeamsPath(eventSlug)}/${teamSlug}`;
 export const getTeamVolunteersPath = (eventSlug: string, teamSlug: string): string =>
   `${getTeamShiftsPath(eventSlug, teamSlug)}/volunteers`;
 export const getUpdateTeamPath = (eventSlug: string, teamId: string): string =>

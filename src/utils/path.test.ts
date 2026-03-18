@@ -13,8 +13,17 @@ import {
   getUserProfilePath,
   getUsersDashboardPath,
   getUpdateTeamPath,
-  getCreateTeamPath
+  getCreateTeamPath,
+  getTeamsPath
 } from './path';
+
+describe('getTeamsPath', () => {
+  it('should return the correct path for teams', () => {
+    const eventSlug = 'event-123';
+    const result = getTeamsPath(eventSlug);
+    expect(result).toBe('/event/event-123/team');
+  });
+});
 
 describe('getTeamShiftsPath', () => {
   it('should return the correct path for team shifts', () => {

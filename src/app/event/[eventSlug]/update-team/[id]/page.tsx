@@ -13,9 +13,10 @@ import { inTransaction } from '@/db';
 import TeamForm from '@/ui/team-form';
 import { validateExistingTeam } from '@/validator/team-validator';
 import { validateUserId } from '@/validator/user-validator';
-import { getTeamById, updateTeam } from '@/service/team-service';
+import { deleteTeam, getTeamById, updateTeam } from '@/service/team-service';
 import { usersToVolunteers, userToVolunteer } from '@/lib/volunteer';
 import { getPermissionsProfile } from '@/utils/permissions';
+import { getTeamsPath } from '@/utils/path';
 
 const PAGE_KEY = 'UpdateTeamPage';
 
@@ -61,7 +62,15 @@ export default async function UpdateTeam({ params }: Props) {
         await addRoleToUser(roleToAdd, teamlead, client);
       }
     });
-    redirect(`/event/${eventSlug}/team`);
+    redirect(getTeamsPath(eventSlug));
+  };
+
+  const onDelete = async () => {
+    'use server';
+
+    await checkAuthorisation([{ type: 'admin' }, { type: 'organiser', eventId: team.eventId }]);
+    await deleteTeam(team.id);
+    redirect(getTeamsPath(eventSlug));
   };
 
   const permissionsProfile = getPermissionsProfile(await currentUser());
@@ -77,6 +86,7 @@ export default async function UpdateTeam({ params }: Props) {
       <TeamForm
         eventId={team.eventId}
         onSubmit={onSubmit}
+        onDelete={onDelete}
         backOnCancel
         teamleadOptions={volunteers}
         editingTeam={team}
