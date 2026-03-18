@@ -45,7 +45,7 @@ export default function TeamList({ teams, shifts, eventSlug, itemActions = {} }:
                 <TeamCard
                   eventSlug={eventSlug}
                   team={team}
-                  shifts={shiftsByTeamId[team.id]}
+                  shifts={shiftsByTeamId[team.id] ?? []}
                   actions={itemActions[team.id]}
                 />
               </ul>

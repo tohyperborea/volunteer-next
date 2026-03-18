@@ -41,6 +41,10 @@ export const validateNewTeam = (data: FormData): Omit<TeamInfo, 'id'> => {
   if (!description) {
     throw new Error('Team description is required');
   }
+  const contactAddress = data.get('contactAddress')?.toString() ?? null;
+  if (!contactAddress) {
+    throw new Error('Team contact address is required');
+  }
   const eventId = data.get('eventId')?.toString() ?? null;
   if (!eventId) {
     throw new Error('Team eventId is required');
@@ -49,6 +53,7 @@ export const validateNewTeam = (data: FormData): Omit<TeamInfo, 'id'> => {
     eventId,
     slug,
     name,
-    description
+    description,
+    contactAddress
   };
 };

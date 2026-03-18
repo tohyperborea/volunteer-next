@@ -81,6 +81,7 @@ declare global {
     eventId: EventId;
     slug: UrlSlug;
     description: string;
+    contactAddress: string;
   }
 
   interface UserFilters {

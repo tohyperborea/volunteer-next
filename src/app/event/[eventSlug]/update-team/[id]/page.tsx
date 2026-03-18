@@ -71,17 +71,17 @@ export default async function UpdateTeam({ params }: Props) {
 
   return (
     <Flex direction="column" gap="4">
-      <Heading my="4">{t('title')}</Heading>
-      <Card>
-        <TeamForm
-          eventId={team.eventId}
-          onSubmit={onSubmit}
-          backOnCancel
-          teamleadOptions={volunteers}
-          editingTeam={team}
-          editingTeamlead={teamlead}
-        />
-      </Card>
+      <Heading my="4" as="h1" align="center">
+        {t('title')}
+      </Heading>
+      <TeamForm
+        eventId={team.eventId}
+        onSubmit={onSubmit}
+        backOnCancel
+        teamleadOptions={volunteers}
+        editingTeam={team}
+        editingTeamlead={teamlead}
+      />
     </Flex>
   );
 }

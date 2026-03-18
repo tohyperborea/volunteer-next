@@ -31,7 +31,7 @@
     "edit": "Edit Team: {teamName}"
   },
   "CreateTeamPage": {
-    "title": "Create Team for {eventName}"
+    "title": "Create Team"
   },
   "UpdateTeamPage": {
     "title": "Update Team"
@@ -237,11 +237,17 @@
   },
   "TeamForm": {
     "teamName": "Team Name",
+    "teamNameDescription": "This will be the team's official title",
     "teamSlug": "URL Slug",
-    "teamDescription": "Team Description",
+    "teamSlugDescription": "This will be used for the team's URL. It must be unique among teams in the same event, and can only contain lowercase letters, numbers, and hyphens.",
+    "teamDescription": "Description",
+    "teamDescriptionDescription": "Provide a description about the team",
+    "contactAddress": "Contact Address",
+    "contactAddressDescription": "Provide a contact email",
     "teamLead": "Team Lead",
-    "createButton": "Create Team",
-    "updateButton": "Update Team",
+    "teamLeadDescription": "Select the lead for this team.",
+    "createButton": "Add Team",
+    "updateButton": "Save Changes",
     "cancelButton": "Cancel"
   },
   "NavBar": {

@@ -9,12 +9,7 @@
 import { Flex, Text, TextField, Select, Button, TextArea } from '@radix-ui/themes';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
-
-const FormItem = ({ children }: { children: React.ReactNode }) => (
-  <Flex direction="column" gap="1">
-    {children}
-  </Flex>
-);
+import { FormField } from '../form-dialog';
 
 interface Props {
   eventId: EventId;
@@ -40,10 +35,11 @@ export default function TeamForm({
       {editingTeam && <input type="hidden" name="id" value={editingTeam.id} />}
       <input type="hidden" name="eventId" value={editingTeam?.eventId || eventId} />
       <Flex direction="column" gap="4">
-        <FormItem>
-          <Text as="label" id="team-name-label" htmlFor="team-name" size="2" weight="bold">
-            {t('teamName')}
-          </Text>
+        <FormField
+          name={t('teamName')}
+          description={t('teamNameDescription')}
+          ariaId="team-name-label"
+        >
           <TextField.Root
             name="name"
             aria-labelledby="team-name-label"
@@ -53,11 +49,12 @@ export default function TeamForm({
             defaultValue={editingTeam?.name}
             required
           />
-        </FormItem>
-        <FormItem>
-          <Text as="label" id="team-slug-label" htmlFor="team-slug" size="2" weight="bold">
-            {t('teamSlug')}
-          </Text>
+        </FormField>
+        <FormField
+          ariaId="team-slug-label"
+          name={t('teamSlug')}
+          description={t('teamSlugDescription')}
+        >
           <TextField.Root
             name="slug"
             aria-labelledby="team-slug-label"
@@ -67,17 +64,12 @@ export default function TeamForm({
             defaultValue={editingTeam?.slug}
             required
           />
-        </FormItem>
-        <FormItem>
-          <Text
-            as="label"
-            id="team-description-label"
-            htmlFor="team-description"
-            size="2"
-            weight="bold"
-          >
-            {t('teamDescription')}
-          </Text>
+        </FormField>
+        <FormField
+          ariaId="team-description-label"
+          name={t('teamDescription')}
+          description={t('teamDescriptionDescription')}
+        >
           <TextArea
             name="description"
             id="team-description"
@@ -86,11 +78,28 @@ export default function TeamForm({
             defaultValue={editingTeam?.description}
             required
           />
-        </FormItem>
-        <FormItem>
-          <Text as="label" id="team-lead-label" htmlFor="team-lead" size="2" weight="bold">
-            {t('teamLead')}
-          </Text>
+        </FormField>
+        <FormField
+          ariaId="contact-address-label"
+          name={t('contactAddress')}
+          description={t('contactAddressDescription')}
+        >
+          <TextField.Root
+            name="contactAddress"
+            aria-labelledby="contact-address-label"
+            id="contact-address"
+            placeholder={t('contactAddress')}
+            autoComplete="off"
+            type="email"
+            defaultValue={editingTeam?.contactAddress}
+            required
+          />
+        </FormField>
+        <FormField
+          ariaId="team-lead-label"
+          name={t('teamLead')}
+          description={t('teamLeadDescription')}
+        >
           <Select.Root required name="teamleadId" defaultValue={editingTeamlead?.id}>
             <Select.Trigger placeholder={t('teamLead')} />
             <Select.Content>
@@ -101,12 +110,13 @@ export default function TeamForm({
               ))}
             </Select.Content>
           </Select.Root>
-        </FormItem>
-        <Flex gap="2" justify="end">
-          <Button type="submit">{t(editingTeam ? 'updateButton' : 'createButton')}</Button>
+        </FormField>
+        <Flex gap="2" my="6">
           {backOnCancel && (
             <Button
-              variant="outline"
+              style={{ maxWidth: '284px', flexBasis: '40%', flexGrow: 1 }}
+              variant="soft"
+              color="gray"
               onClick={(e) => {
                 e.preventDefault();
                 router.back();
@@ -115,6 +125,13 @@ export default function TeamForm({
               {t('cancelButton')}
             </Button>
           )}
+          <Button
+            variant="soft"
+            style={{ maxWidth: '284px', flexBasis: '40%', flexGrow: 1 }}
+            type="submit"
+          >
+            {t(editingTeam ? 'updateButton' : 'createButton')}
+          </Button>
         </Flex>
       </Flex>
     </form>

@@ -56,7 +56,7 @@ export default async function TeamLayout({ params, children }: Props) {
       <Flex direction="column" gap="1" mb="4">
         <Box>
           <Text>{t('contact')}: </Text>
-          <Link href={`mailto:test@example.com`}>test@example.com</Link>
+          <Link href={`mailto:${team.contactAddress}`}>{team.contactAddress}</Link>
         </Box>
         <Flex direction="column">
           <Text>{t('descriptionLabel')}:</Text>
