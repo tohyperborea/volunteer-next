@@ -1,11 +1,18 @@
 import metadata from '@/i18n/metadata';
 import { getEventBySlug } from '@/service/event-service';
 import { getQualificationsForEvent } from '@/service/qualification-service';
-import { createShift, updateShift, deleteShift, getShiftsForTeam } from '@/service/shift-service';
+import {
+  createShift,
+  updateShift,
+  deleteShift,
+  getShiftsForTeam,
+  getFilteredShiftsForTeam
+} from '@/service/shift-service';
 import { getTeamBySlug } from '@/service/team-service';
 import { checkAuthorisation } from '@/session';
 import ShiftList from '@/ui/shift-list';
 import { getTeamShiftsApiPath, getTeamShiftsPath } from '@/utils/path';
+import { recordToShiftFilters } from '@/utils/shift-filters';
 import { validateNewShift } from '@/validator/shift-validator';
 import { Flex, Heading } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
@@ -27,7 +34,10 @@ interface Props {
   params: Promise<{ eventSlug: string; teamSlug: string }>;
 }
 
-export default async function TeamShifts({ params }: Props) {
+export default async function TeamShifts({
+  params,
+  searchParams
+}: PageProps<`/event/[eventSlug]/team/[teamSlug]`>) {
   const { eventSlug, teamSlug } = await params;
   const event = await getEventBySlug(eventSlug);
   const team = await getTeamBySlug(eventSlug, teamSlug);
@@ -35,10 +45,11 @@ export default async function TeamShifts({ params }: Props) {
     notFound();
   }
 
+  const filters = recordToShiftFilters(await searchParams);
   const qualifications = await getQualificationsForEvent(team.eventId).then((quals) =>
     quals.filter((q) => !q.teamId || q.teamId === team.id)
   );
-  const shifts = await getShiftsForTeam(team.id);
+  const shifts = await getFilteredShiftsForTeam(team.id, filters);
   shifts.sort((a, b) => {
     const dayDiff = a.eventDay - b.eventDay;
     if (dayDiff !== 0) {
@@ -86,9 +97,11 @@ export default async function TeamShifts({ params }: Props) {
 
   return (
     <Flex direction="column" gap="2">
-      <Heading my="4" as="h2">
-        {t('title')}
-      </Heading>
+      {!isEditable && (
+        <Heading my="4" as="h2">
+          {t('title')}
+        </Heading>
+      )}
       <ShiftList
         event={event}
         startDate={event.startDate}

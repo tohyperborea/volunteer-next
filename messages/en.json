@@ -200,6 +200,14 @@
     "teamLead": "Team Lead",
     "clear": "Clear"
   },
+  "TeamFilters": {
+    "filters": "Filters",
+    "clear": "Clear"
+  },
+  "ShiftFilters": {
+    "filters": "Filters",
+    "clear": "Clear"
+  },
   "UserForm": {
     "userName": "Real Name",
     "displayName": "Chosen Name",

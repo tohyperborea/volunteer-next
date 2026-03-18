@@ -1,5 +1,5 @@
 /**
- * Utility functions for handling TeamFilters
+ * Utility functions for handling ShiftFilters
  * @since 2026-03-17
  * @author Michael Townsend <@continuities>
  */
@@ -7,24 +7,24 @@
 import { normalise } from './list';
 
 /**
- * Converts URLSearchParams to a TeamFilters object
+ * Converts URLSearchParams to a ShiftFilters object
  * @param searchParams URLSearchParams from the request or current URL
- * @returns TeamFilters object constructed from the search parameters
+ * @returns ShiftFilters object constructed from the search parameters
  */
-export function paramsToTeamFilters(searchParams: URLSearchParams): TeamFilters {
+export function paramsToShiftFilters(searchParams: URLSearchParams): ShiftFilters {
   return {
     searchQuery: searchParams.get('searchQuery') || undefined
   };
 }
 
 /**
- * Converts a record of string values (like from Next.js page props) to a TeamFilters object
+ * Converts a record of string values (like from Next.js page props) to a ShiftFilters object
  * @param record A searchParams record like nextjs pageprops provides
- * @returns TeamFilters object constructed from the record
+ * @returns ShiftFilters object constructed from the record
  */
-export function recordToTeamFilters(
+export function recordToShiftFilters(
   record: Record<string, string | string[] | undefined>
-): TeamFilters {
+): ShiftFilters {
   const searchQuery = normalise(record['searchQuery'])?.trim();
   return {
     searchQuery: searchQuery === '' ? undefined : searchQuery
@@ -32,13 +32,13 @@ export function recordToTeamFilters(
 }
 
 /**
- * Converts a TeamFilters object to URLSearchParams
- * @param filters TeamFilters object to convert to URLSearchParams
+ * Converts a ShiftFilters object to URLSearchParams
+ * @param filters ShiftFilters object to convert to URLSearchParams
  * @param existing Optional existing URLSearchParams to merge with (useful for preserving other params)
  * @returns
  */
-export function teamFiltersToParams(
-  filters: TeamFilters,
+export function shiftFiltersToParams(
+  filters: ShiftFilters,
   existing?: URLSearchParams
 ): URLSearchParams {
   const params = new URLSearchParams(existing);

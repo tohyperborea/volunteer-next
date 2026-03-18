@@ -119,6 +119,47 @@ export const getShiftsForTeam = cache(async (teamId: TeamId): Promise<ShiftInfo[
 });
 
 /**
+ * Fetches a list of shifts for a given team, filtered by the provided criteria.
+ * @param teamId - The ID of the team to fetch shifts for.
+ * @param filters - A ShiftFilters object
+ * @return An array of ShiftInfo objects that match the filter criteria.
+ */
+export const getFilteredShiftsForTeam = cache(
+  async (teamId: TeamId, filters: ShiftFilters): Promise<ShiftInfo[]> => {
+    const { searchQuery } = filters;
+
+    const params = [teamId];
+    const whereClauses = [`"teamId" = $${params.length}`];
+    if (searchQuery) {
+      params.push(`%${searchQuery}%`);
+      whereClauses.push(`s."title" ILIKE $${params.length}`);
+    }
+
+    const result = await pool.query(
+      `
+      SELECT 
+        s."id",
+        s."teamId", 
+        s."title", 
+        s."eventDay", 
+        s."startTime", 
+        s."durationHours",
+        s."minVolunteers",
+        s."maxVolunteers",
+        s."isActive",
+        r."qualificationId"
+      FROM shift s
+      LEFT JOIN requirement r ON s.id = r."shiftId"
+      WHERE ${whereClauses.join(' AND ')}
+      ORDER BY s."eventDay", s."startTime"
+      `,
+      params
+    );
+    return rowsToShifts(result.rows);
+  }
+);
+
+/**
  * Fetches a list of all shifts for a given event
  * @param eventId - The ID of the event to fetch shifts for.
  * @return An array of ShiftInfo objects.

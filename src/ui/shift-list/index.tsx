@@ -14,6 +14,7 @@ import ShiftDialog from '../shift-dialog';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { eventDayToDate } from '@/utils/datetime';
+import ShiftFilters from '../shift-filters';
 
 interface Props {
   event: EventInfo;
@@ -43,8 +44,8 @@ export default function ShiftList({
   const qualificationMap = new Map(qualifications.map((q) => [q.id, q]));
   return (
     <Flex direction="column" gap="6">
-      <Flex direction="row" gap="2">
-        {canEdit && (
+      {canEdit && (
+        <Flex direction="row" gap="2">
           <Button
             variant="soft"
             onClick={() => {
@@ -54,29 +55,34 @@ export default function ShiftList({
           >
             <PlusIcon /> {t('addShift')}
           </Button>
-        )}
-        {exportLink && (
-          <Button variant="soft" asChild>
-            <Link href={exportLink} rel="noopener noreferrer" target="_blank">
-              <Share2Icon /> {t('export')}
-            </Link>
-          </Button>
-        )}
+          {exportLink && (
+            <Button variant="soft" asChild>
+              <Link href={exportLink} rel="noopener noreferrer" target="_blank">
+                <Share2Icon /> {t('export')}
+              </Link>
+            </Button>
+          )}
+        </Flex>
+      )}
+      <Flex direction="column" gap="4">
+        <ShiftFilters withFilters={['searchQuery']} />
+        <DatedList
+          items={shifts}
+          getDate={(shift) => eventDayToDate(startDate, shift.eventDay)}
+          renderItem={(shift) => (
+            <ShiftCard
+              event={event}
+              shift={shift}
+              qualification={
+                shift.requirement ? qualificationMap.get(shift.requirement) : undefined
+              }
+              volunteerNames={[] /* TODO */}
+              key={shift.id}
+              onEdit={canEdit ? () => setEditingShift(shift) : undefined}
+            />
+          )}
+        />
       </Flex>
-      <DatedList
-        items={shifts}
-        getDate={(shift) => eventDayToDate(startDate, shift.eventDay)}
-        renderItem={(shift) => (
-          <ShiftCard
-            event={event}
-            shift={shift}
-            qualification={shift.requirement ? qualificationMap.get(shift.requirement) : undefined}
-            volunteerNames={[] /* TODO */}
-            key={shift.id}
-            onEdit={canEdit ? () => setEditingShift(shift) : undefined}
-          />
-        )}
-      />
       {canEdit && (
         <ShiftDialog
           startDate={startDate}

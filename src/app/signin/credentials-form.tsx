@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { useCallback, useRef, useState, useTransition } from 'react';
 import { Text, AlertDialog, Button, TextField, Flex } from '@radix-ui/themes';
 import { isRedirectError } from 'next/dist/client/components/redirect-error';
-import styles from './styles.module.css';
 import { useTranslations } from 'next-intl';
 
 type View = 'signin' | 'forgot' | 'forgotSent';
@@ -79,7 +78,7 @@ export function CredentialsForm({
     return (
       <Flex direction="column" gap="4">
         <Text as="p">{t('forgotDescription')}</Text>
-        <form action={requestResetAction} className={styles.signinForm}>
+        <form action={requestResetAction}>
           <Flex direction="column" gap="4">
             <TextField.Root
               name="email"
@@ -141,24 +140,26 @@ export function CredentialsForm({
           setShowErrorDialog(open);
         }}
       >
-        <AlertDialog.Content className={styles.errorDialog}>
-          <AlertDialog.Title className={styles.errorDialogTitle}>
+        <AlertDialog.Content>
+          <AlertDialog.Title>
             {errorReason === 'locked'
               ? t('tooManyAttemptsTitle')
               : errorReason === 'rate_limit'
                 ? t('tooManyAttemptsTitle')
                 : t('invalidCredentialsTitle')}
           </AlertDialog.Title>
-          <AlertDialog.Description className={styles.errorDialogDescription}>
+          <AlertDialog.Description>
             {errorReason === 'locked'
               ? t('tooManyAttempts')
               : errorReason === 'rate_limit'
                 ? t('rateLimitError')
                 : t('invalidCredentials')}
           </AlertDialog.Description>
-          <AlertDialog.Action>
-            <Button type="button">{t('errorDialogClose')}</Button>
-          </AlertDialog.Action>
+          <Flex justify="end" mt="4">
+            <AlertDialog.Action>
+              <Button type="button">{t('errorDialogClose')}</Button>
+            </AlertDialog.Action>
+          </Flex>
         </AlertDialog.Content>
       </AlertDialog.Root>
     </Flex>

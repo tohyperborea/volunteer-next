@@ -81,7 +81,7 @@ export default async function TeamLayout({ params, children }: Props) {
               {t('tabs.volunteers')}
             </TabNav.Link>
           </TabNav.Root>
-          <Box pt="6">{children}</Box>
+          <Box mt="6">{children}</Box>
         </>
       ) : (
         children

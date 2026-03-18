@@ -108,6 +108,10 @@ declare global {
     searchQuery?: string;
   }
 
+  interface ShiftFilters {
+    searchQuery?: string;
+  }
+
   type ThemeMode = 'light' | 'dark' | 'system';
 
   interface QualificationInfo {
