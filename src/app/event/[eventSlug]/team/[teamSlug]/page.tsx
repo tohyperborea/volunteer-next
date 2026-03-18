@@ -5,7 +5,6 @@ import {
   createShift,
   updateShift,
   deleteShift,
-  getShiftsForTeam,
   getFilteredShiftsForTeam
 } from '@/service/shift-service';
 import { getTeamBySlug } from '@/service/team-service';

@@ -34,9 +34,23 @@ describe('QualificationList', () => {
       }
     ];
 
-    const mockTeams = [
-      { id: 'team1', eventId: 'event1', slug: 'team1', name: 'Team 1', description: 'description' },
-      { id: 'team2', eventId: 'event1', slug: 'team2', name: 'Team 2', description: 'description' }
+    const mockTeams: TeamInfo[] = [
+      {
+        id: 'team1',
+        eventId: 'event1',
+        slug: 'team1',
+        name: 'Team 1',
+        description: 'description',
+        contactAddress: ''
+      },
+      {
+        id: 'team2',
+        eventId: 'event1',
+        slug: 'team2',
+        name: 'Team 2',
+        description: 'description',
+        contactAddress: ''
+      }
     ];
 
     render(
@@ -62,7 +76,14 @@ describe('QualificationList', () => {
       }
     ];
     const mockTeams = [
-      { id: 'team1', eventId: 'event1', name: 'Team 1', slug: 'team1', description: 'description' }
+      {
+        id: 'team1',
+        eventId: 'event1',
+        name: 'Team 1',
+        slug: 'team1',
+        description: 'description',
+        contactAddress: ''
+      }
     ];
 
     render(
@@ -87,7 +108,14 @@ describe('QualificationList', () => {
       }
     ];
     const mockTeams = [
-      { id: 'team1', eventId: 'event1', name: 'Team 1', slug: 'team1', description: 'description' }
+      {
+        id: 'team1',
+        eventId: 'event1',
+        name: 'Team 1',
+        slug: 'team1',
+        description: 'description',
+        contactAddress: ''
+      }
     ];
 
     render(

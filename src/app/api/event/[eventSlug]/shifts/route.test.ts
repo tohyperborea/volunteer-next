@@ -65,7 +65,8 @@ describe('GET /api/event/[eventSlug]/shifts', () => {
         name: 'Team A',
         eventId: mockEvent.id,
         slug: 'team1',
-        description: 'description'
+        description: 'description',
+        contactAddress: ''
       }
     ];
     const mockCSVContent = 'csv-content';

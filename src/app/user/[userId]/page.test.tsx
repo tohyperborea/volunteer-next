@@ -110,7 +110,8 @@ describe('UserProfilePage', () => {
       name: 'Team 1',
       eventId: 'event1',
       slug: 'team-1',
-      description: 'description'
+      description: 'description',
+      contactAddress: ''
     }
   ];
 

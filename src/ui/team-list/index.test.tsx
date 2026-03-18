@@ -34,14 +34,16 @@ describe('TeamList', () => {
         name: 'Team 1',
         eventId: 'event1',
         slug: 'team1',
-        description: 'description'
+        description: 'description',
+        contactAddress: ''
       },
       {
         id: 'team2',
         name: 'Team 2',
         eventId: 'even1',
         slug: 'team2',
-        description: 'description'
+        description: 'description',
+        contactAddress: ''
       }
     ];
     const shifts: ShiftInfo[] = [
@@ -105,14 +107,16 @@ describe('TeamList', () => {
         name: 'Team 1',
         eventId: 'event1',
         slug: 'team1',
-        description: 'description'
+        description: 'description',
+        contactAddress: ''
       },
       {
         id: 'team2',
         name: 'Team 2',
         eventId: 'even1',
         slug: 'team2',
-        description: 'description'
+        description: 'description',
+        contactAddress: ''
       }
     ];
     const { getByTestId } = render(<TeamList teams={teams} shifts={[]} eventSlug="test-event" />);

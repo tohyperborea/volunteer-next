@@ -24,7 +24,8 @@ describe('TeamCard', () => {
       description: 'Description A',
       slug: 'team-a',
       id: 'teamid',
-      eventId: 'eventid'
+      eventId: 'eventid',
+      contactAddress: ''
     };
     const shifts: ShiftInfo[] = [];
     const eventSlug = 'event-2025';
@@ -41,7 +42,8 @@ describe('TeamCard', () => {
       description: 'Description A',
       slug: 'team-a',
       id: 'teamid',
-      eventId: 'eventid'
+      eventId: 'eventid',
+      contactAddress: ''
     };
     const shifts: ShiftInfo[] = [];
     const eventSlug = 'event-2025';
@@ -59,7 +61,8 @@ describe('TeamCard', () => {
       description: 'Description A',
       slug: 'team-a',
       id: 'teamid',
-      eventId: 'eventid'
+      eventId: 'eventid',
+      contactAddress: ''
     };
     const shifts: ShiftInfo[] = [
       {
@@ -105,7 +108,8 @@ describe('TeamCard', () => {
       description: 'Description A',
       slug: 'team-a',
       id: 'teamid',
-      eventId: 'eventid'
+      eventId: 'eventid',
+      contactAddress: ''
     };
     const shifts: ShiftInfo[] = [];
     const eventSlug = 'event-2025';
@@ -122,7 +126,8 @@ describe('TeamCard', () => {
       description: 'Description A',
       slug: 'team-a',
       id: 'teamid',
-      eventId: 'eventid'
+      eventId: 'eventid',
+      contactAddress: ''
     };
     const shifts: ShiftInfo[] = [];
     const eventSlug = 'event-2025';

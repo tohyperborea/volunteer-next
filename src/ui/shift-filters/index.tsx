@@ -4,6 +4,8 @@
  * @author Michael Townsend <@continuities>
  */
 
+'use client';
+
 import { MixerVerticalIcon } from '@radix-ui/react-icons';
 import { Flex, Button, Card, Box } from '@radix-ui/themes';
 import { useSearchParams, usePathname, useRouter } from 'next/navigation';
@@ -26,7 +28,7 @@ export default function ShiftFilters({ withFilters = [] }: Props) {
   const pathname = usePathname();
   const { replace } = useRouter();
 
-  const onFilterChange = (filter: keyof UserFilters, value: string | undefined) => {
+  const onFilterChange = (filter: keyof ShiftFilters, value: string | undefined) => {
     const params = new URLSearchParams(searchParams);
     if (value) {
       params.set(filter, value);

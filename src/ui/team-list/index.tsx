@@ -38,20 +38,20 @@ export default function TeamList({ teams, shifts, eventSlug, itemActions = {} }:
     <Flex direction="column" gap="4">
       <TeamFilters withFilters={['searchQuery']} />
       <Flex direction="column" gap="4" asChild m="0" p="0">
-        <li>
+        <ul style={{ listStyle: 'none' }}>
           {teams.map((team) => (
             <Box asChild m="0" p="0" key={team.id}>
-              <ul style={{ listStyle: 'none' }}>
+              <li>
                 <TeamCard
                   eventSlug={eventSlug}
                   team={team}
                   shifts={shiftsByTeamId[team.id] ?? []}
                   actions={itemActions[team.id]}
                 />
-              </ul>
+              </li>
             </Box>
           ))}
-        </li>
+        </ul>
       </Flex>
     </Flex>
   );

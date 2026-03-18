@@ -14,7 +14,8 @@ describe('shiftsToCSV', () => {
       name: 'Team Alpha',
       eventId: event.id,
       slug: 'team1',
-      description: 'description'
+      description: 'description',
+      contactAddress: ''
     }
   ];
   const shifts: ShiftInfo[] = [
@@ -135,7 +136,8 @@ describe('shiftsToCSV', () => {
         name: 'Team Beta',
         eventId: event.id,
         slug: 'team2',
-        description: 'description'
+        description: 'description',
+        contactAddress: ''
       }
     ];
     const twoShifts: ShiftInfo[] = [
