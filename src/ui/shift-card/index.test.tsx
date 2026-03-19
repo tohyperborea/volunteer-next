@@ -143,7 +143,7 @@ describe('ShiftCard', () => {
 
     expect(mockProgressBar).toHaveBeenCalledWith(
       expect.objectContaining({
-        filled: mockVolunteers.length,
+        filled: mockShift.maxVolunteers - mockVolunteers.length,
         total: mockShift.maxVolunteers
       }),
       undefined

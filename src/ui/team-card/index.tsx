@@ -60,7 +60,11 @@ export default function TeamCard({
         </Flex>
         <Flex justify="between" align="center">
           <Box style={{ maxWidth: '200px' }} flexGrow="1" flexShrink="0">
-            <ProgressBar filled={filledSpots} total={shiftSpots} />
+            <ProgressBar
+              colour={getStatusColour(shifts, shiftVolunteers)}
+              filled={shiftSpots - filledSpots}
+              total={shiftSpots}
+            />
           </Box>
           {showSignup && (
             <Button asChild disabled={isFull} title={isFull ? t('full') : undefined}>
@@ -85,3 +89,30 @@ export default function TeamCard({
     </Card>
   );
 }
+
+const getStatusColour = (
+  shifts: ShiftInfo[],
+  shiftVolunteers: Record<ShiftId, VolunteerInfo[]> = {}
+) => {
+  let anyBelowMin = false;
+  let allFull = false;
+  for (const shift of shifts) {
+    const volunteers = shiftVolunteers?.[shift.id] ?? [];
+    if (volunteers.length === 0) {
+      return 'red';
+    }
+    if (volunteers.length < shift.minVolunteers) {
+      anyBelowMin = true;
+    }
+    if (volunteers.length < shift.maxVolunteers) {
+      allFull = false;
+    }
+  }
+  if (anyBelowMin) {
+    return 'amber';
+  }
+  if (allFull) {
+    return 'green';
+  }
+  return 'accent';
+};

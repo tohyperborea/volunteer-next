@@ -29,6 +29,19 @@ interface Props {
   onCancel?: () => void;
 }
 
+const getStatusColour = (volunteerCount: number, minVolunteers: number, maxVolunteers: number) => {
+  if (volunteerCount >= maxVolunteers) {
+    return 'green';
+  }
+  if (volunteerCount === 0) {
+    return 'red';
+  }
+  if (volunteerCount < minVolunteers) {
+    return 'orange';
+  }
+  return 'accent';
+};
+
 export default function ShiftCard({
   event,
   shift,
@@ -105,7 +118,7 @@ export default function ShiftCard({
                 <Box>
                   <Badge asChild>
                     <Link
-                      color="orange"
+                      color="yellow"
                       href={getQualificationDetailsPath({
                         eventSlug: event.slug,
                         qualificationId: shift.requirement!
@@ -117,7 +130,11 @@ export default function ShiftCard({
                 </Box>
               )}
               <Box style={{ maxWidth: '200px' }}>
-                <ProgressBar filled={volunteerCount} total={shift.maxVolunteers} />
+                <ProgressBar
+                  colour={getStatusColour(volunteerCount, shift.minVolunteers, shift.maxVolunteers)}
+                  filled={shift.maxVolunteers - volunteerCount}
+                  total={shift.maxVolunteers}
+                />
               </Box>
             </Flex>
             {onSignup && (

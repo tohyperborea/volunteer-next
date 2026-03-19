@@ -2,14 +2,18 @@
   position: relative;
   width: 70%;
   height: 2rem;
-  background-color: var(--accent-a5);
+  background-color: var(--progress-background-colour);
   border-radius: var(--radius-1);
   overflow: hidden;
+  transition: background-color 0.3s ease;
 }
 
 .progressFilled {
   height: 100%;
-  background-color: var(--accent-9);
+  background-color: var(--progress-fill-colour);
+  transition:
+    width 0.5s ease-in-out,
+    background-color 0.3s ease;
 }
 
 .progressLabel {
@@ -17,4 +21,5 @@
   top: 0;
   left: 0.5rem;
   line-height: 2rem;
+  color: var(--accent-contrast);
 }

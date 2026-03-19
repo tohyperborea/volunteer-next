@@ -94,7 +94,7 @@ describe('TeamCard', () => {
 
     expect(mockProgressBar).toHaveBeenCalledWith(
       expect.objectContaining({
-        filled: 0,
+        filled: 15,
         total: 15
       }),
       undefined
