@@ -106,7 +106,6 @@ const MenuButton = ({
       size="3"
       variant="ghost"
       highContrast
-      disabled={active}
       style={{
         width: '100%',
         justifyContent: 'flex-start',

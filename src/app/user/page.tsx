@@ -1,8 +1,8 @@
 import metadata from '@/i18n/metadata';
-import { Heading, Flex, Button, Dialog, Link } from '@radix-ui/themes';
+import { Heading, Flex, Button } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
 import { checkAuthorisation, currentUser } from '@/session';
-import { getFilteredUsers, getUsers } from '@/service/user-service';
+import { getFilteredUsers } from '@/service/user-service';
 import { markUserAsDeleted, undeleteUser } from '@/service/user-service';
 import { revalidatePath } from 'next/cache';
 import { getCreateUserPath, getEditUserPath, getUsersDashboardPath } from '@/utils/path';
@@ -12,6 +12,7 @@ import { Pencil1Icon, PlusIcon, TrashIcon } from '@radix-ui/react-icons';
 import DeleteButton from '@/ui/delete-button';
 import { recordToUserFilters } from '@/utils/user-filters';
 import { getPermissionsProfile } from '@/utils/permissions';
+import NextLink from 'next/link';
 
 const PAGE_KEY = 'UsersDashboardPage';
 export const generateMetadata = metadata(PAGE_KEY);
@@ -48,11 +49,11 @@ export default async function UsersDashboardPage({ searchParams }: PageProps<'/u
     for (const user of users) {
       itemActions[user.id] = (
         <Flex gap="2">
-          <Link href={getEditUserPath(user.id)}>
+          <NextLink href={getEditUserPath(user.id)}>
             <Button variant="outline">
               <Pencil1Icon />
             </Button>
-          </Link>
+          </NextLink>
           {user.deletedAt ? (
             <Button
               variant="outline"
@@ -79,11 +80,11 @@ export default async function UsersDashboardPage({ searchParams }: PageProps<'/u
         {t('title')}
       </Heading>
       {canEdit && (
-        <Link href={getCreateUserPath()}>
+        <NextLink href={getCreateUserPath()}>
           <Button variant="soft" color="blue">
             <PlusIcon /> {t('createUser')}
           </Button>
-        </Link>
+        </NextLink>
       )}
       <VolunteerList volunteers={volunteers} withFilters={withFilters} itemActions={itemActions} />
     </Flex>

@@ -8,7 +8,7 @@
 
 import { Heading, Text, Flex, Avatar, IconButton, Box } from '@radix-ui/themes';
 import { useState } from 'react';
-import Link from 'next/link';
+import NextLink from 'next/link';
 import { getUserProfilePath } from '@/utils/path';
 import { HamburgerMenuIcon } from '@radix-ui/react-icons';
 import NavMenu from './navmenu';
@@ -53,13 +53,13 @@ export default function NavigationFrame({ title, subtitle, currentUser, children
             <Heading size="3">{title}</Heading>
             <Text size="1">{subtitle}</Text>
           </Flex>
-          <Link href={getUserProfilePath(currentUser.id)}>
+          <NextLink href={getUserProfilePath(currentUser.id)}>
             <Avatar
               fallback={currentUser.displayName.charAt(0).toUpperCase()}
               radius="full"
               variant="solid"
             />
-          </Link>
+          </NextLink>
         </Flex>
       </Flex>
 
@@ -75,6 +75,7 @@ export default function NavigationFrame({ title, subtitle, currentUser, children
             transition: 'width 0.3s',
             overflow: 'hidden'
           }}
+          flexShrink="0"
           position={{ initial: 'absolute', md: 'relative' }}
           onClick={(e) => {
             // Close on navigation if the menu is fullscreen

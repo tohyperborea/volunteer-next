@@ -6,6 +6,7 @@ import { PlusIcon } from '@radix-ui/react-icons';
 import { checkAuthorisation } from '@/session';
 import EventCard from '@/ui/event-card';
 import { redirect } from 'next/navigation';
+import NextLink from 'next/link';
 
 const PAGE_KEY = 'EventsManagementPage';
 
@@ -28,11 +29,11 @@ export default async function EventsDashboard() {
     <Flex direction="column" gap="4">
       <Heading my="4">{t('title')}</Heading>
       <Box>
-        <Link href="/create-event">
+        <NextLink href="/create-event">
           <Button>
             <PlusIcon /> {t('createEvent')}
           </Button>
-        </Link>
+        </NextLink>
       </Box>
       {events.length === 0 && (
         <Card>
@@ -40,8 +41,10 @@ export default async function EventsDashboard() {
         </Card>
       )}
       {events.map((event) => (
-        <Link highContrast underline="none" href={`/event/${event.slug}`} key={event.id}>
-          <EventCard event={event} onDelete={deleteAction} />
+        <Link asChild highContrast underline="none" key={event.id}>
+          <NextLink href={`/event/${event.slug}`}>
+            <EventCard event={event} onDelete={deleteAction} />
+          </NextLink>
         </Link>
       ))}
     </Flex>

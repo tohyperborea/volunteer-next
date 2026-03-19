@@ -11,7 +11,7 @@ import { checkAuthorisation, currentUser, getMatchingRoles } from '@/session';
 import UserQualifications from '@/ui/user-qualifications';
 import VolunteerCard from '@/ui/volunteer-card';
 import { getEditUserPath, getUserProfilePath } from '@/utils/path';
-import { Box, Button, Flex, Heading, IconButton, Link, Select } from '@radix-ui/themes';
+import { Box, Button, Flex, Heading, IconButton, Select } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
 import { revalidatePath } from 'next/cache';
 import { notFound, redirect } from 'next/navigation';
@@ -22,6 +22,7 @@ import { getVolunteerById } from '@/lib/volunteer';
 import { getPermissionsProfile } from '@/utils/permissions';
 import { auth } from '@/auth';
 import { headers } from 'next/headers';
+import NextLink from 'next/link';
 
 const PAGE_KEY = 'VolunteerProfilePage';
 
@@ -145,9 +146,9 @@ export default async function VolunteerProfilePage({ params }: PageProps<'/user/
         actions={
           (isOwnProfile || isAdmin) && (
             <IconButton asChild variant="ghost" aria-label={t('edit')} title={t('edit')}>
-              <Link href={getEditUserPath(volunteer.id, getUserProfilePath(volunteer.id))}>
+              <NextLink href={getEditUserPath(volunteer.id, getUserProfilePath(volunteer.id))}>
                 <Pencil2Icon width={20} height={20} />
-              </Link>
+              </NextLink>
             </IconButton>
           )
         }

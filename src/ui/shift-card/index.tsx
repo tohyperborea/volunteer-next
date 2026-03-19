@@ -6,7 +6,7 @@
 
 'use client';
 
-import { Badge, Box, Card, Flex, Heading, IconButton, Link, Text } from '@radix-ui/themes';
+import { Badge, Box, Card, Flex, Heading, IconButton, Text } from '@radix-ui/themes';
 import TimeSpan from '../time-span';
 import { useTranslations } from 'next-intl';
 import styles from './styles.module.css';
@@ -15,6 +15,7 @@ import { Pencil2Icon, ChevronDownIcon } from '@radix-ui/react-icons';
 import { addHoursToTimeString } from '@/utils/datetime';
 import { getQualificationDetailsPath } from '@/utils/path';
 import { useState } from 'react';
+import NextLink from 'next/link';
 
 interface Props {
   event: EventInfo;
@@ -89,16 +90,15 @@ export default function ShiftCard({
           </Flex>
           <Badge color="teal">{t('status').toUpperCase()}</Badge>
           {requirementLabel && (
-            <Badge asChild>
-              <Link
-                color="orange"
+            <Badge asChild color="orange">
+              <NextLink
                 href={getQualificationDetailsPath({
                   eventSlug: event.slug,
                   qualificationId: shift.requirement!
                 })}
               >
                 {t('requires')}: {requirementLabel}
-              </Link>
+              </NextLink>
             </Badge>
           )}
           <ShiftProgress filled={volunteerCount} total={shift.maxVolunteers} />

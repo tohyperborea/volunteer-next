@@ -7,7 +7,7 @@
 'use client';
 
 import { Card, Flex, Heading, Text } from '@radix-ui/themes';
-import Link from 'next/link';
+import NextLink from 'next/link';
 import { getQualificationDetailsPath } from '@/utils/path';
 
 interface Props {
@@ -42,14 +42,14 @@ export default function QualificationCard({
   return (
     <Card asChild={asLink} data-testid={cardId}>
       {asLink ? (
-        <Link
+        <NextLink
           href={getQualificationDetailsPath({
             eventSlug: event.slug,
             qualificationId: qualification.id
           })}
         >
           <Inner />
-        </Link>
+        </NextLink>
       ) : (
         <Inner />
       )}

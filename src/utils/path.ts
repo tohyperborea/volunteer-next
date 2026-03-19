@@ -13,6 +13,9 @@ export const getUserProfilePath = (userId: string): string => `/user/${userId}`;
 
 // Teams paths
 export const getTeamsPath = (eventSlug: string): string => `/event/${eventSlug}/team`;
+export const getCreateTeamPath = (eventSlug: string): string => `/event/${eventSlug}/create-team`;
+export const getUpdateTeamPath = (eventSlug: string, teamId: TeamId): string =>
+  `/event/${eventSlug}/update-team/${teamId}`;
 export const getTeamInfoPath = (eventSlug: string, teamSlug: string): string =>
   `/event/${eventSlug}/team/${teamSlug}`;
 export const getTeamShiftsPath = (eventSlug: string, teamSlug: string): string =>

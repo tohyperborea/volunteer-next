@@ -13,8 +13,27 @@ import {
   getEditUserPath,
   getUserProfilePath,
   getUsersDashboardPath,
-  getEventsPath
+  getEventsPath,
+  getCreateTeamPath,
+  getUpdateTeamPath
 } from './path';
+
+describe('getCreateTeamPath', () => {
+  it('should return the correct path for creating a team', () => {
+    const eventSlug = 'event-123';
+    const result = getCreateTeamPath(eventSlug);
+    expect(result).toBe('/event/event-123/create-team');
+  });
+});
+
+describe('getUpdateTeamPath', () => {
+  it('should return the correct path for updating a team', () => {
+    const eventSlug = 'event-123';
+    const teamId = 'team-456';
+    const result = getUpdateTeamPath(eventSlug, teamId);
+    expect(result).toBe('/event/event-123/update-team/team-456');
+  });
+});
 
 describe('getTeamInfoPath', () => {
   it('should return the correct path for team info', () => {

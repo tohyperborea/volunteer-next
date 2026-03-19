@@ -7,13 +7,14 @@
 'use client';
 
 import { PlusIcon, Share2Icon } from '@radix-ui/react-icons';
-import { Button, Flex, Link } from '@radix-ui/themes';
+import { Button, Flex } from '@radix-ui/themes';
 import DatedList from '../dated-list';
 import ShiftCard from '../shift-card';
 import ShiftDialog from '../shift-dialog';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { eventDayToDate } from '@/utils/datetime';
+import NextLink from 'next/link';
 
 interface Props {
   event: EventInfo;
@@ -57,9 +58,9 @@ export default function ShiftList({
         )}
         {exportLink && (
           <Button variant="soft" asChild>
-            <Link href={exportLink} rel="noopener noreferrer" target="_blank">
+            <NextLink href={exportLink} rel="noopener noreferrer" target="_blank">
               <Share2Icon /> {t('export')}
-            </Link>
+            </NextLink>
           </Button>
         )}
       </Flex>
