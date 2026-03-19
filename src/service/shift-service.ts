@@ -61,6 +61,22 @@ const rowsToShifts = (rows: any[]): ShiftInfo[] => {
   return Array.from(shiftsMap.values());
 };
 
+const SHIFT_QUERY = `
+  SELECT 
+    s."id",
+    s."teamId", 
+    s."title", 
+    s."eventDay", 
+    s."startTime", 
+    s."durationHours",
+    s."minVolunteers",
+    s."maxVolunteers",
+    s."isActive",
+    r."qualificationId"
+  FROM shift s
+  LEFT JOIN requirement r ON s.id = r."shiftId"
+`;
+
 /**
  * Fetches a shift by its ID from the database.
  * @param shiftId - The ID of the shift to fetch.
@@ -69,19 +85,7 @@ const rowsToShifts = (rows: any[]): ShiftInfo[] => {
 export const getShiftById = cache(async (shiftId: ShiftId): Promise<ShiftInfo | null> => {
   const result = await pool.query(
     `
-    SELECT 
-      s."id",
-      s."teamId", 
-      s."title", 
-      s."eventDay", 
-      s."startTime", 
-      s."durationHours",
-      s."minVolunteers",
-      s."maxVolunteers",
-      s."isActive",
-      r."qualificationId"
-    FROM shift s
-    LEFT JOIN requirement r ON s.id = r."shiftId"
+    ${SHIFT_QUERY}
     WHERE id = $1`,
     [shiftId]
   );
@@ -99,19 +103,7 @@ export const getShiftById = cache(async (shiftId: ShiftId): Promise<ShiftInfo | 
 export const getShiftsForTeam = cache(async (teamId: TeamId): Promise<ShiftInfo[]> => {
   const result = await pool.query(
     `
-    SELECT 
-      s."id",
-      s."teamId", 
-      s."title", 
-      s."eventDay", 
-      s."startTime", 
-      s."durationHours",
-      s."minVolunteers",
-      s."maxVolunteers",
-      s."isActive",
-      r."qualificationId"
-    FROM shift s
-    LEFT JOIN requirement r ON s.id = r."shiftId"
+    ${SHIFT_QUERY}
     WHERE "teamId" = $1`,
     [teamId]
   );
@@ -137,19 +129,7 @@ export const getFilteredShiftsForTeam = cache(
 
     const result = await pool.query(
       `
-      SELECT 
-        s."id",
-        s."teamId", 
-        s."title", 
-        s."eventDay", 
-        s."startTime", 
-        s."durationHours",
-        s."minVolunteers",
-        s."maxVolunteers",
-        s."isActive",
-        r."qualificationId"
-      FROM shift s
-      LEFT JOIN requirement r ON s.id = r."shiftId"
+      ${SHIFT_QUERY}
       WHERE ${whereClauses.join(' AND ')}
       ORDER BY s."eventDay", s."startTime"
       `,
@@ -167,20 +147,8 @@ export const getFilteredShiftsForTeam = cache(
 export const getShiftsForEvent = cache(async (eventId: EventId): Promise<ShiftInfo[]> => {
   const result = await pool.query(
     `
-    SELECT 
-      s."id",
-      s."teamId", 
-      s."title",
-      s."eventDay",
-      s."startTime",
-      s."durationHours",
-      s."minVolunteers",
-      s."maxVolunteers",
-      s."isActive",
-      r."qualificationId"
-    FROM shift s
+    ${SHIFT_QUERY}
     JOIN team t ON s."teamId" = t.id
-    LEFT JOIN requirement r ON s.id = r."shiftId"
     WHERE t."eventId" = $1
     ORDER BY s."eventDay", s."startTime"
     `,
@@ -335,3 +303,66 @@ export const deleteShift = async (shiftId: ShiftId, client?: PoolClient): Promis
   await db.query('DELETE FROM shift WHERE id = $1', [shiftId]);
   console.info('Deleted shift with id:', shiftId);
 };
+
+/**
+ * Adds a volunteer to a shift in the database
+ * @param shiftId - The ID of the shift to add the volunteer to.
+ * @param volunteerId - The ID of the volunteer to add to the shift.
+ * @param client - Optional database client for transaction support.
+ */
+export const addVolunteerToShift = async (
+  shiftId: ShiftId,
+  volunteerId: UserId,
+  client?: PoolClient
+): Promise<void> => {
+  const db = client || pool;
+  await db.query(
+    `
+    INSERT INTO shift_volunteer (
+      "shift_id",
+      "user_id"
+    ) VALUES ($1, $2)
+    ON CONFLICT DO NOTHING
+    `,
+    [shiftId, volunteerId]
+  );
+};
+
+/**
+ * Removes a volunteer from a shift in the database
+ * @param shiftId - The ID of the shift to remove the volunteer from.
+ * @param volunteerId - The ID of the volunteer to remove from the shift.
+ * @param client - Optional database client for transaction support.
+ */
+export const removeVolunteerFromShift = async (
+  shiftId: ShiftId,
+  volunteerId: UserId,
+  client?: PoolClient
+): Promise<void> => {
+  const db = client || pool;
+  await db.query(
+    `
+    DELETE FROM shift_volunteer
+    WHERE "shift_id" = $1 AND "user_id" = $2
+    `,
+    [shiftId, volunteerId]
+  );
+};
+
+/**
+ * Fetches a list of shifts that a given volunteer is signed up for.
+ * @param volunteerId - The ID of the volunteer to fetch shifts for.
+ * @return An array of ShiftInfo objects that the volunteer is signed up for.
+ */
+export const getShiftsForVolunteer = cache(async (volunteerId: UserId): Promise<ShiftInfo[]> => {
+  const result = await pool.query(
+    `
+    ${SHIFT_QUERY}
+    JOIN shift_volunteer sv ON s.id = sv.shift_id
+    WHERE sv.user_id = $1
+    ORDER BY s."eventDay", s."startTime"
+    `,
+    [volunteerId]
+  );
+  return rowsToShifts(result.rows);
+});

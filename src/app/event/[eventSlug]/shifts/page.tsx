@@ -75,7 +75,7 @@ export default async function EventShifts({ params }: PageProps<'/event/[eventSl
                     <ShiftCard
                       event={event}
                       shift={shift}
-                      volunteerNames={[] /* TODO */}
+                      volunteers={[] /* TODO */}
                       key={shift.id}
                       collapsible
                     />

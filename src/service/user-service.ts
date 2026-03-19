@@ -9,6 +9,21 @@ import { PoolClient } from 'pg';
 import { cache } from 'react';
 import { randomUUID } from 'node:crypto';
 import { canAccess } from '@/utils/permissions';
+import { userToVolunteer } from '@/lib/volunteer';
+
+const USER_QUERY = `
+    SELECT
+      u.id,
+      u.name,
+      u."chosenName",
+      u.email,
+      u."deletedAt",
+      r.type,
+      r."eventId",
+      r."teamId"
+    FROM "user" u
+    LEFT JOIN role r ON u.id = r."userId"
+  `;
 
 const roleFromRow = (row: any): UserRole => {
   switch (row.type) {
@@ -66,17 +81,7 @@ const usersFromRows = (rows: any[]): User[] => {
 export const getUser = cache(async (userId: UserId): Promise<User | null> => {
   const result = await pool.query(
     `
-    SELECT 
-      u.id,
-      u.name,
-      u."chosenName",
-      u.email,
-      u."deletedAt",
-      r.type,
-      r."eventId",
-      r."teamId"
-    FROM "user" u
-    LEFT JOIN role r ON u.id = r."userId"
+    ${USER_QUERY}
     WHERE u.id = $1
   `,
     [userId]
@@ -95,19 +100,7 @@ export const getUser = cache(async (userId: UserId): Promise<User | null> => {
  * @throws {Error} If the database query fails.
  */
 export const getUsers = cache(async (): Promise<User[]> => {
-  const result = await pool.query(`
-    SELECT
-      u.id,
-      u.name,
-      u."chosenName",
-      u.email,
-      u."deletedAt",
-      r.type,
-      r."eventId",
-      r."teamId"
-    FROM "user" u
-    LEFT JOIN role r ON u.id = r."userId"
-  `);
+  const result = await pool.query(USER_QUERY);
 
   return usersFromRows(result.rows);
 });
@@ -163,17 +156,7 @@ export const getFilteredUsers = cache(
 
     const result = await pool.query(
       `
-      SELECT
-        u.id,
-        u.name,
-        u."chosenName",
-        u.email,
-        u."deletedAt",
-        r.type,
-        r."eventId",
-        r."teamId"
-      FROM "user" u
-      LEFT JOIN role r ON u.id = r."userId"
+      ${USER_QUERY}
       ${whereClause}
     `,
       queryParams
@@ -201,17 +184,7 @@ export const getUsersWithRole = cache(async (role: UserRole): Promise<User[]> =>
   }
   const result = await pool.query(
     `
-    SELECT
-      u.id,
-      u.name,
-      u."chosenName",
-      u.email,
-      u."deletedAt",
-      r.type,
-      r."eventId",
-      r."teamId"
-    FROM "user" u
-    LEFT JOIN role r ON u.id = r."userId"
+    ${USER_QUERY}
     WHERE EXISTS (${roleQuery.join(' AND ')})
   `,
     queryParams
@@ -390,17 +363,7 @@ export const undeleteUser = async (userId: UserId, client?: PoolClient): Promise
 export const getTeamLeadsForTeam = cache(async (teamId: TeamId): Promise<User[]> => {
   const result = await pool.query(
     `
-    SELECT 
-      u.id,
-      u.name,
-      u."chosenName",
-      u.email,
-      u."deletedAt",
-      r.type,
-      r."eventId",
-      r."teamId"
-    FROM "user" u
-    JOIN role r ON u.id = r."userId"
+    ${USER_QUERY}
     WHERE r.type = 'team-lead' AND r."teamId" = $1
   `,
     [teamId]
@@ -412,3 +375,41 @@ export const getTeamLeadsForTeam = cache(async (teamId: TeamId): Promise<User[]>
 
   return usersFromRows(result.rows);
 });
+
+/**
+ * Fetches all volunteers for a given list of shifts
+ * @param shiftIds - An array of shift IDs to fetch volunteers for
+ * @param permissionsProfile - The permissions profile of the requesting user
+ * @returns A record mapping ShiftID to VolunteerInfo[]
+ */
+export const getVolunteersForShifts = cache(
+  async (
+    shiftIds: ShiftId[],
+    permissionsProfile: PermissionsProfile
+  ): Promise<Record<ShiftId, VolunteerInfo[]>> => {
+    const result = await pool.query(
+      `
+    ${USER_QUERY}
+    JOIN shift_volunteer sv ON sv.user_id = u.id
+    WHERE sv.shift_id = ANY($1::uuid[])
+  `,
+      [shiftIds]
+    );
+
+    const volunteersByShift: Record<ShiftId, VolunteerInfo[]> = {};
+    const users = usersFromRows(result.rows);
+    const userMap = new Map(users.map((u) => [u.id, u]));
+    result.rows.forEach((row: any) => {
+      const shiftId: ShiftId = row.shift_id;
+      if (!volunteersByShift[shiftId]) {
+        volunteersByShift[shiftId] = [];
+      }
+      const user = userMap.get(row.id);
+      if (user) {
+        volunteersByShift[shiftId].push(userToVolunteer(user, permissionsProfile));
+      }
+    });
+
+    return volunteersByShift;
+  }
+);

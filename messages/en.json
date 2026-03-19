@@ -278,7 +278,9 @@
     "volunteers": "Volunteers",
     "editShift": "Edit Shift",
     "expand": "Expand shift details",
-    "collapse": "Collapse shift details"
+    "collapse": "Collapse shift details",
+    "signup": "Sign Up",
+    "cancel": "Cancel Shift"
   },
   "ShiftDialog": {
     "cancel": "Cancel",

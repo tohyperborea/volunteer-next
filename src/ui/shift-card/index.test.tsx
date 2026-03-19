@@ -40,21 +40,24 @@ describe('ShiftCard', () => {
     name: 'First Aid',
     errorMessage: 'error'
   };
-  const mockVolunteerNames = ['Alice', 'Bob'];
+  const mockVolunteers: VolunteerInfo[] = [
+    { id: 'volunteer-1', displayName: 'Alice' },
+    { id: 'volunteer-2', displayName: 'Bob' }
+  ];
 
   beforeEach(() => {
     mockProgressBar.mockClear();
   });
 
   it('renders the shift title and time span', () => {
-    render(<ShiftCard event={mockEvent} shift={mockShift} volunteerNames={mockVolunteerNames} />);
+    render(<ShiftCard event={mockEvent} shift={mockShift} volunteers={mockVolunteers} />);
 
     expect(screen.getByText('Morning Shift')).toBeInTheDocument();
     expect(screen.getByText('08:00 - 12:00')).toBeInTheDocument();
   });
 
   it('displays badges for max and min volunteers', () => {
-    render(<ShiftCard event={mockEvent} shift={mockShift} volunteerNames={mockVolunteerNames} />);
+    render(<ShiftCard event={mockEvent} shift={mockShift} volunteers={mockVolunteers} />);
 
     expect(screen.getByText('max: 10')).toBeInTheDocument();
     expect(screen.getByText('min: 2')).toBeInTheDocument();
@@ -66,7 +69,7 @@ describe('ShiftCard', () => {
         event={mockEvent}
         shift={mockShift}
         qualification={mockQualification}
-        volunteerNames={mockVolunteerNames}
+        volunteers={mockVolunteers}
       />
     );
     const badge = screen.getByText('requires: First Aid');
@@ -96,7 +99,7 @@ describe('ShiftCard', () => {
       <ShiftCard
         event={mockEvent}
         shift={mockShiftWithoutRequirement}
-        volunteerNames={mockVolunteerNames}
+        volunteers={mockVolunteers}
       />
     );
 
@@ -104,7 +107,7 @@ describe('ShiftCard', () => {
   });
 
   it('renders the volunteer names in a collapsible section', () => {
-    render(<ShiftCard event={mockEvent} shift={mockShift} volunteerNames={mockVolunteerNames} />);
+    render(<ShiftCard event={mockEvent} shift={mockShift} volunteers={mockVolunteers} />);
 
     expect(screen.getByText('volunteers')).toBeInTheDocument();
     fireEvent.click(screen.getByText('volunteers'));
@@ -118,7 +121,7 @@ describe('ShiftCard', () => {
       <ShiftCard
         event={mockEvent}
         shift={mockShift}
-        volunteerNames={mockVolunteerNames}
+        volunteers={mockVolunteers}
         onEdit={onEditMock}
       />
     );
@@ -130,17 +133,17 @@ describe('ShiftCard', () => {
   });
 
   it('does not render the edit button when onEdit is not provided', () => {
-    render(<ShiftCard event={mockEvent} shift={mockShift} volunteerNames={mockVolunteerNames} />);
+    render(<ShiftCard event={mockEvent} shift={mockShift} volunteers={mockVolunteers} />);
 
     expect(screen.queryByRole('button', { name: 'editShift' })).not.toBeInTheDocument();
   });
 
   it('renders the progress bar with correct filled and total values', () => {
-    render(<ShiftCard event={mockEvent} shift={mockShift} volunteerNames={mockVolunteerNames} />);
+    render(<ShiftCard event={mockEvent} shift={mockShift} volunteers={mockVolunteers} />);
 
     expect(mockProgressBar).toHaveBeenCalledWith(
       expect.objectContaining({
-        filled: mockVolunteerNames.length,
+        filled: mockVolunteers.length,
         total: mockShift.maxVolunteers
       }),
       undefined

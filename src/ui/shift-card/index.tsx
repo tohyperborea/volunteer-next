@@ -6,7 +6,7 @@
 
 'use client';
 
-import { Badge, Box, Card, Flex, Heading, IconButton, Link, Text } from '@radix-ui/themes';
+import { Badge, Box, Button, Card, Flex, Heading, IconButton, Link, Text } from '@radix-ui/themes';
 import TimeSpan from '../time-span';
 import { useTranslations } from 'next-intl';
 import styles from './styles.module.css';
@@ -21,23 +21,27 @@ interface Props {
   event: EventInfo;
   shift: ShiftInfo;
   qualification?: QualificationInfo;
-  volunteerNames: string[];
+  volunteers: VolunteerInfo[];
   collapsible?: boolean;
   onEdit?: () => void;
+  onSignup?: () => void;
+  onCancel?: () => void;
 }
 
 export default function ShiftCard({
   event,
   shift,
-  volunteerNames,
+  volunteers,
   qualification,
   onEdit,
+  onSignup,
+  onCancel,
   collapsible
 }: Props) {
   const t = useTranslations('ShiftCard');
   const startTime = shift.startTime;
   const endTime = addHoursToTimeString(shift.startTime, shift.durationHours);
-  const volunteerCount = volunteerNames.length;
+  const volunteerCount = volunteers.length;
   const requirementLabel =
     shift.requirement && qualification && qualification.id === shift.requirement
       ? qualification.name
@@ -74,38 +78,50 @@ export default function ShiftCard({
           </Flex>
           <TimeSpan start={startTime} end={endTime} />
         </Flex>
+
         <Flex direction="column" gap="3" style={!isExpanded ? { display: 'none' } : undefined}>
-          <Flex direction="row" gap="2">
-            <Badge color="gray">
-              {t('max')}: {shift.maxVolunteers}
-            </Badge>
-            <Badge color="gray">
-              {t('min')}: {shift.minVolunteers}
-            </Badge>
+          <Flex direction="row" align="center" justify="between">
+            <Flex direction="column" gap="3" flexShrink="0" flexGrow="1">
+              <Flex direction="row" gap="2">
+                <Badge color="gray">
+                  {t('max')}: {shift.maxVolunteers}
+                </Badge>
+                <Badge color="gray">
+                  {t('min')}: {shift.minVolunteers}
+                </Badge>
+              </Flex>
+              {requirementLabel && (
+                <Box>
+                  <Badge asChild>
+                    <Link
+                      color="orange"
+                      href={getQualificationDetailsPath({
+                        eventSlug: event.slug,
+                        qualificationId: shift.requirement!
+                      })}
+                    >
+                      {t('requires')}: {requirementLabel}
+                    </Link>
+                  </Badge>
+                </Box>
+              )}
+              <Box style={{ maxWidth: '200px' }}>
+                <ProgressBar filled={volunteerCount} total={shift.maxVolunteers} />
+              </Box>
+            </Flex>
+            {onSignup && <Button onClick={onSignup}>{t('signup')}</Button>}
+            {onCancel && (
+              <Button onClick={onCancel} color="red">
+                {t('cancel')}
+              </Button>
+            )}
           </Flex>
-          {requirementLabel && (
-            <Box>
-              <Badge asChild>
-                <Link
-                  color="orange"
-                  href={getQualificationDetailsPath({
-                    eventSlug: event.slug,
-                    qualificationId: shift.requirement!
-                  })}
-                >
-                  {t('requires')}: {requirementLabel}
-                </Link>
-              </Badge>
-            </Box>
-          )}
-          <Box style={{ maxWidth: '200px' }}>
-            <ProgressBar filled={volunteerCount} total={shift.maxVolunteers} />
-          </Box>
+
           <Box style={{ maxWidth: '600px' }}>
             <Collapsible header={<Text>{t('volunteers')}</Text>}>
               <Flex direction="column" gap="1">
-                {volunteerNames.map((name) => (
-                  <Text key={name}>{name}</Text>
+                {volunteers.map((volunteer) => (
+                  <Text key={volunteer.id}>{volunteer.displayName}</Text>
                 ))}
               </Flex>
             </Collapsible>

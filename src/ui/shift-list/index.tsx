@@ -22,9 +22,13 @@ interface Props {
   teamId: TeamId;
   shifts: ShiftInfo[];
   qualifications: QualificationInfo[];
+  shiftVolunteers: Record<ShiftId, VolunteerInfo[]>;
   exportLink: string;
+  userShifts?: Set<ShiftId>;
   onSaveShift?: (data: FormData) => Promise<void>;
   onDeleteShift?: (shiftId: ShiftId) => Promise<void>;
+  onSignup?: (shiftId: ShiftId) => Promise<void>;
+  onCancel?: (shiftId: ShiftId) => Promise<void>;
 }
 
 export default function ShiftList({
@@ -33,15 +37,21 @@ export default function ShiftList({
   teamId,
   shifts,
   qualifications,
+  shiftVolunteers,
   exportLink,
   onSaveShift,
-  onDeleteShift
+  onDeleteShift,
+  onSignup,
+  onCancel,
+  userShifts
 }: Props) {
   const t = useTranslations('ShiftList');
   const canEdit = Boolean(onSaveShift);
   const [creatingShift, setCreatingShift] = useState(false);
   const [editingShift, setEditingShift] = useState<ShiftInfo | undefined>(undefined);
   const qualificationMap = new Map(qualifications.map((q) => [q.id, q]));
+  const canSignup = (shiftId: ShiftId) => onSignup && userShifts && !userShifts.has(shiftId);
+  const canCancel = (shiftId: ShiftId) => onCancel && userShifts && userShifts.has(shiftId);
   return (
     <Flex direction="column" gap="6">
       {canEdit && (
@@ -76,9 +86,11 @@ export default function ShiftList({
               qualification={
                 shift.requirement ? qualificationMap.get(shift.requirement) : undefined
               }
-              volunteerNames={[] /* TODO */}
+              volunteers={shiftVolunteers[shift.id] || []}
               key={shift.id}
               onEdit={canEdit ? () => setEditingShift(shift) : undefined}
+              onSignup={canSignup(shift.id) ? () => onSignup!(shift.id) : undefined}
+              onCancel={canCancel(shift.id) ? () => onCancel!(shift.id) : undefined}
             />
           )}
         />
