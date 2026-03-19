@@ -11,20 +11,6 @@ import { randomUUID } from 'node:crypto';
 import { canAccess } from '@/utils/permissions';
 import { userToVolunteer } from '@/lib/volunteer';
 
-const USER_QUERY = `
-    SELECT
-      u.id,
-      u.name,
-      u."chosenName",
-      u.email,
-      u."deletedAt",
-      r.type,
-      r."eventId",
-      r."teamId"
-    FROM "user" u
-    LEFT JOIN role r ON u.id = r."userId"
-  `;
-
 const roleFromRow = (row: any): UserRole => {
   switch (row.type) {
     case 'admin':
@@ -43,6 +29,20 @@ const roleFromRow = (row: any): UserRole => {
       throw new Error(`Unknown role type: ${row.type}`);
   }
 };
+
+const USER_QUERY = `
+    SELECT
+      u.id,
+      u.name,
+      u."chosenName",
+      u.email,
+      u."deletedAt",
+      r.type,
+      r."eventId",
+      r."teamId"
+    FROM "user" u
+    LEFT JOIN role r ON u.id = r."userId"
+  `;
 
 const usersFromRows = (rows: any[]): User[] => {
   const usersMap = new Map<UserId, User>();
@@ -389,7 +389,18 @@ export const getVolunteersForShifts = cache(
   ): Promise<Record<ShiftId, VolunteerInfo[]>> => {
     const result = await pool.query(
       `
-    ${USER_QUERY}
+    SELECT
+      u.id,
+      u.name,
+      u."chosenName",
+      u.email,
+      u."deletedAt",
+      r.type,
+      r."eventId",
+      r."teamId",
+      sv.shift_id
+    FROM "user" u
+    LEFT JOIN role r ON u.id = r."userId"
     JOIN shift_volunteer sv ON sv.user_id = u.id
     WHERE sv.shift_id = ANY($1::uuid[])
   `,
