@@ -17,7 +17,7 @@ interface Props {
   volunteersPath: string;
 }
 
-export default function ({ infoPath, shiftsPath, volunteersPath }: Props) {
+export default function TeamTabs({ infoPath, shiftsPath, volunteersPath }: Props) {
   const path = usePathname();
   const t = useTranslations('TeamPage');
   return (

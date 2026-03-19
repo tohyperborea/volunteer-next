@@ -8,8 +8,6 @@ import { getTeamBySlug } from '@/service/team-service';
 import TeamTabs from '@/ui/team-tabs';
 import { getTeamInfoPath, getTeamShiftsPath, getTeamVolunteersPath } from '@/utils/path';
 import { Box, Flex, Heading } from '@radix-ui/themes';
-import { getTranslations } from 'next-intl/server';
-import { headers } from 'next/headers';
 import { notFound } from 'next/navigation';
 
 const PAGE_KEY = 'TeamPage';
@@ -26,12 +24,6 @@ export default async function TeamLayout({ params, children }: Props) {
   if (!team) {
     notFound();
   }
-  const t = await getTranslations(PAGE_KEY);
-
-  const headerList = await headers();
-  const path = headerList.get('x-pathname');
-
-  console.log('Current path:', path);
 
   const infoPath = getTeamInfoPath(eventSlug, teamSlug);
   const shiftsPath = getTeamShiftsPath(eventSlug, teamSlug);

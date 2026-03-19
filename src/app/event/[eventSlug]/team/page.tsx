@@ -52,11 +52,11 @@ export default async function EventsDashboard({ params }: Props) {
       <Heading my="4">{t('teamsForEvent', { eventName: event.name })}</Heading>
       {isEditable && (
         <Box>
-          <NextLink href={getCreateTeamPath(eventSlug)}>
-            <Button>
+          <Button asChild>
+            <NextLink href={getCreateTeamPath(eventSlug)}>
               <PlusIcon /> {t('createTeam')}
-            </Button>
-          </NextLink>
+            </NextLink>
+          </Button>
         </Box>
       )}
       {teams.length === 0 && (
@@ -65,13 +65,7 @@ export default async function EventsDashboard({ params }: Props) {
         </Card>
       )}
       {teams.map((team) => (
-        <Link
-          highContrast
-          asChild
-          underline="none"
-          href={`/event/${eventSlug}/team/${team.slug}`}
-          key={team.id}
-        >
+        <Link highContrast asChild underline="none" key={team.id}>
           <NextLink href={getTeamInfoPath(eventSlug, team.slug)}>
             <TeamCard
               team={team}

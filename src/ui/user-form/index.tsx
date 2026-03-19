@@ -96,9 +96,9 @@ export default function UserForm({
           />
         </FormItem>
         <Flex direction="row" justify="between">
-          <NextLink href={callbackUrl}>
-            <Button variant="outline">{t('cancelButton')}</Button>
-          </NextLink>
+          <Button variant="outline" asChild>
+            <NextLink href={callbackUrl}>{t('cancelButton')}</NextLink>
+          </Button>
           <Button type="submit">{t(editingUser ? 'updateButton' : 'createButton')}</Button>
         </Flex>
         {/* Roles */}

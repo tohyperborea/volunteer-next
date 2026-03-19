@@ -29,11 +29,11 @@ export default async function EventsDashboard() {
     <Flex direction="column" gap="4">
       <Heading my="4">{t('title')}</Heading>
       <Box>
-        <NextLink href="/create-event">
-          <Button>
+        <Button asChild>
+          <NextLink href="/create-event">
             <PlusIcon /> {t('createEvent')}
-          </Button>
-        </NextLink>
+          </NextLink>
+        </Button>
       </Box>
       {events.length === 0 && (
         <Card>

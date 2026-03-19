@@ -66,7 +66,7 @@ export default function NavigationFrame({ title, subtitle, currentUser, children
       {/* Content area */}
       <Flex direction="row" position="relative" overflow="hidden" flexGrow="1">
         <Box
-          maxWidth={{ initial: '100vw', md: '250px' }}
+          maxWidth={{ initial: '100vw', sm: '250px' }}
           width={isNavOpen ? '100%' : '0'}
           height="100%"
           style={{
@@ -76,7 +76,7 @@ export default function NavigationFrame({ title, subtitle, currentUser, children
             overflow: 'hidden'
           }}
           flexShrink="0"
-          position={{ initial: 'absolute', md: 'relative' }}
+          position={{ initial: 'absolute', sm: 'relative' }}
           onClick={(e) => {
             // Close on navigation if the menu is fullscreen
             const fullscreenMenu =

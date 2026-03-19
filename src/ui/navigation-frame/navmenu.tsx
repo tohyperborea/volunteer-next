@@ -70,20 +70,24 @@ export default function NavMenu({ permissionsProfile }: Props) {
               </li>
             </React.Fragment>
           ))}
-          <Text size="3" weight="medium" mt="4">
-            {t('adminTools')}:
-          </Text>
-          {showAdminTools &&
-            AdminLinks.map(([path, text]) => (
-              <React.Fragment key={path}>
-                <li>
-                  <MenuButton active={activePath === path} href={path} label={t(text)} />
-                </li>
-                <li>
-                  <Divider weight="3" />
-                </li>
-              </React.Fragment>
-            ))}
+
+          {showAdminTools && (
+            <>
+              <Text size="3" weight="medium" mt="4">
+                {t('adminTools')}:
+              </Text>
+              {AdminLinks.map(([path, text]) => (
+                <React.Fragment key={path}>
+                  <li>
+                    <MenuButton active={activePath === path} href={path} label={t(text)} />
+                  </li>
+                  <li>
+                    <Divider weight="3" />
+                  </li>
+                </React.Fragment>
+              ))}
+            </>
+          )}
         </ul>
       </Flex>
     </nav>
@@ -101,21 +105,22 @@ const MenuButton = ({
   active?: boolean;
   icon?: React.ReactNode;
 }) => (
-  <NextLink href={href}>
-    <Button
-      size="3"
-      variant="ghost"
-      highContrast
-      style={{
-        width: '100%',
-        justifyContent: 'flex-start',
-        cursor: active ? 'default' : 'pointer',
-        fontWeight: active ? 'bold' : 'normal',
-        color: 'var(--gray-12)'
-      }}
-    >
+  <Button
+    asChild
+    size="3"
+    variant="ghost"
+    highContrast
+    style={{
+      width: '100%',
+      justifyContent: 'flex-start',
+      cursor: active ? 'default' : 'pointer',
+      fontWeight: active ? 'bold' : 'normal',
+      color: 'var(--gray-12)'
+    }}
+  >
+    <NextLink href={href}>
       {icon}
       {label}
-    </Button>
-  </NextLink>
+    </NextLink>
+  </Button>
 );

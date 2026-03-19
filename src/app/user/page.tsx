@@ -49,11 +49,11 @@ export default async function UsersDashboardPage({ searchParams }: PageProps<'/u
     for (const user of users) {
       itemActions[user.id] = (
         <Flex gap="2">
-          <NextLink href={getEditUserPath(user.id)}>
-            <Button variant="outline">
+          <Button variant="outline" asChild>
+            <NextLink href={getEditUserPath(user.id)}>
               <Pencil1Icon />
-            </Button>
-          </NextLink>
+            </NextLink>
+          </Button>
           {user.deletedAt ? (
             <Button
               variant="outline"
@@ -80,11 +80,11 @@ export default async function UsersDashboardPage({ searchParams }: PageProps<'/u
         {t('title')}
       </Heading>
       {canEdit && (
-        <NextLink href={getCreateUserPath()}>
-          <Button variant="soft" color="blue">
+        <Button variant="soft" color="blue" asChild>
+          <NextLink href={getCreateUserPath()}>
             <PlusIcon /> {t('createUser')}
-          </Button>
-        </NextLink>
+          </NextLink>
+        </Button>
       )}
       <VolunteerList volunteers={volunteers} withFilters={withFilters} itemActions={itemActions} />
     </Flex>
