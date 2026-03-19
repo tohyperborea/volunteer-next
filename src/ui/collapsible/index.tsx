@@ -5,7 +5,7 @@
  */
 'use client';
 
-import { Flex, Box, Button } from '@radix-ui/themes';
+import { Box, Button } from '@radix-ui/themes';
 import styles from './styles.module.css';
 import { useState } from 'react';
 import { ChevronDownIcon } from '@radix-ui/react-icons';
@@ -24,8 +24,8 @@ export default function Collapsible({ header, children, defaultOpen = false }: P
         {header}
         <ChevronDownIcon className={styles.icon} />
       </Button>
-      <Box p="2" className={styles.content}>
-        {children}
+      <Box m="2" className={styles.content}>
+        <Box className={styles.wrapper}>{children}</Box>
       </Box>
     </Box>
   );

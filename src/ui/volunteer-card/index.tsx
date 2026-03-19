@@ -13,40 +13,44 @@ import { useTranslations } from 'next-intl';
 interface Props {
   volunteer: VolunteerInfo;
   actions?: React.ReactNode;
+  children?: React.ReactNode;
 }
 
-export default function VolunteerCard({ volunteer, actions }: Props) {
+export default function VolunteerCard({ volunteer, children, actions }: Props) {
   return (
     <Card>
       <Flex justify="between">
-        <VolunteerCardContent volunteer={volunteer} />
+        <VolunteerCardContent volunteer={volunteer} children={children} />
         {actions}
       </Flex>
     </Card>
   );
 }
 
-export function VolunteerCardContent({ volunteer }: Props) {
+export function VolunteerCardContent({ volunteer, children }: Props) {
   const { displayName, fullName, email, roles = [] } = volunteer;
   const roleTypes = [...new Set(roles.map((r) => r.type))];
   return (
-    <Flex gap="3">
+    <Flex gap="3" flexGrow="1">
       <Avatar fallback={displayName[0].toUpperCase()} radius="full" />
-      <Flex direction="column" justify="center">
-        <Link highContrast underline="hover" href={getUserProfilePath(volunteer.id)}>
-          <Heading as="h3" size="4" weight="medium">
-            {displayName}
-          </Heading>
-        </Link>
-        {fullName && fullName !== displayName && <Text color="gray">{fullName}</Text>}
-        {email && <Text color="gray">{email}</Text>}
+      <Flex direction="column" justify="center" gap="2" flexGrow="1">
+        <Flex direction="column">
+          <Link highContrast underline="hover" href={getUserProfilePath(volunteer.id)}>
+            <Heading as="h3" size="4" weight="medium">
+              {displayName}
+            </Heading>
+          </Link>
+          {fullName && fullName !== displayName && <Text color="gray">{fullName}</Text>}
+          {email && <Text color="gray">{email}</Text>}
+        </Flex>
         {roles.length > 0 && (
-          <Flex wrap="wrap" gap="1" mt="2">
+          <Flex wrap="wrap" gap="1">
             {roleTypes.map((type, i) => (
               <RoleBadge key={`role-${i}`} type={type} />
             ))}
           </Flex>
         )}
+        {children}
       </Flex>
     </Flex>
   );

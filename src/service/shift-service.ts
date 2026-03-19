@@ -374,3 +374,57 @@ export const getShiftsForVolunteer = cache(
     return rowsToShifts(result.rows);
   }
 );
+
+/**
+ * Fetches a list of shifts for multiple volunteers in a given event.
+ * @param eventId - The ID of the event to fetch shifts for.
+ * @param volunteerIds - An array of volunteer IDs to fetch shifts for.
+ * @return An object mapping volunteer IDs to arrays of ShiftInfo objects
+ */
+export const getShiftsForVolunteers = cache(
+  async (eventId: EventId, volunteerIds: UserId[]): Promise<Record<UserId, ShiftInfo[]>> => {
+    if (volunteerIds.length === 0) {
+      return {};
+    }
+    console.info(`Fetching shifts for volunteers ${volunteerIds.join(', ')} in event ${eventId}`);
+    const result = await pool.query(
+      `
+    SELECT 
+      s."id",
+      s."teamId", 
+      s."title", 
+      s."eventDay", 
+      s."startTime", 
+      s."durationHours",
+      s."minVolunteers",
+      s."maxVolunteers",
+      s."isActive",
+      r."qualificationId",
+      sv."user_id"
+    FROM shift s
+    LEFT JOIN requirement r ON s.id = r."shiftId"
+    JOIN shift_volunteer sv ON s.id = sv.shift_id
+    WHERE sv.user_id = ANY($1)
+    AND s."teamId" IN (
+      SELECT id FROM team WHERE "eventId" = $2
+    )
+    ORDER BY s."eventDay", s."startTime"
+    `,
+      [volunteerIds, eventId]
+    );
+    const shifts = rowsToShifts(result.rows);
+    const shiftMap = new Map<ShiftId, ShiftInfo>(shifts.map((s) => [s.id, s]));
+    const volunteerShifts: Record<UserId, ShiftInfo[]> = {};
+    for (const row of result.rows) {
+      const volunteerId = row.user_id;
+      if (!volunteerShifts[volunteerId]) {
+        volunteerShifts[volunteerId] = [];
+      }
+      const shift = shiftMap.get(row.id);
+      if (shift) {
+        volunteerShifts[volunteerId].push(shift);
+      }
+    }
+    return volunteerShifts;
+  }
+);

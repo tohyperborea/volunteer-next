@@ -17,7 +17,8 @@ export function paramsToUserFilters(searchParams: URLSearchParams): UserFilters 
     searchQuery: searchParams.get('searchQuery') || undefined,
     showDeleted: searchParams.get('showDeleted') === 'true' || false,
     withQualification: searchParams.get('withQualification') || undefined,
-    withoutQualification: searchParams.get('withoutQualification') || undefined
+    withoutQualification: searchParams.get('withoutQualification') || undefined,
+    onTeam: searchParams.get('onTeam') || undefined
   };
 }
 
@@ -34,7 +35,8 @@ export function recordToUserFilters(
     searchQuery: normalise(record['searchQuery']),
     showDeleted: record['showDeleted'] === 'true',
     withQualification: normalise(record['withQualification']),
-    withoutQualification: normalise(record['withoutQualification'])
+    withoutQualification: normalise(record['withoutQualification']),
+    onTeam: normalise(record['onTeam'])
   };
 }
 
@@ -73,6 +75,11 @@ export function userFiltersToParams(
     params.set('withoutQualification', filters.withoutQualification);
   } else {
     params.delete('withoutQualification');
+  }
+  if (filters.onTeam) {
+    params.set('onTeam', filters.onTeam);
+  } else {
+    params.delete('onTeam');
   }
   return params;
 }

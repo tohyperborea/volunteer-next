@@ -90,6 +90,7 @@ declare global {
     showDeleted?: boolean;
     withQualification?: QualificationId;
     withoutQualification?: QualificationId;
+    onTeam?: TeamId;
   }
 
   interface ShiftInfo {

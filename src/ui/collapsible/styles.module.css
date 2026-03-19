@@ -5,12 +5,27 @@
   justify-content: space-between;
 }
 
+.wrapper {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-20px);
+  transition:
+    transform 0.2s ease,
+    opacity 0.2s ease;
+}
+
 .content {
-  display: none;
+  height: 0;
+  overflow: hidden;
 }
 
 .open .content {
-  display: block;
+  height: auto;
+}
+
+.open .wrapper {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .icon {

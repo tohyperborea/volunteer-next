@@ -1,14 +1,14 @@
 import metadata from '@/i18n/metadata';
-import { Heading, Flex, Button, Dialog, Link } from '@radix-ui/themes';
+import { Heading, Flex, Button, Link } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
 import { checkAuthorisation, currentUser } from '@/session';
-import { getFilteredUsers, getUsers } from '@/service/user-service';
+import { getFilteredUsers } from '@/service/user-service';
 import { markUserAsDeleted, undeleteUser } from '@/service/user-service';
 import { revalidatePath } from 'next/cache';
 import { getCreateUserPath, getEditUserPath, getUsersDashboardPath } from '@/utils/path';
 import VolunteerList from '@/ui/volunteer-list';
 import { usersToVolunteers } from '@/lib/volunteer';
-import { Pencil1Icon, PlusIcon, TrashIcon } from '@radix-ui/react-icons';
+import { Pencil1Icon, PlusIcon } from '@radix-ui/react-icons';
 import DeleteButton from '@/ui/delete-button';
 import { recordToUserFilters } from '@/utils/user-filters';
 import { getPermissionsProfile } from '@/utils/permissions';

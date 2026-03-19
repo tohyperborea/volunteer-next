@@ -9,7 +9,7 @@ import { PoolClient } from 'pg';
 import { cache } from 'react';
 import { randomUUID } from 'node:crypto';
 import { canAccess } from '@/utils/permissions';
-import { userToVolunteer } from '@/lib/volunteer';
+import { usersToVolunteers, userToVolunteer } from '@/lib/volunteer';
 
 const roleFromRow = (row: any): UserRole => {
   switch (row.type) {
@@ -151,6 +151,12 @@ export const getFilteredUsers = cache(
         `NOT EXISTS (SELECT 1 FROM user_qualification uq WHERE uq."userId" = u.id AND uq."qualificationId" = $${queryParams.length})`
       );
     }
+    if (filters.onTeam) {
+      queryParams.push(filters.onTeam);
+      queryParts.push(
+        `EXISTS (SELECT 1 FROM shift_volunteer sv JOIN shift s ON sv.shift_id = s.id WHERE sv.user_id = u.id AND s."teamId" = $${queryParams.length})`
+      );
+    }
 
     const whereClause = queryParts.length > 0 ? `WHERE ${queryParts.join(' AND ')}` : '';
 
@@ -163,6 +169,22 @@ export const getFilteredUsers = cache(
     );
 
     return usersFromRows(result.rows);
+  }
+);
+
+/**
+ * Fetches volunteers based on filters and permissions profile.
+ * @param filters - The filters to apply when fetching volunteers.
+ * @param permissionsProfile - The permissions profile of the requesting user
+ * @returns A promise that resolves to an array of VolunteerInfo objects
+ */
+export const getFilteredVolunteers = cache(
+  async (
+    filters: UserFilters,
+    permissionsProfile: PermissionsProfile
+  ): Promise<VolunteerInfo[]> => {
+    const users = await getFilteredUsers(filters, permissionsProfile);
+    return usersToVolunteers(users, permissionsProfile);
   }
 );
 
