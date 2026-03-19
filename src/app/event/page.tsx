@@ -12,7 +12,7 @@ const PAGE_KEY = 'EventsManagementPage';
 export const generateMetadata = metadata(PAGE_KEY);
 
 export default async function EventsDashboard() {
-  await checkAuthorisation([{ type: 'admin' }]);
+  await checkAuthorisation([{ type: 'admin' }, { type: 'organiser' }, { type: 'team-lead' }]);
 
   const t = await getTranslations(PAGE_KEY);
   const events = await getEvents();

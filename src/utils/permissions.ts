@@ -33,7 +33,7 @@ const PERMISSIONS: PermissionsModel = {
  * @param user The user for whom to get the permissions profile. If null, will return a profile with all permissions set to false.
  * @returns A PermissionsProfile object for the User
  */
-export const getPermissionsProfile = (user: User | null): PermissionsProfile => {
+export const getPermissionsProfile = (user: User | VolunteerInfo | null): PermissionsProfile => {
   const roles = user?.roles ?? [];
   const profile: PermissionsProfile = {
     userId: user?.id ?? '',

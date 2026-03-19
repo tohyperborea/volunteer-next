@@ -10,8 +10,8 @@ import '@radix-ui/themes/styles.css';
 import './theme-overrides.css';
 import { ThemeProvider } from 'next-themes';
 import { NextIntlClientProvider } from 'next-intl';
-import { Theme, Container, Box, Flex } from '@radix-ui/themes';
-import NavBar from '@/ui/navbar';
+import { Theme, Flex } from '@radix-ui/themes';
+import NavigationFrame from '@/ui/navigation-frame';
 import { currentUser } from '@/session';
 import { getTranslations } from 'next-intl/server';
 import { headers } from 'next/headers';
@@ -52,25 +52,11 @@ export default async function RootLayout({
     }
   }
 
-  const getChildrenBlock = () => {
-    const childrenWithWrapper = (
-      <Flex asChild direction="column" p="4" flexGrow="1">
-        <main>{children}</main>
-      </Flex>
-    );
-    if (user) {
-      return (
-        <NavBar
-          title={navBarTitle}
-          subtitle={navBarSubtitle}
-          currentUser={userToVolunteer(user, getPermissionsProfile(user))}
-        >
-          {childrenWithWrapper}
-        </NavBar>
-      );
-    }
-    return childrenWithWrapper;
-  };
+  const mainContent = (
+    <Flex asChild direction="column" p="4">
+      <main>{children}</main>
+    </Flex>
+  );
 
   return (
     <html lang="en" suppressHydrationWarning>
@@ -81,7 +67,17 @@ export default async function RootLayout({
             defaultTheme={(process.env.DEFAULT_THEME as ThemeMode) || 'system'}
           >
             <Theme>
-              <Container>{getChildrenBlock()}</Container>
+              {user ? (
+                <NavigationFrame
+                  title={navBarTitle}
+                  subtitle={navBarSubtitle}
+                  currentUser={userToVolunteer(user, getPermissionsProfile(user))}
+                >
+                  {mainContent}
+                </NavigationFrame>
+              ) : (
+                mainContent
+              )}
             </Theme>
           </ThemeProvider>
         </NextIntlClientProvider>

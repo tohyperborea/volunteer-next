@@ -12,6 +12,7 @@ export const getEditUserPath = (userId: string, callbackUrl?: string): string =>
 export const getUserProfilePath = (userId: string): string => `/user/${userId}`;
 
 // Teams paths
+export const getTeamsPath = (eventSlug: string): string => `/event/${eventSlug}/team`;
 export const getTeamInfoPath = (eventSlug: string, teamSlug: string): string =>
   `/event/${eventSlug}/team/${teamSlug}`;
 export const getTeamShiftsPath = (eventSlug: string, teamSlug: string): string =>
@@ -30,6 +31,7 @@ export const getQualificationDetailsPath = ({
 }) => `/event/${eventSlug}/qualification/${qualificationId}`;
 
 // Event-level paths
+export const getEventsPath = () => '/event';
 export const getEventShiftsPath = (eventSlug: string): string => `/event/${eventSlug}/shifts`;
 
 // API paths

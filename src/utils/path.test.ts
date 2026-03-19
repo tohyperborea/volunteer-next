@@ -12,7 +12,8 @@ import {
   getCreateUserPath,
   getEditUserPath,
   getUserProfilePath,
-  getUsersDashboardPath
+  getUsersDashboardPath,
+  getEventsPath
 } from './path';
 
 describe('getTeamInfoPath', () => {
@@ -56,6 +57,13 @@ describe('getQualificationDetailsPath', () => {
     const qualificationId = '12345';
     const result = getQualificationDetailsPath({ eventSlug, qualificationId });
     expect(result).toBe('/event/test-event/qualification/12345');
+  });
+});
+
+describe('getEventsPath', () => {
+  it('should return the correct path for events', () => {
+    const result = getEventsPath();
+    expect(result).toBe('/event');
   });
 });
 
