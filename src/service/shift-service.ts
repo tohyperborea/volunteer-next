@@ -352,18 +352,25 @@ export const removeVolunteerFromShift = async (
 
 /**
  * Fetches a list of shifts that a given volunteer is signed up for.
+ * @param eventId - The ID of the event to fetch shifts for.
  * @param volunteerId - The ID of the volunteer to fetch shifts for.
  * @return An array of ShiftInfo objects that the volunteer is signed up for.
  */
-export const getShiftsForVolunteer = cache(async (volunteerId: UserId): Promise<ShiftInfo[]> => {
-  const result = await pool.query(
-    `
+export const getShiftsForVolunteer = cache(
+  async (eventId: EventId, volunteerId: UserId): Promise<ShiftInfo[]> => {
+    console.info(`Fetching shifts for volunteer ${volunteerId} in event ${eventId}`);
+    const result = await pool.query(
+      `
     ${SHIFT_QUERY}
     JOIN shift_volunteer sv ON s.id = sv.shift_id
     WHERE sv.user_id = $1
+    AND s."teamId" IN (
+      SELECT id FROM team WHERE "eventId" = $2
+    )
     ORDER BY s."eventDay", s."startTime"
     `,
-    [volunteerId]
-  );
-  return rowsToShifts(result.rows);
-});
+      [volunteerId, eventId]
+    );
+    return rowsToShifts(result.rows);
+  }
+);

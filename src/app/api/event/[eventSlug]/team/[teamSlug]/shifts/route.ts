@@ -10,8 +10,10 @@ import { CSVResponse, NotFoundResponse, NotImplementedResponse } from '@/lib/res
 import { getEventBySlug } from '@/service/event-service';
 import { getShiftsForTeam } from '@/service/shift-service';
 import { getTeamBySlug } from '@/service/team-service';
-import { checkAuthorisation } from '@/session';
+import { getVolunteersForShifts } from '@/service/user-service';
+import { checkAuthorisation, currentUser } from '@/session';
 import { shiftsToCSV } from '@/utils/csv-export';
+import { getPermissionsProfile } from '@/utils/permissions';
 import { NextRequest, NextResponse } from 'next/server';
 
 export const GET = async (
@@ -28,7 +30,10 @@ export const GET = async (
       return NotFoundResponse();
     }
     const shifts = await getShiftsForTeam(team.id);
-    const shiftVolunteers: Record<ShiftId, VolunteerInfo[]> = {}; // TODO
+    const shiftVolunteers = await getVolunteersForShifts(
+      shifts.map((shift) => shift.id),
+      getPermissionsProfile(await currentUser())
+    );
     const csvContent = shiftsToCSV({
       event,
       teams: [team],

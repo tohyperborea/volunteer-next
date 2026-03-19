@@ -188,7 +188,9 @@
     "dateSpan": "{startDate} to {endDate}"
   },
   "TeamCard": {
-    "volunteers": "Volunteers"
+    "volunteers": "Volunteers",
+    "signup": "Sign Up",
+    "full": "All shifts filled"
   },
   "VolunteerFilters": {
     "filters": "Filters",

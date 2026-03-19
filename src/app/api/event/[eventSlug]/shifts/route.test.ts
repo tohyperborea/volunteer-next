@@ -17,6 +17,9 @@ jest.mock('@/service/shift-service', () => ({
 jest.mock('@/service/team-service', () => ({
   getTeamsForEvent: jest.fn()
 }));
+jest.mock('@/service/user-service', () => ({
+  getVolunteersForShifts: jest.fn().mockResolvedValue({})
+}));
 jest.mock('next/server', () => ({
   NextResponse: jest.fn().mockImplementation((body, init) => ({
     body,
@@ -25,7 +28,8 @@ jest.mock('next/server', () => ({
   }))
 }));
 jest.mock('@/session', () => ({
-  checkAuthorisation: jest.fn().mockResolvedValue(true)
+  checkAuthorisation: jest.fn().mockResolvedValue(true),
+  currentUser: jest.fn().mockResolvedValue({ id: 'current-user' })
 }));
 
 const mockGetEventBySlug = getEventBySlug as jest.MockedFunction<typeof getEventBySlug>;

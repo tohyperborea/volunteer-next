@@ -79,7 +79,9 @@ export default async function TeamShifts({
     shifts.map((s) => s.id),
     permissions
   );
-  const userShifts = new Set((await getShiftsForVolunteer(permissions.userId)).map((s) => s.id));
+  const userShifts = new Set(
+    (await getShiftsForVolunteer(event.id, permissions.userId)).map((s) => s.id)
+  );
   const userQualifications = new Set(
     (await getQualificationsForUser(permissions.userId)).map((q) => q.id)
   );

@@ -26,7 +26,7 @@ export default function ProgressBar({ filled, total }: Props) {
         aria-valuemin={0}
         aria-valuemax={100}
         className={styles.progressFilled}
-        style={{ width: `${value}%` }}
+        style={{ width: `${value}%`, transition: 'width 0.5s ease-in-out' }}
       />
       <Text className={styles.progressLabel} weight="medium" size="2">
         {t('label', { filled, total })}

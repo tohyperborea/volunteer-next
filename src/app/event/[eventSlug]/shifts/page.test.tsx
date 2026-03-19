@@ -20,11 +20,21 @@ jest.mock('@/service/event-service', () => ({
 }));
 
 jest.mock('@/service/shift-service', () => ({
-  getShiftsForEvent: jest.fn()
+  getShiftsForEvent: jest.fn(),
+  getVolunteersForShifts: jest.fn().mockResolvedValue({})
 }));
 
 jest.mock('@/service/team-service', () => ({
   getTeamsForEvent: jest.fn()
+}));
+
+jest.mock('@/service/user-service', () => ({
+  getVolunteersForShifts: jest.fn().mockResolvedValue({})
+}));
+
+jest.mock('@/session', () => ({
+  checkAuthorisation: jest.fn().mockResolvedValue(true),
+  currentUser: jest.fn().mockResolvedValue({ id: 'current-user' })
 }));
 
 jest.mock('next/navigation', () => ({

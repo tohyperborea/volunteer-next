@@ -3,13 +3,15 @@ import { getEventBySlug } from '@/service/event-service';
 import { Heading, Flex, Button, Box, Link, IconButton } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
 import { Pencil2Icon, PlusIcon } from '@radix-ui/react-icons';
-import { checkAuthorisation } from '@/session';
+import { checkAuthorisation, currentUser } from '@/session';
 import { notFound } from 'next/navigation';
 import { getFilteredTeamsForEvent } from '@/service/team-service';
 import TeamList from '@/ui/team-list';
 import { getUpdateTeamPath } from '@/utils/path';
 import { getShiftsForEvent } from '@/service/shift-service';
 import { recordToTeamFilters } from '@/utils/team-filters';
+import { getVolunteersForShifts } from '@/service/user-service';
+import { getPermissionsProfile } from '@/utils/permissions';
 
 const PAGE_KEY = 'TeamsDashboardPage';
 
@@ -33,6 +35,10 @@ export default async function EventsDashboard({
   const filters = recordToTeamFilters(await searchParams);
   const teams = await getFilteredTeamsForEvent(event.id, filters);
   const shifts = await getShiftsForEvent(event.id);
+  const shiftVolunteers = await getVolunteersForShifts(
+    shifts.map((shift) => shift.id),
+    getPermissionsProfile(await currentUser())
+  );
   const isEditable = await checkAuthorisation(editorRoles, true);
 
   const itemActions = !isEditable
@@ -62,7 +68,13 @@ export default async function EventsDashboard({
           </Link>
         </Box>
       )}
-      <TeamList teams={teams} shifts={shifts} eventSlug={eventSlug} itemActions={itemActions} />
+      <TeamList
+        teams={teams}
+        shifts={shifts}
+        shiftVolunteers={shiftVolunteers}
+        eventSlug={eventSlug}
+        itemActions={itemActions}
+      />
     </Flex>
   );
 }

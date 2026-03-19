@@ -7,22 +7,43 @@
 'use client';
 
 import { getTeamShiftsPath } from '@/utils/path';
-import { Box, Card, Flex, Heading, Link, Text } from '@radix-ui/themes';
+import { Box, Button, Card, Flex, Heading, Link, Text } from '@radix-ui/themes';
 import ProgressBar from '../progress-bar';
 import Collapsible from '../collapsible';
 import { useTranslations } from 'next-intl';
+import { deduplicateBy } from '@/utils/list';
+import NextLink from 'next/link';
 
 interface Props {
   team: TeamInfo;
   shifts: ShiftInfo[];
+  shiftVolunteers?: Record<ShiftId, VolunteerInfo[]>;
   eventSlug: string;
   actions?: React.ReactNode;
+  showSignup?: boolean;
 }
-export default function TeamCard({ team, shifts, eventSlug, actions }: Props) {
+export default function TeamCard({
+  team,
+  shifts,
+  shiftVolunteers,
+  eventSlug,
+  actions,
+  showSignup
+}: Props) {
   const t = useTranslations('TeamCard');
   const shiftSpots = shifts.reduce((spots, shift) => spots + shift.maxVolunteers, 0);
-  const filledSpots = 0; // TODO: depends on shift signup infrastructure
-  const volunteerNames: string[] = []; // TODO: depends on shift signup infrastructure
+  const filledSpots = shifts.reduce((spots, shift) => {
+    const volunteers = shiftVolunteers?.[shift.id] ?? [];
+    return spots + volunteers.length;
+  }, 0);
+  const volunteerNames = deduplicateBy(
+    shifts.flatMap((shift) => {
+      const volunteers = shiftVolunteers?.[shift.id] ?? [];
+      return volunteers.map((volunteer) => volunteer.displayName);
+    }),
+    (name) => name
+  );
+  const isFull = filledSpots >= shiftSpots;
   return (
     <Card>
       <Flex direction="column" gap="3">
@@ -37,9 +58,20 @@ export default function TeamCard({ team, shifts, eventSlug, actions }: Props) {
           </Link>
           <Flex>{actions}</Flex>
         </Flex>
-        <Box style={{ maxWidth: '200px' }}>
-          <ProgressBar filled={filledSpots} total={shiftSpots} />
-        </Box>
+        <Flex justify="between" align="center">
+          <Box style={{ maxWidth: '200px' }} flexGrow="1" flexShrink="0">
+            <ProgressBar filled={filledSpots} total={shiftSpots} />
+          </Box>
+          {showSignup && (
+            <Button asChild disabled={isFull} title={isFull ? t('full') : undefined}>
+              {isFull ? (
+                <Text>{t('signup')}</Text>
+              ) : (
+                <NextLink href={getTeamShiftsPath(eventSlug, team.slug)}>{t('signup')}</NextLink>
+              )}
+            </Button>
+          )}
+        </Flex>
         <Box style={{ maxWidth: '600px' }}>
           <Collapsible header={t('volunteers')}>
             <Flex direction="column" gap="1">
