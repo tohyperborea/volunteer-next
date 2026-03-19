@@ -20,8 +20,9 @@ import ProgressBar from '../progress-bar';
 interface Props {
   event: EventInfo;
   shift: ShiftInfo;
-  qualification?: QualificationInfo;
   volunteers: VolunteerInfo[];
+  qualification?: QualificationInfo;
+  isQualified?: boolean;
   collapsible?: boolean;
   onEdit?: () => void;
   onSignup?: () => void;
@@ -36,7 +37,8 @@ export default function ShiftCard({
   onEdit,
   onSignup,
   onCancel,
-  collapsible
+  collapsible,
+  isQualified
 }: Props) {
   const t = useTranslations('ShiftCard');
   const startTime = shift.startTime;
@@ -47,6 +49,15 @@ export default function ShiftCard({
       ? qualification.name
       : null;
   const [isExpanded, setIsExpanded] = useState(!collapsible);
+
+  const isFull = volunteerCount >= shift.maxVolunteers;
+  const cantSignupMessage = isFull
+    ? t('full')
+    : shift.requirement && !isQualified
+      ? qualification?.errorMessage
+      : undefined;
+  const canSignup = !cantSignupMessage;
+
   return (
     <Card className={isExpanded ? styles.expanded : undefined}>
       <Flex direction="column" gap="3">
@@ -109,7 +120,11 @@ export default function ShiftCard({
                 <ProgressBar filled={volunteerCount} total={shift.maxVolunteers} />
               </Box>
             </Flex>
-            {onSignup && <Button onClick={onSignup}>{t('signup')}</Button>}
+            {onSignup && (
+              <Button disabled={!canSignup} onClick={onSignup} title={cantSignupMessage}>
+                {t('signup')}
+              </Button>
+            )}
             {onCancel && (
               <Button onClick={onCancel} color="red">
                 {t('cancel')}

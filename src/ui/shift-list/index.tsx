@@ -25,6 +25,7 @@ interface Props {
   shiftVolunteers: Record<ShiftId, VolunteerInfo[]>;
   exportLink: string;
   userShifts?: Set<ShiftId>;
+  userQualifications?: Set<QualificationId>;
   onSaveShift?: (data: FormData) => Promise<void>;
   onDeleteShift?: (shiftId: ShiftId) => Promise<void>;
   onSignup?: (shiftId: ShiftId) => Promise<void>;
@@ -43,15 +44,16 @@ export default function ShiftList({
   onDeleteShift,
   onSignup,
   onCancel,
-  userShifts
+  userShifts,
+  userQualifications
 }: Props) {
   const t = useTranslations('ShiftList');
   const canEdit = Boolean(onSaveShift);
   const [creatingShift, setCreatingShift] = useState(false);
   const [editingShift, setEditingShift] = useState<ShiftInfo | undefined>(undefined);
   const qualificationMap = new Map(qualifications.map((q) => [q.id, q]));
-  const canSignup = (shiftId: ShiftId) => onSignup && userShifts && !userShifts.has(shiftId);
-  const canCancel = (shiftId: ShiftId) => onCancel && userShifts && userShifts.has(shiftId);
+  const showSignup = (shiftId: ShiftId) => onSignup && userShifts && !userShifts.has(shiftId);
+  const showCancel = (shiftId: ShiftId) => onCancel && userShifts && userShifts.has(shiftId);
   return (
     <Flex direction="column" gap="6">
       {canEdit && (
@@ -89,8 +91,15 @@ export default function ShiftList({
               volunteers={shiftVolunteers[shift.id] || []}
               key={shift.id}
               onEdit={canEdit ? () => setEditingShift(shift) : undefined}
-              onSignup={canSignup(shift.id) ? () => onSignup!(shift.id) : undefined}
-              onCancel={canCancel(shift.id) ? () => onCancel!(shift.id) : undefined}
+              onSignup={showSignup(shift.id) ? () => onSignup!(shift.id) : undefined}
+              onCancel={showCancel(shift.id) ? () => onCancel!(shift.id) : undefined}
+              isQualified={
+                shift.requirement
+                  ? userQualifications
+                    ? userQualifications.has(shift.requirement)
+                    : false
+                  : true
+              }
             />
           )}
         />

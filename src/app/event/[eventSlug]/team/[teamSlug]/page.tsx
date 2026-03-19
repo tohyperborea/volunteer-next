@@ -1,6 +1,9 @@
 import metadata from '@/i18n/metadata';
 import { getEventBySlug } from '@/service/event-service';
-import { getQualificationsForEvent } from '@/service/qualification-service';
+import {
+  getQualificationsForEvent,
+  getQualificationsForUser
+} from '@/service/qualification-service';
 import {
   createShift,
   updateShift,
@@ -8,7 +11,8 @@ import {
   getFilteredShiftsForTeam,
   addVolunteerToShift,
   removeVolunteerFromShift,
-  getShiftsForVolunteer
+  getShiftsForVolunteer,
+  getShiftById
 } from '@/service/shift-service';
 import { getTeamBySlug } from '@/service/team-service';
 import { getVolunteersForShifts } from '@/service/user-service';
@@ -76,6 +80,9 @@ export default async function TeamShifts({
     permissions
   );
   const userShifts = new Set((await getShiftsForVolunteer(permissions.userId)).map((s) => s.id));
+  const userQualifications = new Set(
+    (await getQualificationsForUser(permissions.userId)).map((q) => q.id)
+  );
 
   const onSaveShift = async (data: FormData) => {
     'use server';
@@ -111,6 +118,23 @@ export default async function TeamShifts({
     if (!permissions.userId) {
       unauthorized();
     }
+    const shift = await getShiftById(shiftId);
+    if (!shift) {
+      notFound();
+    }
+    const currentVolunteers = (await getVolunteersForShifts([shiftId], permissions))[shiftId] ?? [];
+    if (currentVolunteers.length >= shift.maxVolunteers) {
+      throw new Error('Shift is already full');
+    }
+
+    if (shift.requirement) {
+      const qualifications = await getQualificationsForUser(permissions.userId);
+      const hasRequiredQualification = qualifications.some((q) => q.id === shift.requirement);
+      if (!hasRequiredQualification) {
+        throw new Error('User does not have the required qualification for this shift');
+      }
+    }
+
     await addVolunteerToShift(shiftId, permissions.userId);
     const path = getTeamShiftsPath(eventSlug, teamSlug);
     revalidatePath(path);
@@ -140,6 +164,7 @@ export default async function TeamShifts({
         teamId={team.id}
         shifts={shifts}
         userShifts={userShifts}
+        userQualifications={userQualifications}
         qualifications={qualifications}
         shiftVolunteers={shiftVolunteers}
         exportLink={getTeamShiftsApiPath(eventSlug, teamSlug, { format: 'csv' })}

@@ -39,7 +39,8 @@ const rowToShift = (row: any): ShiftInfo => ({
   durationHours: row.durationHours,
   minVolunteers: row.minVolunteers,
   maxVolunteers: row.maxVolunteers,
-  isActive: row.isActive
+  isActive: row.isActive,
+  requirement: row.qualificationId || undefined
 });
 
 const rowsToShifts = (rows: any[]): ShiftInfo[] => {
@@ -86,7 +87,7 @@ export const getShiftById = cache(async (shiftId: ShiftId): Promise<ShiftInfo | 
   const result = await pool.query(
     `
     ${SHIFT_QUERY}
-    WHERE id = $1`,
+    WHERE s.id = $1`,
     [shiftId]
   );
   if (result.rows.length === 0) {
