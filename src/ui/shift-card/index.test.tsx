@@ -150,4 +150,89 @@ describe('ShiftCard', () => {
     );
     expect(screen.getByTestId('progress-bar')).toBeInTheDocument();
   });
+
+  test.each<{
+    isFull: boolean;
+    requirement: QualificationInfo | null;
+    isQualified: boolean;
+    signupError: string | null;
+  }>([
+    { isFull: false, requirement: null, isQualified: false, signupError: null },
+    { isFull: true, requirement: null, isQualified: false, signupError: 'full' },
+    {
+      isFull: false,
+      requirement: mockQualification,
+      isQualified: false,
+      signupError: mockQualification.errorMessage
+    },
+    { isFull: false, requirement: mockQualification, isQualified: true, signupError: null },
+    { isFull: true, requirement: mockQualification, isQualified: false, signupError: 'full' },
+    { isFull: true, requirement: mockQualification, isQualified: true, signupError: 'full' }
+  ])(
+    'renders the signup button when onSignup is provided',
+    ({ isFull, requirement, isQualified, signupError }) => {
+      const onSignupMock = jest.fn();
+      const shift = {
+        ...mockShift,
+        maxVolunteers: isFull ? mockVolunteers.length : mockShift.maxVolunteers,
+        requirement: requirement ? requirement.id : undefined
+      };
+      render(
+        <ShiftCard
+          event={mockEvent}
+          shift={shift}
+          volunteers={mockVolunteers}
+          qualification={requirement || undefined}
+          isQualified={isQualified}
+          onSignup={onSignupMock}
+        />
+      );
+
+      const signupButton = screen.getByRole('button', { name: 'signup' });
+      expect(signupButton).toBeInTheDocument();
+
+      if (signupError) {
+        expect(signupButton).toBeDisabled();
+        expect(signupButton).toHaveAttribute('title', signupError);
+      }
+
+      fireEvent.click(signupButton);
+      expect(onSignupMock).toHaveBeenCalledTimes(signupError ? 0 : 1);
+    }
+  );
+
+  test.each<{
+    minVolunteers: number;
+    maxVolunteers: number;
+    volunteerCount: number;
+    expectedColour: string;
+  }>([
+    { minVolunteers: 2, maxVolunteers: 10, volunteerCount: 0, expectedColour: 'red' },
+    { minVolunteers: 2, maxVolunteers: 10, volunteerCount: 1, expectedColour: 'orange' },
+    { minVolunteers: 2, maxVolunteers: 10, volunteerCount: 2, expectedColour: 'accent' },
+    { minVolunteers: 2, maxVolunteers: 10, volunteerCount: 5, expectedColour: 'accent' },
+    { minVolunteers: 2, maxVolunteers: 10, volunteerCount: 10, expectedColour: 'green' },
+    { minVolunteers: 2, maxVolunteers: 10, volunteerCount: 12, expectedColour: 'green' }
+  ])(
+    'renders the progress bar with the correct status colour based on volunteer count',
+    ({ minVolunteers, maxVolunteers, volunteerCount, expectedColour }) => {
+      const shift = {
+        ...mockShift,
+        minVolunteers,
+        maxVolunteers
+      };
+      const volunteers = Array.from({ length: volunteerCount }, (_, i) => ({
+        id: `volunteer-${i}`,
+        displayName: `Volunteer ${i}`
+      }));
+      render(<ShiftCard event={mockEvent} shift={shift} volunteers={volunteers} />);
+
+      expect(mockProgressBar).toHaveBeenCalledWith(
+        expect.objectContaining({
+          colour: expectedColour
+        }),
+        undefined
+      );
+    }
+  );
 });

@@ -18,7 +18,6 @@ import ShiftFilters from '../shift-filters';
 
 interface Props {
   event: EventInfo;
-  startDate: Date;
   teamId: TeamId;
   shifts: ShiftInfo[];
   qualifications: QualificationInfo[];
@@ -34,7 +33,6 @@ interface Props {
 
 export default function ShiftList({
   event,
-  startDate,
   teamId,
   shifts,
   qualifications,
@@ -54,6 +52,7 @@ export default function ShiftList({
   const qualificationMap = new Map(qualifications.map((q) => [q.id, q]));
   const showSignup = (shiftId: ShiftId) => onSignup && userShifts && !userShifts.has(shiftId);
   const showCancel = (shiftId: ShiftId) => onCancel && userShifts && userShifts.has(shiftId);
+
   return (
     <Flex direction="column" gap="6">
       {canEdit && (
@@ -80,7 +79,7 @@ export default function ShiftList({
         <ShiftFilters withFilters={['searchQuery']} />
         <DatedList
           items={shifts}
-          getDate={(shift) => eventDayToDate(startDate, shift.eventDay)}
+          getDate={(shift) => eventDayToDate(event.startDate, shift.eventDay)}
           renderItem={(shift) => (
             <ShiftCard
               event={event}
@@ -106,7 +105,7 @@ export default function ShiftList({
       </Flex>
       {canEdit && (
         <ShiftDialog
-          startDate={startDate}
+          startDate={event.startDate}
           teamId={teamId}
           qualifications={qualifications}
           creating={creatingShift}

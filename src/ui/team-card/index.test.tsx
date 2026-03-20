@@ -156,4 +156,82 @@ describe('TeamCard', () => {
 
     expect(screen.getByText('volunteers')).toBeInTheDocument();
   });
+
+  it('renders a signup button if showSignup is true and there are open shifts', () => {
+    const team: TeamInfo = {
+      name: 'Team A',
+      description: 'Description A',
+      slug: 'team-a',
+      id: 'teamid',
+      eventId: 'eventid',
+      contactAddress: ''
+    };
+    const shifts: ShiftInfo[] = [
+      {
+        id: 'shift1',
+        teamId: 'teamid',
+        title: 'Shift 1',
+        eventDay: 0,
+        startTime: '',
+        durationHours: 0,
+        isActive: true,
+        maxVolunteers: 5,
+        minVolunteers: 0
+      }
+    ];
+    const eventSlug = 'event-2025';
+
+    render(<TeamCard team={team} shifts={shifts} eventSlug={eventSlug} showSignup />);
+
+    const signupLink = screen.getByRole('link', { name: /signup/i });
+    expect(signupLink).toBeInTheDocument();
+    expect(signupLink).toHaveAttribute('href', 'team-shifts-path');
+  });
+
+  it('disables the signup button if all shifts are full', () => {
+    const team: TeamInfo = {
+      name: 'Team A',
+      description: 'Description A',
+      slug: 'team-a',
+      id: 'teamid',
+      eventId: 'eventid',
+      contactAddress: ''
+    };
+    const shifts: ShiftInfo[] = [
+      {
+        id: 'shift1',
+        teamId: 'teamid',
+        title: 'Shift 1',
+        eventDay: 0,
+        startTime: '',
+        durationHours: 0,
+        isActive: true,
+        maxVolunteers: 5,
+        minVolunteers: 0
+      }
+    ];
+    const eventSlug = 'event-2025';
+    const volunteers: Record<ShiftId, VolunteerInfo[]> = {
+      shift1: [
+        { id: 'vol1', displayName: 'Volunteer 1' },
+        { id: 'vol2', displayName: 'Volunteer 2' },
+        { id: 'vol3', displayName: 'Volunteer 3' },
+        { id: 'vol4', displayName: 'Volunteer 4' },
+        { id: 'vol5', displayName: 'Volunteer 5' }
+      ]
+    };
+
+    render(
+      <TeamCard
+        team={team}
+        shifts={shifts}
+        eventSlug={eventSlug}
+        shiftVolunteers={volunteers}
+        showSignup
+      />
+    );
+
+    const signup = screen.getByText('signup');
+    expect(signup).toHaveAttribute('data-disabled', 'true');
+  });
 });
