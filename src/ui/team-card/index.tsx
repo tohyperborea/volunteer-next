@@ -53,7 +53,6 @@ export default function TeamCard({
               <Heading as="h3" size="4">
                 {team.name}
               </Heading>
-              <Text>{team.description}</Text>
             </Flex>
           </Link>
           <Flex>{actions}</Flex>

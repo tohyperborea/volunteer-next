@@ -13,20 +13,28 @@ import { ChevronDownIcon } from '@radix-ui/react-icons';
 interface Props {
   header: React.ReactNode;
   children: React.ReactNode;
+  maxWidth?: string;
   defaultOpen?: boolean;
 }
 
-export default function Collapsible({ header, children, defaultOpen = false }: Props) {
+export default function Collapsible({
+  header,
+  children,
+  maxWidth = '600px',
+  defaultOpen = false
+}: Props) {
   const [isOpen, setIsOpen] = useState(defaultOpen);
   return (
-    <Box width="100%" className={`${isOpen ? styles.open : ''}`}>
+    <Box width="100%" style={{ maxWidth }} className={`${isOpen ? styles.open : ''}`}>
       <Button variant="surface" className={styles.button} onClick={() => setIsOpen(!isOpen)}>
         {header}
         <ChevronDownIcon className={styles.icon} />
       </Button>
-      <Box m="2" className={styles.content}>
-        <Box className={styles.wrapper}>{children}</Box>
-      </Box>
+      {isOpen && (
+        <Box m="2" className={styles.content}>
+          {children}
+        </Box>
+      )}
     </Box>
   );
 }

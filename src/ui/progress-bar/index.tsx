@@ -14,9 +14,15 @@ interface Props {
   filled: number;
   total: number;
   colour?: string;
+  maxWidth?: string;
 }
 
-export default function ProgressBar({ filled, total, colour = 'accent' }: Props) {
+export default function ProgressBar({
+  filled,
+  total,
+  colour = 'accent',
+  maxWidth = '200px'
+}: Props) {
   const t = useTranslations('ProgressBar');
   const value = total <= 0 ? 0 : Math.round((filled / total) * 100);
   return (
@@ -24,6 +30,7 @@ export default function ProgressBar({ filled, total, colour = 'accent' }: Props)
       className={styles.progress}
       style={
         {
+          maxWidth,
           '--progress-fill-colour': `var(--${colour}-9)`,
           '--progress-background-colour': `var(--${colour}-a5)`
         } as React.CSSProperties

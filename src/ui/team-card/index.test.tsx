@@ -18,7 +18,7 @@ const mockProgressBar = ProgressBar as jest.MockedFunction<typeof ProgressBar>;
 const mockGetTeamShiftsPath = getTeamShiftsPath as jest.MockedFunction<typeof getTeamShiftsPath>;
 
 describe('TeamCard', () => {
-  it('renders team name and description', () => {
+  it('renders team name', () => {
     const team: TeamInfo = {
       name: 'Team A',
       description: 'Description A',
@@ -33,7 +33,6 @@ describe('TeamCard', () => {
     render(<TeamCard team={team} shifts={shifts} eventSlug={eventSlug} />);
 
     expect(screen.getByText('Team A')).toBeInTheDocument();
-    expect(screen.getByText('Description A')).toBeInTheDocument();
   });
 
   it('renders a link to the team info page', () => {
