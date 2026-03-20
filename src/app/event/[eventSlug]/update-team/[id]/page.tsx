@@ -76,7 +76,8 @@ export default async function UpdateTeam({ params }: Props) {
   const permissionsProfile = getPermissionsProfile(await currentUser());
   const volunteers = usersToVolunteers(await getUsers(), permissionsProfile);
   const teamleadRole: UserRole = { type: 'team-lead', eventId: team.eventId, teamId: team.id };
-  const teamlead = userToVolunteer((await getUsersWithRole(teamleadRole))[0], permissionsProfile);
+  const teamLoadUser = (await getUsersWithRole(teamleadRole))[0];
+  const teamlead = teamLoadUser ? userToVolunteer(teamLoadUser, permissionsProfile) : undefined;
 
   return (
     <Flex direction="column" gap="4">

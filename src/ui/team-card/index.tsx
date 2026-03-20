@@ -47,7 +47,7 @@ export default function TeamCard({
   return (
     <Card>
       <Flex direction="column" gap="3">
-        <Flex justify="between" gap="4">
+        {/* <Flex justify="between" gap="4">
           <Link highContrast underline="none" href={getTeamShiftsPath(eventSlug, team.slug)}>
             <Flex direction="column">
               <Heading as="h3" size="4">
@@ -74,17 +74,55 @@ export default function TeamCard({
               )}
             </Button>
           )}
+        </Flex> */}
+        <Flex justify="between" gap="4">
+          {/* Content */}
+          <Flex
+            flexGrow="1"
+            align={{ initial: 'stretch', sm: 'center' }}
+            direction={{ initial: 'column', sm: 'row' }}
+            gap="3"
+          >
+            <Link asChild highContrast underline="hover">
+              <NextLink href={getTeamShiftsPath(eventSlug, team.slug)}>
+                <Heading as="h3" size="4">
+                  {team.name}
+                </Heading>
+              </NextLink>
+            </Link>
+            <Flex justify={{ initial: 'between', sm: 'end' }} align="center" flexGrow="1" gap="4">
+              <ProgressBar
+                colour={getStatusColour(shifts, shiftVolunteers)}
+                filled={shiftSpots - filledSpots}
+                total={shiftSpots}
+              />
+              {showSignup && (
+                <Button asChild disabled={isFull} title={isFull ? t('full') : undefined}>
+                  {isFull ? (
+                    <Text>{t('signup')}</Text>
+                  ) : (
+                    <NextLink href={getTeamShiftsPath(eventSlug, team.slug)}>
+                      {t('signup')}
+                    </NextLink>
+                  )}
+                </Button>
+              )}
+            </Flex>
+          </Flex>
+          {/* Actions */}
+          <Flex top="3" right="3" position={{ initial: 'absolute', sm: 'static' }}>
+            {actions}
+          </Flex>
         </Flex>
+        {/* Collapsible volunteers */}
         {volunteerNames.length > 0 && (
-          <Box style={{ maxWidth: '600px' }}>
-            <Collapsible header={t('volunteers')}>
-              <Flex direction="column" gap="1">
-                {volunteerNames.map((name) => (
-                  <Text key={name}>{name}</Text>
-                ))}
-              </Flex>
-            </Collapsible>
-          </Box>
+          <Collapsible header={t('volunteers')}>
+            <Flex direction="column" gap="1">
+              {volunteerNames.map((name) => (
+                <Text key={name}>{name}</Text>
+              ))}
+            </Flex>
+          </Collapsible>
         )}
       </Flex>
     </Card>
