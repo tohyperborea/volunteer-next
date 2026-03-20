@@ -61,7 +61,7 @@ export default async function TeamVolunteers({
       acc[volunteer.id] = (
         <Collapsible header={t('shifts')}>
           <DatedList
-            items={shifts[volunteer.id]}
+            items={shifts[volunteer.id].filter((s) => s.teamId === team.id)}
             getDate={(s) => eventDayToDate(event.startDate, s.eventDay)}
             renderItem={(shift) => (
               <Flex direction="column" key={`${volunteer.id}:${shift.id}`} asChild>
