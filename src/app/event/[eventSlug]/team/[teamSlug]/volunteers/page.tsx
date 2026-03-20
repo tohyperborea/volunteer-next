@@ -11,9 +11,12 @@ import VolunteerList from '@/ui/volunteer-list';
 import { addHoursToTimeString, eventDayToDate } from '@/utils/datetime';
 import { getPermissionsProfile } from '@/utils/permissions';
 import { recordToUserFilters } from '@/utils/user-filters';
-import { Flex, Text } from '@radix-ui/themes';
+import { Box, Button, Flex, Text } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
+import NextLink from 'next/link';
+import { getTeamVolunteersApiPath } from '@/utils/path';
+import { Share2Icon } from '@radix-ui/react-icons';
 
 const PAGE_KEY = 'TeamPage.VolunteersTab';
 
@@ -79,10 +82,24 @@ export default async function TeamVolunteers({
   }, {});
 
   return (
-    <VolunteerList
-      volunteers={volunteers}
-      withFilters={['searchQuery']}
-      itemContent={shiftPanels}
-    />
+    <Flex direction="column" gap="6">
+      <Box>
+        <Button asChild variant="soft">
+          <NextLink
+            href={getTeamVolunteersApiPath(eventSlug, teamSlug, { format: 'csv' })}
+            target="_blank"
+            rel="noopener"
+          >
+            <Share2Icon />
+            {t('export')}
+          </NextLink>
+        </Button>
+      </Box>
+      <VolunteerList
+        volunteers={volunteers}
+        withFilters={['searchQuery']}
+        itemContent={shiftPanels}
+      />
+    </Flex>
   );
 }

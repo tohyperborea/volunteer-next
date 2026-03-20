@@ -52,3 +52,13 @@ export const getVolunteerShiftsApiPath = (
   `/api/event/${eventSlug}/volunteer/${userId}/shifts?format=${params?.format ?? 'json'}`;
 export const getUserApiPath = (filter?: UserFilters): string =>
   `/api/user${filter ? `?${new URLSearchParams(filter as Record<string, string>).toString()}` : ''}`;
+export const getTeamVolunteersApiPath = (
+  eventSlug: string,
+  teamSlug: string,
+  params?: { format: 'csv' | 'json' }
+): string =>
+  `/api/event/${eventSlug}/team/${teamSlug}/volunteers?format=${params?.format ?? 'json'}`;
+export const getEventVolunteersApiPath = (
+  eventSlug: string,
+  params?: { format: 'csv' | 'json' }
+): string => `/api/event/${eventSlug}/volunteers?format=${params?.format ?? 'json'}`;

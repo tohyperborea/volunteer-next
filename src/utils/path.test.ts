@@ -14,7 +14,9 @@ import {
   getUsersDashboardPath,
   getUpdateTeamPath,
   getCreateTeamPath,
-  getTeamsPath
+  getTeamsPath,
+  getTeamVolunteersApiPath,
+  getEventVolunteersApiPath
 } from './path';
 
 describe('getTeamsPath', () => {
@@ -148,6 +150,49 @@ describe('getVolunteerShiftsApiPath', () => {
     const userId = 'user-123';
     const result = getVolunteerShiftsApiPath(eventSlug, userId, { format: 'json' });
     expect(result).toBe('/api/event/event-123/volunteer/user-123/shifts?format=json');
+  });
+});
+
+describe('getTeamVolunteersApiPath', () => {
+  it('should return the correct API path for team volunteers with default format', () => {
+    const eventSlug = 'event-123';
+    const teamSlug = 'team-123';
+    const result = getTeamVolunteersApiPath(eventSlug, teamSlug);
+    expect(result).toBe('/api/event/event-123/team/team-123/volunteers?format=json');
+  });
+
+  it('should return the correct API path for team volunteers with CSV format', () => {
+    const eventSlug = 'event-123';
+    const teamSlug = 'team-123';
+    const result = getTeamVolunteersApiPath(eventSlug, teamSlug, { format: 'csv' });
+    expect(result).toBe('/api/event/event-123/team/team-123/volunteers?format=csv');
+  });
+
+  it('should return the correct API path for team volunteers with JSON format explicitly set', () => {
+    const eventSlug = 'event-123';
+    const teamSlug = 'team-123';
+    const result = getTeamVolunteersApiPath(eventSlug, teamSlug, { format: 'json' });
+    expect(result).toBe('/api/event/event-123/team/team-123/volunteers?format=json');
+  });
+});
+
+describe('getEventVolunteersApiPath', () => {
+  it('should return the correct API path for event volunteers with default format', () => {
+    const eventSlug = 'event-123';
+    const result = getEventVolunteersApiPath(eventSlug);
+    expect(result).toBe('/api/event/event-123/volunteers?format=json');
+  });
+
+  it('should return the correct API path for event volunteers with CSV format', () => {
+    const eventSlug = 'event-123';
+    const result = getEventVolunteersApiPath(eventSlug, { format: 'csv' });
+    expect(result).toBe('/api/event/event-123/volunteers?format=csv');
+  });
+
+  it('should return the correct API path for event volunteers with JSON format explicitly set', () => {
+    const eventSlug = 'event-123';
+    const result = getEventVolunteersApiPath(eventSlug, { format: 'json' });
+    expect(result).toBe('/api/event/event-123/volunteers?format=json');
   });
 });
 

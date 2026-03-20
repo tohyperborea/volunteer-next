@@ -1,4 +1,4 @@
-import { shiftsToCSV } from './csv-export';
+import { shiftsToCSV, volunteersToCSV } from './csv-export';
 
 describe('shiftsToCSV', () => {
   const event: EventInfo = {
@@ -198,6 +198,125 @@ describe('shiftsToCSV', () => {
       `Date,Team,Shift Title,Start Time,Duration (Hours),Volunteers`,
       `2026-03-11,Team Alpha,Shift 1,08:00,4,"\t=CMD|' /C calc'!A0 <badguy@evil.com>"`
     ].join('\r\n');
+
+    expect(result).toBe(expectedCSV);
+  });
+});
+
+describe('volunteersToCSV', () => {
+  it('should generate a CSV with only display names if no full names or emails are present', () => {
+    const volunteers: VolunteerInfo[] = [
+      { id: 'user1', displayName: 'John D.' },
+      { id: 'user2', displayName: 'Jane S.' }
+    ];
+
+    const result = volunteersToCSV(volunteers);
+
+    const expectedCSV = ['Chosen Name', 'John D.', 'Jane S.'].join('\r\n');
+
+    expect(result).toBe(expectedCSV);
+  });
+
+  it('should include full names if at least one volunteer has a full name', () => {
+    const volunteers: VolunteerInfo[] = [
+      { id: 'user1', displayName: 'John D.', fullName: 'John Doe' },
+      { id: 'user2', displayName: 'Jane S.' }
+    ];
+
+    const result = volunteersToCSV(volunteers);
+
+    const expectedCSV = ['Chosen Name,Full Name', 'John D.,John Doe', 'Jane S.,'].join('\r\n');
+
+    expect(result).toBe(expectedCSV);
+  });
+
+  it('should include emails if at least one volunteer has an email', () => {
+    const volunteers: VolunteerInfo[] = [
+      { id: 'user1', displayName: 'John D.', email: 'john.doe@example.com' },
+      { id: 'user2', displayName: 'Jane S.' }
+    ];
+
+    const result = volunteersToCSV(volunteers);
+
+    const expectedCSV = ['Chosen Name,Email', 'John D.,john.doe@example.com', 'Jane S.,'].join(
+      '\r\n'
+    );
+
+    expect(result).toBe(expectedCSV);
+  });
+
+  it('should include full names and emails if present', () => {
+    const volunteers: VolunteerInfo[] = [
+      { id: 'user1', displayName: 'John D.', fullName: 'John Doe', email: 'john.doe@example.com' },
+      {
+        id: 'user2',
+        displayName: 'Jane S.',
+        fullName: 'Jane Smith',
+        email: 'jane.smith@example.com'
+      }
+    ];
+
+    const result = volunteersToCSV(volunteers);
+
+    const expectedCSV = [
+      'Chosen Name,Full Name,Email',
+      'John D.,John Doe,john.doe@example.com',
+      'Jane S.,Jane Smith,jane.smith@example.com'
+    ].join('\r\n');
+
+    expect(result).toBe(expectedCSV);
+  });
+
+  it('should escape special characters in display names, full names, and emails', () => {
+    const volunteers: VolunteerInfo[] = [
+      {
+        id: 'user1',
+        displayName: 'John, "The Great"',
+        fullName: 'John "Doe"',
+        email: 'john.doe@example.com'
+      },
+      {
+        id: 'user2',
+        displayName: 'Jane S.',
+        fullName: 'Jane, Smith',
+        email: 'jane.smith@example.com'
+      }
+    ];
+
+    const result = volunteersToCSV(volunteers);
+
+    const expectedCSV = [
+      'Chosen Name,Full Name,Email',
+      '"John, ""The Great""","John ""Doe""",john.doe@example.com',
+      'Jane S.,"Jane, Smith",jane.smith@example.com'
+    ].join('\r\n');
+
+    expect(result).toBe(expectedCSV);
+  });
+
+  it('should guard against CSV injection', () => {
+    const volunteers: VolunteerInfo[] = [
+      { id: 'user1', displayName: '=John', email: 'john.doe@example.com' },
+      { id: 'user2', displayName: '+Jane', email: 'jane.smith@example.com' }
+    ];
+
+    const result = volunteersToCSV(volunteers);
+
+    const expectedCSV = [
+      'Chosen Name,Email',
+      '"\t=John",john.doe@example.com',
+      '"\t+Jane",jane.smith@example.com'
+    ].join('\r\n');
+
+    expect(result).toBe(expectedCSV);
+  });
+
+  it('should handle an empty volunteers array', () => {
+    const volunteers: VolunteerInfo[] = [];
+
+    const result = volunteersToCSV(volunteers);
+
+    const expectedCSV = 'Chosen Name';
 
     expect(result).toBe(expectedCSV);
   });

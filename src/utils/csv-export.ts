@@ -81,3 +81,33 @@ export const shiftsToCSV = ({
     })
   ].join('\r\n');
 };
+
+/**
+ * Exports volunteer data to CSV format
+ * @param volunteers A list of VolunteerInfo objects to export
+ * @returns A string in CSV format representing the volunteer data
+ */
+export const volunteersToCSV = (volunteers: VolunteerInfo[]): string => {
+  const showFullName = volunteers.some((v) => Boolean(v.fullName));
+  const showEmail = volunteers.some((v) => Boolean(v.email));
+  const headers = ['Chosen Name'];
+  if (showFullName) {
+    headers.push('Full Name');
+  }
+  if (showEmail) {
+    headers.push('Email');
+  }
+  return [
+    headers.join(','),
+    ...volunteers.map((volunteer) => {
+      const row = [escapeForCSV(preventCSVInjection(volunteer.displayName))];
+      if (showFullName) {
+        row.push(escapeForCSV(preventCSVInjection(volunteer.fullName ?? '')));
+      }
+      if (showEmail) {
+        row.push(escapeForCSV(preventCSVInjection(volunteer.email ?? '')));
+      }
+      return row.join(',');
+    })
+  ].join('\r\n');
+};

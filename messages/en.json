@@ -51,7 +51,8 @@
     },
     "VolunteersTab": {
       "title": "Volunteers",
-      "shifts": "Shifts"
+      "shifts": "Shifts",
+      "export": "Export volunteers"
     }
   },
   "SignInPage": {
@@ -190,7 +191,7 @@
   },
   "TeamCard": {
     "volunteers": "Volunteers",
-    "signup": "Sign Up",
+    "signup": "Sign up",
     "full": "All shifts filled"
   },
   "VolunteerFilters": {
@@ -282,7 +283,7 @@
     "editShift": "Edit Shift",
     "expand": "Expand shift details",
     "collapse": "Collapse shift details",
-    "signup": "Sign Up",
+    "signup": "Sign up",
     "cancel": "Cancel Shift"
   },
   "ShiftDialog": {
