@@ -4,6 +4,9 @@ import { checkAuthorisation } from '@/session';
 import { paramsToUserFilters } from '@/utils/user-filters';
 import { NextRequest } from 'next/server';
 import { GET } from './route';
+import { volunteersToCSV } from '@/utils/csv-export';
+import { CSVResponse, NotImplementedResponse } from '@/lib/response';
+import { NextResponse } from 'next/server';
 
 jest.mock('next/server', () => ({
   NextResponse: {
@@ -34,12 +37,28 @@ jest.mock('@/utils/permissions', () => ({
   getPermissionsProfile: jest.fn().mockReturnValue({ id: 'permissionsProfile' })
 }));
 
+jest.mock('@/utils/csv-export', () => ({
+  volunteersToCSV: jest.fn()
+}));
+
+jest.mock('@/lib/response', () => ({
+  CSVResponse: jest.fn(),
+  NotImplementedResponse: jest.fn()
+}));
+
+const mockVolunteersToCSV = volunteersToCSV as jest.MockedFunction<typeof volunteersToCSV>;
+const mockCSVResponse = CSVResponse as jest.MockedFunction<typeof CSVResponse>;
+const mockNotImplementedResponse = NotImplementedResponse as jest.MockedFunction<
+  typeof NotImplementedResponse
+>;
+
 const mockCheckAuthorisation = checkAuthorisation as jest.MockedFunction<typeof checkAuthorisation>;
 const mockGetFilteredUsers = getFilteredUsers as jest.MockedFunction<typeof getFilteredUsers>;
 const mockParamsToUserFilters = paramsToUserFilters as jest.MockedFunction<
   typeof paramsToUserFilters
 >;
 const mockUsersToVolunteers = usersToVolunteers as jest.MockedFunction<typeof usersToVolunteers>;
+const mockNextResponseJson = NextResponse.json as jest.MockedFunction<typeof NextResponse.json>;
 
 describe('GET /api/user', () => {
   beforeEach(() => {
@@ -79,17 +98,60 @@ describe('GET /api/user', () => {
     );
 
     const request = {
-      nextUrl: { searchParams: new URLSearchParams({ roleType: 'admin' }) }
+      nextUrl: { searchParams: new URLSearchParams({ roleType: 'admin', format: 'json' }) }
     } as unknown as NextRequest;
-    const response = await GET(request);
+    await GET(request);
 
     expect(mockParamsToUserFilters).toHaveBeenCalledWith(request.nextUrl.searchParams);
     expect(mockCheckAuthorisation).toHaveBeenCalled();
     expect(mockGetFilteredUsers).toHaveBeenCalledWith(mockFilter, { id: 'permissionsProfile' });
     expect(mockUsersToVolunteers).toHaveBeenCalledWith(mockUsers, { id: 'permissionsProfile' });
 
-    expect(response.status).toBe(200);
-    expect(response.body).toEqual(JSON.stringify(mockVolunteers));
+    expect(mockNextResponseJson).toHaveBeenCalledWith(mockVolunteers);
+  });
+
+  it('should return a CSV response when format is csv', async () => {
+    const mockFilter: UserFilters = { roleType: 'admin' };
+    const mockUsers: User[] = [
+      {
+        id: 'user1',
+        name: 'John',
+        chosenName: 'Johnny',
+        email: 'john@example.com',
+        roles: []
+      }
+    ];
+    const mockVolunteers: VolunteerInfo[] = [{ id: 'user1', displayName: 'Johnny' }];
+    const mockCSVContent = 'id,displayName\nuser1,Johnny';
+
+    mockParamsToUserFilters.mockReturnValue(mockFilter);
+    mockGetFilteredUsers.mockResolvedValue(mockUsers);
+    mockUsersToVolunteers.mockReturnValue(mockVolunteers);
+    mockVolunteersToCSV.mockReturnValue(mockCSVContent);
+
+    const request = {
+      nextUrl: { searchParams: new URLSearchParams({ roleType: 'admin', format: 'csv' }) }
+    } as unknown as NextRequest;
+
+    await GET(request);
+
+    expect(mockParamsToUserFilters).toHaveBeenCalledWith(request.nextUrl.searchParams);
+    expect(mockCheckAuthorisation).toHaveBeenCalled();
+    expect(mockGetFilteredUsers).toHaveBeenCalledWith(mockFilter, { id: 'permissionsProfile' });
+    expect(mockUsersToVolunteers).toHaveBeenCalledWith(mockUsers, { id: 'permissionsProfile' });
+    expect(mockVolunteersToCSV).toHaveBeenCalledWith(mockVolunteers);
+    expect(mockCSVResponse).toHaveBeenCalledWith(mockCSVContent, 'volunteers');
+  });
+
+  it('should return NotImplementedResponse for unsupported format', async () => {
+    const request = {
+      nextUrl: { searchParams: new URLSearchParams({ format: 'xml' }) }
+    } as unknown as NextRequest;
+
+    await GET(request);
+
+    expect(mockCheckAuthorisation).toHaveBeenCalled();
+    expect(mockNotImplementedResponse).toHaveBeenCalled();
   });
 
   it('should throw an error if authorisation fails', async () => {

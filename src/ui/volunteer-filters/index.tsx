@@ -12,6 +12,7 @@ import SearchBar from '../search-bar';
 import { paramsToUserFilters } from '@/utils/user-filters';
 import { useTranslations } from 'next-intl';
 import { FormField } from '../form-dialog';
+import styles from './styles.module.css';
 
 interface Props {
   withFilters?: (keyof UserFilters)[];
@@ -64,7 +65,7 @@ export default function VolunteerFilters({ withFilters = [] }: Props) {
             </Button>
           </Flex>
           {filtersOpen && (
-            <Card variant="classic">
+            <Card variant="classic" className={styles.easeInTransition}>
               <Flex direction="column" gap="4">
                 {hasFilter.has('roleType') && (
                   <FormField name={t('roleFilterLabel')} ariaId="roleFilter">

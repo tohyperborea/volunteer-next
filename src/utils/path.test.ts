@@ -15,8 +15,7 @@ import {
   getUpdateTeamPath,
   getCreateTeamPath,
   getTeamsPath,
-  getTeamVolunteersApiPath,
-  getEventVolunteersApiPath
+  getTeamVolunteersApiPath
 } from './path';
 
 describe('getTeamsPath', () => {
@@ -176,48 +175,34 @@ describe('getTeamVolunteersApiPath', () => {
   });
 });
 
-describe('getEventVolunteersApiPath', () => {
-  it('should return the correct API path for event volunteers with default format', () => {
-    const eventSlug = 'event-123';
-    const result = getEventVolunteersApiPath(eventSlug);
-    expect(result).toBe('/api/event/event-123/volunteers?format=json');
-  });
-
-  it('should return the correct API path for event volunteers with CSV format', () => {
-    const eventSlug = 'event-123';
-    const result = getEventVolunteersApiPath(eventSlug, { format: 'csv' });
-    expect(result).toBe('/api/event/event-123/volunteers?format=csv');
-  });
-
-  it('should return the correct API path for event volunteers with JSON format explicitly set', () => {
-    const eventSlug = 'event-123';
-    const result = getEventVolunteersApiPath(eventSlug, { format: 'json' });
-    expect(result).toBe('/api/event/event-123/volunteers?format=json');
-  });
-});
-
 describe('getUserApiPath', () => {
-  it('should return the correct API path without filters', () => {
+  it('should return the correct API path without params', () => {
     const result = getUserApiPath();
-    expect(result).toBe('/api/user');
+    expect(result).toBe('/api/user?format=json');
   });
 
   it('should return the correct API path with a single filter', () => {
     const filter: UserFilters = { roleType: 'admin' };
     const result = getUserApiPath(filter);
-    expect(result).toBe('/api/user?roleType=admin');
+    expect(result).toBe('/api/user?format=json&roleType=admin');
   });
 
   it('should return the correct API path with multiple filters', () => {
     const filter: UserFilters = { roleType: 'admin', withQualification: 'qual-id' };
     const result = getUserApiPath(filter);
-    expect(result).toBe('/api/user?roleType=admin&withQualification=qual-id');
+    expect(result).toBe('/api/user?format=json&roleType=admin&withQualification=qual-id');
   });
 
   it('should encode special characters in filter values', () => {
     const filter: UserFilters = { searchQuery: 'John Doe & Co.' };
     const result = getUserApiPath(filter);
-    expect(result).toBe('/api/user?searchQuery=John+Doe+%26+Co.');
+    expect(result).toBe('/api/user?format=json&searchQuery=John+Doe+%26+Co.');
+  });
+
+  it('should accept a custom format', () => {
+    const filter: UserFilters = { roleType: 'admin' };
+    const result = getUserApiPath(filter, { format: 'csv' });
+    expect(result).toBe('/api/user?format=csv&roleType=admin');
   });
 });
 

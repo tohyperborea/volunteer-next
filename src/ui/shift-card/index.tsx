@@ -148,16 +148,17 @@ export default function ShiftCard({
               </Button>
             )}
           </Flex>
-
-          <Box style={{ maxWidth: '600px' }}>
-            <Collapsible header={<Text>{t('volunteers')}</Text>}>
-              <Flex direction="column" gap="1">
-                {volunteers.map((volunteer) => (
-                  <Text key={volunteer.id}>{volunteer.displayName}</Text>
-                ))}
-              </Flex>
-            </Collapsible>
-          </Box>
+          {volunteerCount > 0 && (
+            <Box style={{ maxWidth: '600px' }}>
+              <Collapsible header={<Text>{t('volunteers')}</Text>}>
+                <Flex direction="column" gap="1">
+                  {volunteers.map((volunteer) => (
+                    <Text key={volunteer.id}>{volunteer.displayName}</Text>
+                  ))}
+                </Flex>
+              </Collapsible>
+            </Box>
+          )}
         </Flex>
       </Flex>
     </Card>
