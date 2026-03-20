@@ -1,6 +1,5 @@
 .progress {
   position: relative;
-  width: 70%;
   height: 2rem;
   background-color: var(--progress-background-colour);
   border-radius: var(--radius-1);

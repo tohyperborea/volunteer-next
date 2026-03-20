@@ -27,6 +27,7 @@ export default function ProgressBar({
   const value = total <= 0 ? 0 : Math.round((filled / total) * 100);
   return (
     <Box
+      width="100%"
       className={styles.progress}
       style={
         {

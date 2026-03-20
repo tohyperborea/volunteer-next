@@ -5,3 +5,13 @@
 .expanded .collapse {
   transform: rotate(180deg);
 }
+
+.transitionOpen {
+  transition:
+    transform 0.2s ease,
+    opacity 0.2s ease;
+  @starting-style {
+    transform: translateY(-10px);
+    opacity: 0;
+  }
+}

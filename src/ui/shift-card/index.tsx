@@ -70,6 +70,8 @@ export default function ShiftCard({
       ? qualification?.errorMessage
       : undefined;
   const canSignup = !cantSignupMessage;
+  const hasButtons = onSignup || onCancel;
+  const hasActions = onEdit || collapsible;
 
   return (
     <Card className={isExpanded ? styles.expanded : undefined}>
@@ -86,15 +88,16 @@ export default function ShiftCard({
               <TimeSpan start={startTime} end={endTime} />
             </Flex>
             {/* Spots and Signup */}
-            <Flex justify="between" align="center" flexGrow="1" gap="6">
+            <Flex
+              display={{ initial: isExpanded ? 'flex' : 'none', sm: 'flex' }}
+              className={collapsible ? styles.transitionOpen : undefined}
+              justify="between"
+              align={{ initial: 'end', sm: 'center' }}
+              flexGrow="1"
+              gap="4"
+            >
               <Flex direction={{ initial: 'column', sm: 'row' }} flexGrow="1" gap="3" justify="end">
                 <Flex direction="row" gap="2" align="center" wrap="wrap">
-                  <Badge color="gray">
-                    {t('max')}: {shift.maxVolunteers}
-                  </Badge>
-                  <Badge color="gray">
-                    {t('min')}: {shift.minVolunteers}
-                  </Badge>
                   {requirementLabel && (
                     <Badge asChild>
                       <Link
@@ -108,6 +111,14 @@ export default function ShiftCard({
                       </Link>
                     </Badge>
                   )}
+                  <Flex direction="row" gap="2" align="center" wrap="wrap">
+                    <Badge color="gray">
+                      {t('max')}: {shift.maxVolunteers}
+                    </Badge>
+                    <Badge color="gray">
+                      {t('min')}: {shift.minVolunteers}
+                    </Badge>
+                  </Flex>
                 </Flex>
                 <ProgressBar
                   colour={getStatusColour(volunteerCount, shift.minVolunteers, shift.maxVolunteers)}
@@ -115,62 +126,71 @@ export default function ShiftCard({
                   total={shift.maxVolunteers}
                 />
               </Flex>
-              <Flex minWidth="120px" justify="end">
-                {onSignup && (
-                  <Button disabled={!canSignup} onClick={onSignup} title={cantSignupMessage}>
-                    {t('signup')}
-                  </Button>
-                )}
-                {onCancel && (
-                  <Button onClick={onCancel} color="red">
-                    {t('cancel')}
-                  </Button>
-                )}
-              </Flex>
+              {hasButtons && (
+                <Flex minWidth="110px" justify="end">
+                  {onSignup && (
+                    <Button disabled={!canSignup} onClick={onSignup} title={cantSignupMessage}>
+                      {t('signup')}
+                    </Button>
+                  )}
+                  {onCancel && (
+                    <Button onClick={onCancel} color="red">
+                      {t('cancel')}
+                    </Button>
+                  )}
+                </Flex>
+              )}
             </Flex>
           </Flex>
 
           {/* Volunteer collapsible */}
-          <Flex direction="column" gap="3" style={!isExpanded ? { display: 'none' } : undefined}>
-            {volunteerCount > 0 && (
-              <Collapsible header={<Text>{t('volunteers')}</Text>}>
+          {volunteerCount > 0 && (
+            <Flex
+              direction="column"
+              className={styles.transitionOpen}
+              gap="3"
+              style={!isExpanded ? { display: 'none' } : undefined}
+            >
+              <Collapsible header={<Text>{t('volunteers')}</Text>} defaultOpen={collapsible}>
                 <Flex direction="column" gap="1">
                   {volunteers.map((volunteer) => (
                     <Text key={volunteer.id}>{volunteer.displayName}</Text>
                   ))}
                 </Flex>
               </Collapsible>
-            )}
-          </Flex>
+            </Flex>
+          )}
         </Flex>
         {/* Actions */}
-        <Flex
-          direction="row"
-          gap="4"
-          position={{ initial: 'absolute', sm: 'static' }}
-          m={{ initial: '0', sm: '3' }}
-          top="3"
-          right="3"
-        >
-          {onEdit && (
-            <IconButton aria-label={t('editShift')} variant="ghost" onClick={onEdit}>
-              <Pencil2Icon width={20} height={20} />
-            </IconButton>
-          )}
-          {collapsible && (
-            <IconButton
-              variant="ghost"
-              aria-label={isExpanded ? t('collapse') : t('expand')}
-              aria-expanded={isExpanded}
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsExpanded((prev) => !prev);
-              }}
-            >
-              <ChevronDownIcon className={styles.collapse} />
-            </IconButton>
-          )}
-        </Flex>
+        {hasActions && (
+          <Flex
+            direction="row"
+            gap="4"
+            position={{ initial: 'absolute', sm: 'static' }}
+            ml={{ initial: '0', sm: '3' }}
+            top="3"
+            right="3"
+          >
+            {onEdit && (
+              <IconButton aria-label={t('editShift')} variant="ghost" onClick={onEdit}>
+                <Pencil2Icon width={20} height={20} />
+              </IconButton>
+            )}
+            {collapsible && (
+              <IconButton
+                variant="ghost"
+                aria-label={isExpanded ? t('collapse') : t('expand')}
+                aria-expanded={isExpanded}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsExpanded((prev) => !prev);
+                }}
+              >
+                <ChevronDownIcon className={styles.collapse} />
+              </IconButton>
+            )}
+          </Flex>
+        )}
       </Flex>
     </Card>
   );
