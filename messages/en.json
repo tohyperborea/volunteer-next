@@ -285,7 +285,8 @@
     "expand": "Expand shift details",
     "collapse": "Collapse shift details",
     "signup": "Sign up",
-    "cancel": "Cancel Shift"
+    "cancel": "Cancel Shift",
+    "full": "Shift is full!"
   },
   "ShiftDialog": {
     "cancel": "Cancel",

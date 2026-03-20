@@ -120,7 +120,7 @@ const getStatusColour = (
     }
   }
   if (anyBelowMin) {
-    return 'amber';
+    return 'orange';
   }
   if (allFull) {
     return 'green';
