@@ -76,15 +76,17 @@ export default function TeamCard({
             </Button>
           )}
         </Flex>
-        <Box style={{ maxWidth: '600px' }}>
-          <Collapsible header={t('volunteers')}>
-            <Flex direction="column" gap="1">
-              {volunteerNames.map((name) => (
-                <Text key={name}>{name}</Text>
-              ))}
-            </Flex>
-          </Collapsible>
-        </Box>
+        {volunteerNames.length > 0 && (
+          <Box style={{ maxWidth: '600px' }}>
+            <Collapsible header={t('volunteers')}>
+              <Flex direction="column" gap="1">
+                {volunteerNames.map((name) => (
+                  <Text key={name}>{name}</Text>
+                ))}
+              </Flex>
+            </Collapsible>
+          </Box>
+        )}
       </Flex>
     </Card>
   );

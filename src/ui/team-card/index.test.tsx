@@ -129,10 +129,30 @@ describe('TeamCard', () => {
       eventId: 'eventid',
       contactAddress: ''
     };
-    const shifts: ShiftInfo[] = [];
+    const shifts: ShiftInfo[] = [
+      {
+        id: 'shift1',
+        teamId: 'teamid',
+        title: 'Shift 1',
+        eventDay: 0,
+        startTime: '',
+        durationHours: 0,
+        isActive: true,
+        maxVolunteers: 5,
+        minVolunteers: 0
+      }
+    ];
     const eventSlug = 'event-2025';
+    const volunteers: Record<ShiftId, VolunteerInfo[]> = {
+      shift1: [
+        { id: 'vol1', displayName: 'Volunteer 1' },
+        { id: 'vol2', displayName: 'Volunteer 2' }
+      ]
+    };
 
-    render(<TeamCard team={team} shifts={shifts} eventSlug={eventSlug} />);
+    render(
+      <TeamCard team={team} shifts={shifts} eventSlug={eventSlug} shiftVolunteers={volunteers} />
+    );
 
     expect(screen.getByText('volunteers')).toBeInTheDocument();
   });
