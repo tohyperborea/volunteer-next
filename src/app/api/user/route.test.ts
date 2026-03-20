@@ -84,8 +84,8 @@ describe('GET /api/user', () => {
       }
     ];
     const mockVolunteers: VolunteerInfo[] = [
-      { id: 'user1', displayName: 'Johnny' },
-      { id: 'user2', displayName: 'Janey' }
+      { id: 'user2', displayName: 'Janey' },
+      { id: 'user1', displayName: 'Johnny' }
     ];
 
     mockParamsToUserFilters.mockReturnValue(mockFilter);

@@ -164,6 +164,7 @@ export const getFilteredUsers = cache(
       `
       ${USER_QUERY}
       ${whereClause}
+      ORDER BY u."chosenName" ASC
     `,
       queryParams
     );

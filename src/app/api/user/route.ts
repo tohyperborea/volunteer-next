@@ -21,7 +21,7 @@ export const GET = async (request: NextRequest): Promise<Response> => {
   const volunteers = usersToVolunteers(
     await getFilteredUsers(filter, permissionsProfile),
     permissionsProfile
-  );
+  ).sort((a, b) => a.displayName.localeCompare(b.displayName));
   switch (searchParams.get('format')) {
     case 'csv': {
       const csvContent = volunteersToCSV(volunteers);

@@ -47,34 +47,6 @@ export default function TeamCard({
   return (
     <Card>
       <Flex direction="column" gap="3">
-        {/* <Flex justify="between" gap="4">
-          <Link highContrast underline="none" href={getTeamShiftsPath(eventSlug, team.slug)}>
-            <Flex direction="column">
-              <Heading as="h3" size="4">
-                {team.name}
-              </Heading>
-            </Flex>
-          </Link>
-          <Flex>{actions}</Flex>
-        </Flex>
-        <Flex justify="between" align="center">
-          <Box style={{ maxWidth: '200px' }} flexGrow="1" flexShrink="0">
-            <ProgressBar
-              colour={getStatusColour(shifts, shiftVolunteers)}
-              filled={shiftSpots - filledSpots}
-              total={shiftSpots}
-            />
-          </Box>
-          {showSignup && (
-            <Button asChild disabled={isFull} title={isFull ? t('full') : undefined}>
-              {isFull ? (
-                <Text>{t('signup')}</Text>
-              ) : (
-                <NextLink href={getTeamShiftsPath(eventSlug, team.slug)}>{t('signup')}</NextLink>
-              )}
-            </Button>
-          )}
-        </Flex> */}
         <Flex justify="between" gap="4">
           {/* Content */}
           <Flex
