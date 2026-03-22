@@ -11,7 +11,6 @@ import { Share2Icon } from '@radix-ui/react-icons';
 import { Button, Card, Flex, Heading } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
-import NextLink from 'next/link';
 
 const PAGE_KEY = 'EventShiftsPage';
 
@@ -50,15 +49,14 @@ export default async function EventShifts({ params }: PageProps<'/event/[eventSl
       </Heading>
       <Flex direction="row" gap="2">
         <Button variant="soft" asChild>
-          <NextLink
-            prefetch={false}
+          <a
             href={getEventShiftsApiPath(eventSlug, { format: 'csv' })}
             rel="noopener noreferrer"
             target="_blank"
           >
             <Share2Icon />
             {t('export')}
-          </NextLink>
+          </a>
         </Button>
       </Flex>
       <SearchBar />

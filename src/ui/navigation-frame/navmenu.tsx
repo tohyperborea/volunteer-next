@@ -23,8 +23,8 @@ import React from 'react';
 
 const VolunteerLinks = [[getTeamsPath('test-event'), 'teams']];
 
-const AdminLinks = [
-  [getEventsPath(), 'events'],
+const AdminLinks: [string, string, UserRoleType[]?][] = [
+  [getEventsPath(), 'events', ['admin', 'organiser']],
   [getQualificationsPath('test-event'), 'qualifications'],
   [getEventShiftsPath('test-event'), 'shifts'],
   [getUsersDashboardPath(), 'volunteers']
@@ -39,6 +39,9 @@ export default function NavMenu({ permissionsProfile }: Props) {
   const pathname = usePathname();
   const showAdminTools =
     permissionsProfile.admin || permissionsProfile.organiser || permissionsProfile['team-lead'];
+  const adminLinks = showAdminTools
+    ? AdminLinks.filter(([, , roles]) => !roles || roles.some((role) => permissionsProfile[role]))
+    : null;
 
   const activePath = [...VolunteerLinks, ...(showAdminTools ? AdminLinks : [])].reduce(
     (longest, [path]) => {
@@ -76,7 +79,7 @@ export default function NavMenu({ permissionsProfile }: Props) {
               <Text size="3" weight="medium" mt="4">
                 {t('adminTools')}:
               </Text>
-              {AdminLinks.map(([path, text]) => (
+              {adminLinks!.map(([path, text]) => (
                 <React.Fragment key={path}>
                   <li>
                     <MenuButton active={activePath === path} href={path} label={t(text)} />

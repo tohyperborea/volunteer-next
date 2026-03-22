@@ -58,9 +58,9 @@ export default function ShiftList({
         )}
         {exportLink && (
           <Button variant="soft" asChild>
-            <NextLink prefetch={false} href={exportLink} rel="noopener noreferrer" target="_blank">
+            <a href={exportLink} rel="noopener noreferrer" target="_blank">
               <Share2Icon /> {t('export')}
-            </NextLink>
+            </a>
           </Button>
         )}
       </Flex>
