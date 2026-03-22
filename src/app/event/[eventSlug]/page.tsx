@@ -6,6 +6,7 @@ import { getQualificationsPath } from '@/utils/path';
 import { Flex, Heading, Link } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
+import NextLink from 'next/link';
 
 const PAGE_KEY = 'EventDashboardPage';
 
@@ -47,7 +48,9 @@ export default async function EventPage({ params }: Props) {
           <Link color="gray">TODO: MY TEAM</Link>
         </SubLinkMenu>
         <SubLinkMenu title={t('qualifications')}>
-          <Link href={getQualificationsPath(eventSlug)}>{t('createQualifications')}</Link>
+          <Link asChild>
+            <NextLink href={getQualificationsPath(eventSlug)}>{t('createQualifications')}</NextLink>
+          </Link>
           <Link color="gray">{t('assignQualifications')}</Link>
           <Link color="gray">{t('requests')}</Link>
         </SubLinkMenu>

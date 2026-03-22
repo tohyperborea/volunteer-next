@@ -32,6 +32,7 @@ export const getQualificationDetailsPath = ({
 }) => `/event/${eventSlug}/qualification/${qualificationId}`;
 
 // Event-level paths
+export const getEventsPath = () => '/event';
 export const getEventShiftsPath = (eventSlug: string): string => `/event/${eventSlug}/shifts`;
 
 // API paths

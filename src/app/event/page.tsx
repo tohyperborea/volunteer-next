@@ -6,13 +6,14 @@ import { PlusIcon } from '@radix-ui/react-icons';
 import { checkAuthorisation } from '@/session';
 import EventCard from '@/ui/event-card';
 import { redirect } from 'next/navigation';
+import NextLink from 'next/link';
 
 const PAGE_KEY = 'EventsManagementPage';
 
 export const generateMetadata = metadata(PAGE_KEY);
 
 export default async function EventsDashboard() {
-  await checkAuthorisation([{ type: 'admin' }]);
+  await checkAuthorisation([{ type: 'admin' }, { type: 'organiser' }]);
 
   const t = await getTranslations(PAGE_KEY);
   const events = await getEvents();
@@ -28,11 +29,11 @@ export default async function EventsDashboard() {
     <Flex direction="column" gap="4">
       <Heading my="4">{t('title')}</Heading>
       <Box>
-        <Link href="/create-event">
-          <Button>
+        <Button asChild>
+          <NextLink href="/create-event">
             <PlusIcon /> {t('createEvent')}
-          </Button>
-        </Link>
+          </NextLink>
+        </Button>
       </Box>
       {events.length === 0 && (
         <Card>
@@ -40,8 +41,10 @@ export default async function EventsDashboard() {
         </Card>
       )}
       {events.map((event) => (
-        <Link highContrast underline="none" href={`/event/${event.slug}`} key={event.id}>
-          <EventCard event={event} onDelete={deleteAction} />
+        <Link asChild highContrast underline="none" key={event.id}>
+          <NextLink href={`/event/${event.slug}`}>
+            <EventCard event={event} onDelete={deleteAction} />
+          </NextLink>
         </Link>
       ))}
     </Flex>

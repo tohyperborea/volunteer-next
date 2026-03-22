@@ -77,6 +77,13 @@ describe('getQualificationDetailsPath', () => {
   });
 });
 
+describe('getEventsPath', () => {
+  it('should return the correct path for events', () => {
+    const result = getEventsPath();
+    expect(result).toBe('/event');
+  });
+});
+
 describe('getEventShiftsPath', () => {
   it('should return the correct path for event shifts', () => {
     const eventSlug = 'event-123';

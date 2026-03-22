@@ -13,8 +13,8 @@ import { getTeamShiftsPath, getTeamVolunteersPath } from '@/utils/path';
 import { getPermissionsProfile } from '@/utils/permissions';
 import { Box, Flex, Heading, Link, TabNav, Text } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
-import { headers } from 'next/headers';
 import { notFound } from 'next/navigation';
+import TeamTabs from '@/ui/team-tabs';
 
 const PAGE_KEY = 'TeamPage';
 
@@ -43,9 +43,6 @@ export default async function TeamLayout({ params, children }: Props) {
   const permissionsProfile = getPermissionsProfile(await currentUser());
   const teamLeads = usersToVolunteers(await getTeamLeadsForTeam(team.id), permissionsProfile);
 
-  const headerList = await headers();
-  const path = headerList.get('x-pathname');
-
   const shiftsPath = getTeamShiftsPath(eventSlug, teamSlug);
   const volunteersPath = getTeamVolunteersPath(eventSlug, teamSlug);
   return (
@@ -73,14 +70,7 @@ export default async function TeamLayout({ params, children }: Props) {
       </Flex>
       {canEdit ? (
         <>
-          <TabNav.Root>
-            <TabNav.Link active={path === shiftsPath} href={shiftsPath}>
-              {t('tabs.shifts')}
-            </TabNav.Link>
-            <TabNav.Link active={path === volunteersPath} href={volunteersPath}>
-              {t('tabs.volunteers')}
-            </TabNav.Link>
-          </TabNav.Root>
+          <TeamTabs shiftsPath={shiftsPath} volunteersPath={volunteersPath} />
           <Box mt="6">{children}</Box>
         </>
       ) : (

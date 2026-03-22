@@ -161,7 +161,8 @@
     "addQualificationDescription": "Select a qualification",
     "select": "Select...",
     "assignQualification": "Assign Qualification",
-    "edit": "Edit Profile"
+    "edit": "Edit Profile",
+    "signOut": "Sign Out"
   },
 
   "AuthContainer": {
@@ -259,6 +260,17 @@
     "users": "Users",
     "settings": "Settings",
     "screenReaderDialogDescription": "Navigation menu with links to different sections of the application"
+  },
+  "NavMenu": {
+    "label": "Main navigation",
+    "home": "Home",
+    "teams": "Teams",
+    "myShifts": "My Shifts",
+    "adminTools": "Admin Tools",
+    "events": "Events",
+    "qualifications": "Qualifications",
+    "shifts": "Shifts",
+    "volunteers": "Volunteers"
   },
   "Metadata": {
     "description": "A system to support the organisation of alternative arts events"
