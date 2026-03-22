@@ -85,16 +85,18 @@ export default function ShiftCard({
             </Badge>
           </Flex>
           {requirementLabel && (
-            <Badge asChild color="orange">
-              <NextLink
-                href={getQualificationDetailsPath({
-                  eventSlug: event.slug,
-                  qualificationId: shift.requirement!
-                })}
-              >
-                {t('requires')}: {requirementLabel}
-              </NextLink>
-            </Badge>
+            <Box>
+              <Badge asChild color="orange">
+                <NextLink
+                  href={getQualificationDetailsPath({
+                    eventSlug: event.slug,
+                    qualificationId: shift.requirement!
+                  })}
+                >
+                  {t('requires')}: {requirementLabel}
+                </NextLink>
+              </Badge>
+            </Box>
           )}
           <Box style={{ maxWidth: '200px' }}>
             <ProgressBar filled={volunteerCount} total={shift.maxVolunteers} />

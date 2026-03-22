@@ -14,7 +14,8 @@ import {
   getUsersDashboardPath,
   getUpdateTeamPath,
   getCreateTeamPath,
-  getTeamsPath
+  getTeamsPath,
+  getEventsPath
 } from './path';
 
 describe('getTeamsPath', () => {
