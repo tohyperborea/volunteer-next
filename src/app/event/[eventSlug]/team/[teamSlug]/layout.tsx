@@ -5,10 +5,9 @@
  */
 
 import { getTeamBySlug } from '@/service/team-service';
+import TeamTabs from '@/ui/team-tabs';
 import { getTeamInfoPath, getTeamShiftsPath, getTeamVolunteersPath } from '@/utils/path';
-import { Box, Flex, Heading, TabNav } from '@radix-ui/themes';
-import { getTranslations } from 'next-intl/server';
-import { headers } from 'next/headers';
+import { Box, Flex, Heading } from '@radix-ui/themes';
 import { notFound } from 'next/navigation';
 
 const PAGE_KEY = 'TeamPage';
@@ -25,10 +24,6 @@ export default async function TeamLayout({ params, children }: Props) {
   if (!team) {
     notFound();
   }
-  const t = await getTranslations(PAGE_KEY);
-
-  const headerList = await headers();
-  const path = headerList.get('x-pathname');
 
   const infoPath = getTeamInfoPath(eventSlug, teamSlug);
   const shiftsPath = getTeamShiftsPath(eventSlug, teamSlug);
@@ -36,17 +31,7 @@ export default async function TeamLayout({ params, children }: Props) {
   return (
     <Flex direction="column">
       <Heading my="4">{team.name}</Heading>
-      <TabNav.Root>
-        <TabNav.Link active={path === infoPath} href={infoPath}>
-          {t('tabs.team')}
-        </TabNav.Link>
-        <TabNav.Link active={path === shiftsPath} href={shiftsPath}>
-          {t('tabs.shifts')}
-        </TabNav.Link>
-        <TabNav.Link active={path === volunteersPath} href={volunteersPath}>
-          {t('tabs.volunteers')}
-        </TabNav.Link>
-      </TabNav.Root>
+      <TeamTabs infoPath={infoPath} shiftsPath={shiftsPath} volunteersPath={volunteersPath} />
       <Box pt="6">{children}</Box>
     </Flex>
   );

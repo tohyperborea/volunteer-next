@@ -61,6 +61,13 @@ jest.mock('next/navigation', () => ({
 jest.mock('@/utils/permissions', () => ({
   getPermissionsProfile: jest.fn().mockReturnValue({ id: 'permissionsProfile' })
 }));
+jest.mock('@/auth', () => ({
+  auth: {
+    api: {
+      signOut: jest.fn()
+    }
+  }
+}));
 
 const mockCheckAuthorisation = checkAuthorisation as jest.MockedFunction<typeof checkAuthorisation>;
 const mockGetMatchingRoles = getMatchingRoles as jest.MockedFunction<typeof getMatchingRoles>;

@@ -9,6 +9,7 @@
 import { getUserProfilePath } from '@/utils/path';
 import { Avatar, Badge, Card, Flex, Heading, Link, Text } from '@radix-ui/themes';
 import { useTranslations } from 'next-intl';
+import NextLink from 'next/link';
 
 interface Props {
   volunteer: VolunteerInfo;
@@ -33,10 +34,12 @@ export function VolunteerCardContent({ volunteer }: Props) {
     <Flex gap="3">
       <Avatar fallback={displayName[0].toUpperCase()} radius="full" />
       <Flex direction="column" justify="center">
-        <Link highContrast underline="hover" href={getUserProfilePath(volunteer.id)}>
-          <Heading as="h3" size="4" weight="medium">
-            {displayName}
-          </Heading>
+        <Link highContrast underline="hover" asChild>
+          <NextLink href={getUserProfilePath(volunteer.id)}>
+            <Heading as="h3" size="4" weight="medium">
+              {displayName}
+            </Heading>
+          </NextLink>
         </Link>
         {fullName && fullName !== displayName && <Text color="gray">{fullName}</Text>}
         {email && <Text color="gray">{email}</Text>}

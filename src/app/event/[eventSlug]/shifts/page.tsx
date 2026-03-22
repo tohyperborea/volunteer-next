@@ -8,7 +8,7 @@ import ShiftCard from '@/ui/shift-card';
 import { eventDayToDate } from '@/utils/datetime';
 import { getEventShiftsApiPath } from '@/utils/path';
 import { Share2Icon } from '@radix-ui/react-icons';
-import { Button, Card, Flex, Heading, Link } from '@radix-ui/themes';
+import { Button, Card, Flex, Heading } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 
@@ -49,14 +49,14 @@ export default async function EventShifts({ params }: PageProps<'/event/[eventSl
       </Heading>
       <Flex direction="row" gap="2">
         <Button variant="soft" asChild>
-          <Link
+          <a
             href={getEventShiftsApiPath(eventSlug, { format: 'csv' })}
             rel="noopener noreferrer"
             target="_blank"
           >
             <Share2Icon />
             {t('export')}
-          </Link>
+          </a>
         </Button>
       </Flex>
       <SearchBar />

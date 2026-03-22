@@ -7,6 +7,8 @@ import { checkAuthorisation } from '@/session';
 import TeamCard from '@/ui/team-card';
 import { notFound, redirect } from 'next/navigation';
 import { deleteTeam, getTeamsForEvent } from '@/service/team-service';
+import NextLink from 'next/link';
+import { getCreateTeamPath, getTeamInfoPath } from '@/utils/path';
 
 const PAGE_KEY = 'TeamsDashboardPage';
 
@@ -50,11 +52,11 @@ export default async function EventsDashboard({ params }: Props) {
       <Heading my="4">{t('teamsForEvent', { eventName: event.name })}</Heading>
       {isEditable && (
         <Box>
-          <Link href={`/event/${eventSlug}/create-team`}>
-            <Button>
+          <Button asChild>
+            <NextLink href={getCreateTeamPath(eventSlug)}>
               <PlusIcon /> {t('createTeam')}
-            </Button>
-          </Link>
+            </NextLink>
+          </Button>
         </Box>
       )}
       {teams.length === 0 && (
@@ -63,18 +65,15 @@ export default async function EventsDashboard({ params }: Props) {
         </Card>
       )}
       {teams.map((team) => (
-        <Link
-          highContrast
-          underline="none"
-          href={`/event/${eventSlug}/team/${team.slug}`}
-          key={team.id}
-        >
-          <TeamCard
-            team={team}
-            editable={isEditable}
-            eventSlug={eventSlug}
-            onDelete={deleteAction}
-          />
+        <Link highContrast asChild underline="none" key={team.id}>
+          <NextLink href={getTeamInfoPath(eventSlug, team.slug)}>
+            <TeamCard
+              team={team}
+              editable={isEditable}
+              eventSlug={eventSlug}
+              onDelete={deleteAction}
+            />
+          </NextLink>
         </Link>
       ))}
     </Flex>

@@ -11,15 +11,18 @@ import { checkAuthorisation, currentUser, getMatchingRoles } from '@/session';
 import UserQualifications from '@/ui/user-qualifications';
 import VolunteerCard from '@/ui/volunteer-card';
 import { getEditUserPath, getUserProfilePath } from '@/utils/path';
-import { Button, Flex, Heading, IconButton, Link, Select } from '@radix-ui/themes';
+import { Box, Button, Flex, Heading, IconButton, Select } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
 import { revalidatePath } from 'next/cache';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { getManagedQualifications } from '@/lib/qualification';
 import { FormField } from '@/ui/form-dialog';
-import { Pencil2Icon, PlusIcon } from '@radix-ui/react-icons';
+import { ExitIcon, Pencil2Icon, PlusIcon } from '@radix-ui/react-icons';
 import { getVolunteerById } from '@/lib/volunteer';
 import { getPermissionsProfile } from '@/utils/permissions';
+import { auth } from '@/auth';
+import { headers } from 'next/headers';
+import NextLink from 'next/link';
 
 const PAGE_KEY = 'VolunteerProfilePage';
 
@@ -128,6 +131,14 @@ export default async function VolunteerProfilePage({ params }: PageProps<'/user/
     revalidatePath(getUserProfilePath(userId));
   };
 
+  const signOut = async () => {
+    'use server';
+    await auth.api.signOut({
+      headers: await headers()
+    });
+    redirect('/');
+  };
+
   return (
     <Flex direction="column" gap="4" my="4">
       <VolunteerCard
@@ -135,13 +146,21 @@ export default async function VolunteerProfilePage({ params }: PageProps<'/user/
         actions={
           (isOwnProfile || isAdmin) && (
             <IconButton asChild variant="ghost" aria-label={t('edit')} title={t('edit')}>
-              <Link href={getEditUserPath(volunteer.id, getUserProfilePath(volunteer.id))}>
+              <NextLink href={getEditUserPath(volunteer.id, getUserProfilePath(volunteer.id))}>
                 <Pencil2Icon width={20} height={20} />
-              </Link>
+              </NextLink>
             </IconButton>
           )
         }
       />
+      {isOwnProfile && (
+        <Box mt="4">
+          <Button variant="soft" color="red" onClick={signOut}>
+            <ExitIcon />
+            {t('signOut')}
+          </Button>
+        </Box>
+      )}
       <Heading as="h2" size="4" mt="4">
         {t('qualifications')}
       </Heading>

@@ -5,6 +5,7 @@
  */
 
 import { Card, Flex, Text } from '@radix-ui/themes';
+import NextLink from 'next/link';
 import styles from './styles.module.css';
 
 interface Props {
@@ -14,9 +15,9 @@ interface Props {
 export default function LinkCard({ href, children }: Props) {
   return (
     <Card asChild>
-      <a href={href} className={styles.linkCard}>
+      <NextLink href={href} className={styles.linkCard}>
         {children}
-      </a>
+      </NextLink>
     </Card>
   );
 }
