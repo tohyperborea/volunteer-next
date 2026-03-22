@@ -79,7 +79,11 @@ export default function ShiftCard({
         {/* Card content */}
         <Flex direction="column" gap="3" flexGrow="1">
           {/* Responsive content */}
-          <Flex direction={{ initial: 'column', sm: 'row' }} gap="3">
+          <Flex
+            direction={{ initial: 'column', sm: 'row' }}
+            align={{ initial: 'stretch', sm: 'start' }}
+            gap="3"
+          >
             {/* Title and Time */}
             <Flex direction="column">
               <Heading as="h3" size="4" weight="medium">
