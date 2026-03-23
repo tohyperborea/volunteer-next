@@ -8,17 +8,9 @@
 
 import { useTranslations } from 'next-intl';
 import { DotsVerticalIcon } from '@radix-ui/react-icons';
-import {
-  Button,
-  Card,
-  Dialog,
-  DropdownMenu,
-  Flex,
-  Heading,
-  IconButton,
-  Link
-} from '@radix-ui/themes';
+import { Button, Card, Dialog, DropdownMenu, Flex, Heading, IconButton } from '@radix-ui/themes';
 import { useRef } from 'react';
+import NextLink from 'next/link';
 
 interface Props {
   title?: string;
@@ -46,7 +38,7 @@ export default function MenuCard({ title = '', children, updateUri, onDelete }: 
             <DropdownMenu.Content>
               {updateUri && (
                 <DropdownMenu.Item asChild>
-                  <Link href={updateUri}>{t('update')}</Link>
+                  <NextLink href={updateUri}>{t('update')}</NextLink>
                 </DropdownMenu.Item>
               )}
               {onDelete && (

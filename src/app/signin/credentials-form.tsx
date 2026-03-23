@@ -1,8 +1,8 @@
 'use client';
 
-import Link from 'next/link';
+import NextLink from 'next/link';
 import { useCallback, useRef, useState, useTransition } from 'react';
-import { Text, AlertDialog, Button, TextField, Flex } from '@radix-ui/themes';
+import { Text, AlertDialog, Button, TextField, Flex, Link } from '@radix-ui/themes';
 import { isRedirectError } from 'next/dist/client/components/redirect-error';
 import { useTranslations } from 'next-intl';
 
@@ -69,7 +69,9 @@ export function CredentialsForm({
         <Text as="p" size="2">
           {t('forgotSuccessMessage')}
         </Text>
-        <Link href="/signin">{t('backToSignIn')}</Link>
+        <Link asChild>
+          <NextLink href="/signin">{t('backToSignIn')}</NextLink>
+        </Link>
       </>
     );
   }
@@ -121,10 +123,12 @@ export function CredentialsForm({
             {isPending ? '...' : t('buttonCredentials')}
           </Button>
           <Flex direction="column" gap="2" align="center">
-            <Link
-              href={`/signup${callbackUrl !== '/' ? `?callbackUrl=${encodeURIComponent(callbackUrl)}` : ''}`}
-            >
-              {t('createAccount')}
+            <Link asChild>
+              <NextLink
+                href={`/signup${callbackUrl !== '/' ? `?callbackUrl=${encodeURIComponent(callbackUrl)}` : ''}`}
+              >
+                {t('createAccount')}
+              </NextLink>
             </Link>
             <Button type="button" variant="soft" color="gray" onClick={showForgot}>
               {t('forgotPassword')}

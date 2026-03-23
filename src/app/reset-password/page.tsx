@@ -1,9 +1,8 @@
 import { auth, AUTH_MODE } from '@/auth';
 import { redirect } from 'next/navigation';
-import Link from 'next/link';
-import { Flex, Heading, Text } from '@radix-ui/themes';
+import NextLink from 'next/link';
+import { Text, Link } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
-import { VisuallyHidden } from '@radix-ui/themes';
 import { checkRateLimit, PASSWORD_RESET_LIMITS } from '@/lib/rate-limit';
 import { getClientIp } from '@/lib/client-ip';
 import { ResetPasswordForm } from './reset-password-form';
@@ -69,7 +68,9 @@ export default async function ResetPasswordPage({
       ) : (
         <Text as="p">{t('missingToken')}</Text>
       )}
-      <Link href="/signin">{t('signInLink')}</Link>
+      <Link asChild>
+        <NextLink href="/signin">{t('signInLink')}</NextLink>
+      </Link>
     </SigninContainer>
   );
 }

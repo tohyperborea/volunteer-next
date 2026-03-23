@@ -1,5 +1,5 @@
-#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
+echo "Running typecheck..."
+npm run typecheck
 
-echo "Running test suite before commit..."
+echo "Running test suite..."
 npm test

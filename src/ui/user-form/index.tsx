@@ -11,7 +11,7 @@ import { useTranslations } from 'next-intl';
 import RolesEditForm from './roles-edit-form';
 import NewRoleForm from './new-role-form';
 
-import Link from 'next/link';
+import NextLink from 'next/link';
 import { getUsersDashboardPath } from '@/utils/path';
 
 const FormItem = ({ children }: { children: React.ReactNode }) => (
@@ -96,9 +96,9 @@ export default function UserForm({
           />
         </FormItem>
         <Flex direction="row" justify="between">
-          <Link href={callbackUrl}>
-            <Button variant="outline">{t('cancelButton')}</Button>
-          </Link>
+          <Button variant="outline" asChild>
+            <NextLink href={callbackUrl}>{t('cancelButton')}</NextLink>
+          </Button>
           <Button type="submit">{t(editingUser ? 'updateButton' : 'createButton')}</Button>
         </Flex>
         {/* Roles */}

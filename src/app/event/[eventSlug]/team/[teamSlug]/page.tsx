@@ -38,10 +38,6 @@ export const generateMetadata = metadata(PAGE_KEY, {
   }
 });
 
-interface Props {
-  params: Promise<{ eventSlug: string; teamSlug: string }>;
-}
-
 export default async function TeamShifts({
   params,
   searchParams
@@ -162,7 +158,6 @@ export default async function TeamShifts({
       )}
       <ShiftList
         event={event}
-        startDate={event.startDate}
         teamId={team.id}
         shifts={shifts}
         userShifts={userShifts}

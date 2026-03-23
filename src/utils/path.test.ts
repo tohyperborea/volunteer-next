@@ -15,7 +15,8 @@ import {
   getUpdateTeamPath,
   getCreateTeamPath,
   getTeamsPath,
-  getTeamVolunteersApiPath
+  getTeamVolunteersApiPath,
+  getEventsPath
 } from './path';
 
 describe('getTeamsPath', () => {
@@ -75,6 +76,13 @@ describe('getQualificationDetailsPath', () => {
     const qualificationId = '12345';
     const result = getQualificationDetailsPath({ eventSlug, qualificationId });
     expect(result).toBe('/event/test-event/qualification/12345');
+  });
+});
+
+describe('getEventsPath', () => {
+  it('should return the correct path for events', () => {
+    const result = getEventsPath();
+    expect(result).toBe('/event');
   });
 });
 

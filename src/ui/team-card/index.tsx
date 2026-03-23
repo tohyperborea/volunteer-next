@@ -7,7 +7,7 @@
 'use client';
 
 import { getTeamShiftsPath } from '@/utils/path';
-import { Box, Button, Card, Flex, Heading, Link, Text } from '@radix-ui/themes';
+import { Button, Card, Flex, Heading, Link, Text } from '@radix-ui/themes';
 import ProgressBar from '../progress-bar';
 import Collapsible from '../collapsible';
 import { useTranslations } from 'next-intl';

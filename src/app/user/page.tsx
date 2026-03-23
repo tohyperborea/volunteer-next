@@ -1,5 +1,5 @@
 import metadata from '@/i18n/metadata';
-import { Heading, Flex, Button, Link } from '@radix-ui/themes';
+import { Heading, Flex, Button } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
 import { checkAuthorisation, currentUser } from '@/session';
 import { getFilteredUsers } from '@/service/user-service';
@@ -54,11 +54,11 @@ export default async function UsersDashboardPage({ searchParams }: PageProps<'/u
     for (const user of users) {
       itemActions[user.id] = (
         <Flex gap="2">
-          <Link href={getEditUserPath(user.id)}>
-            <Button variant="outline">
+          <Button variant="outline" asChild>
+            <NextLink href={getEditUserPath(user.id)}>
               <Pencil1Icon />
-            </Button>
-          </Link>
+            </NextLink>
+          </Button>
           {user.deletedAt ? (
             <Button
               variant="outline"
@@ -86,11 +86,11 @@ export default async function UsersDashboardPage({ searchParams }: PageProps<'/u
       </Heading>
       <Flex gap="2" mb="4">
         {canEdit && (
-          <Link href={getCreateUserPath()}>
-            <Button variant="soft">
+          <Button variant="soft" color="blue" asChild>
+            <NextLink href={getCreateUserPath()}>
               <PlusIcon /> {t('createUser')}
-            </Button>
-          </Link>
+            </NextLink>
+          </Button>
         )}
         <Button variant="soft" asChild>
           <NextLink

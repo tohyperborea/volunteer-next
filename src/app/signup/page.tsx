@@ -1,15 +1,10 @@
 import { auth, AUTH_MODE } from '@/auth';
 import { redirect } from 'next/navigation';
-import Link from 'next/link';
-import { Button, Flex, Heading, Text, TextField } from '@radix-ui/themes';
+import NextLink from 'next/link';
+import { Button, Flex, Text, TextField, Link } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
-import { VisuallyHidden } from '@radix-ui/themes';
-import {
-  isValidEmail,
-  validatePassword,
-  validateName,
-  getSafeCallbackUrl
-} from '@/lib/signup-validation';
+import { isValidEmail } from '@/utils/string';
+import { validatePassword, validateName, getSafeCallbackUrl } from '@/lib/signup-validation';
 import { checkRateLimit, AUTH_ENDPOINT_LIMITS } from '@/lib/rate-limit';
 import { getClientIp } from '@/lib/client-ip';
 import SigninContainer from '@/ui/signin-container';
@@ -225,10 +220,12 @@ export default async function SignUpPage({
             <Button style={{ width: '100%' }} type="submit">
               {t('button')}
             </Button>
-            <Link
-              href={`/signin${callbackUrl !== '/' ? `?callbackUrl=${encodeURIComponent(callbackUrl)}` : ''}`}
-            >
-              {t('signInLink')}
+            <Link asChild>
+              <NextLink
+                href={`/signin${callbackUrl !== '/' ? `?callbackUrl=${encodeURIComponent(callbackUrl)}` : ''}`}
+              >
+                {t('signInLink')}
+              </NextLink>
             </Link>
           </form>
         </Flex>

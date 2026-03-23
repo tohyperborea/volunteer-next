@@ -6,7 +6,7 @@
 
 'use client';
 
-import { Badge, Button, Card, Flex, Heading, IconButton, Link, Text } from '@radix-ui/themes';
+import { Badge, Box, Button, Card, Flex, Heading, IconButton, Text } from '@radix-ui/themes';
 import TimeSpan from '../time-span';
 import { useTranslations } from 'next-intl';
 import styles from './styles.module.css';
@@ -16,6 +16,7 @@ import { addHoursToTimeString } from '@/utils/datetime';
 import { getQualificationDetailsPath } from '@/utils/path';
 import { useState } from 'react';
 import ProgressBar from '../progress-bar';
+import NextLink from 'next/link';
 
 interface Props {
   event: EventInfo;
@@ -103,16 +104,15 @@ export default function ShiftCard({
               <Flex direction={{ initial: 'column', sm: 'row' }} flexGrow="1" gap="3" justify="end">
                 <Flex direction="row" gap="2" align="center" wrap="wrap">
                   {requirementLabel && (
-                    <Badge asChild>
-                      <Link
-                        color="yellow"
+                    <Badge color="yellow" asChild>
+                      <NextLink
                         href={getQualificationDetailsPath({
                           eventSlug: event.slug,
                           qualificationId: shift.requirement!
                         })}
                       >
                         {t('requires')}: {requirementLabel}
-                      </Link>
+                      </NextLink>
                     </Badge>
                   )}
                   <Flex direction="row" gap="2" align="center" wrap="wrap">

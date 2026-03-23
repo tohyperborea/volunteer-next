@@ -7,11 +7,12 @@ import { checkAuthorisation, currentUser } from '@/session';
 import { notFound } from 'next/navigation';
 import { getFilteredTeamsForEvent } from '@/service/team-service';
 import TeamList from '@/ui/team-list';
-import { getUpdateTeamPath } from '@/utils/path';
+import { getCreateTeamPath, getUpdateTeamPath } from '@/utils/path';
 import { getShiftsForEvent } from '@/service/shift-service';
 import { recordToTeamFilters } from '@/utils/team-filters';
 import { getVolunteersForShifts } from '@/service/user-service';
 import { getPermissionsProfile } from '@/utils/permissions';
+import NextLink from 'next/link';
 
 const PAGE_KEY = 'TeamsDashboardPage';
 
@@ -61,11 +62,11 @@ export default async function EventsDashboard({
       </Heading>
       {isEditable && (
         <Box>
-          <Link href={`/event/${eventSlug}/create-team`}>
-            <Button variant="soft">
+          <Button asChild>
+            <NextLink href={getCreateTeamPath(eventSlug)}>
               <PlusIcon /> {t('createTeam')}
-            </Button>
-          </Link>
+            </NextLink>
+          </Button>
         </Box>
       )}
       <TeamList

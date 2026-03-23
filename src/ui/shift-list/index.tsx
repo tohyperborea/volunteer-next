@@ -7,7 +7,7 @@
 'use client';
 
 import { PlusIcon, Share2Icon } from '@radix-ui/react-icons';
-import { Button, Flex, Link } from '@radix-ui/themes';
+import { Button, Flex } from '@radix-ui/themes';
 import DatedList from '../dated-list';
 import ShiftCard from '../shift-card';
 import ShiftDialog from '../shift-dialog';
@@ -68,9 +68,9 @@ export default function ShiftList({
           </Button>
           {exportLink && (
             <Button variant="soft" asChild>
-              <Link href={exportLink} rel="noopener noreferrer" target="_blank">
+              <a href={exportLink} rel="noopener noreferrer" target="_blank">
                 <Share2Icon /> {t('export')}
-              </Link>
+              </a>
             </Button>
           )}
         </Flex>

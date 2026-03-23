@@ -1,14 +1,13 @@
 import { auth, AUTH_MODE } from '@/auth';
 import { redirect } from 'next/navigation';
-import Link from 'next/link';
-import { Heading, Text } from '@radix-ui/themes';
+import { Text, Link } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
-import { VisuallyHidden } from '@radix-ui/themes';
 import { checkRateLimit, PASSWORD_RESET_LIMITS } from '@/lib/rate-limit';
 import { getClientIp } from '@/lib/client-ip';
 import { verifyTurnstile } from '@/lib/turnstile';
 import { ForgotPasswordForm } from './forgot-password-form';
 import SigninContainer from '@/ui/signin-container';
+import NextLink from 'next/link';
 
 const MIN_RESPONSE_DELAY_MS = 400;
 
@@ -78,8 +77,8 @@ export default async function ForgotPasswordPage({
           buttonText={t('button')}
         />
       )}
-      <Link href="/signin" style={{ alignSelf: 'center' }}>
-        {t('signInLink')}
+      <Link asChild style={{ alignSelf: 'center' }}>
+        <NextLink href="/signin">{t('signInLink')}</NextLink>
       </Link>
     </SigninContainer>
   );

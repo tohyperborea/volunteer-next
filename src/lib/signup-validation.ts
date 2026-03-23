@@ -3,18 +3,11 @@
  * Used to prevent invalid input and open redirect vulnerabilities.
  */
 
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MIN_PASSWORD_LENGTH = 8;
 const NAME_MIN_LENGTH = 1;
 const NAME_MAX_LENGTH = 255;
 /** Disallow control chars, leading/trailing spaces already trimmed by caller */
 const NAME_SAFE_REGEX = /^[\p{L}\p{N}\p{P}\p{Z}\p{S}]*$/u;
-
-export function isValidEmail(email: string): boolean {
-  if (typeof email !== 'string') return false;
-  const trimmed = email.trim();
-  return trimmed.length > 0 && trimmed.length <= 254 && EMAIL_REGEX.test(trimmed);
-}
 
 export interface PasswordValidation {
   valid: boolean;
