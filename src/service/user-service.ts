@@ -381,3 +381,34 @@ export const undeleteUser = async (userId: UserId, client?: PoolClient): Promise
   const db = client || pool;
   await db.query('UPDATE "user" SET "deletedAt" = NULL WHERE id = $1', [userId]);
 };
+
+/**
+ * Fetches all team leads for a given team.
+ * @param teamId - The ID of the team to fetch leads for.
+ * @returns An array of User objects that are team leads for the specified team.
+ */
+export const getTeamLeadsForTeam = cache(async (teamId: TeamId): Promise<User[]> => {
+  const result = await pool.query(
+    `
+    SELECT 
+      u.id,
+      u.name,
+      u."chosenName",
+      u.email,
+      u."deletedAt",
+      r.type,
+      r."eventId",
+      r."teamId"
+    FROM "user" u
+    JOIN role r ON u.id = r."userId"
+    WHERE r.type = 'team-lead' AND r."teamId" = $1
+  `,
+    [teamId]
+  );
+
+  if (result.rows.length === 0) {
+    return [];
+  }
+
+  return usersFromRows(result.rows);
+});

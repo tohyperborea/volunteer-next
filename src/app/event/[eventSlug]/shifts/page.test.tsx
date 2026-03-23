@@ -61,14 +61,16 @@ describe('EventShifts Page', () => {
       name: 'Team A',
       eventId: mockEvent.id,
       slug: 'team-1',
-      description: 'description'
+      description: 'description',
+      contactAddress: ''
     },
     {
       id: 'team-2',
       name: 'Team B',
       eventId: mockEvent.id,
       slug: 'team-2',
-      description: 'description'
+      description: 'description',
+      contactAddress: ''
     }
   ];
   const mockShifts: ShiftInfo[] = [

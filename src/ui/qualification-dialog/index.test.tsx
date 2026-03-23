@@ -12,15 +12,23 @@ describe('QualificationDialog', () => {
   const mockOnCreate = jest.fn();
   const mockOnUpdate = jest.fn();
   const mockEventId = 'event123';
-  const mockTeams = [
+  const mockTeams: TeamInfo[] = [
     {
       id: 'team1',
       eventId: mockEventId,
       name: 'Team 1',
       slug: 'team2',
-      description: 'Description'
+      description: 'Description',
+      contactAddress: ''
     },
-    { id: 'team2', eventId: mockEventId, name: 'Team 2', slug: 'team2', description: 'Description' }
+    {
+      id: 'team2',
+      eventId: mockEventId,
+      name: 'Team 2',
+      slug: 'team2',
+      description: 'Description',
+      contactAddress: ''
+    }
   ];
 
   afterEach(() => {

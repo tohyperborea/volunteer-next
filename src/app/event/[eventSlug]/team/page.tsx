@@ -1,31 +1,25 @@
 import metadata from '@/i18n/metadata';
 import { getEventBySlug } from '@/service/event-service';
-import { Heading, Flex, Card, Text, Button, Box, Link } from '@radix-ui/themes';
+import { Heading, Flex, Button, Box, Link, IconButton } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
-import { PlusIcon } from '@radix-ui/react-icons';
+import { Pencil2Icon, PlusIcon } from '@radix-ui/react-icons';
 import { checkAuthorisation } from '@/session';
-import TeamCard from '@/ui/team-card';
-import { notFound, redirect } from 'next/navigation';
-import { deleteTeam, getTeamsForEvent } from '@/service/team-service';
+import { notFound } from 'next/navigation';
+import { getFilteredTeamsForEvent } from '@/service/team-service';
+import TeamList from '@/ui/team-list';
+import { getCreateTeamPath, getUpdateTeamPath } from '@/utils/path';
+import { getShiftsForEvent } from '@/service/shift-service';
+import { recordToTeamFilters } from '@/utils/team-filters';
 import NextLink from 'next/link';
-import { getCreateTeamPath, getTeamInfoPath } from '@/utils/path';
 
 const PAGE_KEY = 'TeamsDashboardPage';
 
-export const generateMetadata = metadata(PAGE_KEY, {
-  title: async (params) => {
-    const { locale, eventSlug } = params;
-    const t = await getTranslations({ locale: locale ?? '', namespace: PAGE_KEY });
-    const event = !eventSlug ? null : await getEventBySlug(eventSlug);
-    return t('teamsForEvent', { eventName: event?.name ?? '' });
-  }
-});
+export const generateMetadata = metadata(PAGE_KEY);
 
-interface Props {
-  params: Promise<{ eventSlug: string }>;
-}
-
-export default async function EventsDashboard({ params }: Props) {
+export default async function EventsDashboard({
+  params,
+  searchParams
+}: PageProps<'/event/[eventSlug]/team'>) {
   const t = await getTranslations(PAGE_KEY);
 
   const { eventSlug } = await params;
@@ -37,19 +31,29 @@ export default async function EventsDashboard({ params }: Props) {
 
   const editorRoles: UserRole[] = [{ type: 'admin' }, { type: 'organiser', eventId: event.id }];
 
-  const teams = await getTeamsForEvent(event.id);
+  const filters = recordToTeamFilters(await searchParams);
+  const teams = await getFilteredTeamsForEvent(event.id, filters);
+  const shifts = await getShiftsForEvent(event.id);
   const isEditable = await checkAuthorisation(editorRoles, true);
 
-  const deleteAction = async (id: TeamId) => {
-    'use server';
-    await checkAuthorisation(editorRoles);
-    await deleteTeam(id);
-    redirect(`/event/${eventSlug}/team`);
-  };
+  const itemActions = !isEditable
+    ? {}
+    : teams.reduce<Record<TeamId, React.ReactNode>>((actions, team) => {
+        actions[team.id] = (
+          <Link href={getUpdateTeamPath(eventSlug, team.id)}>
+            <IconButton variant="ghost" aria-label={t('edit', { teamName: team.name })}>
+              <Pencil2Icon width={20} height={20} />
+            </IconButton>
+          </Link>
+        );
+        return actions;
+      }, {});
 
   return (
     <Flex direction="column" gap="4">
-      <Heading my="4">{t('teamsForEvent', { eventName: event.name })}</Heading>
+      <Heading my="4" as="h1" align="center">
+        {t('title')}
+      </Heading>
       {isEditable && (
         <Box>
           <Button asChild>
@@ -59,23 +63,7 @@ export default async function EventsDashboard({ params }: Props) {
           </Button>
         </Box>
       )}
-      {teams.length === 0 && (
-        <Card>
-          <Text>{t('noTeams')}</Text>
-        </Card>
-      )}
-      {teams.map((team) => (
-        <Link highContrast asChild underline="none" key={team.id}>
-          <NextLink href={getTeamInfoPath(eventSlug, team.slug)}>
-            <TeamCard
-              team={team}
-              editable={isEditable}
-              eventSlug={eventSlug}
-              onDelete={deleteAction}
-            />
-          </NextLink>
-        </Link>
-      ))}
+      <TeamList teams={teams} shifts={shifts} eventSlug={eventSlug} itemActions={itemActions} />
     </Flex>
   );
 }

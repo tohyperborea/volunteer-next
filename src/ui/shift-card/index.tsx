@@ -15,6 +15,7 @@ import { Pencil2Icon, ChevronDownIcon } from '@radix-ui/react-icons';
 import { addHoursToTimeString } from '@/utils/datetime';
 import { getQualificationDetailsPath } from '@/utils/path';
 import { useState } from 'react';
+import ProgressBar from '../progress-bar';
 import NextLink from 'next/link';
 
 interface Props {
@@ -74,12 +75,7 @@ export default function ShiftCard({
           </Flex>
           <TimeSpan start={startTime} end={endTime} />
         </Flex>
-        <Flex
-          direction="column"
-          gap="3"
-          align="start"
-          style={!isExpanded ? { display: 'none' } : undefined}
-        >
+        <Flex direction="column" gap="3" style={!isExpanded ? { display: 'none' } : undefined}>
           <Flex direction="row" gap="2">
             <Badge color="gray">
               {t('max')}: {shift.maxVolunteers}
@@ -88,44 +84,34 @@ export default function ShiftCard({
               {t('min')}: {shift.minVolunteers}
             </Badge>
           </Flex>
-          <Badge color="teal">{t('status').toUpperCase()}</Badge>
           {requirementLabel && (
-            <Badge asChild color="orange">
-              <NextLink
-                href={getQualificationDetailsPath({
-                  eventSlug: event.slug,
-                  qualificationId: shift.requirement!
-                })}
-              >
-                {t('requires')}: {requirementLabel}
-              </NextLink>
-            </Badge>
+            <Box>
+              <Badge asChild color="orange">
+                <NextLink
+                  href={getQualificationDetailsPath({
+                    eventSlug: event.slug,
+                    qualificationId: shift.requirement!
+                  })}
+                >
+                  {t('requires')}: {requirementLabel}
+                </NextLink>
+              </Badge>
+            </Box>
           )}
-          <ShiftProgress filled={volunteerCount} total={shift.maxVolunteers} />
-          <Collapsible header={<Text>{t('volunteers')}</Text>}>
-            <Flex direction="column" gap="1">
-              {volunteerNames.map((name) => (
-                <Text key={name}>{name}</Text>
-              ))}
-            </Flex>
-          </Collapsible>
+          <Box style={{ maxWidth: '200px' }}>
+            <ProgressBar filled={volunteerCount} total={shift.maxVolunteers} />
+          </Box>
+          <Box style={{ maxWidth: '600px' }}>
+            <Collapsible header={<Text>{t('volunteers')}</Text>}>
+              <Flex direction="column" gap="1">
+                {volunteerNames.map((name) => (
+                  <Text key={name}>{name}</Text>
+                ))}
+              </Flex>
+            </Collapsible>
+          </Box>
         </Flex>
       </Flex>
     </Card>
   );
 }
-
-const ShiftProgress = ({ filled, total }: { filled: number; total: number }) => {
-  const t = useTranslations('ShiftCard');
-  const value = total <= 0 ? 0 : Math.round((filled / total) * 100);
-  return (
-    <Box className={styles.shiftProgress}>
-      <Box className={styles.shiftProgressFilled} style={{ width: `${value}%` }} />
-      <Text
-        className={styles.shiftProgressLabel}
-        weight="medium"
-        size="2"
-      >{`${filled}/${total} ${t('spots')}`}</Text>
-    </Box>
-  );
-};

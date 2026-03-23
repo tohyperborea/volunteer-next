@@ -19,10 +19,9 @@ describe('TeamTabs Component', () => {
 
   it('renders the correct tabs with the provided paths', () => {
     const { getAllByText } = render(
-      <TeamTabs infoPath="/team/info" shiftsPath="/team/shifts" volunteersPath="/team/volunteers" />
+      <TeamTabs shiftsPath="/team/shifts" volunteersPath="/team/volunteers" />
     );
 
-    expect(getAllByText('tabs.team')[0]).toBeInTheDocument();
     expect(getAllByText('tabs.shifts')[0]).toBeInTheDocument();
     expect(getAllByText('tabs.volunteers')[0]).toBeInTheDocument();
   });
@@ -31,10 +30,9 @@ describe('TeamTabs Component', () => {
     mockUsePathname.mockReturnValue('/team/shifts');
 
     const { getAllByText } = render(
-      <TeamTabs infoPath="/team/info" shiftsPath="/team/shifts" volunteersPath="/team/volunteers" />
+      <TeamTabs shiftsPath="/team/shifts" volunteersPath="/team/volunteers" />
     );
 
-    expect(getAllByText('tabs.team')[0].closest('a')).not.toHaveAttribute('data-active');
     expect(getAllByText('tabs.shifts')[0].closest('a')).toHaveAttribute('data-active');
     expect(getAllByText('tabs.volunteers')[0].closest('a')).not.toHaveAttribute('data-active');
   });

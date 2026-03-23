@@ -4,11 +4,17 @@
  * @author Michael Townsend <@continuities>
  */
 
+import { usersToVolunteers } from '@/lib/volunteer';
 import { getTeamBySlug } from '@/service/team-service';
-import TeamTabs from '@/ui/team-tabs';
-import { getTeamInfoPath, getTeamShiftsPath, getTeamVolunteersPath } from '@/utils/path';
-import { Box, Flex, Heading } from '@radix-ui/themes';
+import { getTeamLeadsForTeam } from '@/service/user-service';
+import { checkAuthorisation, currentUser } from '@/session';
+import VolunteerCard from '@/ui/volunteer-card';
+import { getTeamShiftsPath, getTeamVolunteersPath } from '@/utils/path';
+import { getPermissionsProfile } from '@/utils/permissions';
+import { Box, Flex, Heading, Link, TabNav, Text } from '@radix-ui/themes';
+import { getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
+import TeamTabs from '@/ui/team-tabs';
 
 const PAGE_KEY = 'TeamPage';
 
@@ -24,15 +30,52 @@ export default async function TeamLayout({ params, children }: Props) {
   if (!team) {
     notFound();
   }
+  const canEdit = await checkAuthorisation(
+    [
+      { type: 'admin' },
+      { type: 'organiser', eventId: team.eventId },
+      { type: 'team-lead', eventId: team.eventId, teamId: team.id }
+    ],
+    true
+  );
 
-  const infoPath = getTeamInfoPath(eventSlug, teamSlug);
+  const t = await getTranslations(PAGE_KEY);
+  const permissionsProfile = getPermissionsProfile(await currentUser());
+  const teamLeads = usersToVolunteers(await getTeamLeadsForTeam(team.id), permissionsProfile);
+
   const shiftsPath = getTeamShiftsPath(eventSlug, teamSlug);
   const volunteersPath = getTeamVolunteersPath(eventSlug, teamSlug);
   return (
     <Flex direction="column">
-      <Heading my="4">{team.name}</Heading>
-      <TeamTabs infoPath={infoPath} shiftsPath={shiftsPath} volunteersPath={volunteersPath} />
-      <Box pt="6">{children}</Box>
+      <Heading my="4" align="center">
+        {team.name}
+      </Heading>
+      <Flex direction="column" gap="1" mb="4">
+        <Box>
+          <Text>{t('contact')}: </Text>
+          <Link href={`mailto:${team.contactAddress}`}>{team.contactAddress}</Link>
+        </Box>
+        <Flex direction="column">
+          <Text>{t('descriptionLabel')}:</Text>
+          <Text>{team.description}</Text>
+        </Flex>
+        <Box>
+          <Text>{t('teamLeads')}:</Text>
+          <Flex direction="column" gap="1" mt="1">
+            {teamLeads.map((lead) => (
+              <VolunteerCard key={lead.id} volunteer={lead} />
+            ))}
+          </Flex>
+        </Box>
+      </Flex>
+      {canEdit ? (
+        <>
+          <TeamTabs shiftsPath={shiftsPath} volunteersPath={volunteersPath} />
+          <Box mt="6">{children}</Box>
+        </>
+      ) : (
+        children
+      )}
     </Flex>
   );
 }

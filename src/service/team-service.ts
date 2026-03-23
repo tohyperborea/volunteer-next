@@ -13,7 +13,8 @@ const rowToTeam = (row: any): TeamInfo => ({
   eventId: row.eventId,
   slug: row.slug,
   name: row.name,
-  description: row.description
+  description: row.description,
+  contactAddress: row.contactAddress
 });
 
 /**
@@ -23,9 +24,17 @@ const rowToTeam = (row: any): TeamInfo => ({
  */
 export const getTeamsForEvent = cache(async (eventId: EventId): Promise<TeamInfo[]> => {
   const res = await pool.query(
-    `SELECT id, "eventId", slug, name, description
-     FROM team
-     WHERE "eventId" = $1`,
+    `
+    SELECT 
+      id, 
+      "eventId",
+      slug,
+      name,
+      description,
+      "contactAddress"
+      FROM team
+    WHERE "eventId" = $1
+     `,
     [eventId]
   );
   return res.rows.map(rowToTeam);
@@ -41,20 +50,73 @@ export const getTeamsForEvents = cache(async (eventIds: EventId[]): Promise<Team
     return [];
   }
   const res = await pool.query(
-    `SELECT id, "eventId", slug, name, description
-       FROM team
-       WHERE "eventId" = ANY($1)`,
+    `
+    SELECT
+      id,
+      "eventId",
+      slug,
+      name,
+      description,
+      "contactAddress"
+    FROM team
+    WHERE "eventId" = ANY($1)
+    `,
     [eventIds]
   );
   return res.rows.map(rowToTeam);
 });
 
 /**
+ * Fetches a list of teams for a specific event, applying optional filters
+ * @param eventId - The ID of the event to fetch teams for
+ * @param filters - A TeamFilters object
+ * @return An array of TeamInfo objects matching the filters
+ */
+export const getFilteredTeamsForEvent = cache(
+  async (eventId: EventId, filters: TeamFilters): Promise<TeamInfo[]> => {
+    const { searchQuery } = filters;
+    const params = [eventId];
+    const whereClauses = [`"eventId" = $${params.length}`];
+    if (searchQuery) {
+      params.push(`%${searchQuery}%`);
+      whereClauses.push(`(name ILIKE $${params.length} OR description ILIKE $${params.length})`);
+    }
+
+    const res = await pool.query(
+      `
+      SELECT
+        id,
+        "eventId",
+        slug,
+        name,
+        description,
+        "contactAddress"
+      FROM team
+      WHERE ${whereClauses.join(' AND ')}
+      `,
+      params
+    );
+    return res.rows.map(rowToTeam);
+  }
+);
+
+/**
  * Fetches a list of all teams from the database.
  * @return An array of TeamInfo objects.
  */
 export const getAllTeams = cache(async (): Promise<TeamInfo[]> => {
-  const result = await pool.query('SELECT id, "eventId", slug, name, description FROM team');
+  const result = await pool.query(
+    `
+    SELECT
+      id,
+      "eventId",
+      slug,
+      name,
+      description,
+      "contactAddress"
+    FROM team
+    `
+  );
   return result.rows.map(rowToTeam);
 });
 
@@ -67,10 +129,18 @@ export const getAllTeams = cache(async (): Promise<TeamInfo[]> => {
 export const getTeamBySlug = cache(
   async (eventSlug: UrlSlug, teamSlug: UrlSlug): Promise<TeamInfo | null> => {
     const result = await pool.query(
-      `SELECT t.id, t."eventId", t.slug, t.name, t.description
-       FROM team t
-       JOIN event e ON t."eventId" = e.id
-       WHERE e.slug = $1 AND t.slug = $2`,
+      `
+      SELECT
+        t.id,
+        t."eventId",
+        t.slug,
+        t.name,
+        t.description,
+        t."contactAddress"
+      FROM team t
+      JOIN event e ON t."eventId" = e.id
+      WHERE e.slug = $1 AND t.slug = $2
+      `,
       [eventSlug, teamSlug]
     );
     if (result.rowCount === 0) {
@@ -87,9 +157,17 @@ export const getTeamBySlug = cache(
  */
 export const getTeamById = cache(async (id: TeamId): Promise<TeamInfo | null> => {
   const result = await pool.query(
-    `SELECT id, "eventId", slug, name, description
-       FROM team
-       WHERE id = $1`,
+    `
+    SELECT
+      id,
+      "eventId",
+      slug,
+      name,
+      description,
+      "contactAddress"
+    FROM team
+    WHERE id = $1
+    `,
     [id]
   );
   if (result.rowCount === 0) {
@@ -108,9 +186,17 @@ export const getTeamsById = cache(async (teamIds: TeamId[]): Promise<TeamInfo[]>
     return [];
   }
   const result = await pool.query(
-    `SELECT id, "eventId", slug, name, description
-       FROM team
-       WHERE id = ANY($1)`,
+    `
+    SELECT
+      id,
+      "eventId",
+      slug,
+      name,
+      description,
+      "contactAddress"
+    FROM team
+    WHERE id = ANY($1)
+    `,
     [teamIds]
   );
   return result.rows.map(rowToTeam);
@@ -128,10 +214,17 @@ export const createTeam = async (
 ): Promise<TeamInfo> => {
   const db = client || pool;
   const result = await db.query(
-    `INSERT INTO team ("eventId", slug, name, description)
-       VALUES ($1, $2, $3, $4)
-       RETURNING id, "eventId", slug, name, description`,
-    [team.eventId, team.slug, team.name, team.description]
+    `
+    INSERT INTO team (
+      "eventId",
+      slug,
+      name,
+      description,
+      "contactAddress"
+    )
+    VALUES ($1, $2, $3, $4, $5)
+    RETURNING id, "eventId", slug, name, description, "contactAddress"`,
+    [team.eventId, team.slug, team.name, team.description, team.contactAddress]
   );
   return rowToTeam(result.rows[0]);
 };
@@ -145,14 +238,18 @@ export const createTeam = async (
 export const updateTeam = async (team: TeamInfo, client?: PoolClient): Promise<TeamInfo> => {
   const db = client || pool;
   const result = await db.query(
-    `UPDATE team
-       SET "eventId" = $1,
-           slug = $2,
-           name = $3,
-           description = $4
-       WHERE id = $5
-       RETURNING id, "eventId", slug, name, description`,
-    [team.eventId, team.slug, team.name, team.description, team.id]
+    `
+    UPDATE team
+    SET 
+      "eventId" = $1,
+      slug = $2,
+      name = $3,
+      description = $4,
+      "contactAddress" = $5
+    WHERE id = $6
+    RETURNING id, "eventId", slug, name, description, "contactAddress"
+    `,
+    [team.eventId, team.slug, team.name, team.description, team.contactAddress, team.id]
   );
   return rowToTeam(result.rows[0]);
 };

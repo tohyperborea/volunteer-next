@@ -15,14 +15,7 @@ import { getPermissionsProfile } from '@/utils/permissions';
 
 const PAGE_KEY = 'CreateTeamPage';
 
-export const generateMetadata = metadata(PAGE_KEY, {
-  title: async (params) => {
-    const { eventSlug } = params;
-    const event = eventSlug ? await getEventBySlug(eventSlug) : null;
-    const t = await getTranslations(PAGE_KEY);
-    return t('title', { eventName: event?.name ?? '' });
-  }
-});
+export const generateMetadata = metadata(PAGE_KEY);
 
 interface Props {
   params: Promise<{ eventSlug: string }>;
@@ -61,15 +54,10 @@ export default async function CreateTeam({ params }: Props) {
 
   return (
     <Flex direction="column" gap="4">
-      <Heading my="4">{t('title', { eventName: event?.name ?? '' })}</Heading>
-      <Card>
-        <TeamForm
-          eventId={event.id}
-          onSubmit={onSubmit}
-          backOnCancel
-          teamleadOptions={volunteers}
-        />
-      </Card>
+      <Heading my="4" as="h1" align="center">
+        {t('title')}
+      </Heading>
+      <TeamForm eventId={event.id} onSubmit={onSubmit} backOnCancel teamleadOptions={volunteers} />
     </Flex>
   );
 }

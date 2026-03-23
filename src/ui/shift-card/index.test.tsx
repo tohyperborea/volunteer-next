@@ -1,12 +1,18 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import ShiftCard from './index';
 import { getQualificationDetailsPath } from '@/utils/path';
+import ProgressBar from '../progress-bar';
 
 jest.mock('next-intl', () => ({
   useTranslations: () => (key: string) => key,
   useFormatter: () => ({}),
   useLocale: () => 'en'
 }));
+jest.mock('@/ui/progress-bar', () =>
+  jest.fn().mockReturnValue(<div data-testid="progress-bar"></div>)
+);
+
+const mockProgressBar = ProgressBar as jest.MockedFunction<typeof ProgressBar>;
 
 describe('ShiftCard', () => {
   const mockEvent = {
@@ -35,6 +41,10 @@ describe('ShiftCard', () => {
     errorMessage: 'error'
   };
   const mockVolunteerNames = ['Alice', 'Bob'];
+
+  beforeEach(() => {
+    mockProgressBar.mockClear();
+  });
 
   it('renders the shift title and time span', () => {
     render(<ShiftCard event={mockEvent} shift={mockShift} volunteerNames={mockVolunteerNames} />);
@@ -128,6 +138,13 @@ describe('ShiftCard', () => {
   it('renders the progress bar with correct filled and total values', () => {
     render(<ShiftCard event={mockEvent} shift={mockShift} volunteerNames={mockVolunteerNames} />);
 
-    expect(screen.getByText('2/10 spots')).toBeInTheDocument();
+    expect(mockProgressBar).toHaveBeenCalledWith(
+      expect.objectContaining({
+        filled: mockVolunteerNames.length,
+        total: mockShift.maxVolunteers
+      }),
+      undefined
+    );
+    expect(screen.getByTestId('progress-bar')).toBeInTheDocument();
   });
 });

@@ -12,19 +12,15 @@ import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 
 interface Props {
-  infoPath: string;
   shiftsPath: string;
   volunteersPath: string;
 }
 
-export default function TeamTabs({ infoPath, shiftsPath, volunteersPath }: Props) {
+export default function TeamTabs({ shiftsPath, volunteersPath }: Props) {
   const path = usePathname();
   const t = useTranslations('TeamPage');
   return (
     <TabNav.Root>
-      <TabNav.Link active={path === infoPath} asChild>
-        <NextLink href={infoPath}>{t('tabs.team')}</NextLink>
-      </TabNav.Link>
       <TabNav.Link active={path === shiftsPath} asChild>
         <NextLink href={shiftsPath}>{t('tabs.shifts')}</NextLink>
       </TabNav.Link>

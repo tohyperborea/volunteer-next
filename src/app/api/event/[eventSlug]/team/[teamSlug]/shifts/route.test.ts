@@ -51,7 +51,8 @@ describe('GET /api/event/[eventSlug]/team/[teamSlug]/shifts', () => {
       name: 'Test Team',
       eventId: mockEvent.id,
       slug: 'team-1',
-      description: 'description'
+      description: 'description',
+      contactAddress: ''
     };
     const mockShifts: ShiftInfo[] = [
       {

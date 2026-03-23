@@ -58,14 +58,16 @@ describe('UserQualifications', () => {
       name: 'Team 1',
       eventId: 'event1',
       slug: 'team-1',
-      description: 'description'
+      description: 'description',
+      contactAddress: ''
     },
     {
       id: 'team2',
       name: 'Team 2',
       eventId: 'event1',
       slug: 'team-2',
-      description: 'description'
+      description: 'description',
+      contactAddress: ''
     }
   ];
 

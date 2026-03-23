@@ -4,6 +4,8 @@
  * @author Michael Townsend <@continuities>
  */
 
+import { normalise } from './list';
+
 /**
  * Converts URLSearchParams to a UserFilters object
  * @param searchParams URLSearchParams from the request or current URL
@@ -18,13 +20,6 @@ export function paramsToUserFilters(searchParams: URLSearchParams): UserFilters 
     withoutQualification: searchParams.get('withoutQualification') || undefined
   };
 }
-
-const normalise = <T extends string>(value: string | string[] | undefined): T | undefined => {
-  if (Array.isArray(value)) {
-    return value[0] as T;
-  }
-  return value as T;
-};
 
 /**
  * Converts a record of string values (like from Next.js page props) to a UserFilters object

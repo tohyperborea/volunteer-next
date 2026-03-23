@@ -81,6 +81,7 @@ declare global {
     eventId: EventId;
     slug: UrlSlug;
     description: string;
+    contactAddress: string;
   }
 
   interface UserFilters {
@@ -102,6 +103,14 @@ declare global {
     minVolunteers: number;
     maxVolunteers: number;
     requirement?: QualificationId;
+  }
+
+  interface TeamFilters {
+    searchQuery?: string;
+  }
+
+  interface ShiftFilters {
+    searchQuery?: string;
   }
 
   type ThemeMode = 'light' | 'dark' | 'system';

@@ -32,8 +32,22 @@ describe('QualificationDetails', () => {
   };
 
   const mockTeams = [
-    { id: 'team1', eventId: 'event1', slug: 'team1', description: 'Description', name: 'Team One' },
-    { id: 'team2', eventId: 'event1', slug: 'team2', description: 'Description', name: 'Team Two' }
+    {
+      id: 'team1',
+      eventId: 'event1',
+      slug: 'team1',
+      description: 'Description',
+      name: 'Team One',
+      contactAddress: ''
+    },
+    {
+      id: 'team2',
+      eventId: 'event1',
+      slug: 'team2',
+      description: 'Description',
+      name: 'Team Two',
+      contactAddress: ''
+    }
   ];
 
   const mockOnSave = jest.fn();

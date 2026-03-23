@@ -26,17 +26,20 @@
     "title": "Update Event"
   },
   "TeamsDashboardPage": {
-    "teamsForEvent": "Teams for {eventName}",
-    "noTeams": "No teams yet!",
-    "createTeam": "Create New Team"
+    "title": "All teams",
+    "createTeam": "Add Team",
+    "edit": "Edit Team: {teamName}"
   },
   "CreateTeamPage": {
-    "title": "Create Team for {eventName}"
+    "title": "Create Team"
   },
   "UpdateTeamPage": {
-    "title": "Update Team"
+    "title": "Edit Team"
   },
   "TeamPage": {
+    "contact": "Contact",
+    "descriptionLabel": "Description",
+    "teamLeads": "Team Leads",
     "tabs": {
       "team": "Team",
       "shifts": "Shifts",
@@ -186,7 +189,7 @@
     "dateSpan": "{startDate} to {endDate}"
   },
   "TeamCard": {
-    "noTeams": "No teams yet!"
+    "volunteers": "Volunteers"
   },
   "VolunteerFilters": {
     "filters": "Filters",
@@ -196,6 +199,14 @@
     "admin": "Admin",
     "organiser": "Organiser",
     "teamLead": "Team Lead",
+    "clear": "Clear"
+  },
+  "TeamFilters": {
+    "filters": "Filters",
+    "clear": "Clear"
+  },
+  "ShiftFilters": {
+    "filters": "Filters",
     "clear": "Clear"
   },
   "UserForm": {
@@ -222,14 +233,25 @@
     "cannotRemoveOwnAdminRole": "You cannot remove your own admin role",
     "addRole": "Add Role"
   },
+  "TeamList": {
+    "noTeams": "No teams yet!"
+  },
   "TeamForm": {
     "teamName": "Team Name",
+    "teamNameDescription": "This will be the team's official title",
     "teamSlug": "URL Slug",
-    "teamDescription": "Team Description",
+    "teamSlugDescription": "This will be used for the team's URL. It must be unique among teams in the same event, and can only contain lowercase letters, numbers, and hyphens.",
+    "teamDescription": "Description",
+    "teamDescriptionDescription": "Provide a description about the team",
+    "contactAddress": "Contact Address",
+    "contactAddressDescription": "Provide a contact email",
     "teamLead": "Team Lead",
-    "createButton": "Create Team",
-    "updateButton": "Update Team",
-    "cancelButton": "Cancel"
+    "teamLeadDescription": "Select the lead for this team.",
+    "createButton": "Add Team",
+    "updateButton": "Save Changes",
+    "cancelButton": "Cancel",
+    "delete": "Delete Team",
+    "deleteConfirmation": "Are you sure you want to delete the team \"{teamName}\"? This will delete all shifts associated with the team and remove all volunteers from those shifts. This action cannot be undone."
   },
   "NavBar": {
     "home": "Home",
@@ -264,9 +286,7 @@
   "ShiftCard": {
     "max": "Max",
     "min": "Min",
-    "status": "Status",
     "requires": "Requires",
-    "spots": "Spots",
     "volunteers": "Volunteers",
     "editShift": "Edit Shift",
     "expand": "Expand shift details",
@@ -348,5 +368,8 @@
   "DeleteButton": {
     "cancel": "Cancel",
     "delete": "Delete"
+  },
+  "ProgressBar": {
+    "label": "{filled}/{total} Spots"
   }
 }

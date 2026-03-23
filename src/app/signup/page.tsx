@@ -3,12 +3,8 @@ import { redirect } from 'next/navigation';
 import NextLink from 'next/link';
 import { Button, Flex, Text, TextField, Link } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
-import {
-  isValidEmail,
-  validatePassword,
-  validateName,
-  getSafeCallbackUrl
-} from '@/lib/signup-validation';
+import { isValidEmail } from '@/utils/string';
+import { validatePassword, validateName, getSafeCallbackUrl } from '@/lib/signup-validation';
 import { checkRateLimit, AUTH_ENDPOINT_LIMITS } from '@/lib/rate-limit';
 import { getClientIp } from '@/lib/client-ip';
 import SigninContainer from '@/ui/signin-container';
