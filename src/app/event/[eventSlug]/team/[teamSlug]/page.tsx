@@ -1,3 +1,4 @@
+import { inTransaction } from '@/db';
 import metadata from '@/i18n/metadata';
 import { getEventBySlug } from '@/service/event-service';
 import {
@@ -120,9 +121,8 @@ export default async function TeamShifts({
     if (!shift) {
       notFound();
     }
-    const currentVolunteers = (await getVolunteersForShifts([shiftId], permissions))[shiftId] ?? [];
-    if (currentVolunteers.length >= shift.maxVolunteers) {
-      throw new Error('Shift is already full');
+    if (shift.teamId !== team.id) {
+      throw new Error('Shift does not belong to this team');
     }
 
     if (shift.requirement) {
@@ -133,7 +133,14 @@ export default async function TeamShifts({
       }
     }
 
-    await addVolunteerToShift(shiftId, permissions.userId);
+    await inTransaction(async (client) => {
+      const currentVolunteers =
+        (await getVolunteersForShifts([shiftId], permissions))[shiftId] ?? [];
+      if (currentVolunteers.length >= shift.maxVolunteers) {
+        throw new Error('Shift is already full');
+      }
+      await addVolunteerToShift(shiftId, permissions.userId, client);
+    });
     const path = getTeamShiftsPath(eventSlug, teamSlug);
     revalidatePath(path);
   };

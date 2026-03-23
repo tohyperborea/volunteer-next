@@ -86,7 +86,7 @@ export default async function UsersDashboardPage({ searchParams }: PageProps<'/u
       </Heading>
       <Flex gap="2" mb="4">
         {canEdit && (
-          <Button variant="soft" color="blue" asChild>
+          <Button variant="soft" asChild>
             <NextLink href={getCreateUserPath()}>
               <PlusIcon /> {t('createUser')}
             </NextLink>

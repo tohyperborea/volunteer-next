@@ -49,10 +49,6 @@ describe('ShiftCard', () => {
     mockProgressBar.mockClear();
   });
 
-  beforeEach(() => {
-    mockProgressBar.mockClear();
-  });
-
   it('renders the shift title and time span', () => {
     render(<ShiftCard event={mockEvent} shift={mockShift} volunteers={mockVolunteers} />);
 

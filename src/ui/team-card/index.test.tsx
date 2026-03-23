@@ -230,7 +230,7 @@ describe('TeamCard', () => {
       />
     );
 
-    const signup = screen.getByText('signup');
+    const signup = screen.getByRole('button', { name: 'signup' });
     expect(signup).toHaveAttribute('data-disabled', 'true');
   });
 });

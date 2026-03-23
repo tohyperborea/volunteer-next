@@ -433,13 +433,18 @@ export const getVolunteersForShifts = cache(
     const volunteersByShift: Record<ShiftId, VolunteerInfo[]> = {};
     const users = usersFromRows(result.rows);
     const userMap = new Map(users.map((u) => [u.id, u]));
+    const seenByShift: Record<ShiftId, Set<UserId>> = {};
     result.rows.forEach((row: any) => {
       const shiftId: ShiftId = row.shift_id;
       if (!volunteersByShift[shiftId]) {
         volunteersByShift[shiftId] = [];
       }
       const user = userMap.get(row.id);
-      if (user) {
+      if (user && !seenByShift[shiftId]?.has(user.id)) {
+        if (!seenByShift[shiftId]) {
+          seenByShift[shiftId] = new Set();
+        }
+        seenByShift[shiftId].add(user.id);
         volunteersByShift[shiftId].push(userToVolunteer(user, permissionsProfile));
       }
     });

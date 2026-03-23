@@ -21,15 +21,19 @@ export const GET = async (
   request: NextRequest,
   { params }: RouteContext<'/api/event/[eventSlug]/team/[teamSlug]/volunteers'>
 ): Promise<NextResponse> => {
-  await checkAuthorisation();
+  const { eventSlug, teamSlug } = await params;
+  const event = await getEventBySlug(eventSlug);
+  const team = await getTeamBySlug(eventSlug, teamSlug);
+  if (!event || !team) {
+    return NotFoundResponse();
+  }
+  await checkAuthorisation([
+    { type: 'admin' },
+    { type: 'organiser', eventId: event.id },
+    { type: 'team-lead', eventId: event.id, teamId: team.id }
+  ]);
   const format = request.nextUrl.searchParams.get('format') ?? 'json';
   if (format === 'csv') {
-    const { eventSlug, teamSlug } = await params;
-    const event = await getEventBySlug(eventSlug);
-    const team = await getTeamBySlug(eventSlug, teamSlug);
-    if (!event || !team) {
-      return NotFoundResponse();
-    }
     const shifts = await getShiftsForTeam(team.id);
     const shiftVolunteers = await getVolunteersForShifts(
       shifts.map((shift) => shift.id),

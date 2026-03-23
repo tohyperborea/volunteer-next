@@ -192,25 +192,25 @@ describe('getUserApiPath', () => {
   it('should return the correct API path with a single filter', () => {
     const filter: UserFilters = { roleType: 'admin' };
     const result = getUserApiPath(filter);
-    expect(result).toBe('/api/user?format=json&roleType=admin');
+    expect(result).toBe('/api/user?roleType=admin&format=json');
   });
 
   it('should return the correct API path with multiple filters', () => {
     const filter: UserFilters = { roleType: 'admin', withQualification: 'qual-id' };
     const result = getUserApiPath(filter);
-    expect(result).toBe('/api/user?format=json&roleType=admin&withQualification=qual-id');
+    expect(result).toBe('/api/user?roleType=admin&withQualification=qual-id&format=json');
   });
 
   it('should encode special characters in filter values', () => {
     const filter: UserFilters = { searchQuery: 'John Doe & Co.' };
     const result = getUserApiPath(filter);
-    expect(result).toBe('/api/user?format=json&searchQuery=John+Doe+%26+Co.');
+    expect(result).toBe('/api/user?searchQuery=John+Doe+%26+Co.&format=json');
   });
 
   it('should accept a custom format', () => {
     const filter: UserFilters = { roleType: 'admin' };
     const result = getUserApiPath(filter, { format: 'csv' });
-    expect(result).toBe('/api/user?format=csv&roleType=admin');
+    expect(result).toBe('/api/user?roleType=admin&format=csv');
   });
 });
 

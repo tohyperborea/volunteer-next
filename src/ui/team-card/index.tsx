@@ -69,7 +69,7 @@ export default function TeamCard({
                 total={shiftSpots}
               />
               {showSignup && (
-                <Button asChild disabled={isFull} title={isFull ? t('full') : undefined}>
+                <Button asChild={!isFull} disabled={isFull} title={isFull ? t('full') : undefined}>
                   {isFull ? (
                     <Text>{t('signup')}</Text>
                   ) : (
@@ -106,7 +106,7 @@ const getStatusColour = (
   shiftVolunteers: Record<ShiftId, VolunteerInfo[]> = {}
 ) => {
   let anyBelowMin = false;
-  let allFull = false;
+  let allFull = true;
   for (const shift of shifts) {
     const volunteers = shiftVolunteers?.[shift.id] ?? [];
     if (volunteers.length === 0) {

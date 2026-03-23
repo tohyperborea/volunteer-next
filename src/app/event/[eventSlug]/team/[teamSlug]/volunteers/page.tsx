@@ -42,7 +42,7 @@ export default async function TeamVolunteers({
   if (!event || !team) {
     notFound();
   }
-  checkAuthorisation([
+  await checkAuthorisation([
     { type: 'admin' },
     { type: 'organiser', eventId: team.eventId },
     { type: 'team-lead', eventId: team.eventId, teamId: team.id }
