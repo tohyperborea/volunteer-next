@@ -4,8 +4,6 @@
  * @author Michael Townsend <@continuities>
  */
 
-'use server';
-
 import { CSVResponse, NotFoundResponse, NotImplementedResponse } from '@/lib/response';
 import { getEventBySlug } from '@/service/event-service';
 import { getShiftsForTeam } from '@/service/shift-service';

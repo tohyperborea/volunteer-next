@@ -306,6 +306,38 @@ export const deleteShift = async (shiftId: ShiftId, client?: PoolClient): Promis
 };
 
 /**
+ * Gets a lock for a particular shift
+ * @param shiftId - The ID of the shift to lock on
+ * @param client - database client for transaction support
+ */
+export const getShiftLock = async (
+  shiftId: ShiftId,
+  client: PoolClient
+): Promise<void> => {
+  await client.query(`SELECT id FROM shift WHERE id = $1 FOR UPDATE`, [shiftId]);
+};
+
+/**
+ * Gets the number of volunteers signed up for a shift
+ * @param shiftId - The ID of the shift
+ * @param client - Optional database client for transaction support
+ * @returns The number of volunteers signed up
+ */
+export const getShiftSignupCount = async (
+  shiftId: ShiftId,
+  client?: PoolClient
+): Promise<number> => {
+  const db = client || pool;
+  const result = await db.query(
+    `
+    SELECT COUNT(*) FROM shift_volunteer WHERE shift_id = $1
+    `,
+    [shiftId]
+  );
+  return parseInt(result.rows[0].count, 10);
+};
+
+/**
  * Adds a volunteer to a shift in the database
  * @param shiftId - The ID of the shift to add the volunteer to.
  * @param volunteerId - The ID of the volunteer to add to the shift.

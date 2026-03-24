@@ -4,8 +4,6 @@
  * @author Michael Townsend <@continuities>
  */
 
-'use server';
-
 import { CSVResponse, NotFoundResponse, NotImplementedResponse } from '@/lib/response';
 import { getVolunteerById } from '@/lib/volunteer';
 import { getEventBySlug } from '@/service/event-service';

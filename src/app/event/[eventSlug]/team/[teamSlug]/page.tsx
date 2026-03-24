@@ -13,7 +13,9 @@ import {
   addVolunteerToShift,
   removeVolunteerFromShift,
   getShiftsForVolunteer,
-  getShiftById
+  getShiftById,
+  getShiftLock,
+  getShiftSignupCount
 } from '@/service/shift-service';
 import { getTeamBySlug } from '@/service/team-service';
 import { getVolunteersForShifts } from '@/service/user-service';
@@ -134,9 +136,9 @@ export default async function TeamShifts({
     }
 
     await inTransaction(async (client) => {
-      const currentVolunteers =
-        (await getVolunteersForShifts([shiftId], permissions))[shiftId] ?? [];
-      if (currentVolunteers.length >= shift.maxVolunteers) {
+      await getShiftLock(shiftId, client);
+      const numVolunteers = await getShiftSignupCount(shiftId, client);
+      if (numVolunteers >= shift.maxVolunteers) {
         throw new Error('Shift is already full');
       }
       await addVolunteerToShift(shiftId, permissions.userId, client);
