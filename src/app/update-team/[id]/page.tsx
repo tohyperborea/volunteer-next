@@ -22,11 +22,7 @@ const PAGE_KEY = 'UpdateTeamPage';
 
 export const generateMetadata = metadata(PAGE_KEY);
 
-interface Props {
-  params: Promise<{ id: string }>;
-}
-
-export default async function UpdateTeam({ params }: Props) {
+export default async function UpdateTeam({ params }: PageProps<'/update-team/[id]'>) {
   const { id } = await params;
   const event = await getCurrentEventOrRedirect();
   const team = id ? await getTeamById(id) : null;
@@ -63,7 +59,7 @@ export default async function UpdateTeam({ params }: Props) {
         await addRoleToUser(roleToAdd, teamlead, client);
       }
     });
-    redirect(getTeamsPath(event.slug));
+    redirect(getTeamsPath());
   };
 
   const onDelete = async () => {
@@ -71,7 +67,7 @@ export default async function UpdateTeam({ params }: Props) {
 
     await checkAuthorisation([{ type: 'admin' }, { type: 'organiser', eventId: team.eventId }]);
     await deleteTeam(team.id);
-    redirect(getTeamsPath(event.slug));
+    redirect(getTeamsPath());
   };
 
   const permissionsProfile = getPermissionsProfile(await currentUser());

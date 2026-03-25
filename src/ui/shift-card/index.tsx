@@ -105,12 +105,7 @@ export default function ShiftCard({
                 <Flex direction="row" gap="2" align="center" wrap="wrap">
                   {requirementLabel && (
                     <Badge color="yellow" asChild>
-                      <NextLink
-                        href={getQualificationDetailsPath({
-                          eventSlug: event.slug,
-                          qualificationId: shift.requirement!
-                        })}
-                      >
+                      <NextLink href={getQualificationDetailsPath(shift.requirement!)}>
                         {t('requires')}: {requirementLabel}
                       </NextLink>
                     </Badge>

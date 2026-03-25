@@ -18,75 +18,59 @@ import {
   getTeamVolunteersApiPath,
   getEventsPath,
   getCreateEventPath,
-  getEventPath,
   getUpdateEventPath
 } from './path';
 
 describe('getTeamsPath', () => {
   it('should return the correct path for teams', () => {
-    const eventSlug = 'event-123';
-    const result = getTeamsPath(eventSlug);
-    expect(result).toBe('/event/event-123/team');
+    const result = getTeamsPath();
+    expect(result).toBe('/team');
   });
 });
 
 describe('getTeamShiftsPath', () => {
   it('should return the correct path for team shifts', () => {
-    const eventSlug = 'event-123';
     const teamSlug = 'team-abc';
-    const result = getTeamShiftsPath(eventSlug, teamSlug);
-    expect(result).toBe('/event/event-123/team/team-abc');
+    const result = getTeamShiftsPath(teamSlug);
+    expect(result).toBe('/team/team-abc');
   });
 });
 
 describe('getTeamVolunteersPath', () => {
   it('should return the correct path for team volunteers', () => {
-    const eventSlug = 'event-123';
     const teamSlug = 'team-abc';
-    const result = getTeamVolunteersPath(eventSlug, teamSlug);
-    expect(result).toBe('/event/event-123/team/team-abc/volunteers');
+    const result = getTeamVolunteersPath(teamSlug);
+    expect(result).toBe('/team/team-abc/volunteers');
   });
 });
 
 describe('getUpdateTeamPath', () => {
   it('should return the correct path for updating a team', () => {
-    const eventSlug = 'event-123';
     const teamId = 'team-456';
-    const result = getUpdateTeamPath(eventSlug, teamId);
-    expect(result).toBe('/event/event-123/update-team/team-456');
+    const result = getUpdateTeamPath(teamId);
+    expect(result).toBe('/update-team/team-456');
   });
 });
 
 describe('getCreateTeamPath', () => {
   it('should return the correct path for creating a team', () => {
-    const eventSlug = 'event-123';
-    const result = getCreateTeamPath(eventSlug);
-    expect(result).toBe('/event/event-123/create-team');
+    const result = getCreateTeamPath();
+    expect(result).toBe('/create-team');
   });
 });
 
 describe('getQualificationsPath', () => {
-  it('should return the correct qualifications path for a given eventSlug', () => {
-    const eventSlug = 'test-event';
-    const result = getQualificationsPath(eventSlug);
-    expect(result).toBe('/event/test-event/qualification');
+  it('should return the correct qualifications path', () => {
+    const result = getQualificationsPath();
+    expect(result).toBe('/qualification');
   });
 });
 
 describe('getQualificationDetailsPath', () => {
-  it('should return the correct qualification path for given eventSlug and qualificationId', () => {
-    const eventSlug = 'test-event';
+  it('should return the correct qualification path', () => {
     const qualificationId = '12345';
-    const result = getQualificationDetailsPath({ eventSlug, qualificationId });
-    expect(result).toBe('/event/test-event/qualification/12345');
-  });
-});
-
-describe('getEventPath', () => {
-  it('should return the correct path for a given event slug', () => {
-    const eventSlug = 'event-123';
-    const result = getEventPath(eventSlug);
-    expect(result).toBe('/event/event-123');
+    const result = getQualificationDetailsPath(qualificationId);
+    expect(result).toBe('/qualification/12345');
   });
 });
 
@@ -108,15 +92,14 @@ describe('getUpdateEventPath', () => {
 describe('getEventsPath', () => {
   it('should return the correct path for events', () => {
     const result = getEventsPath();
-    expect(result).toBe('/event');
+    expect(result).toBe('/events');
   });
 });
 
 describe('getEventShiftsPath', () => {
   it('should return the correct path for event shifts', () => {
-    const eventSlug = 'event-123';
-    const result = getEventShiftsPath(eventSlug);
-    expect(result).toBe('/event/event-123/shifts');
+    const result = getEventShiftsPath();
+    expect(result).toBe('/shifts');
   });
 });
 

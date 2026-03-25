@@ -39,7 +39,7 @@ interface Props {}
 export default async function TeamVolunteers({
   params,
   searchParams
-}: PageProps<`/event/[eventSlug]/team/[teamSlug]/volunteers`>) {
+}: PageProps<`/team/[teamSlug]/volunteers`>) {
   const { teamSlug } = await params;
   const t = await getTranslations(PAGE_KEY);
   const event = await getCurrentEventOrRedirect();

@@ -28,9 +28,8 @@ describe('TeamCard', () => {
       contactAddress: ''
     };
     const shifts: ShiftInfo[] = [];
-    const eventSlug = 'event-2025';
 
-    render(<TeamCard team={team} shifts={shifts} eventSlug={eventSlug} />);
+    render(<TeamCard team={team} shifts={shifts} />);
 
     expect(screen.getByText('Team A')).toBeInTheDocument();
   });
@@ -45,11 +44,10 @@ describe('TeamCard', () => {
       contactAddress: ''
     };
     const shifts: ShiftInfo[] = [];
-    const eventSlug = 'event-2025';
 
-    render(<TeamCard team={team} shifts={shifts} eventSlug={eventSlug} />);
+    render(<TeamCard team={team} shifts={shifts} />);
 
-    expect(getTeamShiftsPath).toHaveBeenCalledWith(eventSlug, team.slug);
+    expect(mockGetTeamShiftsPath).toHaveBeenCalledWith(team.slug);
     const link = screen.getByRole('link', { name: /team a/i });
     expect(link).toHaveAttribute('href', 'team-shifts-path');
   });
@@ -87,9 +85,8 @@ describe('TeamCard', () => {
         minVolunteers: 0
       }
     ];
-    const eventSlug = 'event-2025';
 
-    render(<TeamCard team={team} shifts={shifts} eventSlug={eventSlug} />);
+    render(<TeamCard team={team} shifts={shifts} />);
 
     expect(mockProgressBar).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -111,10 +108,9 @@ describe('TeamCard', () => {
       contactAddress: ''
     };
     const shifts: ShiftInfo[] = [];
-    const eventSlug = 'event-2025';
     const actions = <button>Action</button>;
 
-    render(<TeamCard team={team} shifts={shifts} eventSlug={eventSlug} actions={actions} />);
+    render(<TeamCard team={team} shifts={shifts} actions={actions} />);
 
     expect(screen.getByRole('button', { name: /action/i })).toBeInTheDocument();
   });
@@ -141,7 +137,6 @@ describe('TeamCard', () => {
         minVolunteers: 0
       }
     ];
-    const eventSlug = 'event-2025';
     const volunteers: Record<ShiftId, VolunteerInfo[]> = {
       shift1: [
         { id: 'vol1', displayName: 'Volunteer 1' },
@@ -149,9 +144,7 @@ describe('TeamCard', () => {
       ]
     };
 
-    render(
-      <TeamCard team={team} shifts={shifts} eventSlug={eventSlug} shiftVolunteers={volunteers} />
-    );
+    render(<TeamCard team={team} shifts={shifts} shiftVolunteers={volunteers} />);
 
     expect(screen.getByText('volunteers')).toBeInTheDocument();
   });
@@ -178,9 +171,8 @@ describe('TeamCard', () => {
         minVolunteers: 0
       }
     ];
-    const eventSlug = 'event-2025';
 
-    render(<TeamCard team={team} shifts={shifts} eventSlug={eventSlug} showSignup />);
+    render(<TeamCard team={team} shifts={shifts} showSignup />);
 
     const signupLink = screen.getByRole('link', { name: /signup/i });
     expect(signupLink).toBeInTheDocument();
@@ -220,15 +212,7 @@ describe('TeamCard', () => {
       ]
     };
 
-    render(
-      <TeamCard
-        team={team}
-        shifts={shifts}
-        eventSlug={eventSlug}
-        shiftVolunteers={volunteers}
-        showSignup
-      />
-    );
+    render(<TeamCard team={team} shifts={shifts} shiftVolunteers={volunteers} showSignup />);
 
     const signup = screen.getByRole('button', { name: 'signup' });
     expect(signup).toHaveAttribute('data-disabled', 'true');

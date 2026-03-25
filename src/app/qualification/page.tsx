@@ -1,12 +1,16 @@
 import metadata from '@/i18n/metadata';
-import { getEventBySlug } from '@/service/event-service';
 import {
   createQualification,
   getQualificationsForEvent,
   updateQualification
 } from '@/service/qualification-service';
 import { getTeamsForEvent } from '@/service/team-service';
-import { checkAuthorisation, getMatchingRoles } from '@/session';
+import {
+  checkAuthorisation,
+  getCurrentEvent,
+  getCurrentEventOrRedirect,
+  getMatchingRoles
+} from '@/session';
 import ManageQualifications from '@/ui/manage-qualifications';
 import { getQualificationsPath } from '@/utils/path';
 import {
@@ -22,25 +26,16 @@ import { notFound, redirect } from 'next/navigation';
 const PAGE_KEY = 'QualificationsPage';
 
 export const generateMetadata = metadata(PAGE_KEY, {
-  title: async (params) => {
-    const { eventSlug } = params;
-    const event = eventSlug ? await getEventBySlug(eventSlug) : null;
+  title: async () => {
+    const event = await getCurrentEvent();
     const t = await getTranslations(PAGE_KEY);
     return t('title', { eventName: event?.name ?? '' });
   }
 });
 
-interface Props {
-  params: Promise<{ eventSlug: string }>;
-}
-
-export default async function QualificationsPage({ params }: Props) {
+export default async function QualificationsPage() {
   const t = await getTranslations(PAGE_KEY);
-  const { eventSlug } = await params;
-  const event = await getEventBySlug(eventSlug);
-  if (!event) {
-    return notFound();
-  }
+  const event = await getCurrentEventOrRedirect();
 
   const editorRoles: UserRoleMatchCriteria[] = [
     { type: 'admin' },
@@ -75,7 +70,7 @@ export default async function QualificationsPage({ params }: Props) {
     await checkQualificationAuthorisation(data);
     const qualification = validateNewQualification(data);
     await createQualification(qualification);
-    const path = getQualificationsPath(event.slug);
+    const path = getQualificationsPath();
     revalidatePath(path);
     redirect(path);
   };
@@ -85,7 +80,7 @@ export default async function QualificationsPage({ params }: Props) {
     await checkQualificationAuthorisation(data);
     const qualification = validateExistingQualification(data);
     await updateQualification(qualification);
-    const path = getQualificationsPath(event.slug);
+    const path = getQualificationsPath();
     revalidatePath(path);
     redirect(path);
   };

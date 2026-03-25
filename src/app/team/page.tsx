@@ -16,9 +16,7 @@ const PAGE_KEY = 'TeamsDashboardPage';
 
 export const generateMetadata = metadata(PAGE_KEY);
 
-export default async function EventsDashboard({
-  searchParams
-}: PageProps<'/event/[eventSlug]/team'>) {
+export default async function EventsDashboard({ searchParams }: PageProps<'/team'>) {
   const t = await getTranslations(PAGE_KEY);
 
   const event = await getCurrentEventOrRedirect();
@@ -38,7 +36,7 @@ export default async function EventsDashboard({
     ? {}
     : teams.reduce<Record<TeamId, React.ReactNode>>((actions, team) => {
         actions[team.id] = (
-          <Link href={getUpdateTeamPath(event.slug, team.id)}>
+          <Link href={getUpdateTeamPath(team.id)}>
             <IconButton variant="ghost" aria-label={t('edit', { teamName: team.name })}>
               <Pencil2Icon width={20} height={20} />
             </IconButton>
@@ -55,7 +53,7 @@ export default async function EventsDashboard({
       {isEditable && (
         <Box>
           <Button asChild>
-            <NextLink href={getCreateTeamPath(event.slug)}>
+            <NextLink href={getCreateTeamPath()}>
               <PlusIcon /> {t('createTeam')}
             </NextLink>
           </Button>
@@ -65,7 +63,6 @@ export default async function EventsDashboard({
         teams={teams}
         shifts={shifts}
         shiftVolunteers={shiftVolunteers}
-        eventSlug={event.slug}
         itemActions={itemActions}
       />
     </Flex>

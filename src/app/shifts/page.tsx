@@ -1,9 +1,8 @@
 import metadata from '@/i18n/metadata';
-import { getEventBySlug } from '@/service/event-service';
 import { getShiftsForEvent } from '@/service/shift-service';
 import { getTeamsForEvent } from '@/service/team-service';
 import { getVolunteersForShifts } from '@/service/user-service';
-import { currentUser } from '@/session';
+import { currentUser, getCurrentEventOrRedirect } from '@/session';
 import DatedList from '@/ui/dated-list';
 import SearchBar from '@/ui/search-bar';
 import ShiftCard from '@/ui/shift-card';
@@ -19,10 +18,9 @@ const PAGE_KEY = 'EventShiftsPage';
 
 export const generateMetadata = metadata(PAGE_KEY);
 
-export default async function EventShifts({ params }: PageProps<'/event/[eventSlug]/shifts'>) {
+export default async function EventShifts() {
   const t = await getTranslations(PAGE_KEY);
-  const { eventSlug } = await params;
-  const event = await getEventBySlug(eventSlug);
+  const event = await getCurrentEventOrRedirect();
   if (!event) {
     notFound();
   }
@@ -57,7 +55,7 @@ export default async function EventShifts({ params }: PageProps<'/event/[eventSl
       <Flex direction="row" gap="2">
         <Button variant="soft" asChild>
           <a
-            href={getEventShiftsApiPath(eventSlug, { format: 'csv' })}
+            href={getEventShiftsApiPath(event.slug, { format: 'csv' })}
             rel="noopener noreferrer"
             target="_blank"
           >

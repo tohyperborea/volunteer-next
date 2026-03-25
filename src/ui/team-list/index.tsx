@@ -12,20 +12,13 @@ import { useTranslations } from 'next-intl';
 import TeamFilters from '../team-filters';
 
 interface Props {
-  eventSlug: string;
   teams: TeamInfo[];
   shifts: ShiftInfo[];
   shiftVolunteers: Record<ShiftId, VolunteerInfo[]>;
   itemActions?: Record<TeamId, React.ReactNode>;
 }
 
-export default function TeamList({
-  teams,
-  shifts,
-  eventSlug,
-  shiftVolunteers,
-  itemActions = {}
-}: Props) {
+export default function TeamList({ teams, shifts, shiftVolunteers, itemActions = {} }: Props) {
   const t = useTranslations('TeamList');
   if (teams.length === 0) {
     return (
@@ -50,7 +43,6 @@ export default function TeamList({
             <Box asChild m="0" p="0" key={team.id}>
               <li>
                 <TeamCard
-                  eventSlug={eventSlug}
                   team={team}
                   shifts={shiftsByTeamId[team.id] ?? []}
                   shiftVolunteers={shiftVolunteers}

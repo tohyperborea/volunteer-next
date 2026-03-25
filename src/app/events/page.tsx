@@ -1,6 +1,6 @@
 import metadata from '@/i18n/metadata';
 import { deleteEvent, getEvents } from '@/service/event-service';
-import { Heading, Flex, Card, Text, Button, Box, Link } from '@radix-ui/themes';
+import { Heading, Flex, Card, Text, Button, Box } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
 import { PlusIcon } from '@radix-ui/react-icons';
 import { checkAuthorisation } from '@/session';
@@ -8,7 +8,7 @@ import EventCard from '@/ui/event-card';
 import NextLink from 'next/link';
 import { revalidatePath } from 'next/cache';
 import EventLink from '@/ui/event-link';
-import { getCreateEventPath, getEventPath, getEventsPath } from '@/utils/path';
+import { getCreateEventPath, getEventsPath } from '@/utils/path';
 
 const PAGE_KEY = 'EventsManagementPage';
 
@@ -43,13 +43,7 @@ export default async function EventsDashboard() {
         </Card>
       )}
       {events.map((event) => (
-        <EventLink
-          highContrast
-          underline="none"
-          href={getEventPath(event.slug)}
-          eventId={event.id}
-          key={event.id}
-        >
+        <EventLink highContrast underline="none" href={'/'} eventId={event.id} key={event.id}>
           <EventCard event={event} onDelete={deleteAction} />
         </EventLink>
       ))}

@@ -46,10 +46,7 @@ export const generateMetadata = metadata(PAGE_KEY, {
   }
 });
 
-export default async function TeamPage({
-  params,
-  searchParams
-}: PageProps<`/event/[eventSlug]/team/[teamSlug]`>) {
+export default async function TeamPage({ params, searchParams }: PageProps<`/team/[teamSlug]`>) {
   const { teamSlug } = await params;
   const event = await getCurrentEventOrRedirect();
   const team = teamSlug ? await getTeamBySlug(event.slug, teamSlug) : null;
@@ -102,7 +99,7 @@ export default async function TeamPage({
     } else {
       await createShift(shift);
     }
-    const path = getTeamShiftsPath(event.slug, teamSlug);
+    const path = getTeamShiftsPath(teamSlug);
     revalidatePath(path);
     redirect(path);
   };
@@ -115,7 +112,7 @@ export default async function TeamPage({
       throw new Error('Shift id is required for deletion');
     }
     await deleteShift(shiftId);
-    const path = getTeamShiftsPath(event.slug, teamSlug);
+    const path = getTeamShiftsPath(teamSlug);
     revalidatePath(path);
   };
 
@@ -149,7 +146,7 @@ export default async function TeamPage({
       }
       await addVolunteerToShift(shiftId, permissions.userId, client);
     });
-    const path = getTeamShiftsPath(event.slug, teamSlug);
+    const path = getTeamShiftsPath(teamSlug);
     revalidatePath(path);
   };
 
@@ -160,7 +157,7 @@ export default async function TeamPage({
       unauthorized();
     }
     await removeVolunteerFromShift(shiftId, permissions.userId);
-    const path = getTeamShiftsPath(event.slug, teamSlug);
+    const path = getTeamShiftsPath(teamSlug);
     revalidatePath(path);
   };
 

@@ -44,8 +44,8 @@ export default async function TeamLayout({ params, children }: Props) {
   const permissionsProfile = getPermissionsProfile(await currentUser());
   const teamLeads = usersToVolunteers(await getTeamLeadsForTeam(team.id), permissionsProfile);
 
-  const shiftsPath = getTeamShiftsPath(event.slug, teamSlug);
-  const volunteersPath = getTeamVolunteersPath(event.slug, teamSlug);
+  const shiftsPath = getTeamShiftsPath(teamSlug);
+  const volunteersPath = getTeamVolunteersPath(teamSlug);
   return (
     <Flex direction="column">
       <Heading my="4" align="center">

@@ -1,6 +1,5 @@
 import metadata from '@/i18n/metadata';
 import { usersToVolunteers } from '@/lib/volunteer';
-import { getEventBySlug } from '@/service/event-service';
 import {
   assignQualificationToUsers,
   deleteQualification,
@@ -10,7 +9,12 @@ import {
 } from '@/service/qualification-service';
 import { getTeamsForEvent } from '@/service/team-service';
 import { getFilteredUsers } from '@/service/user-service';
-import { checkAuthorisation, currentUser } from '@/session';
+import {
+  checkAuthorisation,
+  currentUser,
+  getCurrentEvent,
+  getCurrentEventOrRedirect
+} from '@/session';
 import AssignQualification from '@/ui/assign-qualification';
 import QualificationDetails from '@/ui/qualification-details';
 import VolunteerList from '@/ui/volunteer-list';
@@ -27,8 +31,8 @@ const PAGE_KEY = 'QualificationDetailsPage';
 
 export const generateMetadata = metadata(PAGE_KEY, {
   title: async (params) => {
-    const { eventSlug, qualificationId } = params;
-    const event = eventSlug ? await getEventBySlug(eventSlug) : null;
+    const { qualificationId } = params;
+    const event = await getCurrentEvent();
     const qualification = qualificationId ? await getQualificationById(qualificationId) : null;
     const t = await getTranslations(PAGE_KEY);
     return t('title', {
@@ -38,20 +42,20 @@ export const generateMetadata = metadata(PAGE_KEY, {
   }
 });
 
-interface Props {
-  params: Promise<{ eventSlug: string; qualificationId: QualificationId }>;
-  searchParams?: Promise<{
-    searchQuery?: string;
-    page?: string;
-  }>;
-}
-
-export default async function QualificationsPage(props: Props) {
-  const { eventSlug, qualificationId } = await props.params;
+export default async function QualificationsPage(
+  props: PagePropsWithSearch<
+    '/qualification/[qualificationId]',
+    {
+      searchQuery?: string;
+      page?: string;
+    }
+  >
+) {
+  const { qualificationId } = await props.params;
   const searchParams = await props.searchParams;
   const query = searchParams?.searchQuery;
   const t = await getTranslations(PAGE_KEY);
-  const event = await getEventBySlug(eventSlug);
+  const event = await getCurrentEventOrRedirect();
   const qualification = await getQualificationById(qualificationId);
   if (!event || !qualification || qualification.eventId !== event.id) {
     return notFound();
@@ -93,7 +97,7 @@ export default async function QualificationsPage(props: Props) {
     const updatedQualification = validateExistingQualification(data);
     await updateQualification(updatedQualification);
 
-    const path = getQualificationDetailsPath({ eventSlug, qualificationId });
+    const path = getQualificationDetailsPath(qualificationId);
     revalidatePath(path);
     redirect(path);
   };
@@ -103,7 +107,7 @@ export default async function QualificationsPage(props: Props) {
     await checkAuthorisation(editorRoles);
     await deleteQualification(qualification.id);
 
-    const path = getQualificationsPath(event.slug);
+    const path = getQualificationsPath();
     revalidatePath(path);
     redirect(path);
   };
@@ -113,7 +117,7 @@ export default async function QualificationsPage(props: Props) {
     const volunteerIds = data.getAll('volunteers') as UserId[];
     await checkAuthorisation(editorRoles);
     await assignQualificationToUsers(qualification.id, volunteerIds);
-    const path = getQualificationDetailsPath({ eventSlug, qualificationId });
+    const path = getQualificationDetailsPath(qualificationId);
     revalidatePath(path);
     redirect(path);
   };
@@ -125,7 +129,7 @@ export default async function QualificationsPage(props: Props) {
     }
     await checkAuthorisation(editorRoles);
     await removeQualificationFromUser(qualification.id, volunteerId);
-    const path = getQualificationDetailsPath({ eventSlug, qualificationId });
+    const path = getQualificationDetailsPath(qualificationId);
     revalidatePath(path);
   };
 

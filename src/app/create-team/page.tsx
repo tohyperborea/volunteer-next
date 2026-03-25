@@ -11,6 +11,7 @@ import { validateNewTeam } from '@/validator/team-validator';
 import { createTeam } from '@/service/team-service';
 import { usersToVolunteers } from '@/lib/volunteer';
 import { getPermissionsProfile } from '@/utils/permissions';
+import { getTeamsPath } from '@/utils/path';
 
 const PAGE_KEY = 'CreateTeamPage';
 
@@ -40,7 +41,7 @@ export default async function CreateTeam() {
         client
       );
     });
-    redirect(`/event/${event.slug}/team`);
+    redirect(getTeamsPath());
   };
 
   return (
