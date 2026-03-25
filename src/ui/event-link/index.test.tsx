@@ -9,6 +9,16 @@ jest.mock('@/utils/cookie', () => ({
   }
 }));
 
+jest.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: mockPush,
+    refresh: mockRefresh
+  })
+}));
+
+const mockPush = jest.fn();
+const mockRefresh = jest.fn();
+
 describe('EventLink', () => {
   it('renders correctly with given props', () => {
     const { getByText } = render(
@@ -31,6 +41,8 @@ describe('EventLink', () => {
     fireEvent.click(link);
 
     expect(setCookie).toHaveBeenCalledWith(EventCookie, '123');
+    expect(mockPush).toHaveBeenCalledWith('/test');
+    expect(mockRefresh).toHaveBeenCalled();
   });
 
   it('passes additional props to the Link component', () => {
@@ -41,7 +53,6 @@ describe('EventLink', () => {
     );
 
     const link = getByText('Test Link');
-    expect(link).toHaveAttribute('href', '/test');
     expect(link).toHaveAttribute('target', '_blank');
   });
 });

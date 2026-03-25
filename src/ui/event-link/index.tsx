@@ -8,23 +8,25 @@
 
 import { EventCookie, setCookie } from '@/utils/cookie';
 import { Link, type LinkProps } from '@radix-ui/themes';
-import NextLink from 'next/link';
+import { useRouter } from 'next/navigation';
 
 interface Props extends LinkProps {
   eventId: EventId;
 }
 
-export default function EventLink({ eventId, href, children, ...linkProps }: Props) {
+export default function EventLink({ eventId, href, ...linkProps }: Props) {
+  const { push, refresh } = useRouter();
   return (
-    <Link asChild {...linkProps}>
-      <NextLink
-        href={href ?? '#'}
-        onClick={() => {
-          setCookie(EventCookie, eventId);
-        }}
-      >
-        {children}
-      </NextLink>
-    </Link>
+    <Link
+      style={{ cursor: 'pointer' }}
+      onClick={() => {
+        setCookie(EventCookie, eventId);
+        if (href) {
+          push(href);
+        }
+        refresh();
+      }}
+      {...linkProps}
+    />
   );
 }

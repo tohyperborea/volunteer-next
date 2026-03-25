@@ -12,7 +12,7 @@ import { ThemeProvider } from 'next-themes';
 import { NextIntlClientProvider } from 'next-intl';
 import { Theme, Flex } from '@radix-ui/themes';
 import NavigationFrame from '@/ui/navigation-frame';
-import { currentUser } from '@/session';
+import { currentUser, getCurrentEvent } from '@/session';
 import { getTranslations } from 'next-intl/server';
 import { headers } from 'next/headers';
 import { getEventBySlug } from '@/service/event-service';
@@ -34,23 +34,10 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const user = await currentUser();
+  const event = await getCurrentEvent();
 
-  // Get the current pathname from middleware header to check if we're on an event page
-  const headersList = await headers();
-  const pathname = headersList.get('x-pathname') || '';
-
-  // Extract event slug from pathname if it matches /event/[eventSlug] pattern
-  let navBarTitle = process.env.APP_NAME;
-  let navBarSubtitle = undefined;
-  const eventMatch = pathname.match(/^\/event\/([^\/]+)/);
-  if (eventMatch) {
-    const eventSlug = eventMatch[1];
-    const event = await getEventBySlug(eventSlug);
-    if (event) {
-      navBarTitle = event.name;
-      navBarSubtitle = getEventDateRangeDisplayText({ event });
-    }
-  }
+  const navBarTitle = event ? event.name : process.env.APP_NAME;
+  const navBarSubtitle = event ? getEventDateRangeDisplayText({ event }) : undefined;
 
   const mainContent = (
     <Flex asChild direction="column" p="4">
