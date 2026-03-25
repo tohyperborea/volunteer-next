@@ -18,30 +18,41 @@ import ShiftFilters from '../shift-filters';
 
 interface Props {
   event: EventInfo;
-  startDate: Date;
   teamId: TeamId;
   shifts: ShiftInfo[];
   qualifications: QualificationInfo[];
+  shiftVolunteers: Record<ShiftId, VolunteerInfo[]>;
   exportLink: string;
+  userShifts?: Set<ShiftId>;
+  userQualifications?: Set<QualificationId>;
   onSaveShift?: (data: FormData) => Promise<void>;
   onDeleteShift?: (shiftId: ShiftId) => Promise<void>;
+  onSignup?: (shiftId: ShiftId) => Promise<void>;
+  onCancel?: (shiftId: ShiftId) => Promise<void>;
 }
 
 export default function ShiftList({
   event,
-  startDate,
   teamId,
   shifts,
   qualifications,
+  shiftVolunteers,
   exportLink,
   onSaveShift,
-  onDeleteShift
+  onDeleteShift,
+  onSignup,
+  onCancel,
+  userShifts,
+  userQualifications
 }: Props) {
   const t = useTranslations('ShiftList');
   const canEdit = Boolean(onSaveShift);
   const [creatingShift, setCreatingShift] = useState(false);
   const [editingShift, setEditingShift] = useState<ShiftInfo | undefined>(undefined);
   const qualificationMap = new Map(qualifications.map((q) => [q.id, q]));
+  const showSignup = (shiftId: ShiftId) => onSignup && userShifts && !userShifts.has(shiftId);
+  const showCancel = (shiftId: ShiftId) => onCancel && userShifts && userShifts.has(shiftId);
+
   return (
     <Flex direction="column" gap="6">
       {canEdit && (
@@ -68,7 +79,7 @@ export default function ShiftList({
         <ShiftFilters withFilters={['searchQuery']} />
         <DatedList
           items={shifts}
-          getDate={(shift) => eventDayToDate(startDate, shift.eventDay)}
+          getDate={(shift) => eventDayToDate(event.startDate, shift.eventDay)}
           renderItem={(shift) => (
             <ShiftCard
               event={event}
@@ -76,16 +87,25 @@ export default function ShiftList({
               qualification={
                 shift.requirement ? qualificationMap.get(shift.requirement) : undefined
               }
-              volunteerNames={[] /* TODO */}
+              volunteers={shiftVolunteers[shift.id] || []}
               key={shift.id}
               onEdit={canEdit ? () => setEditingShift(shift) : undefined}
+              onSignup={showSignup(shift.id) ? () => onSignup!(shift.id) : undefined}
+              onCancel={showCancel(shift.id) ? () => onCancel!(shift.id) : undefined}
+              isQualified={
+                shift.requirement
+                  ? userQualifications
+                    ? userQualifications.has(shift.requirement)
+                    : false
+                  : true
+              }
             />
           )}
         />
       </Flex>
       {canEdit && (
         <ShiftDialog
-          startDate={startDate}
+          startDate={event.startDate}
           teamId={teamId}
           qualifications={qualifications}
           creating={creatingShift}

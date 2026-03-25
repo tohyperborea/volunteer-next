@@ -4,6 +4,8 @@
  * @author Michael Townsend <@continuities>
  */
 
+import { userFiltersToParams } from './user-filters';
+
 // Users paths
 export const getUsersDashboardPath = (): string => '/user';
 export const getCreateUserPath = (): string => '/create-user';
@@ -51,5 +53,17 @@ export const getVolunteerShiftsApiPath = (
   params?: { format: 'csv' | 'json' }
 ): string =>
   `/api/event/${eventSlug}/volunteer/${userId}/shifts?format=${params?.format ?? 'json'}`;
-export const getUserApiPath = (filter?: UserFilters): string =>
-  `/api/user${filter ? `?${new URLSearchParams(filter as Record<string, string>).toString()}` : ''}`;
+export const getUserApiPath = (
+  filter?: UserFilters,
+  params?: { format: 'csv' | 'json' }
+): string => {
+  const fullParams = filter ? userFiltersToParams(filter) : new URLSearchParams();
+  fullParams.set('format', params?.format ?? 'json');
+  return `/api/user?${fullParams.toString()}`;
+};
+export const getTeamVolunteersApiPath = (
+  eventSlug: string,
+  teamSlug: string,
+  params?: { format: 'csv' | 'json' }
+): string =>
+  `/api/event/${eventSlug}/team/${teamSlug}/volunteers?format=${params?.format ?? 'json'}`;

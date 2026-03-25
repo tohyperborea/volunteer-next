@@ -5,10 +5,15 @@ import { checkAuthorisation, currentUser } from '@/session';
 import { getFilteredUsers } from '@/service/user-service';
 import { markUserAsDeleted, undeleteUser } from '@/service/user-service';
 import { revalidatePath } from 'next/cache';
-import { getCreateUserPath, getEditUserPath, getUsersDashboardPath } from '@/utils/path';
+import {
+  getCreateUserPath,
+  getEditUserPath,
+  getUserApiPath,
+  getUsersDashboardPath
+} from '@/utils/path';
 import VolunteerList from '@/ui/volunteer-list';
 import { usersToVolunteers } from '@/lib/volunteer';
-import { Pencil1Icon, PlusIcon, TrashIcon } from '@radix-ui/react-icons';
+import { Pencil1Icon, PlusIcon, Share2Icon } from '@radix-ui/react-icons';
 import DeleteButton from '@/ui/delete-button';
 import { recordToUserFilters } from '@/utils/user-filters';
 import { getPermissionsProfile } from '@/utils/permissions';
@@ -79,13 +84,26 @@ export default async function UsersDashboardPage({ searchParams }: PageProps<'/u
       <Heading my="4" as="h1" align="center">
         {t('title')}
       </Heading>
-      {canEdit && (
-        <Button variant="soft" color="blue" asChild>
-          <NextLink href={getCreateUserPath()}>
-            <PlusIcon /> {t('createUser')}
+      <Flex gap="2" mb="4">
+        {canEdit && (
+          <Button variant="soft" asChild>
+            <NextLink href={getCreateUserPath()}>
+              <PlusIcon /> {t('createUser')}
+            </NextLink>
+          </Button>
+        )}
+        <Button variant="soft" asChild>
+          <NextLink
+            href={getUserApiPath(filters, { format: 'csv' })}
+            prefetch={false}
+            target="_blank"
+            rel="noopener"
+          >
+            <Share2Icon />
+            {t('export')}
           </NextLink>
         </Button>
-      )}
+      </Flex>
       <VolunteerList volunteers={volunteers} withFilters={withFilters} itemActions={itemActions} />
     </Flex>
   );

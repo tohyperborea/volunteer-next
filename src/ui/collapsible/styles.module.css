@@ -4,13 +4,15 @@
   align-items: center;
   justify-content: space-between;
 }
-
 .content {
-  display: none;
-}
+  transition:
+    transform 0.2s ease,
+    opacity 0.2s ease;
 
-.open .content {
-  display: block;
+  @starting-style {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
 }
 
 .icon {

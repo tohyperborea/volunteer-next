@@ -12,10 +12,13 @@ jest.mock('@/service/event-service', () => ({
   getEventBySlug: jest.fn()
 }));
 jest.mock('@/service/shift-service', () => ({
-  getShiftsForVolunteer: jest.fn()
+  getShiftsForVolunteer: jest.fn().mockResolvedValue([])
 }));
 jest.mock('@/service/team-service', () => ({
   getTeamsForEvent: jest.fn()
+}));
+jest.mock('@/service/user-service', () => ({
+  getVolunteersForShifts: jest.fn().mockResolvedValue({})
 }));
 jest.mock('@/lib/volunteer', () => ({
   getVolunteerById: jest.fn()

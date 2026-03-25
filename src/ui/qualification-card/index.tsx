@@ -6,9 +6,9 @@
 
 'use client';
 
-import { Card, Flex, Heading, Text } from '@radix-ui/themes';
-import NextLink from 'next/link';
+import { Box, Card, Flex, Heading, Text } from '@radix-ui/themes';
 import { getQualificationDetailsPath } from '@/utils/path';
+import NextLink from 'next/link';
 
 interface Props {
   qualification: QualificationInfo;
@@ -27,15 +27,25 @@ export default function QualificationCard({
 }: Props) {
   const cardId = `qualification-card-${qualification.id}`;
   const Inner = () => (
-    <Flex direction="column" gap="1">
-      <Flex justify="between" align="center">
-        <Heading size="4" as="h3" weight="medium">
-          {qualification.name}
-        </Heading>
-        {actions}
+    <Flex justify="between">
+      <Flex direction={{ initial: 'column', sm: 'row' }} gap="1" flexGrow="1">
+        <Box asChild flexBasis="100%">
+          <Heading size="4" as="h3" weight="medium">
+            {qualification.name}
+          </Heading>
+        </Box>
+        <Box asChild flexBasis="100%">
+          <Text color="gray">{event.name}</Text>
+        </Box>
+        <Box
+          asChild
+          flexBasis="100%"
+          display={{ initial: teamName ? 'block' : 'none', sm: 'block' }}
+        >
+          <Text color="gray">{teamName}</Text>
+        </Box>
       </Flex>
-      <Text color="gray">{event.name}</Text>
-      {teamName && <Text color="gray">{teamName}</Text>}
+      {actions}
     </Flex>
   );
 

@@ -51,6 +51,7 @@
     "@types/pg": "^8.15.6",
     "@types/react": "19.2.7",
     "@types/react-dom": "19.2.3",
+    "baseline-browser-mapping": "^2.10.10",
     "eslint": "^9",
     "eslint-config-next": "16.0.8",
     "husky": "^9.1.7",

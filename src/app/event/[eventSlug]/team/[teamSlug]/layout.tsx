@@ -11,7 +11,7 @@ import { checkAuthorisation, currentUser } from '@/session';
 import VolunteerCard from '@/ui/volunteer-card';
 import { getTeamShiftsPath, getTeamVolunteersPath } from '@/utils/path';
 import { getPermissionsProfile } from '@/utils/permissions';
-import { Box, Flex, Heading, Link, TabNav, Text } from '@radix-ui/themes';
+import { Box, DataList, Flex, Heading, Link } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import TeamTabs from '@/ui/team-tabs';
@@ -50,24 +50,25 @@ export default async function TeamLayout({ params, children }: Props) {
       <Heading my="4" align="center">
         {team.name}
       </Heading>
-      <Flex direction="column" gap="1" mb="4">
-        <Box>
-          <Text>{t('contact')}: </Text>
-          <Link href={`mailto:${team.contactAddress}`}>{team.contactAddress}</Link>
-        </Box>
-        <Flex direction="column">
-          <Text>{t('descriptionLabel')}:</Text>
-          <Text>{team.description}</Text>
-        </Flex>
-        <Box>
-          <Text>{t('teamLeads')}:</Text>
-          <Flex direction="column" gap="1" mt="1">
-            {teamLeads.map((lead) => (
-              <VolunteerCard key={lead.id} volunteer={lead} />
-            ))}
-          </Flex>
-        </Box>
-      </Flex>
+      {team.description}
+      <DataList.Root my="4">
+        <DataList.Item>
+          <DataList.Label>{t('contact')}</DataList.Label>
+          <DataList.Value>
+            <Link href={`mailto:${team.contactAddress}`}>{team.contactAddress}</Link>
+          </DataList.Value>
+        </DataList.Item>
+        <DataList.Item>
+          <DataList.Label>{t('teamLeads')}</DataList.Label>
+          <DataList.Value>
+            <Flex direction="column" gap="1" mt="1" flexGrow="1">
+              {teamLeads.map((lead) => (
+                <VolunteerCard key={lead.id} volunteer={lead} />
+              ))}
+            </Flex>
+          </DataList.Value>
+        </DataList.Item>
+      </DataList.Root>
       {canEdit ? (
         <>
           <TeamTabs shiftsPath={shiftsPath} volunteersPath={volunteersPath} />

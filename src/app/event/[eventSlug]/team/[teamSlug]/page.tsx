@@ -1,22 +1,34 @@
+import { inTransaction } from '@/db';
 import metadata from '@/i18n/metadata';
 import { getEventBySlug } from '@/service/event-service';
-import { getQualificationsForEvent } from '@/service/qualification-service';
+import {
+  getQualificationsForEvent,
+  getQualificationsForUser
+} from '@/service/qualification-service';
 import {
   createShift,
   updateShift,
   deleteShift,
-  getFilteredShiftsForTeam
+  getFilteredShiftsForTeam,
+  addVolunteerToShift,
+  removeVolunteerFromShift,
+  getShiftsForVolunteer,
+  getShiftById,
+  getShiftLock,
+  getShiftSignupCount
 } from '@/service/shift-service';
 import { getTeamBySlug } from '@/service/team-service';
-import { checkAuthorisation } from '@/session';
+import { getVolunteersForShifts } from '@/service/user-service';
+import { checkAuthorisation, currentUser } from '@/session';
 import ShiftList from '@/ui/shift-list';
 import { getTeamShiftsApiPath, getTeamShiftsPath } from '@/utils/path';
+import { getPermissionsProfile } from '@/utils/permissions';
 import { recordToShiftFilters } from '@/utils/shift-filters';
 import { validateNewShift } from '@/validator/shift-validator';
 import { Flex, Heading } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
 import { revalidatePath } from 'next/cache';
-import { notFound, redirect } from 'next/navigation';
+import { notFound, redirect, unauthorized } from 'next/navigation';
 
 const PAGE_KEY = 'TeamPage.ShiftsTab';
 
@@ -28,10 +40,6 @@ export const generateMetadata = metadata(PAGE_KEY, {
     return `${t('title')} | ${team?.name ?? ''}`;
   }
 });
-
-interface Props {
-  params: Promise<{ eventSlug: string; teamSlug: string }>;
-}
 
 export default async function TeamShifts({
   params,
@@ -65,6 +73,17 @@ export default async function TeamShifts({
 
   const isEditable = await checkAuthorisation(editorRoles, true);
   const t = await getTranslations(PAGE_KEY);
+  const permissions = getPermissionsProfile(await currentUser());
+  const shiftVolunteers = await getVolunteersForShifts(
+    shifts.map((s) => s.id),
+    permissions
+  );
+  const userShifts = new Set(
+    (await getShiftsForVolunteer(event.id, permissions.userId)).map((s) => s.id)
+  );
+  const userQualifications = new Set(
+    (await getQualificationsForUser(permissions.userId)).map((q) => q.id)
+  );
 
   const onSaveShift = async (data: FormData) => {
     'use server';
@@ -94,6 +113,51 @@ export default async function TeamShifts({
     revalidatePath(path);
   };
 
+  const onSignup = async (shiftId: ShiftId) => {
+    'use server';
+    console.info(`Signing up volunteer ${permissions.userId} for shift ${shiftId}`);
+    if (!permissions.userId) {
+      unauthorized();
+    }
+    const shift = await getShiftById(shiftId);
+    if (!shift) {
+      notFound();
+    }
+    if (shift.teamId !== team.id) {
+      throw new Error('Shift does not belong to this team');
+    }
+
+    if (shift.requirement) {
+      const qualifications = await getQualificationsForUser(permissions.userId);
+      const hasRequiredQualification = qualifications.some((q) => q.id === shift.requirement);
+      if (!hasRequiredQualification) {
+        throw new Error('User does not have the required qualification for this shift');
+      }
+    }
+
+    await inTransaction(async (client) => {
+      await getShiftLock(shiftId, client);
+      const numVolunteers = await getShiftSignupCount(shiftId, client);
+      if (numVolunteers >= shift.maxVolunteers) {
+        throw new Error('Shift is already full');
+      }
+      await addVolunteerToShift(shiftId, permissions.userId, client);
+    });
+    const path = getTeamShiftsPath(eventSlug, teamSlug);
+    revalidatePath(path);
+  };
+
+  const onCancel = async (shiftId: ShiftId) => {
+    'use server';
+    console.info(`Cancelling volunteer ${permissions.userId} for shift ${shiftId}`);
+    if (!permissions.userId) {
+      unauthorized();
+    }
+    await removeVolunteerFromShift(shiftId, permissions.userId);
+    const path = getTeamShiftsPath(eventSlug, teamSlug);
+    revalidatePath(path);
+  };
+
   return (
     <Flex direction="column" gap="2">
       {!isEditable && (
@@ -103,13 +167,17 @@ export default async function TeamShifts({
       )}
       <ShiftList
         event={event}
-        startDate={event.startDate}
         teamId={team.id}
         shifts={shifts}
+        userShifts={userShifts}
+        userQualifications={userQualifications}
         qualifications={qualifications}
+        shiftVolunteers={shiftVolunteers}
         exportLink={getTeamShiftsApiPath(eventSlug, teamSlug, { format: 'csv' })}
         onSaveShift={isEditable ? onSaveShift : undefined}
         onDeleteShift={isEditable ? onDeleteShift : undefined}
+        onSignup={onSignup}
+        onCancel={onCancel}
       />
     </Flex>
   );

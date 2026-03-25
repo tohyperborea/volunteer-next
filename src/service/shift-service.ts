@@ -39,7 +39,8 @@ const rowToShift = (row: any): ShiftInfo => ({
   durationHours: row.durationHours,
   minVolunteers: row.minVolunteers,
   maxVolunteers: row.maxVolunteers,
-  isActive: row.isActive
+  isActive: row.isActive,
+  requirement: row.qualificationId || undefined
 });
 
 const rowsToShifts = (rows: any[]): ShiftInfo[] => {
@@ -61,6 +62,22 @@ const rowsToShifts = (rows: any[]): ShiftInfo[] => {
   return Array.from(shiftsMap.values());
 };
 
+const SHIFT_QUERY = `
+  SELECT 
+    s."id",
+    s."teamId", 
+    s."title", 
+    s."eventDay", 
+    s."startTime", 
+    s."durationHours",
+    s."minVolunteers",
+    s."maxVolunteers",
+    s."isActive",
+    r."qualificationId"
+  FROM shift s
+  LEFT JOIN requirement r ON s.id = r."shiftId"
+`;
+
 /**
  * Fetches a shift by its ID from the database.
  * @param shiftId - The ID of the shift to fetch.
@@ -69,20 +86,8 @@ const rowsToShifts = (rows: any[]): ShiftInfo[] => {
 export const getShiftById = cache(async (shiftId: ShiftId): Promise<ShiftInfo | null> => {
   const result = await pool.query(
     `
-    SELECT 
-      s."id",
-      s."teamId", 
-      s."title", 
-      s."eventDay", 
-      s."startTime", 
-      s."durationHours",
-      s."minVolunteers",
-      s."maxVolunteers",
-      s."isActive",
-      r."qualificationId"
-    FROM shift s
-    LEFT JOIN requirement r ON s.id = r."shiftId"
-    WHERE id = $1`,
+    ${SHIFT_QUERY}
+    WHERE s.id = $1`,
     [shiftId]
   );
   if (result.rows.length === 0) {
@@ -99,19 +104,7 @@ export const getShiftById = cache(async (shiftId: ShiftId): Promise<ShiftInfo | 
 export const getShiftsForTeam = cache(async (teamId: TeamId): Promise<ShiftInfo[]> => {
   const result = await pool.query(
     `
-    SELECT 
-      s."id",
-      s."teamId", 
-      s."title", 
-      s."eventDay", 
-      s."startTime", 
-      s."durationHours",
-      s."minVolunteers",
-      s."maxVolunteers",
-      s."isActive",
-      r."qualificationId"
-    FROM shift s
-    LEFT JOIN requirement r ON s.id = r."shiftId"
+    ${SHIFT_QUERY}
     WHERE "teamId" = $1`,
     [teamId]
   );
@@ -137,19 +130,7 @@ export const getFilteredShiftsForTeam = cache(
 
     const result = await pool.query(
       `
-      SELECT 
-        s."id",
-        s."teamId", 
-        s."title", 
-        s."eventDay", 
-        s."startTime", 
-        s."durationHours",
-        s."minVolunteers",
-        s."maxVolunteers",
-        s."isActive",
-        r."qualificationId"
-      FROM shift s
-      LEFT JOIN requirement r ON s.id = r."shiftId"
+      ${SHIFT_QUERY}
       WHERE ${whereClauses.join(' AND ')}
       ORDER BY s."eventDay", s."startTime"
       `,
@@ -167,20 +148,8 @@ export const getFilteredShiftsForTeam = cache(
 export const getShiftsForEvent = cache(async (eventId: EventId): Promise<ShiftInfo[]> => {
   const result = await pool.query(
     `
-    SELECT 
-      s."id",
-      s."teamId", 
-      s."title",
-      s."eventDay",
-      s."startTime",
-      s."durationHours",
-      s."minVolunteers",
-      s."maxVolunteers",
-      s."isActive",
-      r."qualificationId"
-    FROM shift s
+    ${SHIFT_QUERY}
     JOIN team t ON s."teamId" = t.id
-    LEFT JOIN requirement r ON s.id = r."shiftId"
     WHERE t."eventId" = $1
     ORDER BY s."eventDay", s."startTime"
     `,
@@ -335,3 +304,159 @@ export const deleteShift = async (shiftId: ShiftId, client?: PoolClient): Promis
   await db.query('DELETE FROM shift WHERE id = $1', [shiftId]);
   console.info('Deleted shift with id:', shiftId);
 };
+
+/**
+ * Gets a lock for a particular shift
+ * @param shiftId - The ID of the shift to lock on
+ * @param client - database client for transaction support
+ */
+export const getShiftLock = async (
+  shiftId: ShiftId,
+  client: PoolClient
+): Promise<void> => {
+  await client.query(`SELECT id FROM shift WHERE id = $1 FOR UPDATE`, [shiftId]);
+};
+
+/**
+ * Gets the number of volunteers signed up for a shift
+ * @param shiftId - The ID of the shift
+ * @param client - Optional database client for transaction support
+ * @returns The number of volunteers signed up
+ */
+export const getShiftSignupCount = async (
+  shiftId: ShiftId,
+  client?: PoolClient
+): Promise<number> => {
+  const db = client || pool;
+  const result = await db.query(
+    `
+    SELECT COUNT(*) FROM shift_volunteer WHERE shift_id = $1
+    `,
+    [shiftId]
+  );
+  return parseInt(result.rows[0].count, 10);
+};
+
+/**
+ * Adds a volunteer to a shift in the database
+ * @param shiftId - The ID of the shift to add the volunteer to.
+ * @param volunteerId - The ID of the volunteer to add to the shift.
+ * @param client - Optional database client for transaction support.
+ */
+export const addVolunteerToShift = async (
+  shiftId: ShiftId,
+  volunteerId: UserId,
+  client?: PoolClient
+): Promise<void> => {
+  const db = client || pool;
+  await db.query(
+    `
+    INSERT INTO shift_volunteer (
+      "shift_id",
+      "user_id"
+    ) VALUES ($1, $2)
+    ON CONFLICT DO NOTHING
+    `,
+    [shiftId, volunteerId]
+  );
+};
+
+/**
+ * Removes a volunteer from a shift in the database
+ * @param shiftId - The ID of the shift to remove the volunteer from.
+ * @param volunteerId - The ID of the volunteer to remove from the shift.
+ * @param client - Optional database client for transaction support.
+ */
+export const removeVolunteerFromShift = async (
+  shiftId: ShiftId,
+  volunteerId: UserId,
+  client?: PoolClient
+): Promise<void> => {
+  const db = client || pool;
+  await db.query(
+    `
+    DELETE FROM shift_volunteer
+    WHERE "shift_id" = $1 AND "user_id" = $2
+    `,
+    [shiftId, volunteerId]
+  );
+};
+
+/**
+ * Fetches a list of shifts that a given volunteer is signed up for.
+ * @param eventId - The ID of the event to fetch shifts for.
+ * @param volunteerId - The ID of the volunteer to fetch shifts for.
+ * @return An array of ShiftInfo objects that the volunteer is signed up for.
+ */
+export const getShiftsForVolunteer = cache(
+  async (eventId: EventId, volunteerId: UserId): Promise<ShiftInfo[]> => {
+    console.info(`Fetching shifts for volunteer ${volunteerId} in event ${eventId}`);
+    const result = await pool.query(
+      `
+    ${SHIFT_QUERY}
+    JOIN shift_volunteer sv ON s.id = sv.shift_id
+    WHERE sv.user_id = $1
+    AND s."teamId" IN (
+      SELECT id FROM team WHERE "eventId" = $2
+    )
+    ORDER BY s."eventDay", s."startTime"
+    `,
+      [volunteerId, eventId]
+    );
+    return rowsToShifts(result.rows);
+  }
+);
+
+/**
+ * Fetches a list of shifts for multiple volunteers in a given event.
+ * @param eventId - The ID of the event to fetch shifts for.
+ * @param volunteerIds - An array of volunteer IDs to fetch shifts for.
+ * @return An object mapping volunteer IDs to arrays of ShiftInfo objects
+ */
+export const getShiftsForVolunteers = cache(
+  async (eventId: EventId, volunteerIds: UserId[]): Promise<Record<UserId, ShiftInfo[]>> => {
+    if (volunteerIds.length === 0) {
+      return {};
+    }
+    console.info(`Fetching shifts for volunteers ${volunteerIds.join(', ')} in event ${eventId}`);
+    const result = await pool.query(
+      `
+    SELECT 
+      s."id",
+      s."teamId", 
+      s."title", 
+      s."eventDay", 
+      s."startTime", 
+      s."durationHours",
+      s."minVolunteers",
+      s."maxVolunteers",
+      s."isActive",
+      r."qualificationId",
+      sv."user_id"
+    FROM shift s
+    LEFT JOIN requirement r ON s.id = r."shiftId"
+    JOIN shift_volunteer sv ON s.id = sv.shift_id
+    WHERE sv.user_id = ANY($1)
+    AND s."teamId" IN (
+      SELECT id FROM team WHERE "eventId" = $2
+    )
+    ORDER BY s."eventDay", s."startTime"
+    `,
+      [volunteerIds, eventId]
+    );
+    const shifts = rowsToShifts(result.rows);
+    const shiftMap = new Map<ShiftId, ShiftInfo>(shifts.map((s) => [s.id, s]));
+    const volunteerShifts: Record<UserId, ShiftInfo[]> = {};
+    for (const row of result.rows) {
+      const volunteerId = row.user_id;
+      if (!volunteerShifts[volunteerId]) {
+        volunteerShifts[volunteerId] = [];
+      }
+      const shift = shiftMap.get(row.id);
+      if (shift) {
+        volunteerShifts[volunteerId].push(shift);
+      }
+    }
+    return volunteerShifts;
+  }
+);

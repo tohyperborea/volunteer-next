@@ -7,7 +7,8 @@ describe('paramsToUserFilters', () => {
       searchQuery: 'test',
       showDeleted: 'true',
       withQualification: 'certified',
-      withoutQualification: 'uncertified'
+      withoutQualification: 'uncertified',
+      onTeam: 'team123'
     });
 
     const result = paramsToUserFilters(searchParams);
@@ -17,7 +18,8 @@ describe('paramsToUserFilters', () => {
       searchQuery: 'test',
       showDeleted: true,
       withQualification: 'certified',
-      withoutQualification: 'uncertified'
+      withoutQualification: 'uncertified',
+      onTeam: 'team123'
     });
   });
 
@@ -31,7 +33,8 @@ describe('paramsToUserFilters', () => {
       searchQuery: undefined,
       showDeleted: false,
       withQualification: undefined,
-      withoutQualification: undefined
+      withoutQualification: undefined,
+      onTeam: undefined
     });
   });
 });
@@ -43,13 +46,14 @@ describe('userFiltersToParams', () => {
       searchQuery: 'test',
       showDeleted: true,
       withQualification: 'certified',
-      withoutQualification: 'uncertified'
+      withoutQualification: 'uncertified',
+      onTeam: 'team123'
     };
 
     const result = userFiltersToParams(filters);
 
     expect(result.toString()).toBe(
-      'roleType=admin&searchQuery=test&showDeleted=true&withQualification=certified&withoutQualification=uncertified'
+      'roleType=admin&searchQuery=test&showDeleted=true&withQualification=certified&withoutQualification=uncertified&onTeam=team123'
     );
   });
 
@@ -59,7 +63,8 @@ describe('userFiltersToParams', () => {
       searchQuery: undefined,
       showDeleted: false,
       withQualification: undefined,
-      withoutQualification: undefined
+      withoutQualification: undefined,
+      onTeam: undefined
     };
 
     const result = userFiltersToParams(filters);
@@ -92,7 +97,8 @@ describe('recordToUserFilters', () => {
       searchQuery: 'test',
       showDeleted: 'true',
       withQualification: 'certified',
-      withoutQualification: 'uncertified'
+      withoutQualification: 'uncertified',
+      onTeam: 'team123'
     };
 
     const result = recordToUserFilters(record);
@@ -102,7 +108,8 @@ describe('recordToUserFilters', () => {
       searchQuery: 'test',
       showDeleted: true,
       withQualification: 'certified',
-      withoutQualification: 'uncertified'
+      withoutQualification: 'uncertified',
+      onTeam: 'team123'
     });
   });
 
@@ -112,7 +119,8 @@ describe('recordToUserFilters', () => {
       searchQuery: undefined,
       showDeleted: undefined,
       withQualification: undefined,
-      withoutQualification: undefined
+      withoutQualification: undefined,
+      onTeam: undefined
     };
 
     const result = recordToUserFilters(record);
@@ -122,7 +130,8 @@ describe('recordToUserFilters', () => {
       searchQuery: undefined,
       showDeleted: false,
       withQualification: undefined,
-      withoutQualification: undefined
+      withoutQualification: undefined,
+      onTeam: undefined
     });
   });
 
@@ -132,7 +141,8 @@ describe('recordToUserFilters', () => {
       searchQuery: undefined,
       showDeleted: 'false',
       withQualification: 'certified',
-      withoutQualification: undefined
+      withoutQualification: undefined,
+      onTeam: undefined
     };
 
     const result = recordToUserFilters(record);
@@ -142,7 +152,8 @@ describe('recordToUserFilters', () => {
       searchQuery: undefined,
       showDeleted: false,
       withQualification: 'certified',
-      withoutQualification: undefined
+      withoutQualification: undefined,
+      onTeam: undefined
     });
   });
 });

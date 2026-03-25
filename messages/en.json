@@ -50,7 +50,9 @@
       "title": "Shifts"
     },
     "VolunteersTab": {
-      "title": "Volunteers"
+      "title": "Volunteers",
+      "shifts": "Shifts",
+      "export": "Export volunteers"
     }
   },
   "SignInPage": {
@@ -136,10 +138,11 @@
   },
   "UsersDashboardPage": {
     "title": "All Volunteers",
-    "createUser": "Create New User",
-    "confirmDeletion": "Confirm Deletion",
+    "createUser": "Create new user",
+    "confirmDeletion": "Confirm deletion",
     "confirmDeleteText": "Are you sure you want to delete \"{userName}\"? The record will be permanently deleted after 30 days.",
-    "undelete": "Undelete"
+    "undelete": "Undelete",
+    "export": "Export volunteers"
   },
   "CreateUserPage": {
     "title": "Create User",
@@ -189,7 +192,9 @@
     "dateSpan": "{startDate} to {endDate}"
   },
   "TeamCard": {
-    "volunteers": "Volunteers"
+    "volunteers": "Volunteers",
+    "signup": "Sign up",
+    "full": "All shifts filled"
   },
   "VolunteerFilters": {
     "filters": "Filters",
@@ -290,7 +295,10 @@
     "volunteers": "Volunteers",
     "editShift": "Edit Shift",
     "expand": "Expand shift details",
-    "collapse": "Collapse shift details"
+    "collapse": "Collapse shift details",
+    "signup": "Sign up",
+    "cancel": "Cancel Shift",
+    "full": "Shift is full!"
   },
   "ShiftDialog": {
     "cancel": "Cancel",

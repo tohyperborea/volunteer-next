@@ -57,7 +57,7 @@ export default function VolunteerPicker({ title, open, onClose, onSubmit, filter
             setSearch(value);
           }}
         />
-        <CheckboxCards.Root mt="4" name="volunteers">
+        <CheckboxCards.Root columns="1" mt="4" name="volunteers">
           {volunteers.map((volunteer) => (
             <CheckboxCards.Item key={volunteer.id} value={volunteer.id}>
               <VolunteerCardContent volunteer={volunteer} />

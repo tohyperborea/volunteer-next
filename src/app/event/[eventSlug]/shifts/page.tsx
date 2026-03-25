@@ -2,11 +2,14 @@ import metadata from '@/i18n/metadata';
 import { getEventBySlug } from '@/service/event-service';
 import { getShiftsForEvent } from '@/service/shift-service';
 import { getTeamsForEvent } from '@/service/team-service';
+import { getVolunteersForShifts } from '@/service/user-service';
+import { currentUser } from '@/session';
 import DatedList from '@/ui/dated-list';
 import SearchBar from '@/ui/search-bar';
 import ShiftCard from '@/ui/shift-card';
 import { eventDayToDate } from '@/utils/datetime';
 import { getEventShiftsApiPath } from '@/utils/path';
+import { getPermissionsProfile } from '@/utils/permissions';
 import { Share2Icon } from '@radix-ui/react-icons';
 import { Button, Card, Flex, Heading } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
@@ -25,6 +28,10 @@ export default async function EventShifts({ params }: PageProps<'/event/[eventSl
   }
 
   const shifts = await getShiftsForEvent(event.id);
+  const shiftVolunteers = await getVolunteersForShifts(
+    shifts.map((shift) => shift.id),
+    getPermissionsProfile(await currentUser())
+  );
   const teams = await getTeamsForEvent(event.id);
   const teamNames = teams.reduce<Record<TeamId, string>>(
     (acc, team) => ({ ...acc, [team.id]: team.name }),
@@ -75,7 +82,7 @@ export default async function EventShifts({ params }: PageProps<'/event/[eventSl
                     <ShiftCard
                       event={event}
                       shift={shift}
-                      volunteerNames={[] /* TODO */}
+                      volunteers={shiftVolunteers[shift.id] ?? []}
                       key={shift.id}
                       collapsible
                     />

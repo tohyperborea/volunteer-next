@@ -4,12 +4,12 @@
  * @author Michael Townsend <@continuities>
  */
 
-'use server';
-
 import { CSVResponse, NotFoundResponse, NotImplementedResponse } from '@/lib/response';
 import { getVolunteerById } from '@/lib/volunteer';
 import { getEventBySlug } from '@/service/event-service';
+import { getShiftsForVolunteer } from '@/service/shift-service';
 import { getTeamsForEvent } from '@/service/team-service';
+import { getVolunteersForShifts } from '@/service/user-service';
 import { checkAuthorisation, currentUser } from '@/session';
 import { shiftsToCSV } from '@/utils/csv-export';
 import { getPermissionsProfile } from '@/utils/permissions';
@@ -29,8 +29,11 @@ export const GET = async (
       return NotFoundResponse();
     }
     const teams = await getTeamsForEvent(event.id);
-    const shifts: ShiftInfo[] = []; // TODO: Depends on volunteer signup implementation
-    const shiftVolunteers: Record<ShiftId, VolunteerInfo[]> = {}; // TODO: Depends on volunteer signup implementation
+    const shifts = await getShiftsForVolunteer(event.id, userId);
+    const shiftVolunteers = await getVolunteersForShifts(
+      shifts.map((shift) => shift.id),
+      getPermissionsProfile(await currentUser())
+    );
 
     const csvContent = shiftsToCSV({
       event,

@@ -13,13 +13,30 @@ import styles from './styles.module.css';
 interface Props {
   filled: number;
   total: number;
+  colour?: string;
+  maxWidth?: string;
 }
 
-export default function ProgressBar({ filled, total }: Props) {
+export default function ProgressBar({
+  filled,
+  total,
+  colour = 'accent',
+  maxWidth = '200px'
+}: Props) {
   const t = useTranslations('ProgressBar');
   const value = total <= 0 ? 0 : Math.round((filled / total) * 100);
   return (
-    <Box className={styles.progress}>
+    <Box
+      width="100%"
+      className={styles.progress}
+      style={
+        {
+          maxWidth,
+          '--progress-fill-colour': `var(--${colour}-9)`,
+          '--progress-background-colour': `var(--${colour}-a5)`
+        } as React.CSSProperties
+      }
+    >
       <Box
         role="progressbar"
         aria-valuenow={value}

@@ -16,9 +16,15 @@ interface Props {
   volunteers: VolunteerInfo[];
   withFilters?: (keyof UserFilters)[];
   itemActions?: Record<UserId, React.ReactNode>;
+  itemContent?: Record<UserId, React.ReactNode>;
 }
 
-export default function VolunteerList({ volunteers, withFilters = [], itemActions = {} }: Props) {
+export default function VolunteerList({
+  volunteers,
+  withFilters = [],
+  itemActions = {},
+  itemContent = {}
+}: Props) {
   const t = useTranslations('VolunteerList');
   return (
     <Flex direction="column" gap="4">
@@ -28,7 +34,11 @@ export default function VolunteerList({ volunteers, withFilters = [], itemAction
         <ul className={styles.list}>
           {volunteers.map((volunteer) => (
             <li key={volunteer.id}>
-              <VolunteerCard volunteer={volunteer} actions={itemActions[volunteer.id]} />
+              <VolunteerCard
+                volunteer={volunteer}
+                actions={itemActions[volunteer.id]}
+                children={itemContent[volunteer.id]}
+              />
             </li>
           ))}
         </ul>

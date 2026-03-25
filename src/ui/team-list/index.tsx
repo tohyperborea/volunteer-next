@@ -15,10 +15,17 @@ interface Props {
   eventSlug: string;
   teams: TeamInfo[];
   shifts: ShiftInfo[];
+  shiftVolunteers: Record<ShiftId, VolunteerInfo[]>;
   itemActions?: Record<TeamId, React.ReactNode>;
 }
 
-export default function TeamList({ teams, shifts, eventSlug, itemActions = {} }: Props) {
+export default function TeamList({
+  teams,
+  shifts,
+  eventSlug,
+  shiftVolunteers,
+  itemActions = {}
+}: Props) {
   const t = useTranslations('TeamList');
   if (teams.length === 0) {
     return (
@@ -46,7 +53,9 @@ export default function TeamList({ teams, shifts, eventSlug, itemActions = {} }:
                   eventSlug={eventSlug}
                   team={team}
                   shifts={shiftsByTeamId[team.id] ?? []}
+                  shiftVolunteers={shiftVolunteers}
                   actions={itemActions[team.id]}
+                  showSignup
                 />
               </li>
             </Box>
