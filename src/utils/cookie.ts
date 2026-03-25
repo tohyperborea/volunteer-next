@@ -18,5 +18,5 @@ export const EventCookie: CookieConfig = {
  * @param value The value to set for the cookie
  */
 export const setCookie = ({ name, maxAge }: CookieConfig, value: string) => {
-  document.cookie = `${name}=${value}; path=/;${maxAge ? ` max-age=${maxAge};` : ''}`;
+  document.cookie = `${encodeURIComponent(name)}=${encodeURIComponent(value)}; path=/;${maxAge ? ` max-age=${maxAge};` : ''}`;
 };

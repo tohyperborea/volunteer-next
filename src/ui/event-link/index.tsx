@@ -19,7 +19,9 @@ export default function EventLink({ eventId, href, ...linkProps }: Props) {
   return (
     <Link
       style={{ cursor: 'pointer' }}
-      onClick={() => {
+      href={href || '#'}
+      onClick={(e) => {
+        e.preventDefault();
         setCookie(EventCookie, eventId);
         if (href) {
           push(href);

@@ -26,7 +26,7 @@ export default async function UpdateTeam({ params }: PageProps<'/update-team/[id
   const { id } = await params;
   const event = await getCurrentEventOrRedirect();
   const team = id ? await getTeamById(id) : null;
-  if (!team) {
+  if (!team || team.eventId !== event.id) {
     notFound();
   }
   await checkAuthorisation([{ type: 'admin' }, { type: 'organiser', eventId: team.eventId }]);

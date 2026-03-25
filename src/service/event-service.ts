@@ -50,7 +50,7 @@ export const getActiveEvents = cache(async (): Promise<EventInfo[]> => {
  * Fetches events by ID.
  * @param eventIds - The event ids to fetch
  * @return An array of EventInfo objects matching the provided IDs.
- * */
+ */
 export const getEventsById = cache(async (eventIds: EventId[]): Promise<EventInfo[]> => {
   if (eventIds.length === 0) {
     return [];

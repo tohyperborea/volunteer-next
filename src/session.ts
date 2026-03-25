@@ -122,7 +122,10 @@ export const getMatchingRoles = async (toMatch: UserRoleMatchCriteria): Promise<
  */
 export const getCurrentEvent = async (): Promise<EventInfo | null> => {
   const eventId = (await headers()).get('x-event-id');
-  return eventId ? (await getEventsById([eventId]))[0] : null;
+  if (!eventId) {
+    return null;
+  }
+  return (await getEventsById([eventId]))[0] ?? null;
 };
 
 /**

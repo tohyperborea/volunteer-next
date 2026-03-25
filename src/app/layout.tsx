@@ -14,8 +14,6 @@ import { Theme, Flex } from '@radix-ui/themes';
 import NavigationFrame from '@/ui/navigation-frame';
 import { currentUser, getCurrentEvent } from '@/session';
 import { getTranslations } from 'next-intl/server';
-import { headers } from 'next/headers';
-import { getEventBySlug } from '@/service/event-service';
 import { getEventDateRangeDisplayText } from '@/utils/date';
 import { userToVolunteer } from '@/lib/volunteer';
 import { getPermissionsProfile } from '@/utils/permissions';

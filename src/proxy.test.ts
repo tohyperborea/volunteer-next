@@ -1,10 +1,9 @@
 import '@testing-library/jest-dom';
-import { proxy } from './proxy';
+import { proxy } from '@/proxy';
 import { auth } from '@/auth';
-import { getActiveEvents } from './service/event-service';
+import { getActiveEvents } from '@/service/event-service';
 import { NextResponse, NextRequest } from 'next/server';
-import { isKeyObject } from 'util/types';
-import { EventCookie } from './utils/cookie';
+import { EventCookie } from '@/utils/cookie';
 
 // Mock next/server to provide NextRequest and NextResponse for testing
 jest.mock('next/server', () => {
