@@ -36,11 +36,11 @@ export default async function EventsDashboard({ searchParams }: PageProps<'/team
     ? {}
     : teams.reduce<Record<TeamId, React.ReactNode>>((actions, team) => {
         actions[team.id] = (
-          <Link href={getUpdateTeamPath(team.id)}>
+          <NextLink href={getUpdateTeamPath(team.id)}>
             <IconButton variant="ghost" aria-label={t('edit', { teamName: team.name })}>
               <Pencil2Icon width={20} height={20} />
             </IconButton>
-          </Link>
+          </NextLink>
         );
         return actions;
       }, {});

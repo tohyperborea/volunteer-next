@@ -79,8 +79,9 @@ export default function NavigationFrame({ title, subtitle, currentUser, children
           position={{ initial: 'absolute', sm: 'relative' }}
           onClick={(e) => {
             // Close on navigation if the menu is fullscreen
-            const fullscreenMenu =
-              getComputedStyle(e.currentTarget).maxWidth === `${screen.width}px`;
+            const maxWidthStyle = parseInt(getComputedStyle(e.currentTarget).maxWidth);
+            const screenWidth = window.innerWidth;
+            const fullscreenMenu = screenWidth <= maxWidthStyle;
             if (fullscreenMenu) {
               setIsNavOpen(false);
             }
