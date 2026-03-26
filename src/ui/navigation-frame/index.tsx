@@ -6,7 +6,7 @@
 
 'use client';
 
-import { Heading, Text, Flex, Avatar, IconButton, Box } from '@radix-ui/themes';
+import { Heading, Text, Flex, Avatar, IconButton, Box, Link } from '@radix-ui/themes';
 import { useState } from 'react';
 import NextLink from 'next/link';
 import { getUserProfilePath } from '@/utils/path';
@@ -80,8 +80,9 @@ export default function NavigationFrame({ title, subtitle, currentUser, children
           position={{ initial: 'absolute', sm: 'relative' }}
           onClick={(e) => {
             // Close on navigation if the menu is fullscreen
-            const fullscreenMenu =
-              getComputedStyle(e.currentTarget).maxWidth === `${screen.width}px`;
+            const maxWidthStyle = parseInt(getComputedStyle(e.currentTarget).maxWidth);
+            const screenWidth = window.innerWidth;
+            const fullscreenMenu = screenWidth <= maxWidthStyle;
             if (fullscreenMenu) {
               setIsNavOpen(false);
             }
@@ -99,9 +100,24 @@ export default function NavigationFrame({ title, subtitle, currentUser, children
             <NavMenu permissionsProfile={permissionsProfile} />
           </Box>
         </Box>
-        <Box overflow="auto" flexGrow="1">
+        <Flex direction="column" overflow="auto" flexGrow="1" justify="between">
           {children}
-        </Box>
+          <Flex p="4" direction="column" asChild>
+            <footer>
+              <Text size="1" align="center">
+                © 2026{' '}
+                <Link
+                  href="https://github.com/tohyperborea/volunteer-next"
+                  target="_blank"
+                  rel="noopener"
+                >
+                  volunteer-next
+                </Link>
+                . Licensed under GPLv3.
+              </Text>
+            </footer>
+          </Flex>
+        </Flex>
       </Flex>
     </Flex>
   );

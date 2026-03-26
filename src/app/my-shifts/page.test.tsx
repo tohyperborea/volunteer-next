@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
-import EventShifts from './page';
-import { getShiftsForEvent } from '@/service/shift-service';
+import MyShifts from './page';
+import { getShiftsForVolunteer } from '@/service/shift-service';
 import { getTeamsForEvent } from '@/service/team-service';
 import { getCurrentEvent, getCurrentEventOrRedirect } from '@/session';
 
@@ -19,8 +19,7 @@ jest.mock('@/service/event-service', () => ({
 }));
 
 jest.mock('@/service/shift-service', () => ({
-  getShiftsForEvent: jest.fn(),
-  getVolunteersForShifts: jest.fn().mockResolvedValue({})
+  getShiftsForVolunteer: jest.fn()
 }));
 
 jest.mock('@/service/team-service', () => ({
@@ -44,16 +43,17 @@ jest.mock('next/navigation', () => ({
   })
 }));
 
-jest.mock('@/ui/search-bar', () => ({
-  __esModule: true,
-  default: () => <div>SearchBar</div>
+jest.mock('next/cache', () => ({
+  revalidatePath: jest.fn()
 }));
 
 const mockGetCurrentEvent = getCurrentEvent as jest.MockedFunction<typeof getCurrentEvent>;
 const mockGetCurrentEventOrRedirect = getCurrentEventOrRedirect as jest.MockedFunction<
   typeof getCurrentEventOrRedirect
 >;
-const mockGetShiftsForEvent = getShiftsForEvent as jest.MockedFunction<typeof getShiftsForEvent>;
+const mockGetShiftsForVolunteer = getShiftsForVolunteer as jest.MockedFunction<
+  typeof getShiftsForVolunteer
+>;
 const mockGetTeamsForEvent = getTeamsForEvent as jest.MockedFunction<typeof getTeamsForEvent>;
 
 beforeEach(() => {
@@ -114,27 +114,18 @@ describe('EventShifts Page', () => {
   it('renders the heading correctly', async () => {
     mockGetCurrentEvent.mockResolvedValue(mockEvent);
     mockGetCurrentEventOrRedirect.mockResolvedValue(mockEvent);
-    mockGetShiftsForEvent.mockResolvedValue(mockShifts);
+    mockGetShiftsForVolunteer.mockResolvedValue(mockShifts);
     mockGetTeamsForEvent.mockResolvedValue(mockTeams);
-    render(await EventShifts());
-    expect(screen.getByRole('heading', { name: 'allShifts' })).toBeInTheDocument();
-  });
-
-  it('renders the search bar', async () => {
-    mockGetCurrentEvent.mockResolvedValue(mockEvent);
-    mockGetCurrentEventOrRedirect.mockResolvedValue(mockEvent);
-    mockGetShiftsForEvent.mockResolvedValue(mockShifts);
-    mockGetTeamsForEvent.mockResolvedValue(mockTeams);
-    render(await EventShifts());
-    expect(screen.getByText('SearchBar')).toBeInTheDocument();
+    render(await MyShifts());
+    expect(screen.getByRole('heading', { name: 'title' })).toBeInTheDocument();
   });
 
   it('renders shifts grouped by day and team', async () => {
     mockGetCurrentEvent.mockResolvedValue(mockEvent);
     mockGetCurrentEventOrRedirect.mockResolvedValue(mockEvent);
-    mockGetShiftsForEvent.mockResolvedValue(mockShifts);
+    mockGetShiftsForVolunteer.mockResolvedValue(mockShifts);
     mockGetTeamsForEvent.mockResolvedValue(mockTeams);
-    render(await EventShifts());
+    render(await MyShifts());
     expect(screen.getByText('Team A')).toBeInTheDocument();
     expect(screen.getByText('Team B')).toBeInTheDocument();
   });
