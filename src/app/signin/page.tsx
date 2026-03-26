@@ -22,6 +22,7 @@ export default async function SignInPage({
   const params = await searchParams;
   const callbackUrl = params.callbackUrl || '/';
   const forgotSent = params.forgotSent === '1';
+  const oauthProviderName = process.env.OAUTH_PROVIDER_NAME ?? 'OAuth Provider';
 
   const signInOAuth = async (formData: FormData) => {
     'use server';
@@ -92,13 +93,13 @@ export default async function SignInPage({
             action={signInOAuth}
             style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '16px' }}
           >
-            <Text>{t('usePretix')}</Text>
-            <Text>{t('clickButtonToRedirect')}</Text>
+            <Text>{t('useOAuth', { provider: oauthProviderName })}</Text>
+            <Text>{t('clickButtonToRedirect', { provider: oauthProviderName })}</Text>
             <Text>{t('afterLoggingIn')}</Text>
             <Text>{t('signInToAccount')}</Text>
             <input type="hidden" name="callbackUrl" value={callbackUrl ?? ''} />
             <Button type="submit" mt="4">
-              {t('button')}
+              {t('button', { provider: oauthProviderName })}
             </Button>
           </form>
         </Flex>

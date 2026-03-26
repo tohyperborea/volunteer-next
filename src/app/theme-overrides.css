@@ -1,25 +1,149 @@
 /* Custom theme variable overrides */
 /* Must be imported AFTER @radix-ui/themes/styles.css */
+/* Generated using https://www.radix-ui.com/colors/custom */
 
-/* Override semantic colors */
-.radix-themes {
-  --color-panel-solid: rgb(89, 55, 239);
-  --color-panel-contrast: white;
-  --color-panel-gradient: linear-gradient(to bottom, #5937ef, rgba(89, 55, 239, 0.77));
-  --color-border-default: #d9d9d9;
+:root,
+.light,
+.light-theme {
+  --violet-1: #fdfdff;
+  --violet-2: #f7f8ff;
+  --violet-3: #eff1ff;
+  --violet-4: #e3e7ff;
+  --violet-5: #d7dbff;
+  --violet-6: #c7ccff;
+  --violet-7: #b2b7ff;
+  --violet-8: #9799ff;
+  --violet-9: #5937ef;
+  --violet-10: #4d2bd4;
+  --violet-11: #5940e6;
+  --violet-12: #2a2072;
+
+  --violet-a1: #0000ff02;
+  --violet-a2: #0020ff08;
+  --violet-a3: #0020ff10;
+  --violet-a4: #0025ff1c;
+  --violet-a5: #001aff28;
+  --violet-a6: #0017ff38;
+  --violet-a7: #0011ff4d;
+  --violet-a8: #0005ff68;
+  --violet-a9: #2b00ebc8;
+  --violet-a10: #2900cbd4;
+  --violet-a11: #2200debf;
+  --violet-a12: #0c005edf;
+
+  --violet-contrast: #fff;
+  --violet-surface: #f5f6ffcc;
+  --violet-indicator: #5937ef;
+  --violet-track: #5937ef;
 }
 
-/* Add theme-specific overrides here if values differ between light/dark themes */
-/* Example:
-.radix-themes.dark,
-.radix-themes.dark-theme {
-  --color-panel-solid: rgb(89, 55, 239);
-  --color-panel-contrast: white;
-}
-*/
+@supports (color: color(display-p3 1 1 1)) {
+  @media (color-gamut: p3) {
+    :root,
+    .light,
+    .light-theme {
+      --violet-1: oklch(99.4% 0.0035 280.9);
+      --violet-2: oklch(98.1% 0.0126 280.9);
+      --violet-3: oklch(96.1% 0.0239 280.9);
+      --violet-4: oklch(93.5% 0.0481 280.9);
+      --violet-5: oklch(90.4% 0.0717 280.9);
+      --violet-6: oklch(86.5% 0.0949 280.9);
+      --violet-7: oklch(80.8% 0.1206 280.9);
+      --violet-8: oklch(72.9% 0.1612 280.9);
+      --violet-9: oklch(50.8% 0.2538 280.9);
+      --violet-10: oklch(45.9% 0.2363 280.9);
+      --violet-11: oklch(51% 0.2363 280.9);
+      --violet-12: oklch(31.5% 0.1348 280.9);
 
-/* Example: Override an accent color (if using indigo as accent) */
-/* .radix-themes {
-  --indigo-9: rgb(89, 55, 239);
-  --indigo-a9: rgb(89, 55, 239);
-} */
+      --violet-a1: color(display-p3 0.0196 0.0196 1 / 0.008);
+      --violet-a2: color(display-p3 0.0196 0.1451 0.8784 / 0.032);
+      --violet-a3: color(display-p3 0.0078 0.1294 0.9412 / 0.063);
+      --violet-a4: color(display-p3 0.0039 0.1137 0.9294 / 0.106);
+      --violet-a5: color(display-p3 0.0039 0.0784 0.9255 / 0.153);
+      --violet-a6: color(display-p3 0.0039 0.0745 0.9294 / 0.216);
+      --violet-a7: color(display-p3 0.0039 0.0588 0.9373 / 0.299);
+      --violet-a8: color(display-p3 0.0039 0.0196 0.9333 / 0.408);
+      --violet-a9: color(display-p3 0.1373 0 0.8745 / 0.777);
+      --violet-a10: color(display-p3 0.1294 0 0.7569 / 0.824);
+      --violet-a11: color(display-p3 0.1059 0 0.8196 / 0.746);
+      --violet-a12: color(display-p3 0.0353 0 0.349 / 0.875);
+
+      --violet-contrast: #fff;
+      --violet-surface: color(display-p3 0.9608 0.9686 1 / 0.8);
+      --violet-indicator: oklch(50.8% 0.2538 280.9);
+      --violet-track: oklch(50.8% 0.2538 280.9);
+    }
+  }
+}
+
+.dark,
+.dark-theme {
+  --violet-1: #0f0f1e;
+  --violet-2: #141529;
+  --violet-3: #211d53;
+  --violet-4: #2b1f76;
+  --violet-5: #342988;
+  --violet-6: #3d3496;
+  --violet-7: #4941ac;
+  --violet-8: #584dcd;
+  --violet-9: #5937ef;
+  --violet-10: #4e1fdd;
+  --violet-11: #a6aaff;
+  --violet-12: #dbdfff;
+
+  --violet-a1: #0000fe0e;
+  --violet-a2: #2f39fd1a;
+  --violet-a3: #4b3dff47;
+  --violet-a4: #4e32fd6d;
+  --violet-a5: #5741ff80;
+  --violet-a6: #6050ff8f;
+  --violet-a7: #675afea7;
+  --violet-a8: #6a5cfeca;
+  --violet-a9: #5e3affee;
+  --violet-a10: #5922ffdb;
+  --violet-a11: #a6aaff;
+  --violet-a12: #dbdfff;
+
+  --violet-contrast: #fff;
+  --violet-surface: #17194180;
+  --violet-indicator: #5937ef;
+  --violet-track: #5937ef;
+}
+
+@supports (color: color(display-p3 1 1 1)) {
+  @media (color-gamut: p3) {
+    .dark,
+    .dark-theme {
+      --violet-1: oklch(17.8% 0.0299 280.9);
+      --violet-2: oklch(20.6% 0.0403 280.9);
+      --violet-3: oklch(27.2% 0.0947 280.9);
+      --violet-4: oklch(31.8% 0.1407 280.9);
+      --violet-5: oklch(35.8% 0.1508 280.9);
+      --violet-6: oklch(39.9% 0.1542 280.9);
+      --violet-7: oklch(44.8% 0.1657 280.9);
+      --violet-8: oklch(50.7% 0.1906 280.9);
+      --violet-9: oklch(50.8% 0.2538 280.9);
+      --violet-10: oklch(45.9% 0.2538 280.9);
+      --violet-11: oklch(77.6% 0.1809 280.9);
+      --violet-12: oklch(91.4% 0.0578 280.9);
+
+      --violet-a1: color(display-p3 0 0 0.9922 / 0.051);
+      --violet-a2: color(display-p3 0.1882 0.2314 1 / 0.097);
+      --violet-a3: color(display-p3 0.2902 0.2471 1 / 0.265);
+      --violet-a4: color(display-p3 0.302 0.2039 1 / 0.404);
+      --violet-a5: color(display-p3 0.3373 0.2627 1 / 0.479);
+      --violet-a6: color(display-p3 0.3843 0.3255 1 / 0.534);
+      --violet-a7: color(display-p3 0.4118 0.3686 1 / 0.627);
+      --violet-a8: color(display-p3 0.4235 0.3765 1 / 0.761);
+      --violet-a9: color(display-p3 0.3608 0.2431 1 / 0.895);
+      --violet-a10: color(display-p3 0.3294 0.149 1 / 0.82);
+      --violet-a11: color(display-p3 0.6706 0.6824 1 / 0.975);
+      --violet-a12: color(display-p3 0.8745 0.8863 1 / 0.988);
+
+      --violet-contrast: #fff;
+      --violet-surface: color(display-p3 0.0863 0.0941 0.2431 / 0.5);
+      --violet-indicator: oklch(50.8% 0.2538 280.9);
+      --violet-track: oklch(50.8% 0.2538 280.9);
+    }
+  }
+}
