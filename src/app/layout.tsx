@@ -51,7 +51,7 @@ export default async function RootLayout({
             attribute="class"
             defaultTheme={(process.env.DEFAULT_THEME as ThemeMode) || 'system'}
           >
-            <Theme>
+            <Theme accentColor="violet">
               {user ? (
                 <NavigationFrame
                   title={navBarTitle}

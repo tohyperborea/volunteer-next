@@ -4,6 +4,9 @@
  * @author Michael Townsend <@continuities>
  */
 
+export const EVENT_SLUG_REGEX = /^[a-zA-Z0-9\-_]*$/;
+export const EVENT_SLUG_PATTERN = EVENT_SLUG_REGEX.source.substring(1);
+
 /**
  * Validates FormData for updating an event.
  * @param data - FormData to validate
@@ -36,6 +39,9 @@ export const validateNewEvent = (data: FormData): Omit<EventInfo, 'id'> => {
   const slug = data.get('slug')?.toString() ?? null;
   if (!slug) {
     throw new Error('Event slug is required');
+  }
+  if (EVENT_SLUG_REGEX.test(slug) === false) {
+    throw new Error('Event slug contains invalid characters');
   }
   const startDateString = data.get('startDate')?.toString() ?? null;
   if (!startDateString) {
