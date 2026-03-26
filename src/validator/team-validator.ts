@@ -56,7 +56,7 @@ export const validateNewTeam = (data: FormData): Omit<TeamInfo, 'id'> => {
   }
   return {
     eventId,
-    slug,
+    slug: encodeURIComponent(slug),
     name,
     description,
     contactAddress

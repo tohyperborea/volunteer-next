@@ -54,7 +54,7 @@ export const validateNewEvent = (data: FormData): Omit<EventInfo, 'id'> => {
   }
 
   return {
-    slug,
+    slug: encodeURIComponent(slug),
     name,
     startDate,
     endDate
