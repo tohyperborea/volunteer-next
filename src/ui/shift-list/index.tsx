@@ -82,7 +82,6 @@ export default function ShiftList({
           getDate={(shift) => eventDayToDate(event.startDate, shift.eventDay)}
           renderItem={(shift) => (
             <ShiftCard
-              event={event}
               shift={shift}
               qualification={
                 shift.requirement ? qualificationMap.get(shift.requirement) : undefined

@@ -6,7 +6,7 @@
 
 'use client';
 
-import { Badge, Box, Button, Card, Flex, Heading, IconButton, Text } from '@radix-ui/themes';
+import { Badge, Button, Card, Flex, Heading, IconButton, Text } from '@radix-ui/themes';
 import TimeSpan from '../time-span';
 import { useTranslations } from 'next-intl';
 import styles from './styles.module.css';
@@ -19,7 +19,6 @@ import ProgressBar from '../progress-bar';
 import NextLink from 'next/link';
 
 interface Props {
-  event: EventInfo;
   shift: ShiftInfo;
   volunteers: VolunteerInfo[];
   qualification?: QualificationInfo;
@@ -44,7 +43,6 @@ const getStatusColour = (volunteerCount: number, minVolunteers: number, maxVolun
 };
 
 export default function ShiftCard({
-  event,
   shift,
   volunteers,
   qualification,

@@ -6,7 +6,7 @@
 
 'use client';
 
-import { Heading, Text, Flex, Avatar, IconButton, Box } from '@radix-ui/themes';
+import { Heading, Text, Flex, Avatar, IconButton, Box, Link } from '@radix-ui/themes';
 import { useState } from 'react';
 import NextLink from 'next/link';
 import { getUserProfilePath } from '@/utils/path';
@@ -43,7 +43,7 @@ export default function NavigationFrame({ title, subtitle, currentUser, children
         <IconButton
           variant="ghost"
           aria-label="Menu"
-          highContrast
+          style={{ color: 'var(--accent-contrast' }}
           onClick={() => setIsNavOpen((val) => !val)}
         >
           <HamburgerMenuIcon height={30} width={30} />
@@ -99,9 +99,24 @@ export default function NavigationFrame({ title, subtitle, currentUser, children
             <NavMenu permissionsProfile={permissionsProfile} />
           </Box>
         </Box>
-        <Box overflow="auto" flexGrow="1">
+        <Flex direction="column" overflow="auto" flexGrow="1" justify="between">
           {children}
-        </Box>
+          <Flex p="4" direction="column" asChild>
+            <footer>
+              <Text size="1" align="center">
+                © 2026{' '}
+                <Link
+                  href="https://github.com/tohyperborea/volunteer-next"
+                  target="_blank"
+                  rel="noopener"
+                >
+                  volunteer-next
+                </Link>
+                . Licensed under GPLv3.
+              </Text>
+            </footer>
+          </Flex>
+        </Flex>
       </Flex>
     </Flex>
   );

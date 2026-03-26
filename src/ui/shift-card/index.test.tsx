@@ -50,14 +50,14 @@ describe('ShiftCard', () => {
   });
 
   it('renders the shift title and time span', () => {
-    render(<ShiftCard event={mockEvent} shift={mockShift} volunteers={mockVolunteers} />);
+    render(<ShiftCard shift={mockShift} volunteers={mockVolunteers} />);
 
     expect(screen.getByText('Morning Shift')).toBeInTheDocument();
     expect(screen.getByText('08:00 - 12:00')).toBeInTheDocument();
   });
 
   it('displays badges for max and min volunteers', () => {
-    render(<ShiftCard event={mockEvent} shift={mockShift} volunteers={mockVolunteers} />);
+    render(<ShiftCard shift={mockShift} volunteers={mockVolunteers} />);
 
     expect(screen.getByText('max: 10')).toBeInTheDocument();
     expect(screen.getByText('min: 2')).toBeInTheDocument();
@@ -65,12 +65,7 @@ describe('ShiftCard', () => {
 
   it('shows the qualification requirement when present', () => {
     render(
-      <ShiftCard
-        event={mockEvent}
-        shift={mockShift}
-        qualification={mockQualification}
-        volunteers={mockVolunteers}
-      />
+      <ShiftCard shift={mockShift} qualification={mockQualification} volunteers={mockVolunteers} />
     );
     const badge = screen.getByText('requires: First Aid');
     expect(badge).toBeInTheDocument();
@@ -89,19 +84,13 @@ describe('ShiftCard', () => {
       maxVolunteers: 10,
       minVolunteers: 2
     };
-    render(
-      <ShiftCard
-        event={mockEvent}
-        shift={mockShiftWithoutRequirement}
-        volunteers={mockVolunteers}
-      />
-    );
+    render(<ShiftCard shift={mockShiftWithoutRequirement} volunteers={mockVolunteers} />);
 
     expect(screen.queryByText(/requires:/)).not.toBeInTheDocument();
   });
 
   it('renders the volunteer names in a collapsible section', () => {
-    render(<ShiftCard event={mockEvent} shift={mockShift} volunteers={mockVolunteers} />);
+    render(<ShiftCard shift={mockShift} volunteers={mockVolunteers} />);
 
     expect(screen.getByText('volunteers')).toBeInTheDocument();
     fireEvent.click(screen.getByText('volunteers'));
@@ -111,14 +100,7 @@ describe('ShiftCard', () => {
 
   it('renders the edit button and triggers the onEdit callback', () => {
     const onEditMock = jest.fn();
-    render(
-      <ShiftCard
-        event={mockEvent}
-        shift={mockShift}
-        volunteers={mockVolunteers}
-        onEdit={onEditMock}
-      />
-    );
+    render(<ShiftCard shift={mockShift} volunteers={mockVolunteers} onEdit={onEditMock} />);
 
     const editButton = screen.getByRole('button', { name: 'editShift' });
     expect(editButton).toBeInTheDocument();
@@ -127,13 +109,13 @@ describe('ShiftCard', () => {
   });
 
   it('does not render the edit button when onEdit is not provided', () => {
-    render(<ShiftCard event={mockEvent} shift={mockShift} volunteers={mockVolunteers} />);
+    render(<ShiftCard shift={mockShift} volunteers={mockVolunteers} />);
 
     expect(screen.queryByRole('button', { name: 'editShift' })).not.toBeInTheDocument();
   });
 
   it('renders the progress bar with correct filled and total values', () => {
-    render(<ShiftCard event={mockEvent} shift={mockShift} volunteers={mockVolunteers} />);
+    render(<ShiftCard shift={mockShift} volunteers={mockVolunteers} />);
 
     expect(mockProgressBar).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -173,7 +155,6 @@ describe('ShiftCard', () => {
       };
       render(
         <ShiftCard
-          event={mockEvent}
           shift={shift}
           volunteers={mockVolunteers}
           qualification={requirement || undefined}
@@ -219,7 +200,7 @@ describe('ShiftCard', () => {
         id: `volunteer-${i}`,
         displayName: `Volunteer ${i}`
       }));
-      render(<ShiftCard event={mockEvent} shift={shift} volunteers={volunteers} />);
+      render(<ShiftCard shift={shift} volunteers={volunteers} />);
 
       expect(mockProgressBar).toHaveBeenCalledWith(
         expect.objectContaining({

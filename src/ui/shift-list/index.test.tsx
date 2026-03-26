@@ -178,7 +178,6 @@ describe('ShiftList', () => {
       expect(mockShiftCard).toHaveBeenNthCalledWith(
         i + 1,
         expect.objectContaining({
-          event: props.event,
           shift,
           qualification: mockQualificationMap.get(shift.requirement ?? ''),
           volunteers: props.shiftVolunteers[shift.id] || [],

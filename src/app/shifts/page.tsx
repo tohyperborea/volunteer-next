@@ -3,14 +3,12 @@ import { getShiftsForEvent } from '@/service/shift-service';
 import { getTeamsForEvent } from '@/service/team-service';
 import { getVolunteersForShifts } from '@/service/user-service';
 import { currentUser, getCurrentEventOrRedirect } from '@/session';
-import DatedList from '@/ui/dated-list';
 import SearchBar from '@/ui/search-bar';
-import ShiftCard from '@/ui/shift-card';
-import { eventDayToDate } from '@/utils/datetime';
+import ShiftOverviewList from '@/ui/shift-overview-list';
 import { getEventShiftsApiPath } from '@/utils/path';
 import { getPermissionsProfile } from '@/utils/permissions';
 import { Share2Icon } from '@radix-ui/react-icons';
-import { Button, Card, Flex, Heading } from '@radix-ui/themes';
+import { Button, Flex, Heading } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 
@@ -31,21 +29,6 @@ export default async function EventShifts() {
     getPermissionsProfile(await currentUser())
   );
   const teams = await getTeamsForEvent(event.id);
-  const teamNames = teams.reduce<Record<TeamId, string>>(
-    (acc, team) => ({ ...acc, [team.id]: team.name }),
-    {}
-  );
-
-  const teamShiftsByDay = shifts.reduce<Record<number, Record<TeamId, ShiftInfo[]>>>(
-    (acc, shift) => ({
-      ...acc,
-      [shift.eventDay]: {
-        ...acc[shift.eventDay],
-        [shift.teamId]: [...(acc[shift.eventDay]?.[shift.teamId] ?? []), shift]
-      }
-    }),
-    {}
-  );
 
   return (
     <Flex direction="column" gap="6" py="4">
@@ -65,31 +48,11 @@ export default async function EventShifts() {
         </Button>
       </Flex>
       <SearchBar />
-      <DatedList
-        items={Object.entries(teamShiftsByDay)}
-        getDate={([day]) => eventDayToDate(event.startDate, parseInt(day, 10))}
-        renderItem={([day, teams]) => (
-          <Flex key={day} direction="column" gap="4">
-            {Object.entries(teams).map(([teamId, shifts]) => (
-              <Card key={teamId}>
-                <Heading as="h3" size="4">
-                  {teamNames[teamId]}
-                </Heading>
-                <Flex direction="column" gap="2" mt="4">
-                  {shifts.map((shift) => (
-                    <ShiftCard
-                      event={event}
-                      shift={shift}
-                      volunteers={shiftVolunteers[shift.id] ?? []}
-                      key={shift.id}
-                      collapsible
-                    />
-                  ))}
-                </Flex>
-              </Card>
-            ))}
-          </Flex>
-        )}
+      <ShiftOverviewList
+        event={event}
+        teams={teams}
+        shifts={shifts}
+        shiftVolunteers={shiftVolunteers}
       />
     </Flex>
   );

@@ -5,19 +5,24 @@
     "createEvent": "Create New Event"
   },
   "DashboardPage": {
-    "manageMy": "Manage My",
-    "volunteers": "Volunteers",
-    "yourHours": "Your Hours",
-    "yourShifts": "Your Shifts",
-    "next": "Next",
+    "yourDashboard": "Your dashboard",
+    "your": "Your",
     "shifts": "Shifts",
-    "teams": "Teams",
-    "qualifications": "Qualifications",
-    "findShifts": "Find Shifts",
-    "eventSettings": "Event Settings",
-    "createQualifications": "Create Qualifications",
-    "assignQualifications": "Assign Qualifications",
-    "requests": "Requests"
+    "totalHours": "Total Hours",
+    "viewTeams": "View Teams",
+    "upcomingShifts": "Upcoming Shifts",
+    "gettingStarted": "Getting Started",
+    "gettingStartedDescription": "Start by exploring volunteer roles, browsing shifts, and finding where you fit in the community. Community is built on shared effort—everyone contributes a little to create something bigger together. By showing up, you help shape a more vibrant, connected experience for everyone.",
+    "tips": "Tips for a Smooth Shift",
+    "tipsDescription": "Make sure to check in before your shift! Plan to arrive 15-20 minutes early to sign in and meet your department lead.",
+    "exploreTeams": "Explore teams",
+    "exploreTeamsDescription": "Discover where your interests and skills fit within the community.",
+    "findShift": "Find a shift that works for you",
+    "findShiftDescription": "Look through available shifts and roles to see how you can contribute.",
+    "signUp": "Sign up",
+    "signUpDescription": "Sign up for at least one shift and review any details. Visit your shifts page to manage and see your upcoming shift(s).",
+    "showUp": "Show up & connect",
+    "showUpDescription": "Meet others and support your team! Your participation helps build a stronger, more vibrant community for everyone."
   },
   "CreateEventPage": {
     "title": "Create Event"
