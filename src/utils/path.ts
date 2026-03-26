@@ -12,6 +12,7 @@ export const getCreateUserPath = (): string => '/create-user';
 export const getEditUserPath = (userId: string, callbackUrl?: string): string =>
   `/update-user/${userId}${callbackUrl ? `?callbackUrl=${encodeURIComponent(callbackUrl)}` : ''}`;
 export const getUserProfilePath = (userId: string): string => `/user/${userId}`;
+export const getMyShiftsPath = (): string => '/my-shifts';
 
 // Teams paths
 export const getTeamsPath = (): string => `/team`;

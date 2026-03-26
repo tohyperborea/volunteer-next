@@ -18,7 +18,8 @@ import {
   getTeamVolunteersApiPath,
   getEventsPath,
   getCreateEventPath,
-  getUpdateEventPath
+  getUpdateEventPath,
+  getMyShiftsPath
 } from './path';
 
 describe('getTeamsPath', () => {
@@ -250,5 +251,12 @@ describe('getUserProfilePath', () => {
     const userId = 'user-123';
     const result = getUserProfilePath(userId);
     expect(result).toBe('/user/user-123');
+  });
+});
+
+describe('getMyShiftsPath', () => {
+  it('should return the correct path for my shifts', () => {
+    const result = getMyShiftsPath();
+    expect(result).toBe('/my-shifts');
   });
 });

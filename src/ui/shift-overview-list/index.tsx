@@ -16,9 +16,16 @@ interface Props {
   teams: TeamInfo[];
   shifts: ShiftInfo[];
   shiftVolunteers: Record<ShiftId, VolunteerInfo[]>;
+  onCancelShift?: (shiftId: ShiftId) => Promise<void>;
 }
 
-export default function ShiftOverviewList({ event, teams, shifts, shiftVolunteers }: Props) {
+export default function ShiftOverviewList({
+  event,
+  teams,
+  shifts,
+  shiftVolunteers,
+  onCancelShift
+}: Props) {
   const teamNames = teams.reduce<Record<TeamId, string>>(
     (acc, team) => ({ ...acc, [team.id]: team.name }),
     {}
@@ -52,6 +59,7 @@ export default function ShiftOverviewList({ event, teams, shifts, shiftVolunteer
                     volunteers={shiftVolunteers[shift.id] ?? []}
                     key={shift.id}
                     collapsible
+                    onCancel={onCancelShift?.bind(null, shift.id)}
                   />
                 ))}
               </Flex>

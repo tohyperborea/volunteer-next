@@ -1,5 +1,5 @@
 import metadata from '@/i18n/metadata';
-import { Box, Button, Card, Flex, Heading, Text } from '@radix-ui/themes';
+import { Box, Button, Card, Flex, Heading, Link, Text } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import NextLink from 'next/link';
@@ -9,7 +9,7 @@ import {
   getCurrentEvent,
   getCurrentEventOrRedirect
 } from '@/session';
-import { getTeamsPath } from '@/utils/path';
+import { getMyShiftsPath, getTeamsPath } from '@/utils/path';
 import { getShiftsForVolunteer } from '@/service/shift-service';
 import ShiftOverviewList from '@/ui/shift-overview-list';
 import { getTeamsForEvent } from '@/service/team-service';
@@ -51,9 +51,13 @@ export default async function DashboardPage() {
       </Heading>
 
       {/* Shift/Hours cards */}
-      <Flex gap="6" direction={{ initial: 'column', md: 'row' }}>
-        <DashCard topLine={t('your')} bottomLine={t('shifts')} />
-        <DashCard topLine={t('totalHours')} bottomLine={String(totalHours).padStart(2, '0')} />
+      <Flex gap="6" direction={{ initial: 'column', md: 'row' }} asChild>
+        <Link asChild underline="none">
+          <NextLink href={getMyShiftsPath()}>
+            <DashCard topLine={t('your')} bottomLine={t('shifts')} />
+            <DashCard topLine={t('totalHours')} bottomLine={String(totalHours).padStart(2, '0')} />
+          </NextLink>
+        </Link>
       </Flex>
 
       {/* View Teams CTA */}

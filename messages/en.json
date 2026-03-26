@@ -141,6 +141,10 @@
     "allShifts": "All Current Shifts",
     "export": "Export Shifts"
   },
+  "MyShiftsPage": {
+    "title": "My Shifts",
+    "export": "Export Shifts"
+  },
   "UsersDashboardPage": {
     "title": "All Volunteers",
     "createUser": "Create new user",

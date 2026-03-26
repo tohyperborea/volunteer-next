@@ -9,6 +9,7 @@
 import {
   getEventShiftsPath,
   getEventsPath,
+  getMyShiftsPath,
   getQualificationsPath,
   getTeamsPath,
   getUsersDashboardPath
@@ -21,7 +22,10 @@ import NextLink from 'next/link';
 import { usePathname } from 'next/navigation';
 import React from 'react';
 
-const VolunteerLinks = [[getTeamsPath(), 'teams']];
+const VolunteerLinks = [
+  [getMyShiftsPath(), 'myShifts'],
+  [getTeamsPath(), 'teams']
+];
 
 const AdminLinks: [string, string, UserRoleType[]?][] = [
   [getEventsPath(), 'events', ['admin', 'organiser']],
