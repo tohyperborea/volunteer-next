@@ -35,15 +35,15 @@ export default function NavigationFrame({ title, subtitle, currentUser, children
         align="center"
         height="70px"
         style={{
-          background: 'var(--color-panel-solid)',
-          color: 'var(--color-panel-contrast)',
+          background: 'var(--accent-9)',
+          color: 'var(--accent-contrast)',
           boxShadow: 'var(--shadow-2)'
         }}
       >
         <IconButton
           variant="ghost"
           aria-label="Menu"
-          highContrast
+          style={{ color: 'var(--accent-contrast)' }}
           onClick={() => setIsNavOpen((val) => !val)}
         >
           <HamburgerMenuIcon height={30} width={30} />
@@ -58,6 +58,7 @@ export default function NavigationFrame({ title, subtitle, currentUser, children
               fallback={currentUser.displayName.charAt(0).toUpperCase()}
               radius="full"
               variant="solid"
+              highContrast
             />
           </NextLink>
         </Flex>
