@@ -51,7 +51,7 @@ export default async function DashboardPage() {
       </Heading>
 
       {/* Shift/Hours cards */}
-      <Flex gap="6" direction={{ initial: 'column', md: 'row' }} asChild>
+      <Flex gap={{ initial: '4', md: '6' }} direction={{ initial: 'column', md: 'row' }} asChild>
         <Link asChild underline="none">
           <NextLink href={getMyShiftsPath()}>
             <DashCard topLine={t('your')} bottomLine={t('shifts')} />
