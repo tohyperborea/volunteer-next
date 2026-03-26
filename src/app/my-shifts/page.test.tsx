@@ -47,11 +47,6 @@ jest.mock('next/cache', () => ({
   revalidatePath: jest.fn()
 }));
 
-jest.mock('@/ui/search-bar', () => ({
-  __esModule: true,
-  default: () => <div>SearchBar</div>
-}));
-
 const mockGetCurrentEvent = getCurrentEvent as jest.MockedFunction<typeof getCurrentEvent>;
 const mockGetCurrentEventOrRedirect = getCurrentEventOrRedirect as jest.MockedFunction<
   typeof getCurrentEventOrRedirect
@@ -123,15 +118,6 @@ describe('EventShifts Page', () => {
     mockGetTeamsForEvent.mockResolvedValue(mockTeams);
     render(await MyShifts());
     expect(screen.getByRole('heading', { name: 'title' })).toBeInTheDocument();
-  });
-
-  it('renders the search bar', async () => {
-    mockGetCurrentEvent.mockResolvedValue(mockEvent);
-    mockGetCurrentEventOrRedirect.mockResolvedValue(mockEvent);
-    mockGetShiftsForVolunteer.mockResolvedValue(mockShifts);
-    mockGetTeamsForEvent.mockResolvedValue(mockTeams);
-    render(await MyShifts());
-    expect(screen.getByText('SearchBar')).toBeInTheDocument();
   });
 
   it('renders shifts grouped by day and team', async () => {

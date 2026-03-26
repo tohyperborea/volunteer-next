@@ -21,10 +21,6 @@ export default async function MyShifts() {
   await checkAuthorisation();
   const t = await getTranslations(PAGE_KEY);
   const event = await getCurrentEventOrRedirect();
-  if (!event) {
-    notFound();
-  }
-
   const user = (await currentUser())!; // checkAuthorisation guarantees this
   const shifts = await getShiftsForVolunteer(event.id, user.id);
   const shiftVolunteers = await getVolunteersForShifts(
@@ -56,7 +52,6 @@ export default async function MyShifts() {
           </a>
         </Button>
       </Flex>
-      <SearchBar />
       <ShiftOverviewList
         event={event}
         teams={teams}
