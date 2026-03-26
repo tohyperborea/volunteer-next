@@ -14,11 +14,12 @@ import NextLink from 'next/link';
 
 interface Props {
   title?: string;
+  titleNode?: React.ReactNode;
   children?: React.ReactNode;
   updateUri?: string;
   onDelete?: () => Promise<void>;
 }
-export default function MenuCard({ title = '', children, updateUri, onDelete }: Props) {
+export default function MenuCard({ title = '', titleNode, children, updateUri, onDelete }: Props) {
   const deleteRef = useRef<HTMLButtonElement>(null);
   const t = useTranslations('MenuCard');
   const showMenu = updateUri || onDelete;
@@ -26,7 +27,7 @@ export default function MenuCard({ title = '', children, updateUri, onDelete }: 
     <Card>
       <Flex justify="between" align="center">
         <Heading as="h3" size="4">
-          {title}
+          {titleNode ?? title}
         </Heading>
         {showMenu && (
           <DropdownMenu.Root>

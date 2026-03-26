@@ -7,7 +7,6 @@ import { checkAuthorisation } from '@/session';
 import EventCard from '@/ui/event-card';
 import NextLink from 'next/link';
 import { revalidatePath } from 'next/cache';
-import EventLink from '@/ui/event-link';
 import { getCreateEventPath, getEventsPath } from '@/utils/path';
 
 const PAGE_KEY = 'EventsManagementPage';
@@ -43,9 +42,7 @@ export default async function EventsDashboard() {
         </Card>
       )}
       {events.map((event) => (
-        <EventLink highContrast underline="none" href={'/'} eventId={event.id} key={event.id}>
-          <EventCard event={event} onDelete={deleteAction} />
-        </EventLink>
+        <EventCard event={event} onDelete={deleteAction} key={event.id} asLink />
       ))}
     </Flex>
   );
