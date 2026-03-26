@@ -14,28 +14,23 @@ export const getEditUserPath = (userId: string, callbackUrl?: string): string =>
 export const getUserProfilePath = (userId: string): string => `/user/${userId}`;
 
 // Teams paths
-export const getTeamsPath = (eventSlug: string): string => `/event/${eventSlug}/team`;
-export const getTeamShiftsPath = (eventSlug: string, teamSlug: string): string =>
-  `${getTeamsPath(eventSlug)}/${teamSlug}`;
-export const getTeamVolunteersPath = (eventSlug: string, teamSlug: string): string =>
-  `${getTeamShiftsPath(eventSlug, teamSlug)}/volunteers`;
-export const getUpdateTeamPath = (eventSlug: string, teamId: string): string =>
-  `/event/${eventSlug}/update-team/${teamId}`;
-export const getCreateTeamPath = (eventSlug: string): string => `/event/${eventSlug}/create-team`;
+export const getTeamsPath = (): string => `/team`;
+export const getTeamShiftsPath = (teamSlug: string): string => `${getTeamsPath()}/${teamSlug}`;
+export const getTeamVolunteersPath = (teamSlug: string): string =>
+  `${getTeamShiftsPath(teamSlug)}/volunteers`;
+export const getUpdateTeamPath = (teamId: string): string => `/update-team/${teamId}`;
+export const getCreateTeamPath = (): string => `/create-team`;
 
 // Qualifications paths
-export const getQualificationsPath = (eventSlug: string) => `/event/${eventSlug}/qualification`;
-export const getQualificationDetailsPath = ({
-  eventSlug,
-  qualificationId
-}: {
-  eventSlug: string;
-  qualificationId: string;
-}) => `/event/${eventSlug}/qualification/${qualificationId}`;
+export const getQualificationsPath = () => `/qualification`;
+export const getQualificationDetailsPath = (qualificationId: string) =>
+  `/qualification/${qualificationId}`;
 
-// Event-level paths
-export const getEventsPath = () => '/event';
-export const getEventShiftsPath = (eventSlug: string): string => `/event/${eventSlug}/shifts`;
+// Event paths
+export const getEventsPath = () => '/events';
+export const getCreateEventPath = () => '/create-event';
+export const getUpdateEventPath = (eventId: string) => `/update-event/${eventId}`;
+export const getEventShiftsPath = (): string => `/shifts`;
 
 // API paths
 export const getEventShiftsApiPath = (

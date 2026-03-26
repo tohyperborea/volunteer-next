@@ -1,10 +1,8 @@
 import metadata from '@/i18n/metadata';
-import { getEventBySlug } from '@/service/event-service';
 import { Heading, Flex, Button, Box, Link, IconButton } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
 import { Pencil2Icon, PlusIcon } from '@radix-ui/react-icons';
-import { checkAuthorisation, currentUser } from '@/session';
-import { notFound } from 'next/navigation';
+import { checkAuthorisation, currentUser, getCurrentEventOrRedirect } from '@/session';
 import { getFilteredTeamsForEvent } from '@/service/team-service';
 import TeamList from '@/ui/team-list';
 import { getCreateTeamPath, getUpdateTeamPath } from '@/utils/path';
@@ -18,18 +16,10 @@ const PAGE_KEY = 'TeamsDashboardPage';
 
 export const generateMetadata = metadata(PAGE_KEY);
 
-export default async function EventsDashboard({
-  params,
-  searchParams
-}: PageProps<'/event/[eventSlug]/team'>) {
+export default async function EventsDashboard({ searchParams }: PageProps<'/team'>) {
   const t = await getTranslations(PAGE_KEY);
 
-  const { eventSlug } = await params;
-  const event = await getEventBySlug(eventSlug);
-
-  if (!event) {
-    notFound();
-  }
+  const event = await getCurrentEventOrRedirect();
 
   const editorRoles: UserRole[] = [{ type: 'admin' }, { type: 'organiser', eventId: event.id }];
 
@@ -46,7 +36,7 @@ export default async function EventsDashboard({
     ? {}
     : teams.reduce<Record<TeamId, React.ReactNode>>((actions, team) => {
         actions[team.id] = (
-          <Link href={getUpdateTeamPath(eventSlug, team.id)}>
+          <Link href={getUpdateTeamPath(team.id)}>
             <IconButton variant="ghost" aria-label={t('edit', { teamName: team.name })}>
               <Pencil2Icon width={20} height={20} />
             </IconButton>
@@ -63,7 +53,7 @@ export default async function EventsDashboard({
       {isEditable && (
         <Box>
           <Button asChild>
-            <NextLink href={getCreateTeamPath(eventSlug)}>
+            <NextLink href={getCreateTeamPath()}>
               <PlusIcon /> {t('createTeam')}
             </NextLink>
           </Button>
@@ -73,7 +63,6 @@ export default async function EventsDashboard({
         teams={teams}
         shifts={shifts}
         shiftVolunteers={shiftVolunteers}
-        eventSlug={eventSlug}
         itemActions={itemActions}
       />
     </Flex>

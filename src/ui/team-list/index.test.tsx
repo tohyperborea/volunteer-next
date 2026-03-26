@@ -23,9 +23,7 @@ describe('TeamList', () => {
   });
 
   it('renders no teams message when teams list is empty', () => {
-    const { getByText } = render(
-      <TeamList teams={[]} shifts={[]} shiftVolunteers={{}} eventSlug="test-event" />
-    );
+    const { getByText } = render(<TeamList teams={[]} shifts={[]} shiftVolunteers={{}} />);
     expect(getByText('noTeams')).toBeInTheDocument();
   });
 
@@ -77,18 +75,11 @@ describe('TeamList', () => {
       team2: <button>Action 2</button>
     };
     const { getAllByTestId } = render(
-      <TeamList
-        teams={teams}
-        shifts={shifts}
-        itemActions={itemActions}
-        shiftVolunteers={{}}
-        eventSlug="test-event"
-      />
+      <TeamList teams={teams} shifts={shifts} itemActions={itemActions} shiftVolunteers={{}} />
     );
 
     expect(mockTeamCard).toHaveBeenCalledWith(
       expect.objectContaining({
-        eventSlug: 'test-event',
         team: teams[0],
         shifts: [shifts[0]],
         actions: itemActions['team1']
@@ -97,7 +88,6 @@ describe('TeamList', () => {
     );
     expect(mockTeamCard).toHaveBeenCalledWith(
       expect.objectContaining({
-        eventSlug: 'test-event',
         team: teams[1],
         shifts: [shifts[1]],
         actions: itemActions['team2']
@@ -127,9 +117,7 @@ describe('TeamList', () => {
         contactAddress: ''
       }
     ];
-    const { getByTestId } = render(
-      <TeamList teams={teams} shifts={[]} shiftVolunteers={{}} eventSlug="test-event" />
-    );
+    const { getByTestId } = render(<TeamList teams={teams} shifts={[]} shiftVolunteers={{}} />);
     expect(mockTeamFilters).toHaveBeenCalledWith(
       expect.objectContaining({
         withFilters: ['searchQuery']

@@ -1,9 +1,13 @@
 import metadata from '@/i18n/metadata';
-import { getEventBySlug } from '@/service/event-service';
 import { getShiftsForVolunteers } from '@/service/shift-service';
 import { getTeamBySlug } from '@/service/team-service';
 import { getFilteredVolunteers } from '@/service/user-service';
-import { checkAuthorisation, currentUser } from '@/session';
+import {
+  checkAuthorisation,
+  currentUser,
+  getCurrentEvent,
+  getCurrentEventOrRedirect
+} from '@/session';
 import Collapsible from '@/ui/collapsible';
 import DatedList from '@/ui/dated-list';
 import TimeSpan from '@/ui/time-span';
@@ -23,8 +27,9 @@ const PAGE_KEY = 'TeamPage.VolunteersTab';
 export const generateMetadata = metadata(PAGE_KEY, {
   title: async (params) => {
     const t = await getTranslations(PAGE_KEY);
-    const { eventSlug, teamSlug } = params;
-    const team = !eventSlug || !teamSlug ? null : await getTeamBySlug(eventSlug, teamSlug);
+    const { teamSlug } = params;
+    const event = await getCurrentEvent();
+    const team = !event || !teamSlug ? null : await getTeamBySlug(event.slug, teamSlug);
     return `${t('title')} | ${team?.name ?? ''}`;
   }
 });
@@ -34,11 +39,11 @@ interface Props {}
 export default async function TeamVolunteers({
   params,
   searchParams
-}: PageProps<`/event/[eventSlug]/team/[teamSlug]/volunteers`>) {
-  const { eventSlug, teamSlug } = await params;
+}: PageProps<`/team/[teamSlug]/volunteers`>) {
+  const { teamSlug } = await params;
   const t = await getTranslations(PAGE_KEY);
-  const event = await getEventBySlug(eventSlug);
-  const team = await getTeamBySlug(eventSlug, teamSlug);
+  const event = await getCurrentEventOrRedirect();
+  const team = await getTeamBySlug(event.slug, teamSlug);
   if (!event || !team) {
     notFound();
   }
@@ -86,7 +91,7 @@ export default async function TeamVolunteers({
       <Box>
         <Button asChild variant="soft">
           <NextLink
-            href={getTeamVolunteersApiPath(eventSlug, teamSlug, { format: 'csv' })}
+            href={getTeamVolunteersApiPath(event.slug, teamSlug, { format: 'csv' })}
             target="_blank"
             rel="noopener"
           >

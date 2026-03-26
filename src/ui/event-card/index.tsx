@@ -9,6 +9,7 @@
 import { useTranslations } from 'next-intl';
 import { Text } from '@radix-ui/themes';
 import MenuCard from '@/ui/menu-card';
+import { getUpdateEventPath } from '@/utils/path';
 
 const localeOptions: Intl.DateTimeFormatOptions = {
   timeZone: 'UTC',
@@ -28,7 +29,7 @@ export default function EventCard({ event, onDelete }: Props) {
   return (
     <MenuCard
       title={event.name}
-      updateUri={`/update-event/${event.id}`}
+      updateUri={getUpdateEventPath(event.id)}
       onDelete={() => onDelete(event.id)}
     >
       <Text size="1">

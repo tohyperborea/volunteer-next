@@ -52,12 +52,7 @@ export default function QualificationCard({
   return (
     <Card asChild={asLink} data-testid={cardId}>
       {asLink ? (
-        <NextLink
-          href={getQualificationDetailsPath({
-            eventSlug: event.slug,
-            qualificationId: qualification.id
-          })}
-        >
+        <NextLink href={getQualificationDetailsPath(qualification.id)}>
           <Inner />
         </NextLink>
       ) : (

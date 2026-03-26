@@ -11,6 +11,7 @@ import { validateNewEvent } from '@/validator/event-validator';
 import { validateUserId } from '@/validator/user-validator';
 import { usersToVolunteers } from '@/lib/volunteer';
 import { getPermissionsProfile } from '@/utils/permissions';
+import { getEventsPath } from '@/utils/path';
 
 const PAGE_KEY = 'CreateEventPage';
 
@@ -29,7 +30,7 @@ export default async function CreateEvent() {
       const createdEvent = await createEvent(newEvent, client);
       await addRoleToUser({ type: 'organiser', eventId: createdEvent.id }, organiser, client);
     });
-    redirect('/event');
+    redirect(getEventsPath());
   };
 
   await checkAuthorisation([{ type: 'admin' }]);

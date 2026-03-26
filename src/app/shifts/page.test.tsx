@@ -1,9 +1,9 @@
 import { render, screen } from '@testing-library/react';
 import EventShifts from './page';
-import { getEventBySlug } from '@/service/event-service';
 import { getShiftsForEvent } from '@/service/shift-service';
 import { getTeamsForEvent } from '@/service/team-service';
 import { notFound } from 'next/navigation';
+import { getCurrentEvent, getCurrentEventOrRedirect } from '@/session';
 
 jest.mock('next-intl', () => ({
   useTranslations: () => (key: string) => key,
@@ -34,7 +34,9 @@ jest.mock('@/service/user-service', () => ({
 
 jest.mock('@/session', () => ({
   checkAuthorisation: jest.fn().mockResolvedValue(true),
-  currentUser: jest.fn().mockResolvedValue({ id: 'current-user' })
+  currentUser: jest.fn().mockResolvedValue({ id: 'current-user' }),
+  getCurrentEvent: jest.fn(),
+  getCurrentEventOrRedirect: jest.fn()
 }));
 
 jest.mock('next/navigation', () => ({
@@ -48,7 +50,10 @@ jest.mock('@/ui/search-bar', () => ({
   default: () => <div>SearchBar</div>
 }));
 
-const mockGetEventBySlug = getEventBySlug as jest.MockedFunction<typeof getEventBySlug>;
+const mockGetCurrentEvent = getCurrentEvent as jest.MockedFunction<typeof getCurrentEvent>;
+const mockGetCurrentEventOrRedirect = getCurrentEventOrRedirect as jest.MockedFunction<
+  typeof getCurrentEventOrRedirect
+>;
 const mockGetShiftsForEvent = getShiftsForEvent as jest.MockedFunction<typeof getShiftsForEvent>;
 const mockGetTeamsForEvent = getTeamsForEvent as jest.MockedFunction<typeof getTeamsForEvent>;
 const mockNotFound = notFound as jest.MockedFunction<typeof notFound>;
@@ -107,37 +112,32 @@ describe('EventShifts Page', () => {
       isActive: true
     }
   ];
-  const mockParams = Promise.resolve({ eventSlug: mockEvent.slug });
-  const mockSearch = Promise.resolve({});
 
   it('renders the heading correctly', async () => {
-    mockGetEventBySlug.mockResolvedValue(mockEvent);
+    mockGetCurrentEvent.mockResolvedValue(mockEvent);
+    mockGetCurrentEventOrRedirect.mockResolvedValue(mockEvent);
     mockGetShiftsForEvent.mockResolvedValue(mockShifts);
     mockGetTeamsForEvent.mockResolvedValue(mockTeams);
-    render(await EventShifts({ params: mockParams, searchParams: mockSearch }));
+    render(await EventShifts());
     expect(screen.getByRole('heading', { name: 'allShifts' })).toBeInTheDocument();
   });
 
   it('renders the search bar', async () => {
-    mockGetEventBySlug.mockResolvedValue(mockEvent);
+    mockGetCurrentEvent.mockResolvedValue(mockEvent);
+    mockGetCurrentEventOrRedirect.mockResolvedValue(mockEvent);
     mockGetShiftsForEvent.mockResolvedValue(mockShifts);
     mockGetTeamsForEvent.mockResolvedValue(mockTeams);
-    render(await EventShifts({ params: mockParams, searchParams: mockSearch }));
+    render(await EventShifts());
     expect(screen.getByText('SearchBar')).toBeInTheDocument();
   });
 
   it('renders shifts grouped by day and team', async () => {
-    mockGetEventBySlug.mockResolvedValue(mockEvent);
+    mockGetCurrentEvent.mockResolvedValue(mockEvent);
+    mockGetCurrentEventOrRedirect.mockResolvedValue(mockEvent);
     mockGetShiftsForEvent.mockResolvedValue(mockShifts);
     mockGetTeamsForEvent.mockResolvedValue(mockTeams);
-    render(await EventShifts({ params: mockParams, searchParams: mockSearch }));
+    render(await EventShifts());
     expect(screen.getByText('Team A')).toBeInTheDocument();
     expect(screen.getByText('Team B')).toBeInTheDocument();
-  });
-
-  it('calls notFound if event is not found', async () => {
-    mockGetEventBySlug.mockResolvedValue(null);
-    await expect(EventShifts({ params: mockParams, searchParams: mockSearch })).rejects.toThrow();
-    expect(mockNotFound).toHaveBeenCalled();
   });
 });

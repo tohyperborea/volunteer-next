@@ -4,7 +4,7 @@
     "noEvents": "No events yet!",
     "createEvent": "Create New Event"
   },
-  "EventDashboardPage": {
+  "DashboardPage": {
     "manageMy": "Manage My",
     "volunteers": "Volunteers",
     "yourHours": "Your Hours",

@@ -74,13 +74,7 @@ describe('ShiftCard', () => {
     );
     const badge = screen.getByText('requires: First Aid');
     expect(badge).toBeInTheDocument();
-    expect(badge).toHaveAttribute(
-      'href',
-      getQualificationDetailsPath({
-        eventSlug: mockEvent.slug,
-        qualificationId: mockQualification.id
-      })
-    );
+    expect(badge).toHaveAttribute('href', getQualificationDetailsPath(mockQualification.id));
   });
 
   it('does not show qualification requirement when not present', () => {

@@ -21,12 +21,12 @@ import NextLink from 'next/link';
 import { usePathname } from 'next/navigation';
 import React from 'react';
 
-const VolunteerLinks = [[getTeamsPath('test-event'), 'teams']];
+const VolunteerLinks = [[getTeamsPath(), 'teams']];
 
 const AdminLinks: [string, string, UserRoleType[]?][] = [
   [getEventsPath(), 'events', ['admin', 'organiser']],
-  [getQualificationsPath('test-event'), 'qualifications'],
-  [getEventShiftsPath('test-event'), 'shifts'],
+  [getQualificationsPath(), 'qualifications'],
+  [getEventShiftsPath(), 'shifts'],
   [getUsersDashboardPath(), 'volunteers']
 ];
 

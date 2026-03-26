@@ -18,18 +18,10 @@ interface Props {
   team: TeamInfo;
   shifts: ShiftInfo[];
   shiftVolunteers?: Record<ShiftId, VolunteerInfo[]>;
-  eventSlug: string;
   actions?: React.ReactNode;
   showSignup?: boolean;
 }
-export default function TeamCard({
-  team,
-  shifts,
-  shiftVolunteers,
-  eventSlug,
-  actions,
-  showSignup
-}: Props) {
+export default function TeamCard({ team, shifts, shiftVolunteers, actions, showSignup }: Props) {
   const t = useTranslations('TeamCard');
   const shiftSpots = shifts.reduce((spots, shift) => spots + shift.maxVolunteers, 0);
   const filledSpots = shifts.reduce((spots, shift) => {
@@ -56,7 +48,7 @@ export default function TeamCard({
             gap="3"
           >
             <Link asChild highContrast underline="hover">
-              <NextLink href={getTeamShiftsPath(eventSlug, team.slug)}>
+              <NextLink href={getTeamShiftsPath(team.slug)}>
                 <Heading as="h3" size="4">
                   {team.name}
                 </Heading>
@@ -73,9 +65,7 @@ export default function TeamCard({
                   {isFull ? (
                     <Text>{t('signup')}</Text>
                   ) : (
-                    <NextLink href={getTeamShiftsPath(eventSlug, team.slug)}>
-                      {t('signup')}
-                    </NextLink>
+                    <NextLink href={getTeamShiftsPath(team.slug)}>{t('signup')}</NextLink>
                   )}
                 </Button>
               )}

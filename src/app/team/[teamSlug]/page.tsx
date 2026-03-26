@@ -1,6 +1,5 @@
 import { inTransaction } from '@/db';
 import metadata from '@/i18n/metadata';
-import { getEventBySlug } from '@/service/event-service';
 import {
   getQualificationsForEvent,
   getQualificationsForUser
@@ -19,7 +18,12 @@ import {
 } from '@/service/shift-service';
 import { getTeamBySlug } from '@/service/team-service';
 import { getVolunteersForShifts } from '@/service/user-service';
-import { checkAuthorisation, currentUser } from '@/session';
+import {
+  checkAuthorisation,
+  currentUser,
+  getCurrentEvent,
+  getCurrentEventOrRedirect
+} from '@/session';
 import ShiftList from '@/ui/shift-list';
 import { getTeamShiftsApiPath, getTeamShiftsPath } from '@/utils/path';
 import { getPermissionsProfile } from '@/utils/permissions';
@@ -34,21 +38,20 @@ const PAGE_KEY = 'TeamPage.ShiftsTab';
 
 export const generateMetadata = metadata(PAGE_KEY, {
   title: async (params) => {
+    const { teamSlug } = params;
     const t = await getTranslations(PAGE_KEY);
-    const { eventSlug, teamSlug } = params;
-    const team = !eventSlug || !teamSlug ? null : await getTeamBySlug(eventSlug, teamSlug);
+    const event = await getCurrentEvent();
+    const team = !event || !teamSlug ? null : await getTeamBySlug(event.slug, teamSlug);
     return `${t('title')} | ${team?.name ?? ''}`;
   }
 });
 
-export default async function TeamShifts({
-  params,
-  searchParams
-}: PageProps<`/event/[eventSlug]/team/[teamSlug]`>) {
-  const { eventSlug, teamSlug } = await params;
-  const event = await getEventBySlug(eventSlug);
-  const team = await getTeamBySlug(eventSlug, teamSlug);
-  if (!event || !team) {
+export default async function TeamPage({ params, searchParams }: PageProps<`/team/[teamSlug]`>) {
+  const { teamSlug } = await params;
+  const event = await getCurrentEventOrRedirect();
+  const team = teamSlug ? await getTeamBySlug(event.slug, teamSlug) : null;
+
+  if (!team) {
     notFound();
   }
 
@@ -96,7 +99,7 @@ export default async function TeamShifts({
     } else {
       await createShift(shift);
     }
-    const path = getTeamShiftsPath(eventSlug, teamSlug);
+    const path = getTeamShiftsPath(teamSlug);
     revalidatePath(path);
     redirect(path);
   };
@@ -109,7 +112,7 @@ export default async function TeamShifts({
       throw new Error('Shift id is required for deletion');
     }
     await deleteShift(shiftId);
-    const path = getTeamShiftsPath(eventSlug, teamSlug);
+    const path = getTeamShiftsPath(teamSlug);
     revalidatePath(path);
   };
 
@@ -143,7 +146,7 @@ export default async function TeamShifts({
       }
       await addVolunteerToShift(shiftId, permissions.userId, client);
     });
-    const path = getTeamShiftsPath(eventSlug, teamSlug);
+    const path = getTeamShiftsPath(teamSlug);
     revalidatePath(path);
   };
 
@@ -154,7 +157,7 @@ export default async function TeamShifts({
       unauthorized();
     }
     await removeVolunteerFromShift(shiftId, permissions.userId);
-    const path = getTeamShiftsPath(eventSlug, teamSlug);
+    const path = getTeamShiftsPath(teamSlug);
     revalidatePath(path);
   };
 
@@ -173,7 +176,7 @@ export default async function TeamShifts({
         userQualifications={userQualifications}
         qualifications={qualifications}
         shiftVolunteers={shiftVolunteers}
-        exportLink={getTeamShiftsApiPath(eventSlug, teamSlug, { format: 'csv' })}
+        exportLink={getTeamShiftsApiPath(event.slug, teamSlug, { format: 'csv' })}
         onSaveShift={isEditable ? onSaveShift : undefined}
         onDeleteShift={isEditable ? onDeleteShift : undefined}
         onSignup={onSignup}

@@ -26,6 +26,27 @@ export const getEvents = cache(async (): Promise<EventInfo[]> => {
 });
 
 /**
+ * Fetches a list of events that have not yet ended.
+ * @returns An array of EventInfo objects.
+ */
+export const getActiveEvents = cache(async (): Promise<EventInfo[]> => {
+  const result = await pool.query(
+    `
+      SELECT
+        id,
+        name,
+        "slug",
+        "startDate",
+        "endDate"
+      FROM event
+      WHERE "endDate" >= CURRENT_DATE
+      ORDER BY "startDate" ASC
+    `
+  );
+  return result.rows.map(rowToEvent);
+});
+
+/**
  * Fetches events by ID.
  * @param eventIds - The event ids to fetch
  * @return An array of EventInfo objects matching the provided IDs.

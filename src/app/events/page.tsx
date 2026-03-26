@@ -1,12 +1,15 @@
 import metadata from '@/i18n/metadata';
 import { deleteEvent, getEvents } from '@/service/event-service';
-import { Heading, Flex, Card, Text, Button, Box, Link } from '@radix-ui/themes';
+import { Heading, Flex, Card, Text, Button, Box } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
 import { PlusIcon } from '@radix-ui/react-icons';
 import { checkAuthorisation } from '@/session';
 import EventCard from '@/ui/event-card';
-import { redirect } from 'next/navigation';
 import NextLink from 'next/link';
+import { revalidatePath } from 'next/cache';
+import EventLink from '@/ui/event-link';
+import { getCreateEventPath, getEventsPath } from '@/utils/path';
+import { EventCookie, getCookie, setCookie } from '@/utils/cookie';
 
 const PAGE_KEY = 'EventsManagementPage';
 
@@ -22,7 +25,10 @@ export default async function EventsDashboard() {
     'use server';
     await checkAuthorisation([{ type: 'admin' }]);
     await deleteEvent(id);
-    redirect('/event');
+    if (getCookie(EventCookie.name) === id) {
+      setCookie(EventCookie, '');
+    }
+    revalidatePath(getEventsPath());
   };
 
   return (
@@ -30,7 +36,7 @@ export default async function EventsDashboard() {
       <Heading my="4">{t('title')}</Heading>
       <Box>
         <Button asChild>
-          <NextLink href="/create-event">
+          <NextLink href={getCreateEventPath()}>
             <PlusIcon /> {t('createEvent')}
           </NextLink>
         </Button>
@@ -41,11 +47,9 @@ export default async function EventsDashboard() {
         </Card>
       )}
       {events.map((event) => (
-        <Link asChild highContrast underline="none" key={event.id}>
-          <NextLink href={`/event/${event.slug}`}>
-            <EventCard event={event} onDelete={deleteAction} />
-          </NextLink>
-        </Link>
+        <EventLink highContrast underline="none" href={'/'} eventId={event.id} key={event.id}>
+          <EventCard event={event} onDelete={deleteAction} />
+        </EventLink>
       ))}
     </Flex>
   );

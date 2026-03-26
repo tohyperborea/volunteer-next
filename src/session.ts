@@ -9,7 +9,9 @@ import { auth } from './auth';
 import { headers } from 'next/headers';
 import { getUser } from './service/user-service';
 import { redirect, unauthorized } from 'next/navigation';
-import { roleMatches, rolesEq } from './utils/roles';
+import { roleMatches } from './utils/roles';
+import { getEventsPath } from './utils/path';
+import { getEventsById } from './service/event-service';
 
 /**
  * Retrieves the currently authenticated user based on the session.
@@ -112,4 +114,29 @@ export const getMatchingRoles = async (toMatch: UserRoleMatchCriteria): Promise<
     return [];
   }
   return user.roles.filter((userRole) => roleMatches(userRole, toMatch));
+};
+
+/**
+ * Retrieves the current event based on the 'x-event-id' header.
+ * @returns The current event based on the 'x-event-id' header, or null if not found.
+ */
+export const getCurrentEvent = async (): Promise<EventInfo | null> => {
+  const eventId = (await headers()).get('x-event-id');
+  if (!eventId) {
+    return null;
+  }
+  return (await getEventsById([eventId]))[0] ?? null;
+};
+
+/**
+ * Retrieves the current event based on the 'x-event-id' header, or redirects to the event list page if not found.
+ * @returns The current event based on the 'x-event-id' header
+ * @throws NEXT_REDIRECT if no event is found, redirecting to the event list page
+ */
+export const getCurrentEventOrRedirect = async (): Promise<EventInfo> => {
+  const event = await getCurrentEvent();
+  if (!event) {
+    redirect(getEventsPath());
+  }
+  return event;
 };

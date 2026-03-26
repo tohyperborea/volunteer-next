@@ -1,6 +1,6 @@
 import metadata from '@/i18n/metadata';
 import { notFound, redirect } from 'next/navigation';
-import { Flex, Heading, Card } from '@radix-ui/themes';
+import { Flex, Heading } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
 import {
   addRoleToUser,
@@ -8,7 +8,7 @@ import {
   getUsersWithRole,
   removeRoleFromUsers
 } from '@/service/user-service';
-import { checkAuthorisation, currentUser } from '@/session';
+import { checkAuthorisation, currentUser, getCurrentEventOrRedirect } from '@/session';
 import { inTransaction } from '@/db';
 import TeamForm from '@/ui/team-form';
 import { validateExistingTeam } from '@/validator/team-validator';
@@ -22,14 +22,11 @@ const PAGE_KEY = 'UpdateTeamPage';
 
 export const generateMetadata = metadata(PAGE_KEY);
 
-interface Props {
-  params: Promise<{ id: string; eventSlug: UrlSlug }>;
-}
-
-export default async function UpdateTeam({ params }: Props) {
-  const { id, eventSlug } = await params;
+export default async function UpdateTeam({ params }: PageProps<'/update-team/[id]'>) {
+  const { id } = await params;
+  const event = await getCurrentEventOrRedirect();
   const team = id ? await getTeamById(id) : null;
-  if (!team) {
+  if (!team || team.eventId !== event.id) {
     notFound();
   }
   await checkAuthorisation([{ type: 'admin' }, { type: 'organiser', eventId: team.eventId }]);
@@ -62,7 +59,7 @@ export default async function UpdateTeam({ params }: Props) {
         await addRoleToUser(roleToAdd, teamlead, client);
       }
     });
-    redirect(getTeamsPath(eventSlug));
+    redirect(getTeamsPath());
   };
 
   const onDelete = async () => {
@@ -70,7 +67,7 @@ export default async function UpdateTeam({ params }: Props) {
 
     await checkAuthorisation([{ type: 'admin' }, { type: 'organiser', eventId: team.eventId }]);
     await deleteTeam(team.id);
-    redirect(getTeamsPath(eventSlug));
+    redirect(getTeamsPath());
   };
 
   const permissionsProfile = getPermissionsProfile(await currentUser());
