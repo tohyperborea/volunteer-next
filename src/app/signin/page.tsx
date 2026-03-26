@@ -22,7 +22,7 @@ export default async function SignInPage({
   const params = await searchParams;
   const callbackUrl = params.callbackUrl || '/';
   const forgotSent = params.forgotSent === '1';
-  const oauthProviderName = process.env.OAUTH_PROVIDER_NAME ?? 'OAUTH_PROVIDER_NAME';
+  const oauthProviderName = process.env.OAUTH_PROVIDER_NAME ?? 'OAuth Provider';
 
   const signInOAuth = async (formData: FormData) => {
     'use server';

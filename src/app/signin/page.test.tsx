@@ -31,15 +31,14 @@ jest.mock('next-intl', () => ({
 
 jest.mock('next-intl/server', () => ({
   getTranslations: jest.fn(() =>
-    Promise.resolve((key: string) => {
+    Promise.resolve((key: string, values: Record<string, string> = {}) => {
       const translations: Record<string, string> = {
         title: 'Sign In',
         signInToAccount: 'Sign in to your account to continue.',
-        useOAuth: 'We use our ticket system, Pretix, to provide a single sign-on experience.',
-        clickButtonToRedirect:
-          'Clicking the button below will redirect you to the Pretix login page.',
+        useOAuth: `We use our ticket system, ${values.provider}, to provide a single sign-on experience.`,
+        clickButtonToRedirect: `Clicking the button below will redirect you to the ${values.provider} login page.`,
         afterLoggingIn: 'After logging in, you will be redirected back to this application.',
-        button: 'Sign In with Pretix',
+        button: `Sign In with ${values.provider}`,
         emailPlaceholder: 'Email',
         passwordPlaceholder: 'Password',
         buttonCredentials: 'Sign In',
@@ -78,7 +77,8 @@ describe('SignInPage', () => {
     jest.clearAllMocks();
     process.env = {
       ...originalEnv,
-      OAUTH_PROVIDER_ID: 'test-provider-id'
+      OAUTH_PROVIDER_ID: 'test-provider-id',
+      OAUTH_PROVIDER_NAME: 'Pretix'
     };
   });
 
