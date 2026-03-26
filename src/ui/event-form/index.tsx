@@ -11,6 +11,7 @@ import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import DatePicker from '../datepicker';
+import { EVENT_SLUG_PATTERN } from '@/validator/event-validator';
 
 const FormItem = ({ children }: { children: React.ReactNode }) => (
   <Flex direction="column" gap="1">
@@ -68,6 +69,7 @@ export default function EventForm({
             placeholder={t('eventSlug')}
             autoComplete="off"
             defaultValue={editingEvent?.slug}
+            pattern={EVENT_SLUG_PATTERN}
             required
           />
         </FormItem>

@@ -55,34 +55,29 @@ export default async function UpdateEvent({ params }: PageProps<`/update-event/[
   await checkAuthorisation([{ type: 'admin' }]);
   const t = await getTranslations(PAGE_KEY);
   const { id } = await params;
-  try {
-    const event = id ? (await getEventsById([id]))[0] : null;
-    if (!event) {
-      notFound();
-    }
-    const permissionsProfile = getPermissionsProfile(await currentUser());
-    const volunteers = usersToVolunteers(await getUsers(), permissionsProfile);
-    const organiser = userToVolunteer(
-      (await getUsersWithRole({ type: 'organiser', eventId: event.id }))[0],
-      permissionsProfile
-    );
-
-    return (
-      <Flex direction="column" gap="4">
-        <Heading my="4">{t('title')}</Heading>
-        <Card>
-          <EventForm
-            onSubmit={onSubmit}
-            backOnCancel
-            organiserOptions={volunteers}
-            editingEvent={event}
-            editingOrganiser={organiser}
-          />
-        </Card>
-      </Flex>
-    );
-  } catch (error) {
-    console.error(error);
-    throw new Error('Invalid input');
+  const event = id ? (await getEventsById([id]))[0] : null;
+  if (!event) {
+    notFound();
   }
+  const permissionsProfile = getPermissionsProfile(await currentUser());
+  const volunteers = usersToVolunteers(await getUsers(), permissionsProfile);
+  const organiser = userToVolunteer(
+    (await getUsersWithRole({ type: 'organiser', eventId: event.id }))[0],
+    permissionsProfile
+  );
+
+  return (
+    <Flex direction="column" gap="4">
+      <Heading my="4">{t('title')}</Heading>
+      <Card>
+        <EventForm
+          onSubmit={onSubmit}
+          backOnCancel
+          organiserOptions={volunteers}
+          editingEvent={event}
+          editingOrganiser={organiser}
+        />
+      </Card>
+    </Flex>
+  );
 }

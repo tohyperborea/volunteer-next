@@ -6,11 +6,12 @@
 
 'use client';
 
-import { Flex, Text, TextField, Select, Button, TextArea } from '@radix-ui/themes';
+import { Flex, TextField, Select, Button, TextArea } from '@radix-ui/themes';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { FormField } from '../form-dialog';
 import DeleteButton from '../delete-button';
+import { TEAM_SLUG_PATTERN } from '@/validator/team-validator';
 
 interface Props {
   eventId: EventId;
@@ -35,7 +36,7 @@ export default function TeamForm({
   const router = useRouter();
   return (
     <Flex asChild direction="column" align="start" gap="6">
-      <form action={onSubmit}>
+      <form>
         {editingTeam && onDelete && (
           <DeleteButton
             variant="soft"
@@ -73,6 +74,7 @@ export default function TeamForm({
               aria-labelledby="team-slug-label"
               id="team-slug"
               placeholder={t('teamSlug')}
+              pattern={TEAM_SLUG_PATTERN}
               autoComplete="off"
               defaultValue={editingTeam?.slug}
               required

@@ -44,11 +44,7 @@ describe('Event Validator', () => {
       formData.set('endDate', '2025-12-05');
       formData.append('slug', '"slug< w~ith >ba&d | char\\ac`ters% a?nd [{spaces}]^');
 
-      const result = validateNewEvent(formData);
-
-      expect(result.slug).toBe(
-        '%22slug%3C%20w~ith%20%3Eba%26d%20%7C%20char%5Cac%60ters%25%20a%3Fnd%20%5B%7Bspaces%7D%5D%5E'
-      );
+      expect(() => validateNewEvent(formData)).toThrow('Event slug contains invalid characters');
     });
 
     it('throws an error if startDate is missing', () => {

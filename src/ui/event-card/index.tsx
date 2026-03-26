@@ -10,6 +10,7 @@ import { useTranslations } from 'next-intl';
 import { Text } from '@radix-ui/themes';
 import MenuCard from '@/ui/menu-card';
 import { getUpdateEventPath } from '@/utils/path';
+import { EventCookie, getCookie, setCookie } from '@/utils/cookie';
 
 const localeOptions: Intl.DateTimeFormatOptions = {
   timeZone: 'UTC',
@@ -30,7 +31,12 @@ export default function EventCard({ event, onDelete }: Props) {
     <MenuCard
       title={event.name}
       updateUri={getUpdateEventPath(event.id)}
-      onDelete={() => onDelete(event.id)}
+      onDelete={async () => {
+        await onDelete(event.id);
+        if (getCookie(EventCookie.name) === event.id) {
+          setCookie(EventCookie, '');
+        }
+      }}
     >
       <Text size="1">
         {t('dateSpan', {

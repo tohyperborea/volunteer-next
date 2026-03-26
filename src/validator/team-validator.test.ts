@@ -74,7 +74,7 @@ describe('validateNewTeam', () => {
     expect(() => validateNewTeam(formData)).toThrow('Team slug is required');
   });
 
-  it('should ensure that slug is URL-friendly', () => {
+  it('should throw an error if slug contains illegal characters', () => {
     const formData = new FormData();
     formData.append('name', 'Team A');
     formData.append('slug', '"slug< w~ith >ba&d | char\\ac`ters% a?nd [{spaces}]^');
@@ -82,11 +82,7 @@ describe('validateNewTeam', () => {
     formData.append('contactAddress', 'team@example.com');
     formData.append('eventId', '456');
 
-    const result = validateNewTeam(formData);
-
-    expect(result.slug).toBe(
-      '%22slug%3C%20w~ith%20%3Eba%26d%20%7C%20char%5Cac%60ters%25%20a%3Fnd%20%5B%7Bspaces%7D%5D%5E'
-    );
+    expect(() => validateNewTeam(formData)).toThrow('Team slug contains invalid characters');
   });
 
   it('should throw an error if description is missing', () => {

@@ -6,6 +6,9 @@
 
 import { isValidEmail } from '@/utils/string';
 
+export const TEAM_SLUG_REGEX = /^[a-zA-Z0-9\-_]*$/;
+export const TEAM_SLUG_PATTERN = TEAM_SLUG_REGEX.source.substring(1);
+
 /**
  * Validates FormData for updating a team.
  * @param data - FormData to validate
@@ -39,6 +42,9 @@ export const validateNewTeam = (data: FormData): Omit<TeamInfo, 'id'> => {
   if (!slug) {
     throw new Error('Team slug is required');
   }
+  if (TEAM_SLUG_REGEX.test(slug) === false) {
+    throw new Error('Team slug contains invalid characters');
+  }
   const description = data.get('description')?.toString() ?? null;
   if (!description) {
     throw new Error('Team description is required');
@@ -56,7 +62,7 @@ export const validateNewTeam = (data: FormData): Omit<TeamInfo, 'id'> => {
   }
   return {
     eventId,
-    slug: encodeURIComponent(slug),
+    slug,
     name,
     description,
     contactAddress
