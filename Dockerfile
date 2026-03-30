@@ -96,5 +96,5 @@ USER node
 EXPOSE 3000
 
 # Start Next.js standalone server
-ENTRYPOINT ["docker-entrypoint.sh"]
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 CMD ["node", "server.js"]
