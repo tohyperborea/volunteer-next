@@ -1,0 +1,32 @@
+services:
+  # Postgres service with pg_cron extension
+  db:
+    build:
+      context: ./db/docker
+      dockerfile: Dockerfile
+    restart: always
+    command: postgres -c shared_preload_libraries=pg_cron -c cron.database_name=${POSTGRES_DB}
+    ports:
+      - ${POSTGRES_PORT}:${POSTGRES_PORT}
+    volumes:
+      - pgdata:/var/lib/postgresql
+
+  # Liquibase service to run database migrations
+  liquibase:
+    image: liquibase/liquibase
+    volumes:
+      - ./db/changelog.xml:/liquibase/changelog.xml
+      - ./db/scripts:/liquibase/scripts
+      - ./db/drivers:/liquibase/lib
+    command: >
+      --classpath=/liquibase/lib/postgresql.jar
+      --url=jdbc:postgresql://db:${POSTGRES_PORT}/${POSTGRES_DB}
+      --changeLogFile=changelog.xml
+      --username=postgres
+      --password=${POSTGRES_PASSWORD}
+      update
+    depends_on:
+      - db
+
+volumes:
+  pgdata:
