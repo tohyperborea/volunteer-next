@@ -74,4 +74,5 @@ Then set `POSTGRES_URL` (or the individual `POSTGRES_*` vars) in your deployment
 
 1. Create `.env.production` from `.env.example`
 2. Build the production docker images: `npm run prod:build`
-3. Start production docker containers: `npm run prod:up`
+3. Start the database: `npm run db:start`
+4. Start production docker containers: `npm run prod:up`

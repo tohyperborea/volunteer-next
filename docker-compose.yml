@@ -1,81 +1,20 @@
 services:
-  # Postgres service with pg_cron extension
-  db:
-    build:
-      context: ./db/docker
-      dockerfile: Dockerfile
-    restart: always
-    command: postgres -c shared_preload_libraries=pg_cron -c cron.database_name=${POSTGRES_DB}
-    ports:
-      - ${POSTGRES_PORT}:${POSTGRES_PORT}
-    volumes:
-      - pgdata:/var/lib/postgresql
-
-  # Liquibase service to run database migrations
-  liquibase:
-    image: liquibase/liquibase
-    volumes:
-      - ./db/changelog.xml:/liquibase/changelog.xml
-      - ./db/scripts:/liquibase/scripts
-      - ./db/drivers:/liquibase/lib
-    command: >
-      --classpath=/liquibase/lib/postgresql.jar
-      --url=jdbc:postgresql://db:${POSTGRES_PORT}/${POSTGRES_DB}
-      --changeLogFile=changelog.xml
-      --username=postgres
-      --password=${POSTGRES_PASSWORD}
-      update
-    depends_on:
-      - db
-
-  # Mailer service, responsible for sending emails
-  mailer:
-    build:
-      context: ./mailer
-      dockerfile: docker/Dockerfile
-    image: volunteer-next-mailer:latest
-    container_name: volunteer-next-mailer
-    environment:
-      CRON_SCHEDULE: '*/10 * * * * *'
-      RATE_LIMIT: 100
-      POSTGRES_HOST: db
-      POSTGRES_PORT: ${POSTGRES_PORT}
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      SMTP_HOST: ${SMTP_HOST}
-      SMTP_PORT: ${SMTP_PORT}
-      SMTP_USER: ${SMTP_USER}
-      SMTP_PASSWORD: ${SMTP_PASSWORD}
-      SMTP_SECURE: ${SMTP_SECURE}
-      SMTP_FROM: ${SMTP_FROM}
-      FAKE_SEND: true
-    restart: unless-stopped
-    depends_on:
-      - db
-
   # Main Next.js application service, for production only
   volunteer-next:
     build:
       context: .
       dockerfile: Dockerfile
-      secrets:
-        - env_production
+
     image: volunteer-next:latest
     container_name: volunteer-next
-    env_file:
-      - .env.production
+    secrets:
+      - env_production
     environment:
       NODE_ENV: production
       PORT: '3000'
     ports:
       - '3000:3000'
     restart: unless-stopped
-    depends_on:
-      - db
-
-volumes:
-  pgdata:
 
 secrets:
   env_production:

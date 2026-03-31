@@ -47,7 +47,7 @@ ENV NEXT_TELEMETRY_DISABLED=1
 # This caches the .next/cache directory across builds, but it also prevents
 # .next/cache/fetch-cache from being included in the final image, meaning
 # cached fetch responses from the build won't be available at runtime.
-RUN --mount=type=secret,id=env_production,dst=.env.production \
+RUN \
   if [ -f package-lock.json ]; then \
     npm run build; \
   else \
@@ -85,6 +85,10 @@ COPY --from=builder --chown=node:node /app/.next/static ./.next/static
 # cached responses are available immediately on startup, uncomment this line:
 # COPY --from=builder --chown=node:node /app/.next/cache ./.next/cache
 
+# Copy and register the entrypoint
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
 # Switch to non-root user for security best practices
 USER node
 
@@ -92,4 +96,5 @@ USER node
 EXPOSE 3000
 
 # Start Next.js standalone server
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 CMD ["node", "server.js"]
