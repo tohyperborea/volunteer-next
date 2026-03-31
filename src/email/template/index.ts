@@ -1,10 +1,18 @@
+import { body as ShiftEmail } from './ShiftEmail';
 import { htmlToText } from 'html-to-text';
 import { sendEmail } from '@/email';
 
-export async function sendEmailWithTemplate(options: {
+const templates = {
+  ShiftEmail: ShiftEmail
+} as const;
+
+type TemplateName = keyof typeof templates;
+type TemplateProps<T extends TemplateName> = React.ComponentProps<(typeof templates)[T]>;
+
+export async function sendEmailWithTemplate<T extends TemplateName>(options: {
   to: string;
-  template: string;
-  props?: Record<string, any>;
+  template: T;
+  props?: TemplateProps<T>;
 }): Promise<SendEmailResult> {
   // dynamically import renderToStaticMarkup because NextJS gets angry otherwise (https://github.com/vercel/next.js/issues/43810#issuecomment-1341136525)
   const renderToStaticMarkup = (await import('react-dom/server')).renderToStaticMarkup;

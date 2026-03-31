@@ -26,7 +26,7 @@ describe('sendEmailWithTemplate', () => {
     const result = await sendEmailWithTemplate({
       to: 'john@example.com',
       template: 'ShiftEmail',
-      props: { name: 'John' }
+      props: { name: 'John' } as any
     });
 
     expect(mockBody).toHaveBeenCalledWith({ name: 'John' });
@@ -63,7 +63,7 @@ describe('sendEmailWithTemplate', () => {
     const result = await sendEmailWithTemplate({
       to: 'john@example.com',
       template: 'ShiftEmail',
-      props: { name: 'John' }
+      props: { name: 'John' } as any
     });
 
     expect(mockBody).toHaveBeenCalledWith({ name: 'John' });
