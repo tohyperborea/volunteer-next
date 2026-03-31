@@ -1,0 +1,13 @@
+{
+  "name": "@volunteer-next/mailer",
+  "type": "module",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node index.ts"
+  },
+  "dependencies": {
+    "@types/pg": "^8.20.0",
+    "node-cron": "^4.2.1",
+    "pg": "^8.20.0"
+  }
+}
