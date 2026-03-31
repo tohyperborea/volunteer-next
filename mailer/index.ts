@@ -45,7 +45,6 @@ const smtp = createTransport({
 console.log('Starting scheduled task...');
 
 cron.schedule(CRON_SCHEDULE, async () => {
-  console.log('Running scheduled task to send emails...');
   const result = await pool.query(`
     SELECT "id", "to", "subject", "body"
     FROM email

@@ -28,9 +28,6 @@ services:
     depends_on:
       - db
 
-volumes:
-  pgdata:
-
   # Mailer service, responsible for sending emails
   mailer:
     build:
@@ -56,3 +53,6 @@ volumes:
     restart: unless-stopped
     depends_on:
       - db
+
+volumes:
+  pgdata:

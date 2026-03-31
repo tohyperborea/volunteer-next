@@ -15,16 +15,16 @@
     "db:connect": "docker compose -f docker-compose.db.yml --env-file .env.local exec db psql -U postgres",
     "db:logs": "docker compose -f docker-compose.db.yml --env-file .env.local logs -f db",
     "liquibase:logs": "docker compose -f docker-compose.db.yml --env-file .env.local logs -f liquibase",
+    "mailer:start": "docker compose -f docker-compose.db.yml --env-file .env.local up -d mailer",
+    "mailer:stop": "docker compose -f docker-compose.db.yml --env-file .env.local down mailer",
+    "mailer:logs": "docker compose -f docker-compose.db.yml --env-file .env.local logs -f mailer",
     "neon:migrate": "./db/migrate-neon.sh",
     "neon:sync": "./db/migrate-neon.sh changelogSync",
     "prepare": "husky",
     "prod:build": "docker compose -f docker-compose.yml build",
     "prod:up": "docker compose -f docker-compose.yml up -d",
     "prod:down": "docker compose -f docker-compose.yml down",
-    "prod:logs": "docker compose -f docker-compose.yml logs -f volunteer-next",
-    "mailer:start": "docker compose --env-file .env.local up -d mailer",
-    "mailer:stop": "docker compose --env-file .env.local down mailer",
-    "mailer:logs": "docker compose --env-file .env.local logs -f mailer"
+    "prod:logs": "docker compose -f docker-compose.yml logs -f volunteer-next"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.12",

@@ -1,6 +1,7 @@
 import { validateSmtpConfig } from '@/email';
 import { sendEmailWithTemplate } from '@/email/template';
 import metadata from '@/i18n/metadata';
+import { sendUserShiftEmail } from '@/lib/email';
 import { getShiftsForVolunteer, removeVolunteerFromShift } from '@/service/shift-service';
 import { getTeamsForEvent } from '@/service/team-service';
 import { getVolunteersForShifts } from '@/service/user-service';
@@ -38,16 +39,11 @@ export default async function MyShifts() {
 
   const sendShiftEmail = async () => {
     'use server';
-    const result = await sendEmailWithTemplate({
-      key: `ShiftEmail:${event.slug}:${user.id}}`,
-      to: user.email,
-      template: 'ShiftEmail',
-      props: {
-        name: user.chosenName,
-        event,
-        shifts,
-        teams
-      }
+    const result = await sendUserShiftEmail({
+      event,
+      user,
+      shifts,
+      teams
     });
     if (result.status === 'failed') {
       console.error('Shift email failed for %s: %s', user.email, result.error);
