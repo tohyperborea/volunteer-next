@@ -148,10 +148,10 @@ describe('EventShifts Page', () => {
   });
 
   it('hides email button when SMTP config is invalid', async () => {
-    process.env.SMTP_HOST = undefined;
-    process.env.SMTP_USER = undefined;
-    process.env.SMTP_PASSWORD = undefined;
-    process.env.SMTP_PORT = undefined;
+    delete process.env.SMTP_HOST;
+    delete process.env.SMTP_USER;
+    delete process.env.SMTP_PASSWORD;
+    delete process.env.SMTP_PORT;
     mockGetCurrentEvent.mockResolvedValue(mockEvent);
     mockGetCurrentEventOrRedirect.mockResolvedValue(mockEvent);
     mockGetShiftsForVolunteer.mockResolvedValue(mockShifts);

@@ -1,5 +1,4 @@
 import { validateSmtpConfig } from '@/email';
-import { sendEmailWithTemplate } from '@/email/template';
 import metadata from '@/i18n/metadata';
 import { sendUserShiftEmail } from '@/lib/email';
 import { getShiftsForVolunteer, removeVolunteerFromShift } from '@/service/shift-service';
@@ -30,7 +29,10 @@ export default async function MyShifts() {
     getPermissionsProfile(user)
   );
   const teams = await getTeamsForEvent(event.id);
-  const showEmailButton = process.env.NODE_ENV === 'development' || validateSmtpConfig().valid;
+  const showEmailButton =
+    process.env.NODE_ENV === 'development' ||
+    process.env.USE_EMAIL_QUEUE === 'true' ||
+    validateSmtpConfig().valid;
 
   const onCancelShift = async (shiftId: ShiftId) => {
     'use server';

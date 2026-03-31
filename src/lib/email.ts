@@ -26,7 +26,7 @@ export const sendUserShiftEmail = async ({
   teams: TeamInfo[];
 }): Promise<SendEmailResult> =>
   sendEmailWithTemplate({
-    key: `ShiftEmail:${event.slug}:${user.id}}`,
+    key: `ShiftEmail:${event.slug}:${user.id}`,
     to: user.email,
     template: 'ShiftEmail',
     props: {

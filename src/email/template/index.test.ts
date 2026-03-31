@@ -8,6 +8,10 @@ describe('sendEmailWithTemplate', () => {
     jest.clearAllMocks();
   });
 
+  afterEach(() => {
+    delete process.env.USE_EMAIL_QUEUE;
+  });
+
   it('should send an email using the provided template and props', async () => {
     const mockSendEmail = jest.fn().mockResolvedValue({ status: 'sent' });
     jest.mock('@/email', () => ({

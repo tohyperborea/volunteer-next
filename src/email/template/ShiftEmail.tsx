@@ -53,7 +53,7 @@ export async function body({ event, name, shifts, teams }: Props) {
   );
 }
 
-export async function subject({ event, shifts }: Props) {
+export async function subject({ event }: Props) {
   const t = await getTranslations(TEMPLATE_KEY);
   return t('subject', { eventName: event.name });
 }

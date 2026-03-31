@@ -43,6 +43,7 @@ export const queueEmail = async ({
       "to" = EXCLUDED."to",
       "subject" = EXCLUDED."subject",
       "body" = EXCLUDED."body",
+      "sendAfter" = EXCLUDED."sendAfter",
       "createdAt" = CURRENT_TIMESTAMP
     `,
     values

@@ -1,14 +1,14 @@
-import { body as ShiftEmail } from './ShiftEmail';
+import type { body as ShiftEmail } from './ShiftEmail';
 import { htmlToText } from 'html-to-text';
 import { sendEmail } from '@/email';
 import { queueEmail } from '@/service/email-service';
 
-const templates = {
-  ShiftEmail: ShiftEmail
-} as const;
+type Templates = {
+  ShiftEmail: typeof ShiftEmail;
+};
 
-type TemplateName = keyof typeof templates;
-type TemplateProps<T extends TemplateName> = React.ComponentProps<(typeof templates)[T]>;
+type TemplateName = keyof Templates;
+type TemplateProps<T extends TemplateName> = React.ComponentProps<Templates[T]>;
 
 export async function sendEmailWithTemplate<T extends TemplateName>(options: {
   to: string;
@@ -27,7 +27,8 @@ export async function sendEmailWithTemplate<T extends TemplateName>(options: {
       to: options.to,
       subject: emailSubject,
       body: emailBody,
-      key: options.key
+      key: options.key,
+      sendAfter: options.sendAfter
     });
     return { status: 'queued' };
   } else {

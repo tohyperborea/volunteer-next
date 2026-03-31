@@ -147,14 +147,14 @@ export default async function TeamPage({ params, searchParams }: PageProps<`/tea
         throw new Error('Shift is already full');
       }
       await addVolunteerToShift(shiftId, permissions.userId, client);
-      const teams = await getTeamsForEvent(event.id);
-      const shifts = await getShiftsForVolunteer(event.id, permissions.userId);
-      await sendUserShiftEmail({
-        event,
-        user,
-        shifts,
-        teams
-      });
+    });
+    const teams = await getTeamsForEvent(event.id);
+    const shifts = await getShiftsForVolunteer(event.id, permissions.userId);
+    await sendUserShiftEmail({
+      event,
+      user,
+      shifts,
+      teams
     });
     const path = getTeamShiftsPath(teamSlug);
     revalidatePath(path);
