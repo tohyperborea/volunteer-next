@@ -6,6 +6,7 @@ import { getShiftsForVolunteer, removeVolunteerFromShift } from '@/service/shift
 import { getTeamsForEvent } from '@/service/team-service';
 import { getVolunteersForShifts } from '@/service/user-service';
 import { checkAuthorisation, currentUser, getCurrentEventOrRedirect } from '@/session';
+import SendEmailButton from '@/ui/send-email-button';
 import ShiftOverviewList from '@/ui/shift-overview-list';
 import { getMyShiftsPath, getVolunteerShiftsApiPath } from '@/utils/path';
 import { getPermissionsProfile } from '@/utils/permissions';
@@ -48,6 +49,7 @@ export default async function MyShifts() {
     if (result.status === 'failed') {
       console.error('Shift email failed for %s: %s', user.email, result.error);
     }
+    return result;
   };
 
   return (
@@ -67,10 +69,17 @@ export default async function MyShifts() {
           </a>
         </Button>
         {showEmailButton && (
-          <Button variant="soft" onClick={sendShiftEmail}>
+          <SendEmailButton
+            variant="soft"
+            sendEmail={sendShiftEmail}
+            successTitle={t('emailSuccessTitle')}
+            successMessage={t('emailSuccessMessage')}
+            failureTitle={t('emailFailureTitle')}
+            failureMessage={t('emailFailureMessage')}
+          >
             <EnvelopeClosedIcon />
             {t('emailMyShifts')}
-          </Button>
+          </SendEmailButton>
         )}
       </Flex>
       <ShiftOverviewList

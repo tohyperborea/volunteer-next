@@ -144,7 +144,11 @@
   "MyShiftsPage": {
     "title": "My Shifts",
     "export": "Export Shifts",
-    "emailMyShifts": "Email Me"
+    "emailMyShifts": "Email Me",
+    "emailSuccessTitle": "Email sent",
+    "emailSuccessMessage": "We've sent an email with your upcoming shifts. Check your inbox soon!",
+    "emailFailureTitle": "Oops",
+    "emailFailureMessage": "Something went wrong. Please try again later."
   },
   "UsersDashboardPage": {
     "title": "All Volunteers",
@@ -397,5 +401,8 @@
   },
   "ProgressBar": {
     "label": "{filled}/{total} Spots"
+  },
+  "SendEmailButton": {
+    "close": "Close"
   }
 }
