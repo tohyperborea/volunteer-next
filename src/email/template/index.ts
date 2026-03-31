@@ -19,7 +19,6 @@ export async function sendEmailWithTemplate<T extends TemplateName>(options: {
   const { body, subject } = await import(`@/email/template/${options.template}`);
   const emailBody = renderToStaticMarkup(await body(options.props ?? {}));
   const emailSubject = await subject(options.props ?? {});
-  console.log('[email] Sending "%s" email to %s', options.template, options.to);
   return sendEmail({
     to: options.to,
     subject: emailSubject,
