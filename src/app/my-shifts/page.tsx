@@ -39,6 +39,7 @@ export default async function MyShifts() {
   const sendShiftEmail = async () => {
     'use server';
     const result = await sendEmailWithTemplate({
+      key: `ShiftEmail:${event.slug}:${user.id}}`,
       to: user.email,
       template: 'ShiftEmail',
       props: {
@@ -48,7 +49,7 @@ export default async function MyShifts() {
         teams
       }
     });
-    if (!result.sent && result.error) {
+    if (result.status === 'failed') {
       console.error('Shift email failed for %s: %s', user.email, result.error);
     }
   };

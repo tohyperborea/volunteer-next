@@ -47,6 +47,10 @@ jest.mock('next/cache', () => ({
   revalidatePath: jest.fn()
 }));
 
+jest.mock('@/email/template', () => ({
+  sendEmailWithTemplate: jest.fn().mockResolvedValue({ status: 'sent' })
+}));
+
 const mockGetCurrentEvent = getCurrentEvent as jest.MockedFunction<typeof getCurrentEvent>;
 const mockGetCurrentEventOrRedirect = getCurrentEventOrRedirect as jest.MockedFunction<
   typeof getCurrentEventOrRedirect
@@ -128,5 +132,31 @@ describe('EventShifts Page', () => {
     render(await MyShifts());
     expect(screen.getByText('Team A')).toBeInTheDocument();
     expect(screen.getByText('Team B')).toBeInTheDocument();
+  });
+
+  it('shows email button when SMTP config is valid', async () => {
+    process.env.SMTP_HOST = 'smtp.example.com';
+    process.env.SMTP_USER = 'user';
+    process.env.SMTP_PASSWORD = 'password';
+    process.env.SMTP_PORT = '587';
+    mockGetCurrentEvent.mockResolvedValue(mockEvent);
+    mockGetCurrentEventOrRedirect.mockResolvedValue(mockEvent);
+    mockGetShiftsForVolunteer.mockResolvedValue(mockShifts);
+    mockGetTeamsForEvent.mockResolvedValue(mockTeams);
+    render(await MyShifts());
+    expect(screen.getByRole('button', { name: 'emailMyShifts' })).toBeInTheDocument();
+  });
+
+  it('hides email button when SMTP config is invalid', async () => {
+    process.env.SMTP_HOST = undefined;
+    process.env.SMTP_USER = undefined;
+    process.env.SMTP_PASSWORD = undefined;
+    process.env.SMTP_PORT = undefined;
+    mockGetCurrentEvent.mockResolvedValue(mockEvent);
+    mockGetCurrentEventOrRedirect.mockResolvedValue(mockEvent);
+    mockGetShiftsForVolunteer.mockResolvedValue(mockShifts);
+    mockGetTeamsForEvent.mockResolvedValue(mockTeams);
+    render(await MyShifts());
+    expect(screen.queryByRole('button', { name: 'emailMyShifts' })).not.toBeInTheDocument();
   });
 });

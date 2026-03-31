@@ -63,7 +63,7 @@ describe('sendEmail', () => {
       text: 'This is a test email.'
     });
 
-    expect(result).toEqual({ sent: true });
+    expect(result).toEqual<SendEmailResult>({ status: 'sent' });
     expect(sendMailMock).toHaveBeenCalledWith({
       from: 'user@example.com',
       to: 'recipient@example.com',
@@ -91,7 +91,10 @@ describe('sendEmail', () => {
       '[email] Send skipped: %s',
       'SMTP_HOST is missing or empty'
     );
-    expect(result).toEqual({ sent: false, error: 'SMTP_HOST is missing or empty' });
+    expect(result).toEqual<SendEmailResult>({
+      status: 'failed',
+      error: 'SMTP_HOST is missing or empty'
+    });
   });
 
   it('should retry sending email on failure', async () => {
@@ -125,7 +128,7 @@ describe('sendEmail', () => {
       1000,
       'Temporary failure'
     );
-    expect(result).toEqual({ sent: true });
+    expect(result).toEqual<SendEmailResult>({ status: 'sent' });
     expect(sendMailMock).toHaveBeenCalledTimes(2);
   });
 });

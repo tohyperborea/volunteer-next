@@ -122,7 +122,7 @@ export const auth = betterAuth({
               subject: enMessages.ResetPasswordEmail.subject,
               text: enMessages.ResetPasswordEmail.text.replace('{url}', url)
             });
-            if (!result.sent && result.error) {
+            if (result.status === 'failed') {
               console.error(
                 '[auth] Password reset email failed for %s: %s',
                 user.email,

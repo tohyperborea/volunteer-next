@@ -16,11 +16,17 @@ declare global {
   type OptionalKeys<T> = {
     [K in keyof T]-?: undefined extends T[K] ? K : never;
   }[keyof T];
-
-  interface SendEmailResult {
-    sent: boolean;
-    error?: string;
-  }
+  type SendEmailResult =
+    | {
+        status: 'sent';
+      }
+    | {
+        status: 'queued';
+      }
+    | {
+        status: 'failed';
+        error: string;
+      };
 
   type UserId = string;
   type EventId = string;

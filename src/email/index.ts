@@ -7,7 +7,6 @@
  */
 
 import nodemailer from 'nodemailer';
-import { htmlToText } from 'html-to-text';
 
 const SMTP_MAX_RETRIES = 3;
 const SMTP_RETRY_BASE_MS = 1000;
@@ -79,9 +78,9 @@ export async function sendEmail(options: {
     console.error('[email] Send skipped: %s', msg);
     if (process.env.NODE_ENV === 'development') {
       console.info('[email] To: %s (subject: %s) :: %s', options.to, options.subject, options.text);
-      return { sent: true }; // In dev, treat as sent to allow auth flows to work without SMTP
+      return { status: 'sent' }; // In dev, treat as sent to allow auth flows to work without SMTP
     }
-    return { sent: false, error: msg };
+    return { status: 'failed', error: msg };
   }
 
   const from = process.env.SMTP_FROM ?? process.env.SMTP_USER ?? 'noreply@localhost';
@@ -99,7 +98,7 @@ export async function sendEmail(options: {
       if (process.env.NODE_ENV === 'development') {
         console.info('[email] Sent to %s (subject: %s)', options.to, options.subject);
       }
-      return { sent: true };
+      return { status: 'sent' };
     } catch (err) {
       lastError = err instanceof Error ? err : new Error(String(err));
       const delayMs = SMTP_RETRY_BASE_MS * Math.pow(2, attempt - 1);
@@ -124,7 +123,7 @@ export async function sendEmail(options: {
   }
 
   return {
-    sent: false,
+    status: 'failed',
     error: lastError?.message ?? 'Unknown error'
   };
 }
