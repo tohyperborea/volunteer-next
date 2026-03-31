@@ -2,9 +2,6 @@
   "name": "@volunteer-next/mailer",
   "type": "module",
   "version": "1.0.0",
-  "scripts": {
-    "start": "node index.ts"
-  },
   "dependencies": {
     "@types/html-to-text": "^9.0.4",
     "@types/nodemailer": "^7.0.11",
