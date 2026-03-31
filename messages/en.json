@@ -143,7 +143,8 @@
   },
   "MyShiftsPage": {
     "title": "My Shifts",
-    "export": "Export Shifts"
+    "export": "Export Shifts",
+    "emailMyShifts": "Email Me"
   },
   "UsersDashboardPage": {
     "title": "All Volunteers",
@@ -175,6 +176,18 @@
     "assignQualification": "Assign Qualification",
     "edit": "Edit Profile",
     "signOut": "Sign Out"
+  },
+
+  "ResetPasswordEmail": {
+    "subject": "Reset your password",
+    "text": "Click the link to reset your password: {url}"
+  },
+  "ShiftEmail": {
+    "subject": "Your {eventName} shifts",
+    "greeting": "Hello there, {name}!",
+    "thanks": "Thanks for signing up to volunteer with {eventName} - we are excited to see you, and definitely can't make all the magic happen without your help.",
+    "yourShifts": "Here are the shifts you have signed up for:",
+    "closing": "Thanks again and can’t wait to see you at {eventName}!"
   },
 
   "AuthContainer": {
@@ -288,10 +301,6 @@
   },
   "Metadata": {
     "description": "A system to support the organisation of alternative arts events"
-  },
-  "ResetPasswordEmail": {
-    "subject": "Reset your password",
-    "text": "Click the link to reset your password: {url}"
   },
   "ShiftList": {
     "addShift": "Add shift",

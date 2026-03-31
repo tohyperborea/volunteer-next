@@ -7,6 +7,7 @@
  */
 
 import nodemailer from 'nodemailer';
+import { htmlToText } from 'html-to-text';
 
 const SMTP_MAX_RETRIES = 3;
 const SMTP_RETRY_BASE_MS = 1000;
@@ -61,11 +62,6 @@ function getTransporter(): nodemailer.Transporter | null {
   });
 }
 
-export interface SendEmailResult {
-  sent: boolean;
-  error?: string;
-}
-
 /**
  * Sends an email with retries (exponential backoff). Logs failures for monitoring.
  * Returns result so callers can handle delivery failures; does not throw.
@@ -81,6 +77,10 @@ export async function sendEmail(options: {
     const validation = validateSmtpConfig();
     const msg = validation.error ?? 'SMTP not configured';
     console.error('[email] Send skipped: %s', msg);
+    if (process.env.NODE_ENV === 'development') {
+      console.info('[email] To: %s (subject: %s) :: %s', options.to, options.subject, options.text);
+      return { sent: true }; // In dev, treat as sent to allow auth flows to work without SMTP
+    }
     return { sent: false, error: msg };
   }
 

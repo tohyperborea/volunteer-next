@@ -4,6 +4,7 @@
  * @author Michael Townsend <@continuities>
  */
 
+import { getListByDate } from '@/utils/date';
 import { Flex, Text } from '@radix-ui/themes';
 
 interface Props<T> {
@@ -21,18 +22,7 @@ export default function DatedList<T>({
   dateSize = '3',
   dateWeight = 'bold'
 }: Props<T>) {
-  const sortedItems = [...items].sort((a, b) => getDate(a).getTime() - getDate(b).getTime());
-  const itemsByDate = sortedItems.reduce(
-    (acc, item) => {
-      const date = getDate(item).toDateString();
-      if (!acc[date]) {
-        acc[date] = [];
-      }
-      acc[date].push(item);
-      return acc;
-    },
-    {} as Record<string, T[]>
-  );
+  const itemsByDate = getListByDate(items, getDate);
   return (
     <Flex direction="column" gap="4">
       {Object.entries(itemsByDate).map(([date, items]) => (

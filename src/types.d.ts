@@ -17,6 +17,11 @@ declare global {
     [K in keyof T]-?: undefined extends T[K] ? K : never;
   }[keyof T];
 
+  interface SendEmailResult {
+    sent: boolean;
+    error?: string;
+  }
+
   type UserId = string;
   type EventId = string;
   type TeamId = string;

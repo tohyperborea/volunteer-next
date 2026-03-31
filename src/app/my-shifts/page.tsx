@@ -1,17 +1,16 @@
+import { sendEmailWithTemplate } from '@/email/template';
 import metadata from '@/i18n/metadata';
 import { getShiftsForVolunteer, removeVolunteerFromShift } from '@/service/shift-service';
 import { getTeamsForEvent } from '@/service/team-service';
 import { getVolunteersForShifts } from '@/service/user-service';
 import { checkAuthorisation, currentUser, getCurrentEventOrRedirect } from '@/session';
-import SearchBar from '@/ui/search-bar';
 import ShiftOverviewList from '@/ui/shift-overview-list';
 import { getMyShiftsPath, getVolunteerShiftsApiPath } from '@/utils/path';
 import { getPermissionsProfile } from '@/utils/permissions';
-import { Share2Icon } from '@radix-ui/react-icons';
+import { Share2Icon, EnvelopeClosedIcon } from '@radix-ui/react-icons';
 import { Button, Flex, Heading } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
 import { revalidatePath } from 'next/cache';
-import { notFound } from 'next/navigation';
 
 const PAGE_KEY = 'MyShiftsPage';
 
@@ -35,6 +34,23 @@ export default async function MyShifts() {
     revalidatePath(getMyShiftsPath());
   };
 
+  const sendShiftEmail = async () => {
+    'use server';
+    const result = await sendEmailWithTemplate({
+      to: user.email,
+      template: 'ShiftEmail',
+      props: {
+        name: user.chosenName,
+        event,
+        shifts,
+        teams
+      }
+    });
+    if (!result.sent && result.error) {
+      console.error('Shift email failed for %s: %s', user.email, result.error);
+    }
+  };
+
   return (
     <Flex direction="column" gap="6" py="4">
       <Heading align="center" as="h1" size="6">
@@ -50,6 +66,10 @@ export default async function MyShifts() {
             <Share2Icon />
             {t('export')}
           </a>
+        </Button>
+        <Button variant="soft" onClick={sendShiftEmail}>
+          <EnvelopeClosedIcon />
+          {t('emailMyShifts')}
         </Button>
       </Flex>
       <ShiftOverviewList

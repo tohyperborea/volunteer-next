@@ -12,3 +12,18 @@ export const getEventDateRangeDisplayText = ({ event }: { event: EventInfo }): s
     return `${startMonth} ${startDay} - ${endMonth} ${endDay}, ${startYear}`;
   return `${startMonth} ${startDay}, ${startYear} - ${endMonth} ${endDay}, ${endYear}`;
 };
+
+export const getListByDate = <T>(items: T[], getDate: (item: T) => Date): Record<string, T[]> => {
+  const sortedItems = [...items].sort((a, b) => getDate(a).getTime() - getDate(b).getTime());
+  return sortedItems.reduce(
+    (acc, item) => {
+      const date = getDate(item).toDateString();
+      if (!acc[date]) {
+        acc[date] = [];
+      }
+      acc[date].push(item);
+      return acc;
+    },
+    {} as Record<string, T[]>
+  );
+};
