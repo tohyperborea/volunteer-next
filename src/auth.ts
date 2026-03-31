@@ -23,24 +23,14 @@ import {
 export const AUTH_MODE = (process.env.AUTH_MODE ?? 'oauth') as 'oauth' | 'credentials';
 
 const useOAuth = AUTH_MODE === 'oauth';
-
-if (useOAuth) {
-  if (!process.env.OAUTH_CLIENT_ID) {
-    throw new Error('OAUTH_CLIENT_ID is not set in environment variables');
-  }
-  if (!process.env.OAUTH_PROVIDER_ID) {
-    throw new Error('OAUTH_PROVIDER_ID is not set in environment variables');
-  }
-  if (!process.env.OAUTH_CLIENT_SECRET) {
-    throw new Error('OAUTH_CLIENT_SECRET is not set in environment variables');
-  }
-  if (!process.env.OAUTH_DISCOVERY_URL) {
-    throw new Error('OAUTH_DISCOVERY_URL is not set in environment variables');
-  }
-}
+const isOAuthConfigComplete =
+  process.env.OAUTH_CLIENT_ID &&
+  process.env.OAUTH_PROVIDER_ID &&
+  process.env.OAUTH_CLIENT_SECRET &&
+  process.env.OAUTH_DISCOVERY_URL;
 
 const plugins = [
-  ...(useOAuth
+  ...(useOAuth && isOAuthConfigComplete
     ? [
         genericOAuth({
           config: [
