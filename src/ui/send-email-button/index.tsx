@@ -171,7 +171,9 @@ export default function SendEmailButton({
                     {t('cancel')}
                   </Button>
                 </Dialog.Close>
-                <Button type="submit">{t('send', { numEmails })}</Button>
+                <Button disabled={isSending} type="submit">
+                  {t('send', { numEmails })}
+                </Button>
               </Flex>
             </form>
           </Dialog.Content>
