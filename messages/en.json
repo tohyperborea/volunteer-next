@@ -139,7 +139,12 @@
   "EventShiftsPage": {
     "title": "Shifts",
     "allShifts": "All Current Shifts",
-    "export": "Export Shifts"
+    "export": "Export Shifts",
+    "notifyVolunteers": "Notify Volunteers",
+    "emailSuccessTitle": "Emails sent",
+    "emailSuccessMessage": "Your notifications have been sent!",
+    "emailFailureTitle": "Oops",
+    "emailFailureMessage": "Something went wrong. Please try again later."
   },
   "MyShiftsPage": {
     "title": "My Shifts",
@@ -403,6 +408,13 @@
     "label": "{filled}/{total} Spots"
   },
   "SendEmailButton": {
+    "notifyAll": "Notify All Volunteers",
+    "notifyAllDescription": "This will send an email to {numEmails} volunteers in {emailContext}.",
+    "emailSubject": "Email Subject",
+    "emailBody": "Email Body",
+    "includeShifts": "Include shift details in the email",
+    "send": "Send {numEmails, plural, one {# email} other {# emails}}",
+    "cancel": "Cancel",
     "close": "Close"
   }
 }

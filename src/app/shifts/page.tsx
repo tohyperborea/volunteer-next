@@ -4,10 +4,12 @@ import { getTeamsForEvent } from '@/service/team-service';
 import { getVolunteersForShifts } from '@/service/user-service';
 import { checkAuthorisation, currentUser, getCurrentEventOrRedirect } from '@/session';
 import SearchBar from '@/ui/search-bar';
+import SendEmailButton from '@/ui/send-email-button';
 import ShiftOverviewList from '@/ui/shift-overview-list';
+import { deduplicateBy } from '@/utils/list';
 import { getEventShiftsApiPath } from '@/utils/path';
 import { getPermissionsProfile } from '@/utils/permissions';
-import { Share2Icon } from '@radix-ui/react-icons';
+import { Share2Icon, EnvelopeClosedIcon } from '@radix-ui/react-icons';
 import { Button, Flex, Heading } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
@@ -17,19 +19,34 @@ const PAGE_KEY = 'EventShiftsPage';
 export const generateMetadata = metadata(PAGE_KEY);
 
 export default async function EventShifts() {
-  await checkAuthorisation();
-  const t = await getTranslations(PAGE_KEY);
   const event = await getCurrentEventOrRedirect();
   if (!event) {
     notFound();
   }
 
+  const canNotify = await checkAuthorisation(
+    [{ type: 'admin' }, { type: 'organiser', eventId: event.id }],
+    true
+  );
+
+  const t = await getTranslations(PAGE_KEY);
   const shifts = await getShiftsForEvent(event.id);
   const shiftVolunteers = await getVolunteersForShifts(
     shifts.map((shift) => shift.id),
     getPermissionsProfile(await currentUser())
   );
   const teams = await getTeamsForEvent(event.id);
+  const allVolunteers = deduplicateBy(Object.values(shiftVolunteers).flat(), ({ id }) => id);
+
+  const doNotify = async ({
+    subject,
+    body,
+    includeShifts
+  }: EmailCustomisation): Promise<SendEmailResult> => {
+    'use server';
+    console.log('Notify all:: ', { subject, body, includeShifts });
+    return { status: 'sent' };
+  };
 
   return (
     <Flex direction="column" gap="6" py="4">
@@ -47,6 +64,22 @@ export default async function EventShifts() {
             {t('export')}
           </a>
         </Button>
+        {canNotify && (
+          <SendEmailButton
+            variant="soft"
+            successMessage={t('emailSuccessMessage')}
+            successTitle={t('emailSuccessTitle')}
+            failureMessage={t('emailFailureMessage')}
+            failureTitle={t('emailFailureTitle')}
+            customisable
+            numEmails={allVolunteers.length}
+            emailContext={event.name}
+            sendEmail={doNotify}
+          >
+            <EnvelopeClosedIcon />
+            {t('notifyVolunteers')}
+          </SendEmailButton>
+        )}
       </Flex>
       <SearchBar />
       <ShiftOverviewList

@@ -28,6 +28,12 @@ declare global {
         error: string;
       };
 
+  interface EmailCustomisation {
+    subject: string;
+    body: string;
+    includeShifts: boolean;
+  }
+
   type UserId = string;
   type EventId = string;
   type TeamId = string;
