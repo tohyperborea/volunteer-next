@@ -81,11 +81,17 @@ export default function SendEmailButton({
         const subject = formData.get('email-subject');
         const body = formData.get('email-body');
         const includeShifts = formData.get('include-shifts') === 'on';
-        if (typeof subject !== 'string' || typeof body !== 'string') {
+        if (
+          typeof subject !== 'string' ||
+          typeof body !== 'string' ||
+          subject.trim() === '' ||
+          body.trim() === ''
+        ) {
           setResult({
             status: 'failed',
             error: 'Invalid form data'
           });
+          setIsCustomising(false);
           return;
         }
         const customisation: EmailCustomisation = {

@@ -1,4 +1,3 @@
-import { sendEmailWithTemplate } from '@/email/template';
 import metadata from '@/i18n/metadata';
 import { getNotifyVolunteersAction } from '@/lib/email';
 import { getShiftsForEvent } from '@/service/shift-service';
@@ -26,10 +25,11 @@ export default async function EventShifts() {
     notFound();
   }
 
-  const canNotify = await checkAuthorisation(
-    [{ type: 'admin' }, { type: 'organiser', eventId: event.id }],
-    true
-  );
+  const notifyRoles: UserRoleMatchCriteria[] = [
+    { type: 'admin' },
+    { type: 'organiser', eventId: event.id }
+  ];
+  const canNotify = await checkAuthorisation(notifyRoles, true);
 
   const t = await getTranslations(PAGE_KEY);
   const shifts = await getShiftsForEvent(event.id);
@@ -51,13 +51,17 @@ export default async function EventShifts() {
     {}
   );
   const teams = await getTeamsForEvent(event.id);
-  const allVolunteers = deduplicateBy(Object.values(shiftVolunteers).flat(), ({ id }) => id);
+  const emailableVolunteers = deduplicateBy(
+    Object.values(shiftVolunteers).flat(),
+    ({ id }) => id
+  ).filter((v) => v.email);
 
   const doNotify = getNotifyVolunteersAction({
-    volunteers: allVolunteers,
+    volunteers: emailableVolunteers,
     shiftsByVolunteerId,
     event,
-    teams
+    teams,
+    acceptedRoles: notifyRoles
   });
 
   return (
@@ -84,7 +88,7 @@ export default async function EventShifts() {
             failureMessage={t('emailFailureMessage')}
             failureTitle={t('emailFailureTitle')}
             customisable
-            numEmails={allVolunteers.length}
+            numEmails={emailableVolunteers.length}
             emailContext={event.name}
             sendEmail={doNotify}
           >

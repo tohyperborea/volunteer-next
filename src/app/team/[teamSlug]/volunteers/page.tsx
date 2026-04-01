@@ -47,15 +47,17 @@ export default async function TeamVolunteers({
   if (!event || !team) {
     notFound();
   }
-  await checkAuthorisation([
+  const acceptedRoles: UserRoleMatchCriteria[] = [
     { type: 'admin' },
     { type: 'organiser', eventId: team.eventId },
     { type: 'team-lead', eventId: team.eventId, teamId: team.id }
-  ]);
+  ];
+  await checkAuthorisation(acceptedRoles);
   const permissionsProfile = getPermissionsProfile(await currentUser());
   const filters = recordToUserFilters(await searchParams);
   filters.onTeam = team.id;
   const volunteers = await getFilteredVolunteers(filters, permissionsProfile);
+  const emailableVolunteers = volunteers.filter((v) => v.email);
   const shifts = await getShiftsForVolunteers(
     volunteers.map((v) => v.id),
     { team }
@@ -87,10 +89,11 @@ export default async function TeamVolunteers({
   }, {});
 
   const doNotify = getNotifyVolunteersAction({
-    volunteers,
+    volunteers: emailableVolunteers,
     shiftsByVolunteerId: shifts,
     event,
-    teams: [team]
+    teams: [team],
+    acceptedRoles
   });
 
   return (
@@ -113,7 +116,7 @@ export default async function TeamVolunteers({
           failureMessage={t('emailFailureMessage')}
           failureTitle={t('emailFailureTitle')}
           customisable
-          numEmails={volunteers.length}
+          numEmails={emailableVolunteers.length}
           emailContext={team.name}
           sendEmail={doNotify}
         >

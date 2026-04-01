@@ -66,15 +66,15 @@ const ShiftRow = ({ shift, team }: { shift: ShiftInfo; team: TeamInfo | undefine
   </>
 );
 
-export async function body({ event, body, shifts, teams }: Props) {
+export async function body(props: Props) {
   const t = await getTranslations(TEMPLATE_KEY);
   return (
     <>
-      <p>{body}</p>
-      {shifts && (
+      <p>{props.body}</p>
+      {props.shifts && (
         <>
           <p>{t('yourShifts')}</p>
-          <ShiftList event={event} shifts={shifts} teams={teams} />
+          <ShiftList event={props.event} shifts={props.shifts} teams={props.teams} />
         </>
       )}
     </>

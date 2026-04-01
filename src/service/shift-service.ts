@@ -406,8 +406,10 @@ export const getShiftsForVolunteer = cache(
 
 /**
  * Fetches a list of shifts for multiple volunteers in a given event.
- * @param eventId - The ID of the event to fetch shifts for.
  * @param volunteerIds - An array of volunteer IDs to fetch shifts for.
+ * @params filter - An object containing optional filters
+ * @params filter.event - An EventInfo object to filter shifts by event
+ * @params filter.team - A TeamInfo object to filter shifts by team
  * @return An object mapping volunteer IDs to arrays of ShiftInfo objects
  */
 export const getShiftsForVolunteers = cache(

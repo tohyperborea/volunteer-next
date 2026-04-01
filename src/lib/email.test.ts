@@ -2,7 +2,11 @@ import { sendUserShiftEmail, getNotifyVolunteersAction } from './email';
 import { sendEmailWithTemplate } from '@/email/template';
 
 jest.mock('@/email/template', () => ({
-  sendEmailWithTemplate: jest.fn()
+  sendEmailWithTemplate: jest.fn().mockResolvedValue({ status: 'sent' })
+}));
+
+jest.mock('@/session', () => ({
+  checkAuthorisation: jest.fn().mockResolvedValue(true)
 }));
 
 const mockSendEmailWithTemplate = sendEmailWithTemplate as jest.MockedFunction<
@@ -61,7 +65,8 @@ describe('getNotifyVolunteersAction', () => {
       volunteers,
       shiftsByVolunteerId,
       event,
-      teams
+      teams,
+      acceptedRoles: []
     });
 
     await notifyVolunteersAction(emailCustomisation);
@@ -112,7 +117,8 @@ describe('getNotifyVolunteersAction', () => {
       volunteers,
       shiftsByVolunteerId,
       event,
-      teams
+      teams,
+      acceptedRoles: []
     });
 
     await notifyVolunteersAction(emailCustomisation);
