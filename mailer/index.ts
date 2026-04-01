@@ -48,16 +48,19 @@ cron.schedule(CRON_SCHEDULE, async () => {
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
-    const result = await client.query(`
+    const result = await client.query(
+      `
     SELECT "id", "to", "subject", "body"
     FROM email
     WHERE
       "sentAt" IS NULL AND
       ("sendAfter" IS NULL OR "sendAfter" <= NOW())
     ORDER BY "createdAt" ASC
-    ${RATE_LIMIT ? `LIMIT ${RATE_LIMIT}` : ''}
+    ${RATE_LIMIT ? 'LIMIT $1' : ''}
     FOR UPDATE SKIP LOCKED
-  `);
+  `,
+      RATE_LIMIT ? [RATE_LIMIT] : []
+    );
     const sentIds = [];
     for (const row of result.rows) {
       const { to, subject, body } = row;
