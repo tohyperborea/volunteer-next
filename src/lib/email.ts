@@ -36,3 +36,44 @@ export const sendUserShiftEmail = async ({
       teams
     }
   });
+
+export const getNotifyVolunteersAction =
+  ({
+    volunteers,
+    shiftsByVolunteerId,
+    event,
+    teams
+  }: {
+    volunteers: VolunteerInfo[];
+    shiftsByVolunteerId: Record<UserId, ShiftInfo[]>;
+    event: EventInfo;
+    teams: TeamInfo[];
+  }) =>
+  async ({ subject, body, includeShifts }: EmailCustomisation): Promise<SendEmailResult> => {
+    'use server';
+    const baseProps = { subject, body };
+    volunteers
+      .filter((v) => v.email)
+      .map((volunteer) => {
+        const shifts = [...(shiftsByVolunteerId[volunteer.id] || [])].sort((a, b) => {
+          if (a.eventDay !== b.eventDay) {
+            return a.eventDay - b.eventDay;
+          }
+          return a.startTime.localeCompare(b.startTime);
+        });
+        const props = includeShifts
+          ? {
+              ...baseProps,
+              event,
+              shifts,
+              teams
+            }
+          : baseProps;
+        sendEmailWithTemplate({
+          to: volunteer.email!, // we filtered out the ones without emails
+          template: 'NotifyEmail',
+          props
+        });
+      });
+    return { status: 'sent' };
+  };

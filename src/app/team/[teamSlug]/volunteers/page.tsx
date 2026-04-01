@@ -15,12 +15,14 @@ import VolunteerList from '@/ui/volunteer-list';
 import { addHoursToTimeString, eventDayToDate } from '@/utils/datetime';
 import { getPermissionsProfile } from '@/utils/permissions';
 import { recordToUserFilters } from '@/utils/user-filters';
-import { Box, Button, Flex, Text } from '@radix-ui/themes';
+import { Button, Flex, Text } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import NextLink from 'next/link';
 import { getTeamVolunteersApiPath } from '@/utils/path';
-import { Share2Icon } from '@radix-ui/react-icons';
+import { EnvelopeClosedIcon, Share2Icon } from '@radix-ui/react-icons';
+import SendEmailButton from '@/ui/send-email-button';
+import { getNotifyVolunteersAction } from '@/lib/email';
 
 const PAGE_KEY = 'TeamPage.VolunteersTab';
 
@@ -33,8 +35,6 @@ export const generateMetadata = metadata(PAGE_KEY, {
     return `${t('title')} | ${team?.name ?? ''}`;
   }
 });
-
-interface Props {}
 
 export default async function TeamVolunteers({
   params,
@@ -57,8 +57,8 @@ export default async function TeamVolunteers({
   filters.onTeam = team.id;
   const volunteers = await getFilteredVolunteers(filters, permissionsProfile);
   const shifts = await getShiftsForVolunteers(
-    team.eventId,
-    volunteers.map((v) => v.id)
+    volunteers.map((v) => v.id),
+    { team }
   );
 
   const shiftPanels = volunteers.reduce<Record<UserId, React.ReactNode>>((acc, volunteer) => {
@@ -66,7 +66,7 @@ export default async function TeamVolunteers({
       acc[volunteer.id] = (
         <Collapsible header={t('shifts')}>
           <DatedList
-            items={shifts[volunteer.id].filter((s) => s.teamId === team.id)}
+            items={shifts[volunteer.id]}
             getDate={(s) => eventDayToDate(event.startDate, s.eventDay)}
             renderItem={(shift) => (
               <Flex direction="column" key={`${volunteer.id}:${shift.id}`} asChild>
@@ -86,9 +86,16 @@ export default async function TeamVolunteers({
     return acc;
   }, {});
 
+  const doNotify = getNotifyVolunteersAction({
+    volunteers,
+    shiftsByVolunteerId: shifts,
+    event,
+    teams: [team]
+  });
+
   return (
     <Flex direction="column" gap="6">
-      <Box>
+      <Flex gap="2">
         <Button asChild variant="soft">
           <NextLink
             href={getTeamVolunteersApiPath(event.slug, teamSlug, { format: 'csv' })}
@@ -99,7 +106,21 @@ export default async function TeamVolunteers({
             {t('export')}
           </NextLink>
         </Button>
-      </Box>
+        <SendEmailButton
+          variant="soft"
+          successMessage={t('emailSuccessMessage')}
+          successTitle={t('emailSuccessTitle')}
+          failureMessage={t('emailFailureMessage')}
+          failureTitle={t('emailFailureTitle')}
+          customisable
+          numEmails={volunteers.length}
+          emailContext={team.name}
+          sendEmail={doNotify}
+        >
+          <EnvelopeClosedIcon />
+          {t('notifyVolunteers')}
+        </SendEmailButton>
+      </Flex>
       <VolunteerList
         volunteers={volunteers}
         withFilters={['searchQuery']}

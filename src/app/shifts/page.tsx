@@ -1,4 +1,6 @@
+import { sendEmailWithTemplate } from '@/email/template';
 import metadata from '@/i18n/metadata';
+import { getNotifyVolunteersAction } from '@/lib/email';
 import { getShiftsForEvent } from '@/service/shift-service';
 import { getTeamsForEvent } from '@/service/team-service';
 import { getVolunteersForShifts } from '@/service/user-service';
@@ -31,22 +33,32 @@ export default async function EventShifts() {
 
   const t = await getTranslations(PAGE_KEY);
   const shifts = await getShiftsForEvent(event.id);
+  const shiftMap = Object.fromEntries(shifts.map((shift) => [shift.id, shift]));
   const shiftVolunteers = await getVolunteersForShifts(
-    shifts.map((shift) => shift.id),
+    Object.keys(shiftMap),
     getPermissionsProfile(await currentUser())
+  );
+  const shiftsByVolunteerId = Object.entries(shiftVolunteers).reduce<Record<UserId, ShiftInfo[]>>(
+    (acc, [shiftId, volunteers]) => {
+      for (const volunteer of volunteers) {
+        if (!acc[volunteer.id]) {
+          acc[volunteer.id] = [];
+        }
+        acc[volunteer.id].push(shiftMap[shiftId]);
+      }
+      return acc;
+    },
+    {}
   );
   const teams = await getTeamsForEvent(event.id);
   const allVolunteers = deduplicateBy(Object.values(shiftVolunteers).flat(), ({ id }) => id);
 
-  const doNotify = async ({
-    subject,
-    body,
-    includeShifts
-  }: EmailCustomisation): Promise<SendEmailResult> => {
-    'use server';
-    console.log('Notify all:: ', { subject, body, includeShifts });
-    return { status: 'sent' };
-  };
+  const doNotify = getNotifyVolunteersAction({
+    volunteers: allVolunteers,
+    shiftsByVolunteerId,
+    event,
+    teams
+  });
 
   return (
     <Flex direction="column" gap="6" py="4">

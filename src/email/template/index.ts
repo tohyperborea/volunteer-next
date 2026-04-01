@@ -1,10 +1,12 @@
 import type { body as ShiftEmail } from './ShiftEmail';
+import type { body as NotifyEmail } from './NotifyEmail';
 import { htmlToText } from 'html-to-text';
 import { sendEmail } from '@/email';
 import { queueEmail } from '@/service/email-service';
 
 type Templates = {
   ShiftEmail: typeof ShiftEmail;
+  NotifyEmail: typeof NotifyEmail;
 };
 
 type TemplateName = keyof Templates;

@@ -57,7 +57,12 @@
     "VolunteersTab": {
       "title": "Volunteers",
       "shifts": "Shifts",
-      "export": "Export volunteers"
+      "export": "Export volunteers",
+      "notifyVolunteers": "Notify volunteers",
+      "emailSuccessTitle": "Emails sent",
+      "emailSuccessMessage": "Your notifications have been sent!",
+      "emailFailureTitle": "Oops",
+      "emailFailureMessage": "Something went wrong. Please try again later."
     }
   },
   "SignInPage": {
@@ -139,8 +144,8 @@
   "EventShiftsPage": {
     "title": "Shifts",
     "allShifts": "All Current Shifts",
-    "export": "Export Shifts",
-    "notifyVolunteers": "Notify Volunteers",
+    "export": "Export shifts",
+    "notifyVolunteers": "Notify volunteers",
     "emailSuccessTitle": "Emails sent",
     "emailSuccessMessage": "Your notifications have been sent!",
     "emailFailureTitle": "Oops",
@@ -148,8 +153,8 @@
   },
   "MyShiftsPage": {
     "title": "My Shifts",
-    "export": "Export Shifts",
-    "emailMyShifts": "Email Me",
+    "export": "Export shifts",
+    "emailMyShifts": "Email me",
     "emailSuccessTitle": "Email sent",
     "emailSuccessMessage": "We've sent an email with your upcoming shifts. Check your inbox soon!",
     "emailFailureTitle": "Oops",

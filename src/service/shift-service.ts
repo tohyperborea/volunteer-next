@@ -310,10 +310,7 @@ export const deleteShift = async (shiftId: ShiftId, client?: PoolClient): Promis
  * @param shiftId - The ID of the shift to lock on
  * @param client - database client for transaction support
  */
-export const getShiftLock = async (
-  shiftId: ShiftId,
-  client: PoolClient
-): Promise<void> => {
+export const getShiftLock = async (shiftId: ShiftId, client: PoolClient): Promise<void> => {
   await client.query(`SELECT id FROM shift WHERE id = $1 FOR UPDATE`, [shiftId]);
 };
 
@@ -414,11 +411,31 @@ export const getShiftsForVolunteer = cache(
  * @return An object mapping volunteer IDs to arrays of ShiftInfo objects
  */
 export const getShiftsForVolunteers = cache(
-  async (eventId: EventId, volunteerIds: UserId[]): Promise<Record<UserId, ShiftInfo[]>> => {
+  async (
+    volunteerIds: UserId[],
+    filter: { event?: EventInfo; team?: TeamInfo }
+  ): Promise<Record<UserId, ShiftInfo[]>> => {
     if (volunteerIds.length === 0) {
       return {};
     }
-    console.info(`Fetching shifts for volunteers ${volunteerIds.join(', ')} in event ${eventId}`);
+
+    const values: any[] = [volunteerIds];
+    const filterClauses = [];
+    if (filter?.event) {
+      values.push(filter.event.id);
+      filterClauses.push(
+        `
+          AND s."teamId" IN (
+            SELECT id FROM team WHERE "eventId" = $${values.length}
+          )
+        `
+      );
+    }
+    if (filter?.team) {
+      values.push(filter.team.id);
+      filterClauses.push(`AND s."teamId" = $${values.length}`);
+    }
+
     const result = await pool.query(
       `
     SELECT 
@@ -437,12 +454,10 @@ export const getShiftsForVolunteers = cache(
     LEFT JOIN requirement r ON s.id = r."shiftId"
     JOIN shift_volunteer sv ON s.id = sv.shift_id
     WHERE sv.user_id = ANY($1)
-    AND s."teamId" IN (
-      SELECT id FROM team WHERE "eventId" = $2
-    )
+    ${filterClauses.join(' ')}
     ORDER BY s."eventDay", s."startTime"
     `,
-      [volunteerIds, eventId]
+      values
     );
     const shifts = rowsToShifts(result.rows);
     const shiftMap = new Map<ShiftId, ShiftInfo>(shifts.map((s) => [s.id, s]));

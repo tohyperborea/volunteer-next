@@ -12,6 +12,7 @@ declare global {
   type PagePropsWithSearch<T extends AppRoutes, S> = Omit<PageProps<T>, 'searchParams'> & {
     searchParams: Promise<S>;
   };
+  type WithRequired<T, K extends keyof T> = T & Required<Pick<T, K>>;
   type PartialWithRequired<T, R extends keyof T> = Partial<T> & Pick<T, R>;
   type OptionalKeys<T> = {
     [K in keyof T]-?: undefined extends T[K] ? K : never;
