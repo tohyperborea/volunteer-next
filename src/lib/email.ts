@@ -37,6 +37,14 @@ export const sendUserShiftEmail = async ({
     }
   });
 
+/**
+ * Gets a server action for sending a notification email to volunteers
+ * @param param.volunteers - list of volunteers to send the email to
+ * @param param.shiftsByVolunteerId - mapping of volunteer ID to their shifts
+ * @param param.event - event info for the event the volunteers are signed up for
+ * @param param.teams - list of teams for the event (used if including shifts in the email)
+ * @returns a server action that takes email customisation options and sends the email to the volunteers
+ */
 export const getNotifyVolunteersAction =
   ({
     volunteers,
