@@ -49,7 +49,10 @@ export default function VolunteerFilters({ withFilters = [] }: Props) {
   return (
     <Flex direction="column" gap="2">
       {hasFilter.has('searchQuery') && (
-        <SearchBar onChange={onFilterChange.bind(null, 'searchQuery')} />
+        <SearchBar
+          defaultValue={currentFilters.searchQuery}
+          onChange={onFilterChange.bind(null, 'searchQuery')}
+        />
       )}
       {showFilterPanel && (
         <Flex direction="column" gap="2">
