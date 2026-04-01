@@ -146,6 +146,7 @@ export default function SendEmailButton({
                     size="3"
                     resize="vertical"
                     autoComplete="off"
+                    data-1p-ignore
                   />
                 </FormField>
                 <FormField ariaId="include-shifts" name={t('includeShifts')}>
