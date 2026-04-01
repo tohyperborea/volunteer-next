@@ -8,7 +8,7 @@ import { getListByDate } from '@/utils/date';
 import { addHoursToTimeString, eventDayToDate } from '@/utils/datetime';
 import { getTranslations } from 'next-intl/server';
 
-const TEMPLATE_KEY = 'ShiftEmail';
+const TEMPLATE_KEY = 'NotifyEmail';
 
 interface BaseProps {
   body: string;

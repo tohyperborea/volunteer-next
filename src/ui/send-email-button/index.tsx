@@ -134,6 +134,7 @@ export default function SendEmailButton({
                     name="email-subject"
                     placeholder={t('emailSubject')}
                     aria-labelledby="email-subject"
+                    autoComplete="off"
                   />
                 </FormField>
                 <FormField ariaId="email-body" name={t('emailBody')}>
@@ -144,6 +145,7 @@ export default function SendEmailButton({
                     aria-labelledby="email-body"
                     size="3"
                     resize="vertical"
+                    autoComplete="off"
                   />
                 </FormField>
                 <FormField ariaId="include-shifts" name={t('includeShifts')}>

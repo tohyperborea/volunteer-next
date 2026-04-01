@@ -203,6 +203,9 @@
     "yourShifts": "Here are the shifts you have signed up for:",
     "closing": "Thanks again and can’t wait to see you at {eventName}!"
   },
+  "NotifyEmail": {
+    "yourShifts": "Here are the shifts you have signed up for:"
+  },
 
   "AuthContainer": {
     "logo": "Logo image"
