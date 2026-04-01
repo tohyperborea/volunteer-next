@@ -45,7 +45,10 @@ const smtp = createTransport({
 console.log('Starting scheduled task...');
 
 cron.schedule(CRON_SCHEDULE, async () => {
-  const result = await pool.query(`
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    const result = await client.query(`
     SELECT "id", "to", "subject", "body"
     FROM email
     WHERE
@@ -53,36 +56,44 @@ cron.schedule(CRON_SCHEDULE, async () => {
       ("sendAfter" IS NULL OR "sendAfter" <= NOW())
     ORDER BY "createdAt" ASC
     ${RATE_LIMIT ? `LIMIT ${RATE_LIMIT}` : ''}
+    FOR UPDATE SKIP LOCKED
   `);
-  const sentIds = [];
-  for (const row of result.rows) {
-    const { to, subject, body } = row;
-    try {
-      if (FAKE_SEND) {
-        console.log(`to: ${to} [${subject}] :: ${body}`);
-      } else {
-        await smtp.sendMail({
-          from: SMTP_FROM,
-          to,
-          subject,
-          html: body,
-          text: htmlToText(body)
-        });
+    const sentIds = [];
+    for (const row of result.rows) {
+      const { to, subject, body } = row;
+      try {
+        if (FAKE_SEND) {
+          console.log(`to: ${to} [${subject}] :: ${body}`);
+        } else {
+          await smtp.sendMail({
+            from: SMTP_FROM,
+            to,
+            subject,
+            html: body,
+            text: htmlToText(body)
+          });
+        }
+        sentIds.push(row.id);
+      } catch (error) {
+        console.error(`Failed to send email to ${to}:`, error);
       }
-      sentIds.push(row.id);
-    } catch (error) {
-      console.error(`Failed to send email to ${to}:`, error);
     }
-  }
-  if (sentIds.length > 0) {
-    const result = await pool.query(
-      `
+    if (sentIds.length > 0) {
+      const result = await client.query(
+        `
       UPDATE email
       SET "sentAt" = NOW()
       WHERE id = ANY($1::uuid[])
     `,
-      [sentIds]
-    );
-    console.log(`Marked ${result.rowCount} emails as sent.`);
+        [sentIds]
+      );
+      console.log(`Marked ${result.rowCount} emails as sent.`);
+    }
+    await client.query('COMMIT');
+  } catch (error) {
+    await client.query('ROLLBACK');
+    console.error('Error processing emails:', error);
+  } finally {
+    client.release();
   }
 });

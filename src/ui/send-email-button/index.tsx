@@ -36,9 +36,17 @@ export default function SendEmailButton({
       return;
     }
     setIsSending(true);
-    const result = await sendEmail();
-    setIsSending(false);
-    setResult(result);
+    try {
+      const result = await sendEmail();
+      setResult(result);
+    } catch (error) {
+      setResult({
+        status: 'failed',
+        error: error instanceof Error ? error.message : String(error)
+      });
+    } finally {
+      setIsSending(false);
+    }
   };
 
   return (
