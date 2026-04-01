@@ -1,17 +1,24 @@
 #!/bin/sh
 set -e
 
-# Load Docker Secret into environment if it exists
-SECRET_FILE="/run/secrets/env_production"
+# Load individual Docker Secrets from /run/secrets/
+# Files should be named {ENV_VAR_NAME}_FILE and contain only the secret value
+SECRETS_DIR="/run/secrets"
 
-if [ -f "$SECRET_FILE" ]; then
-  echo "Loading environment from Docker Secret..."
-  # Export each non-comment, non-empty line as an env var
-  set -a
-  . "$SECRET_FILE"
-  set +a
+if [ -d "$SECRETS_DIR" ]; then
+  for secret_file in "$SECRETS_DIR"/*_FILE; do
+    # Skip if glob found no matches
+    [ -f "$secret_file" ] || continue
+
+    filename=$(basename "$secret_file")
+    env_var="${filename%_FILE}"
+    secret_value=$(cat "$secret_file")
+
+    export "$env_var=$secret_value"
+    echo "Loaded secret: $env_var"
+  done
 else
-  echo "Warning: Secret file not found at $SECRET_FILE"
+  echo "Warning: Secrets directory not found at $SECRETS_DIR"
 fi
 
 exec "$@"
