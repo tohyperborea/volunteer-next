@@ -4,7 +4,7 @@ import { htmlToText } from 'html-to-text';
 import { Pool } from 'pg';
 
 const CRON_SCHEDULE = process.env.CRON_SCHEDULE || '0 0 * * *';
-const RATE_LIMIT = Number(process.env.RATE_LIMIT) || undefined; // emails per cron tick
+const RATE_LIMIT = Number(process.env.RATE_LIMIT) || 100; // emails per cron tick
 const POSTGRES_HOST = process.env.POSTGRES_HOST || 'localhost';
 const POSTGRES_USER = process.env.POSTGRES_USER || 'postgres';
 const POSTGRES_PASSWORD = process.env.POSTGRES_PASSWORD || 'example';
