@@ -15,7 +15,7 @@
     "db:connect": "docker compose -f docker-compose.db.yml --env-file .env.local exec db psql -U postgres",
     "db:logs": "docker compose -f docker-compose.db.yml --env-file .env.local logs -f db",
     "liquibase:logs": "docker compose -f docker-compose.db.yml --env-file .env.local logs -f liquibase",
-    "mailer:start": "docker compose -f docker-compose.db.yml --env-file .env.local up -d mailer",
+    "mailer:start": "docker compose -f docker-compose.db.yml --env-file .env.local up -d --build mailer",
     "mailer:stop": "docker compose -f docker-compose.db.yml --env-file .env.local stop mailer",
     "mailer:logs": "docker compose -f docker-compose.db.yml --env-file .env.local logs -f mailer",
     "neon:migrate": "./db/migrate-neon.sh",
