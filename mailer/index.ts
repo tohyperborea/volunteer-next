@@ -17,6 +17,7 @@ const SMTP_PORT = Number(process.env.SMTP_PORT) || 587;
 const SMTP_SECURE = process.env.SMTP_SECURE === 'true';
 const SMTP_FROM = process.env.SMTP_FROM ?? SMTP_USER ?? 'noreply@localhost';
 const FAKE_SEND = process.env.FAKE_SEND === 'true';
+const MAX_RETRIES = Number(process.env.MAX_RETRIES) || 3;
 
 console.log(
   `Mailer service started with schedule: ${CRON_SCHEDULE} and rate limit: ${RATE_LIMIT || 'none'}`
@@ -46,22 +47,28 @@ console.log('Starting scheduled task...');
 
 cron.schedule(CRON_SCHEDULE, async () => {
   const client = await pool.connect();
+  const values = [MAX_RETRIES];
+  if (RATE_LIMIT) {
+    values.push(RATE_LIMIT);
+  }
   try {
     await client.query('BEGIN');
     const result = await client.query(
       `
-    SELECT "id", "to", "subject", "body"
-    FROM email
-    WHERE
-      "sentAt" IS NULL AND
-      ("sendAfter" IS NULL OR "sendAfter" <= NOW())
-    ORDER BY "createdAt" ASC
-    ${RATE_LIMIT ? 'LIMIT $1' : ''}
-    FOR UPDATE SKIP LOCKED
-  `,
-      RATE_LIMIT ? [RATE_LIMIT] : []
+        SELECT "id", "to", "subject", "body"
+        FROM email
+        WHERE
+          "retries" < $1 AND
+          "sentAt" IS NULL AND
+          ("sendAfter" IS NULL OR "sendAfter" <= NOW())
+        ORDER BY "createdAt" ASC
+        ${RATE_LIMIT ? 'LIMIT $2' : ''}
+        FOR UPDATE SKIP LOCKED
+      `,
+      values
     );
     const sentIds = [];
+    const failedIds = [];
     for (const row of result.rows) {
       const { to, subject, body } = row;
       try {
@@ -79,18 +86,30 @@ cron.schedule(CRON_SCHEDULE, async () => {
         sentIds.push(row.id);
       } catch (error) {
         console.error(`Failed to send email to ${to}:`, error);
+        failedIds.push(row.id);
       }
     }
     if (sentIds.length > 0) {
       const result = await client.query(
         `
-      UPDATE email
-      SET "sentAt" = NOW()
-      WHERE id = ANY($1::uuid[])
-    `,
+          UPDATE email
+          SET "sentAt" = NOW()
+          WHERE id = ANY($1::uuid[])
+        `,
         [sentIds]
       );
       console.log(`Marked ${result.rowCount} emails as sent.`);
+    }
+    if (failedIds.length > 0) {
+      const result = await client.query(
+        `
+          UPDATE email
+          SET retries = retries + 1
+          WHERE id = ANY($1::uuid[])
+        `,
+        [failedIds]
+      );
+      console.log(`Marked ${result.rowCount} emails as failed.`);
     }
     await client.query('COMMIT');
   } catch (error) {

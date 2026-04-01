@@ -6,7 +6,8 @@ create table "email" (
     "body" text not null,
     "createdAt" timestamptz default CURRENT_TIMESTAMP not null,
     "sendAfter" timestamptz,
-    "sentAt" timestamptz
+    "sentAt" timestamptz,
+    "retries" smallint default 0 not null
 );
 
 create unique index email_key_unsent_unique 

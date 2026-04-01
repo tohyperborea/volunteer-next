@@ -22,3 +22,4 @@ The service requires the following environment variables:
 | SMTP_SECURE       | Set to 'true' if using SMTP port 465                | false                            |
 | SMTP_FROM         | Address to send mail from                           | SMTP_USER \|\| noreply@localhost |
 | FAKE_SEND         | Debug flag to log instead of actually sending email | false                            |
+| MAX_RETRIES       | Maximum retry attemps for failed emails             | 3                                |
