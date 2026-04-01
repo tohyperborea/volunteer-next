@@ -28,5 +28,31 @@ services:
     depends_on:
       - db
 
+  # Mailer service, responsible for sending emails
+  mailer:
+    build:
+      context: ./mailer
+      dockerfile: docker/Dockerfile
+    image: volunteer-next-mailer:latest
+    container_name: volunteer-next-mailer
+    environment:
+      CRON_SCHEDULE: '*/10 * * * * *'
+      RATE_LIMIT: 100
+      POSTGRES_HOST: db
+      POSTGRES_PORT: ${POSTGRES_PORT}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_USER: ${SMTP_USER}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
+      SMTP_SECURE: ${SMTP_SECURE}
+      SMTP_FROM: ${SMTP_FROM}
+      FAKE_SEND: true
+    restart: unless-stopped
+    depends_on:
+      - db
+
 volumes:
   pgdata:

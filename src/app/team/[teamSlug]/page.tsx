@@ -1,5 +1,6 @@
 import { inTransaction } from '@/db';
 import metadata from '@/i18n/metadata';
+import { sendUserShiftEmail } from '@/lib/email';
 import {
   getQualificationsForEvent,
   getQualificationsForUser
@@ -16,7 +17,7 @@ import {
   getShiftLock,
   getShiftSignupCount
 } from '@/service/shift-service';
-import { getTeamBySlug } from '@/service/team-service';
+import { getTeamBySlug, getTeamsForEvent } from '@/service/team-service';
 import { getVolunteersForShifts } from '@/service/user-service';
 import {
   checkAuthorisation,
@@ -76,7 +77,8 @@ export default async function TeamPage({ params, searchParams }: PageProps<`/tea
 
   const isEditable = await checkAuthorisation(editorRoles, true);
   const t = await getTranslations(PAGE_KEY);
-  const permissions = getPermissionsProfile(await currentUser());
+  const user = (await currentUser())!; // checkAuthorisation guarantees this is not null
+  const permissions = getPermissionsProfile(user);
   const shiftVolunteers = await getVolunteersForShifts(
     shifts.map((s) => s.id),
     permissions
@@ -145,6 +147,14 @@ export default async function TeamPage({ params, searchParams }: PageProps<`/tea
         throw new Error('Shift is already full');
       }
       await addVolunteerToShift(shiftId, permissions.userId, client);
+    });
+    const teams = await getTeamsForEvent(event.id);
+    const shifts = await getShiftsForVolunteer(event.id, permissions.userId);
+    await sendUserShiftEmail({
+      event,
+      user,
+      shifts,
+      teams
     });
     const path = getTeamShiftsPath(teamSlug);
     revalidatePath(path);

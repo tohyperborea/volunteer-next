@@ -76,3 +76,7 @@ Then set `POSTGRES_URL` (or the individual `POSTGRES_*` vars) in your deployment
 2. Build the production docker images: `npm run prod:build`
 3. Start the database: `npm run db:start`
 4. Start production docker containers: `npm run prod:up`
+
+## Mailer service
+
+With `USE_EMAIL_QUEUE` set to `true`, email must be delivered via the [mailer service](mailer). It can be started with `npm run mailer:start`

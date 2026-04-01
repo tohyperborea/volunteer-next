@@ -1,17 +1,18 @@
+import { validateSmtpConfig } from '@/email';
 import metadata from '@/i18n/metadata';
+import { sendUserShiftEmail } from '@/lib/email';
 import { getShiftsForVolunteer, removeVolunteerFromShift } from '@/service/shift-service';
 import { getTeamsForEvent } from '@/service/team-service';
 import { getVolunteersForShifts } from '@/service/user-service';
 import { checkAuthorisation, currentUser, getCurrentEventOrRedirect } from '@/session';
-import SearchBar from '@/ui/search-bar';
+import SendEmailButton from '@/ui/send-email-button';
 import ShiftOverviewList from '@/ui/shift-overview-list';
 import { getMyShiftsPath, getVolunteerShiftsApiPath } from '@/utils/path';
 import { getPermissionsProfile } from '@/utils/permissions';
-import { Share2Icon } from '@radix-ui/react-icons';
+import { Share2Icon, EnvelopeClosedIcon } from '@radix-ui/react-icons';
 import { Button, Flex, Heading } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
 import { revalidatePath } from 'next/cache';
-import { notFound } from 'next/navigation';
 
 const PAGE_KEY = 'MyShiftsPage';
 
@@ -28,11 +29,29 @@ export default async function MyShifts() {
     getPermissionsProfile(user)
   );
   const teams = await getTeamsForEvent(event.id);
+  const showEmailButton =
+    process.env.NODE_ENV === 'development' ||
+    process.env.USE_EMAIL_QUEUE === 'true' ||
+    validateSmtpConfig().valid;
 
   const onCancelShift = async (shiftId: ShiftId) => {
     'use server';
     await removeVolunteerFromShift(shiftId, user.id);
     revalidatePath(getMyShiftsPath());
+  };
+
+  const sendShiftEmail = async () => {
+    'use server';
+    const result = await sendUserShiftEmail({
+      event,
+      user,
+      shifts,
+      teams
+    });
+    if (result.status === 'failed') {
+      console.error('Shift email failed for %s: %s', user.email, result.error);
+    }
+    return result;
   };
 
   return (
@@ -51,6 +70,19 @@ export default async function MyShifts() {
             {t('export')}
           </a>
         </Button>
+        {showEmailButton && (
+          <SendEmailButton
+            variant="soft"
+            sendEmail={sendShiftEmail}
+            successTitle={t('emailSuccessTitle')}
+            successMessage={t('emailSuccessMessage')}
+            failureTitle={t('emailFailureTitle')}
+            failureMessage={t('emailFailureMessage')}
+          >
+            <EnvelopeClosedIcon />
+            {t('emailMyShifts')}
+          </SendEmailButton>
+        )}
       </Flex>
       <ShiftOverviewList
         event={event}

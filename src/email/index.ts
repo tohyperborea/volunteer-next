@@ -61,11 +61,6 @@ function getTransporter(): nodemailer.Transporter | null {
   });
 }
 
-export interface SendEmailResult {
-  sent: boolean;
-  error?: string;
-}
-
 /**
  * Sends an email with retries (exponential backoff). Logs failures for monitoring.
  * Returns result so callers can handle delivery failures; does not throw.
@@ -81,7 +76,11 @@ export async function sendEmail(options: {
     const validation = validateSmtpConfig();
     const msg = validation.error ?? 'SMTP not configured';
     console.error('[email] Send skipped: %s', msg);
-    return { sent: false, error: msg };
+    if (process.env.NODE_ENV === 'development') {
+      console.info('[email] To: %s (subject: %s) :: %s', options.to, options.subject, options.text);
+      return { status: 'sent' }; // In dev, treat as sent to allow auth flows to work without SMTP
+    }
+    return { status: 'failed', error: msg };
   }
 
   const from = process.env.SMTP_FROM ?? process.env.SMTP_USER ?? 'noreply@localhost';
@@ -99,7 +98,7 @@ export async function sendEmail(options: {
       if (process.env.NODE_ENV === 'development') {
         console.info('[email] Sent to %s (subject: %s)', options.to, options.subject);
       }
-      return { sent: true };
+      return { status: 'sent' };
     } catch (err) {
       lastError = err instanceof Error ? err : new Error(String(err));
       const delayMs = SMTP_RETRY_BASE_MS * Math.pow(2, attempt - 1);
@@ -124,7 +123,7 @@ export async function sendEmail(options: {
   }
 
   return {
-    sent: false,
+    status: 'failed',
     error: lastError?.message ?? 'Unknown error'
   };
 }
