@@ -1,3 +1,7 @@
+# NOTE: This will not work to start the prod container, as it is missing
+#       all the secrets and environment variables. Will do this later,
+#       once everyything is working in staging.
+
 services:
   # Main Next.js application service, for production only
   volunteer-next:
@@ -7,15 +11,9 @@ services:
 
     image: volunteer-next:latest
     container_name: volunteer-next
-    secrets:
-      - env_production
     environment:
       NODE_ENV: production
       PORT: '3000'
     ports:
       - '3000:3000'
     restart: unless-stopped
-
-secrets:
-  env_production:
-    file: .env.production
