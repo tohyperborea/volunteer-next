@@ -73,7 +73,7 @@ export default function ShiftList({
                 rel="noopener noreferrer"
                 target="_blank"
                 data-umami-event="Export team shifts"
-                data-umami-event-teamId={teamId}
+                data-umami-event-teamid={teamId}
               >
                 <Share2Icon /> {t('export')}
               </a>

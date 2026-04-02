@@ -160,7 +160,7 @@ export default async function VolunteerProfilePage({ params }: PageProps<'/user/
             color="red"
             onClick={signOut}
             data-umami-event="Sign out"
-            data-umami-event-user-id={volunteer.id}
+            data-umami-event-userid={volunteer.id}
           >
             <ExitIcon />
             {t('signOut')}

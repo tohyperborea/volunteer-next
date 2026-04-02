@@ -43,7 +43,7 @@ export default async function EventShifts() {
             rel="noopener noreferrer"
             target="_blank"
             data-umami-event="Export event shifts"
-            data-umami-event-eventSlug={event.slug}
+            data-umami-event-eventslug={event.slug}
           >
             <Share2Icon />
             {t('export')}

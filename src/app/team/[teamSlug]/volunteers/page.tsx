@@ -95,8 +95,8 @@ export default async function TeamVolunteers({
             target="_blank"
             rel="noopener"
             data-umami-event="Export team volunteers"
-            data-umami-event-eventSlug={event.slug}
-            data-umami-event-teamSlug={team.slug}
+            data-umami-event-eventslug={event.slug}
+            data-umami-event-teamslug={team.slug}
           >
             <Share2Icon />
             {t('export')}
