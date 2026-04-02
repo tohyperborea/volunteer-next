@@ -5,6 +5,7 @@
  */
 
 import { sendEmailWithTemplate } from '@/email/template';
+import { checkAuthorisation } from '@/session';
 
 /**
  * Send an email to a user about their volunteer shifts for an event
@@ -36,3 +37,66 @@ export const sendUserShiftEmail = async ({
       teams
     }
   });
+
+/**
+ * Gets a server action for sending a notification email to volunteers
+ * @param param.volunteers - list of volunteers to send the email to
+ * @param param.shiftsByVolunteerId - mapping of volunteer ID to their shifts
+ * @param param.event - event info for the event the volunteers are signed up for
+ * @param param.teams - list of teams for the event (used if including shifts in the email)
+ * @returns a server action that takes email customisation options and sends the email to the volunteers
+ */
+export const getNotifyVolunteersAction =
+  ({
+    volunteers,
+    shiftsByVolunteerId,
+    event,
+    teams,
+    acceptedRoles
+  }: {
+    volunteers: VolunteerInfo[];
+    shiftsByVolunteerId: Record<UserId, ShiftInfo[]>;
+    event: EventInfo;
+    teams: TeamInfo[];
+    acceptedRoles: UserRoleMatchCriteria[];
+  }) =>
+  async ({ subject, body, includeShifts }: EmailCustomisation): Promise<SendEmailResult> => {
+    'use server';
+    await checkAuthorisation(acceptedRoles);
+    const baseProps = { subject, body };
+    const results = await Promise.all(
+      volunteers
+        .filter((v) => v.email)
+        .map((volunteer) => {
+          const shifts = [...(shiftsByVolunteerId[volunteer.id] || [])].sort((a, b) => {
+            if (a.eventDay !== b.eventDay) {
+              return a.eventDay - b.eventDay;
+            }
+            return a.startTime.localeCompare(b.startTime);
+          });
+          const props = includeShifts
+            ? {
+                ...baseProps,
+                event,
+                shifts,
+                teams
+              }
+            : baseProps;
+          return sendEmailWithTemplate({
+            to: volunteer.email!, // we filtered out the ones without emails
+            template: 'NotifyEmail',
+            props
+          });
+        })
+    );
+    let successStatus: 'sent' | 'queued' = 'sent';
+    for (const r of results) {
+      if (r.status === 'failed') {
+        return r;
+      }
+      if (r.status === 'queued') {
+        successStatus = 'queued';
+      }
+    }
+    return { status: successStatus };
+  };

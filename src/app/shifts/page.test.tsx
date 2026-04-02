@@ -49,6 +49,10 @@ jest.mock('@/ui/search-bar', () => ({
   default: () => <div>SearchBar</div>
 }));
 
+jest.mock('@/email/template', () => ({
+  sendEmailWithTemplate: jest.fn()
+}));
+
 const mockGetCurrentEvent = getCurrentEvent as jest.MockedFunction<typeof getCurrentEvent>;
 const mockGetCurrentEventOrRedirect = getCurrentEventOrRedirect as jest.MockedFunction<
   typeof getCurrentEventOrRedirect
@@ -137,5 +141,34 @@ describe('EventShifts Page', () => {
     render(await EventShifts());
     expect(screen.getByText('Team A')).toBeInTheDocument();
     expect(screen.getByText('Team B')).toBeInTheDocument();
+  });
+
+  it('renders the Export Shifts button', async () => {
+    mockGetCurrentEvent.mockResolvedValue(mockEvent);
+    mockGetCurrentEventOrRedirect.mockResolvedValue(mockEvent);
+    mockGetShiftsForEvent.mockResolvedValue(mockShifts);
+    mockGetTeamsForEvent.mockResolvedValue(mockTeams);
+    render(await EventShifts());
+    expect(screen.getByRole('link', { name: 'export' })).toBeInTheDocument();
+  });
+
+  it('renders the Notify Volunteers button for authorised users', async () => {
+    mockGetCurrentEvent.mockResolvedValue(mockEvent);
+    mockGetCurrentEventOrRedirect.mockResolvedValue(mockEvent);
+    mockGetShiftsForEvent.mockResolvedValue(mockShifts);
+    mockGetTeamsForEvent.mockResolvedValue(mockTeams);
+    render(await EventShifts());
+    expect(screen.getByRole('button', { name: 'notifyVolunteers' })).toBeInTheDocument();
+  });
+
+  it('does not render the Notify Volunteers button for unauthorised users', async () => {
+    const { checkAuthorisation } = require('@/session');
+    checkAuthorisation.mockResolvedValue(false);
+    mockGetCurrentEvent.mockResolvedValue(mockEvent);
+    mockGetCurrentEventOrRedirect.mockResolvedValue(mockEvent);
+    mockGetShiftsForEvent.mockResolvedValue(mockShifts);
+    mockGetTeamsForEvent.mockResolvedValue(mockTeams);
+    render(await EventShifts());
+    expect(screen.queryByRole('button', { name: 'notifyVolunteers' })).not.toBeInTheDocument();
   });
 });
