@@ -46,12 +46,6 @@ export default async function RootLayout({
 
   return (
     <html lang="en" suppressHydrationWarning>
-      <Script
-        async
-        strategy="lazyOnload"
-        src="https://cloud.umami.is/script.js"
-        data-website-id={process.env.UMAMI_WEBSITE_ID}
-      />
       <body suppressHydrationWarning>
         <NextIntlClientProvider>
           <ThemeProvider
@@ -73,6 +67,14 @@ export default async function RootLayout({
             </Theme>
           </ThemeProvider>
         </NextIntlClientProvider>
+        {process.env.UMAMI_WEBSITE_ID && (
+          <Script
+            async
+            strategy="lazyOnload"
+            src="https://cloud.umami.is/script.js"
+            data-website-id={process.env.UMAMI_WEBSITE_ID}
+          />
+        )}
       </body>
     </html>
   );

@@ -27,6 +27,7 @@ export default function NavigationFrame({ title, subtitle, currentUser, children
 
   // Wait for umami to load and then identify the user for analytics
   useEffect(() => {
+    let remainingAttempts = 50;
     const timer = setInterval(() => {
       const umami = (window as any).umami;
       if (umami) {
@@ -34,6 +35,10 @@ export default function NavigationFrame({ title, subtitle, currentUser, children
         umami.identify(currentUser.id, {
           name: currentUser.displayName
         });
+      } else if (remainingAttempts <= 0) {
+        clearInterval(timer);
+      } else {
+        remainingAttempts--;
       }
     }, 100);
     return () => clearInterval(timer);
