@@ -53,7 +53,7 @@ export default function SendEmailButton({
 
   const doSend = !customisable
     ? async (e: React.MouseEvent<HTMLButtonElement>) => {
-        if (isSending) {
+        if (isSending || numEmails === 0) {
           return;
         }
         setIsSending(true);
@@ -74,7 +74,7 @@ export default function SendEmailButton({
   const doCustomisedSend = customisable
     ? async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if (isSending) {
+        if (isSending || numEmails === 0) {
           return;
         }
         const formData = new FormData(e.currentTarget);
@@ -120,7 +120,7 @@ export default function SendEmailButton({
       {/* Button */}
       <Button
         onClick={customisable ? () => setIsCustomising(true) : doSend}
-        disabled={disabled || isSending}
+        disabled={disabled || isSending || numEmails === 0}
         {...buttonProps}
       />
 
