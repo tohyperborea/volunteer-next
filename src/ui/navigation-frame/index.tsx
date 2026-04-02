@@ -32,9 +32,7 @@ export default function NavigationFrame({ title, subtitle, currentUser, children
       const umami = (window as any).umami;
       if (umami) {
         clearInterval(timer);
-        umami.identify(currentUser.id, {
-          name: currentUser.displayName
-        });
+        umami.identify(currentUser.id);
       } else if (remainingAttempts <= 0) {
         clearInterval(timer);
       } else {
