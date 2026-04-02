@@ -155,7 +155,13 @@ export default async function VolunteerProfilePage({ params }: PageProps<'/user/
       />
       {isOwnProfile && (
         <Box mt="4">
-          <Button variant="soft" color="red" onClick={signOut}>
+          <Button
+            variant="soft"
+            color="red"
+            onClick={signOut}
+            data-umami-event="Sign out"
+            data-umami-event-user-id={volunteer.id}
+          >
             <ExitIcon />
             {t('signOut')}
           </Button>

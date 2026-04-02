@@ -28,6 +28,8 @@ export default function EventLink({ eventId, href, ...linkProps }: Props) {
         }
         refresh();
       }}
+      data-umami-event="Switch event"
+      data-umami-event-id={eventId}
       {...linkProps}
     />
   );

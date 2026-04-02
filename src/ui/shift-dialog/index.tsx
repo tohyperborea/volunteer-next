@@ -165,11 +165,11 @@ export default function ShiftDialog({
         </Flex>
         <Flex gap="4" mt="auto" py="4">
           <Dialog.Close>
-            <Button color="gray" variant="soft">
+            <Button color="gray" variant="soft" data-umami-event="Cancel shift dialog">
               {t('cancel')}
             </Button>
           </Dialog.Close>
-          <Button variant="soft" formAction={onSubmit}>
+          <Button variant="soft" formAction={onSubmit} data-umami-event="Save shift dialog">
             {t('save')}
           </Button>
         </Flex>

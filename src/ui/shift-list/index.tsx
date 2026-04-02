@@ -68,7 +68,13 @@ export default function ShiftList({
           </Button>
           {exportLink && (
             <Button variant="soft" asChild>
-              <a href={exportLink} rel="noopener noreferrer" target="_blank">
+              <a
+                href={exportLink}
+                rel="noopener noreferrer"
+                target="_blank"
+                data-umami-event="Export team shifts"
+                data-umami-event-teamId={teamId}
+              >
                 <Share2Icon /> {t('export')}
               </a>
             </Button>

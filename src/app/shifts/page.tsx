@@ -42,6 +42,8 @@ export default async function EventShifts() {
             href={getEventShiftsApiPath(event.slug, { format: 'csv' })}
             rel="noopener noreferrer"
             target="_blank"
+            data-umami-event="Export event shifts"
+            data-umami-event-eventSlug={event.slug}
           >
             <Share2Icon />
             {t('export')}

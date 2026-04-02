@@ -7,7 +7,7 @@
 'use client';
 
 import { Heading, Text, Flex, Avatar, IconButton, Box, Link } from '@radix-ui/themes';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import NextLink from 'next/link';
 import { getUserProfilePath } from '@/utils/path';
 import { HamburgerMenuIcon } from '@radix-ui/react-icons';
@@ -24,6 +24,19 @@ interface Props {
 export default function NavigationFrame({ title, subtitle, currentUser, children }: Props) {
   const [isNavOpen, setIsNavOpen] = useState(false);
   const permissionsProfile = getPermissionsProfile(currentUser);
+
+  // Wait for umami to load and then identify the user for analytics
+  useEffect(() => {
+    const timer = setInterval(() => {
+      const umami = (window as any).umami;
+      if (umami) {
+        clearInterval(timer);
+        umami.identify(currentUser.id, currentUser);
+      }
+    }, 100);
+    return () => clearInterval(timer);
+  }, [currentUser]);
+
   return (
     <Flex direction="column" style={{ height: '100vh', overflow: 'hidden' }}>
       {/* Navigation bar */}
@@ -43,6 +56,7 @@ export default function NavigationFrame({ title, subtitle, currentUser, children
         <IconButton
           variant="ghost"
           aria-label="Menu"
+          data-umami-event="Menu button"
           style={{ color: 'var(--accent-contrast)' }}
           onClick={() => setIsNavOpen((val) => !val)}
         >

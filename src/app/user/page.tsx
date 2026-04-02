@@ -98,6 +98,7 @@ export default async function UsersDashboardPage({ searchParams }: PageProps<'/u
             prefetch={false}
             target="_blank"
             rel="noopener"
+            data-umami-event="Export event volunteers"
           >
             <Share2Icon />
             {t('export')}

@@ -88,11 +88,15 @@ export default function QualificationDialog({
         </FormField>
         <Flex gap="4" mt="auto" mb="6">
           <Dialog.Close>
-            <Button color="gray" variant="soft">
+            <Button color="gray" variant="soft" data-umami-event="Cancel qualification dialog">
               {t('cancel')}
             </Button>
           </Dialog.Close>
-          <Button variant="soft" formAction={creating ? onCreate : onUpdate}>
+          <Button
+            variant="soft"
+            formAction={creating ? onCreate : onUpdate}
+            data-umami-event="Save qualification dialog"
+          >
             {t(creating ? 'create' : 'save')}
           </Button>
         </Flex>
