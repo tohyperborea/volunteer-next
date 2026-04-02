@@ -26,7 +26,12 @@ export default function Collapsible({
   const [isOpen, setIsOpen] = useState(defaultOpen);
   return (
     <Box width="100%" style={{ maxWidth }} className={`${isOpen ? styles.open : ''}`}>
-      <Button variant="surface" className={styles.button} onClick={() => setIsOpen(!isOpen)}>
+      <Button
+        variant="surface"
+        className={styles.button}
+        onClick={() => setIsOpen(!isOpen)}
+        data-umami-event={'Toggle collapsible'}
+      >
         {header}
         <ChevronDownIcon className={styles.icon} />
       </Button>

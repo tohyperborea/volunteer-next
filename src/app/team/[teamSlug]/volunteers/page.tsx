@@ -104,6 +104,9 @@ export default async function TeamVolunteers({
             href={getTeamVolunteersApiPath(event.slug, teamSlug, { format: 'csv' })}
             target="_blank"
             rel="noopener"
+            data-umami-event="Export team volunteers"
+            data-umami-event-eventslug={event.slug}
+            data-umami-event-teamslug={team.slug}
           >
             <Share2Icon />
             {t('export')}
