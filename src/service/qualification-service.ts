@@ -123,12 +123,13 @@ export const getQualificationById = cache(
 );
 
 /**
- * Fetches a list of qualifications assigned to a specific user.
+ * Fetches a list of event qualifications assigned to a specific user.
  * @param userId - The ID of the user to fetch qualifications for
+ * @param eventId - The ID of the event to filter qualifications by
  * @returns A list of qualifications assigned to the specified user
  */
 export const getQualificationsForUser = cache(
-  async (userId: UserId): Promise<QualificationInfo[]> => {
+  async (userId: UserId, eventId: EventId): Promise<QualificationInfo[]> => {
     console.info(`Fetching qualifications for user ${userId}`);
     const res = await pool.query(
       `
@@ -140,9 +141,9 @@ export const getQualificationsForUser = cache(
           q."errorMessage"
         FROM qualification q
         JOIN "user_qualification" uq ON q.id = uq."qualificationId"
-        WHERE uq."userId" = $1
+        WHERE uq."userId" = $1 AND q."eventId" = $2
      `,
-      [userId]
+      [userId, eventId]
     );
     return res.rows.map(rowToQualification);
   }
