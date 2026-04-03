@@ -1,13 +1,12 @@
 import metadata from '@/i18n/metadata';
-import { getEvents, getEventsById } from '@/service/event-service';
 import {
   assignQualificationToUsers,
   getQualificationById,
   getQualificationsForUser,
   removeQualificationFromUser
 } from '@/service/qualification-service';
-import { getTeamsById, getTeamsForEvents } from '@/service/team-service';
-import { checkAuthorisation, currentUser, getMatchingRoles } from '@/session';
+import { getTeamsById, getTeamsForEvent } from '@/service/team-service';
+import { checkAuthorisation, currentUser, getCurrentEvent, getMatchingRoles } from '@/session';
 import UserQualifications from '@/ui/user-qualifications';
 import VolunteerCard from '@/ui/volunteer-card';
 import { getEditUserPath, getUserProfilePath } from '@/utils/path';
@@ -47,42 +46,37 @@ export default async function VolunteerProfilePage({ params }: PageProps<'/user/
     notFound();
   }
 
+  const event = await getCurrentEvent();
+
   const isAdmin = await checkAuthorisation([{ type: 'admin' }], true);
   const isOwnProfile = volunteer.id === permissionsProfile.userId;
-  const organisesEvents = await getMatchingRoles({ type: 'organiser' }).then((roles) =>
-    roles.filter((role) => role.type === 'organiser').map((role) => role.eventId)
-  );
-  const leadsTeamIds = await getMatchingRoles({ type: 'team-lead' }).then((roles) =>
-    roles.filter((role) => role.type === 'team-lead').map((role) => role.teamId)
-  );
+  const organisesEvent =
+    event !== null && (await checkAuthorisation([{ type: 'organiser', eventId: event.id }], true));
+  const leadsTeamIds = event
+    ? await getMatchingRoles({ type: 'team-lead', eventId: event.id }).then((roles) =>
+        roles.filter((role) => role.type === 'team-lead').map((role) => role.teamId)
+      )
+    : [];
   const leadsTeams = await getTeamsById(leadsTeamIds);
 
-  const canManageQualifications = isAdmin || organisesEvents.length > 0 || leadsTeams.length > 0;
-  const managedQualifications = canManageQualifications
-    ? await getManagedQualifications({
-        isAdmin,
-        organisesEvents,
-        leadsTeams: leadsTeamIds
-      })
-    : [];
+  const canManageQualifications = isAdmin || organisesEvent || leadsTeams.length > 0;
+  const managedQualifications =
+    canManageQualifications && event
+      ? await getManagedQualifications({
+          eventId: event.id,
+          isAdmin,
+          organisesEvent,
+          leadsTeams: leadsTeamIds
+        })
+      : [];
 
-  const qualifications = await getQualificationsForUser(userId);
+  const qualifications = event ? await getQualificationsForUser(userId, event.id) : [];
 
-  const eventIds = new Set([
-    ...leadsTeams.map((team) => team.eventId),
-    ...organisesEvents,
-    ...qualifications.map((qualification) => qualification.eventId)
-  ]);
-  const events = isAdmin ? await getEvents() : await getEventsById([...eventIds]);
   const omitQualificationOptions = new Set(qualifications.map((qualification) => qualification.id));
   const qualificationOptions = managedQualifications.filter(
     (qualification) => !omitQualificationOptions.has(qualification.id)
   );
-  const eventNames = events.reduce<Record<EventId, string>>(
-    (acc, event) => ({ ...acc, [event.id]: event.name }),
-    {}
-  );
-  const teams = await getTeamsForEvents([...eventIds]);
+  const teams = event ? await getTeamsForEvent(event.id) : [];
 
   const authoriseForQualification = async (qualification: QualificationInfo) => {
     'use server';
@@ -167,53 +161,56 @@ export default async function VolunteerProfilePage({ params }: PageProps<'/user/
           </Button>
         </Box>
       )}
-      <Heading as="h2" size="4" mt="4">
-        {t('qualifications')}
-      </Heading>
-      <UserQualifications
-        qualifications={qualifications}
-        events={events}
-        teams={teams}
-        onRemove={onRemove}
-        authorised={isAdmin}
-        authorisedEvents={organisesEvents}
-        authorisedTeams={leadsTeamIds}
-      />
-      {canManageQualifications && (
-        <Flex direction="column" gap="2" asChild>
-          <form>
-            <FormField
-              ariaId={'add-qualification'}
-              name={t('addQualification')}
-              description={t('addQualificationDescription')}
-            >
-              <Select.Root
-                disabled={qualificationOptions.length === 0}
-                key={qualifications.length}
-                name="qualification-id"
-                required
-              >
-                <Select.Trigger placeholder={t('select')} aria-labelledby="add-qualification" />
-                <Select.Content>
-                  {qualificationOptions.map((qualification) => (
-                    <Select.Item key={qualification.id} value={qualification.id}>
-                      {qualification.name} ({eventNames[qualification.eventId]})
-                    </Select.Item>
-                  ))}
-                </Select.Content>
-              </Select.Root>
-            </FormField>
-            <Button
-              disabled={qualificationOptions.length === 0}
-              variant="soft"
-              style={{ alignSelf: 'flex-start' }}
-              formAction={onAdd}
-            >
-              <PlusIcon />
-              {t('assignQualification')}
-            </Button>
-          </form>
-        </Flex>
+      {event && (
+        <>
+          <Heading as="h2" size="4" mt="4">
+            {t('qualifications')}
+          </Heading>
+          <UserQualifications
+            qualifications={qualifications}
+            event={event}
+            teams={teams}
+            onRemove={onRemove}
+            authorised={isAdmin || organisesEvent}
+            authorisedTeams={leadsTeamIds}
+          />
+          {canManageQualifications && (
+            <Flex direction="column" gap="2" asChild>
+              <form>
+                <FormField
+                  ariaId={'add-qualification'}
+                  name={t('addQualification')}
+                  description={t('addQualificationDescription')}
+                >
+                  <Select.Root
+                    disabled={qualificationOptions.length === 0}
+                    key={qualifications.length}
+                    name="qualification-id"
+                    required
+                  >
+                    <Select.Trigger placeholder={t('select')} aria-labelledby="add-qualification" />
+                    <Select.Content>
+                      {qualificationOptions.map((qualification) => (
+                        <Select.Item key={qualification.id} value={qualification.id}>
+                          {qualification.name}
+                        </Select.Item>
+                      ))}
+                    </Select.Content>
+                  </Select.Root>
+                </FormField>
+                <Button
+                  disabled={qualificationOptions.length === 0}
+                  variant="soft"
+                  style={{ alignSelf: 'flex-start' }}
+                  formAction={onAdd}
+                >
+                  <PlusIcon />
+                  {t('assignQualification')}
+                </Button>
+              </form>
+            </Flex>
+          )}
+        </>
       )}
     </Flex>
   );

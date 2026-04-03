@@ -70,7 +70,7 @@ export async function body(props: Props) {
   const t = await getTranslations(TEMPLATE_KEY);
   return (
     <>
-      <pre>{props.body}</pre>
+      <pre style={{ fontFamily: 'inherit' }}>{props.body}</pre>
       {props.shifts && (
         <>
           <p>{t('yourShifts')}</p>

@@ -54,11 +54,7 @@ describe('QualificationList', () => {
     ];
 
     render(
-      <QualificationList
-        qualifications={mockQualifications}
-        events={[mockEvent]}
-        teams={mockTeams}
-      />
+      <QualificationList qualifications={mockQualifications} event={mockEvent} teams={mockTeams} />
     );
 
     expect(screen.getByText('Qualification 1')).toBeInTheDocument();
@@ -87,11 +83,7 @@ describe('QualificationList', () => {
     ];
 
     render(
-      <QualificationList
-        qualifications={mockQualifications}
-        events={[mockEvent]}
-        teams={mockTeams}
-      />
+      <QualificationList qualifications={mockQualifications} event={mockEvent} teams={mockTeams} />
     );
 
     expect(screen.getByText('Team 1')).toBeInTheDocument();
@@ -121,7 +113,7 @@ describe('QualificationList', () => {
     render(
       <QualificationList
         qualifications={mockQualifications}
-        events={[mockEvent]}
+        event={mockEvent}
         teams={mockTeams}
         itemActions={() => <div data-testid="test-action">Test Action</div>}
       />

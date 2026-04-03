@@ -13,12 +13,12 @@ import { useTranslations } from 'next-intl';
 
 interface Props {
   qualifications: QualificationInfo[];
-  events: EventInfo[];
+  event: EventInfo;
   teams: TeamInfo[];
   itemActions?: (qualification: QualificationInfo) => React.ReactNode;
 }
 
-export default function QualificationList({ qualifications, events, teams, itemActions }: Props) {
+export default function QualificationList({ qualifications, event, teams, itemActions }: Props) {
   const t = useTranslations('QualificationList');
   if (qualifications.length === 0) {
     return (
@@ -27,14 +27,6 @@ export default function QualificationList({ qualifications, events, teams, itemA
       </Text>
     );
   }
-
-  const eventsById = events.reduce<Record<EventId, EventInfo>>(
-    (acc, event) => ({
-      ...acc,
-      [event.id]: event
-    }),
-    {}
-  );
 
   const teamNames = teams.reduce(
     (acc, team) => ({
@@ -53,7 +45,7 @@ export default function QualificationList({ qualifications, events, teams, itemA
               <li>
                 <QualificationCard
                   asLink
-                  event={eventsById[qualification.eventId]}
+                  event={event}
                   teamName={qualification.teamId && teamNames[qualification.teamId]}
                   qualification={qualification}
                   actions={itemActions ? itemActions(qualification) : undefined}

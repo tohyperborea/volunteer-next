@@ -1,17 +1,16 @@
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import UserProfilePage from './page';
 import { getVolunteerById } from '@/lib/volunteer';
-import { getEvents, getEventsById } from '@/service/event-service';
 import {
   getQualificationsForUser,
   getQualificationById,
   removeQualificationFromUser,
-  getQualificationsForEvents,
+  getQualificationsForEvent,
   getQualificationsForTeams
 } from '@/service/qualification-service';
-import { getTeamsForEvents, getTeamsById } from '@/service/team-service';
+import { getTeamsForEvent, getTeamsById } from '@/service/team-service';
 import { notFound } from 'next/navigation';
-import { checkAuthorisation, getMatchingRoles } from '@/session';
+import { getCurrentEvent, checkAuthorisation, getMatchingRoles } from '@/session';
 import { Theme } from '@radix-ui/themes';
 import { getPermissionsProfile } from '@/utils/permissions';
 
@@ -23,29 +22,27 @@ jest.mock('next-intl', () => ({
 jest.mock('next-intl/server', () => ({
   getTranslations: jest.fn().mockResolvedValue((key: string) => key)
 }));
-jest.mock('@/service/event-service', () => ({
-  getEvents: jest.fn(),
-  getEventsById: jest.fn()
-}));
+
 jest.mock('@/lib/volunteer', () => ({
   getVolunteerById: jest.fn()
 }));
 jest.mock('@/service/qualification-service', () => ({
   assignQualificationToUsers: jest.fn(),
   getQualificationById: jest.fn(),
-  getQualificationsForEvents: jest.fn(),
+  getQualificationsForEvent: jest.fn(),
   getQualificationsForTeams: jest.fn(),
   getQualificationsForUser: jest.fn(),
   removeQualificationFromUser: jest.fn()
 }));
 jest.mock('@/service/team-service', () => ({
   getTeamsById: jest.fn(),
-  getTeamsForEvents: jest.fn()
+  getTeamsForEvent: jest.fn()
 }));
 jest.mock('@/session', () => ({
   currentUser: jest.fn().mockResolvedValue({ id: 'currentUserId' }),
   checkAuthorisation: jest.fn(),
-  getMatchingRoles: jest.fn()
+  getMatchingRoles: jest.fn(),
+  getCurrentEvent: jest.fn()
 }));
 jest.mock('next/cache', () => ({
   unstable_cache: jest.fn((fn) => fn),
@@ -69,12 +66,11 @@ jest.mock('@/auth', () => ({
   }
 }));
 
+const mockGetCurrentEvent = getCurrentEvent as jest.MockedFunction<typeof getCurrentEvent>;
 const mockCheckAuthorisation = checkAuthorisation as jest.MockedFunction<typeof checkAuthorisation>;
 const mockGetMatchingRoles = getMatchingRoles as jest.MockedFunction<typeof getMatchingRoles>;
 const mockNotFound = notFound as jest.MockedFunction<typeof notFound>;
 const mockGetVolunteer = getVolunteerById as jest.MockedFunction<typeof getVolunteerById>;
-const mockGetEvents = getEvents as jest.MockedFunction<typeof getEvents>;
-const mockGetEventsById = getEventsById as jest.MockedFunction<typeof getEventsById>;
 const mockGetQualificationsForUser = getQualificationsForUser as jest.MockedFunction<
   typeof getQualificationsForUser
 >;
@@ -84,13 +80,13 @@ const mockGetQualificationById = getQualificationById as jest.MockedFunction<
 const mockRemoveQualificationFromUser = removeQualificationFromUser as jest.MockedFunction<
   typeof removeQualificationFromUser
 >;
-const mockGetQualificationsForEvents = getQualificationsForEvents as jest.MockedFunction<
-  typeof getQualificationsForEvents
+const mockGetQualificationsForEvent = getQualificationsForEvent as jest.MockedFunction<
+  typeof getQualificationsForEvent
 >;
 const mockGetQualificationsForTeams = getQualificationsForTeams as jest.MockedFunction<
   typeof getQualificationsForTeams
 >;
-const mockGetTeamsForEvents = getTeamsForEvents as jest.MockedFunction<typeof getTeamsForEvents>;
+const mockGetTeamsForEvent = getTeamsForEvent as jest.MockedFunction<typeof getTeamsForEvent>;
 const mockGetTeamsById = getTeamsById as jest.MockedFunction<typeof getTeamsById>;
 const mockGetPermissionsProfile = getPermissionsProfile as jest.MockedFunction<
   typeof getPermissionsProfile
@@ -131,10 +127,10 @@ describe('UserProfilePage', () => {
     const mockSearch = Promise.resolve({});
 
     mockGetVolunteer.mockResolvedValue(mockVolunteer);
-    mockGetEventsById.mockResolvedValue([mockEvent]);
+    mockGetCurrentEvent.mockResolvedValue(mockEvent);
     mockGetMatchingRoles.mockResolvedValue([]);
     mockGetQualificationsForUser.mockResolvedValue([]);
-    mockGetTeamsForEvents.mockResolvedValue([]);
+    mockGetTeamsForEvent.mockResolvedValue([]);
     mockGetTeamsById.mockResolvedValue([]);
 
     const page = await UserProfilePage({ params: mockParams, searchParams: mockSearch });
@@ -161,14 +157,13 @@ describe('UserProfilePage', () => {
     const mockParams = Promise.resolve({ userId: '1' });
     const mockSearch = Promise.resolve({});
 
-    mockGetEvents.mockResolvedValue([mockEvent]);
+    mockGetCurrentEvent.mockResolvedValue(mockEvent);
     mockGetVolunteer.mockResolvedValue(mockVolunteer);
     mockCheckAuthorisation.mockResolvedValue(true);
-    mockGetEventsById.mockResolvedValue([mockEvent]);
     mockGetQualificationsForUser.mockResolvedValue([]);
-    mockGetQualificationsForEvents.mockResolvedValue([]);
+    mockGetQualificationsForEvent.mockResolvedValue([]);
     mockGetQualificationsForTeams.mockResolvedValue([]);
-    mockGetTeamsForEvents.mockResolvedValue([]);
+    mockGetTeamsForEvent.mockResolvedValue([]);
     mockGetTeamsById.mockResolvedValue([]);
 
     const page = await UserProfilePage({ params: mockParams, searchParams: mockSearch });
@@ -180,14 +175,13 @@ describe('UserProfilePage', () => {
     const mockParams = Promise.resolve({ userId: '1' });
     const mockSearch = Promise.resolve({});
 
-    mockGetEvents.mockResolvedValue([mockEvent]);
+    mockGetCurrentEvent.mockResolvedValue(mockEvent);
     mockGetVolunteer.mockResolvedValue(mockVolunteer);
     mockCheckAuthorisation.mockResolvedValue(false);
-    mockGetEventsById.mockResolvedValue([mockEvent]);
     mockGetQualificationsForUser.mockResolvedValue([]);
-    mockGetQualificationsForEvents.mockResolvedValue([]);
+    mockGetQualificationsForEvent.mockResolvedValue([]);
     mockGetQualificationsForTeams.mockResolvedValue([]);
-    mockGetTeamsForEvents.mockResolvedValue([]);
+    mockGetTeamsForEvent.mockResolvedValue([]);
     mockGetTeamsById.mockResolvedValue([]);
 
     const page = await UserProfilePage({ params: mockParams, searchParams: mockSearch });
@@ -199,14 +193,13 @@ describe('UserProfilePage', () => {
     const mockParams = Promise.resolve({ userId: mockVolunteer.id });
     const mockSearch = Promise.resolve({});
 
-    mockGetEvents.mockResolvedValue([mockEvent]);
+    mockGetCurrentEvent.mockResolvedValue(mockEvent);
     mockGetVolunteer.mockResolvedValue(mockVolunteer);
     mockCheckAuthorisation.mockResolvedValue(false);
-    mockGetEventsById.mockResolvedValue([mockEvent]);
     mockGetQualificationsForUser.mockResolvedValue([]);
-    mockGetQualificationsForEvents.mockResolvedValue([]);
+    mockGetQualificationsForEvent.mockResolvedValue([]);
     mockGetQualificationsForTeams.mockResolvedValue([]);
-    mockGetTeamsForEvents.mockResolvedValue([]);
+    mockGetTeamsForEvent.mockResolvedValue([]);
     mockGetTeamsById.mockResolvedValue([]);
     mockGetPermissionsProfile.mockReturnValue({
       userId: mockVolunteer.id,
@@ -235,8 +228,8 @@ describe('UserProfilePage', () => {
 
     mockGetVolunteer.mockResolvedValue(mockVolunteer);
     mockGetQualificationsForUser.mockResolvedValue(mockQualifications);
-    mockGetEventsById.mockResolvedValue([mockEvent]);
-    mockGetTeamsForEvents.mockResolvedValue(mockTeams);
+    mockGetCurrentEvent.mockResolvedValue(mockEvent);
+    mockGetTeamsForEvent.mockResolvedValue(mockTeams);
     mockCheckAuthorisation.mockResolvedValue(false);
     mockGetQualificationById.mockResolvedValue(mockQualifications[0]);
     mockGetTeamsById.mockResolvedValue([]);
@@ -254,7 +247,7 @@ describe('UserProfilePage', () => {
     mockGetVolunteer.mockResolvedValue(mockVolunteer);
     mockCheckAuthorisation.mockResolvedValue(false);
     mockGetQualificationsForUser.mockResolvedValue([]);
-    mockGetEvents.mockResolvedValue([mockEvent]);
+    mockGetCurrentEvent.mockResolvedValue(mockEvent);
 
     const page = await UserProfilePage({ params: mockParams, searchParams: mockSearch });
     render(<Theme>{page}</Theme>);
@@ -268,58 +261,33 @@ describe('UserProfilePage', () => {
         name: 'Qualification 1',
         eventId: 'event1',
         errorMessage: 'error'
-      },
-      {
-        id: 'qual2',
-        name: 'Qualification 2',
-        eventId: 'event2',
-        errorMessage: 'error',
-        teamId: 'team1'
       }
     ];
-    const mockEvent2: EventInfo = {
-      id: 'event2',
-      name: 'Event 2',
-      slug: 'event-2',
-      startDate: new Date(),
-      endDate: new Date()
-    };
 
     const mockParams = Promise.resolve({ userId: '1' });
     const mockSearch = Promise.resolve({});
 
     mockGetVolunteer.mockResolvedValue(mockVolunteer);
     mockGetQualificationsForUser.mockResolvedValue(mockQualifications);
-    mockGetQualificationsForEvents.mockResolvedValue(mockQualifications);
+    mockGetQualificationsForEvent.mockResolvedValue(mockQualifications);
     mockGetQualificationsForTeams.mockResolvedValue([mockQualifications[1]]);
-    mockGetEventsById.mockResolvedValue([mockEvent, mockEvent2]);
-    mockGetTeamsForEvents.mockResolvedValue(mockTeams);
+    mockGetCurrentEvent.mockResolvedValue(mockEvent);
+    mockGetTeamsForEvent.mockResolvedValue(mockTeams);
     mockGetTeamsById.mockResolvedValue([]);
-    mockCheckAuthorisation.mockResolvedValue(false);
     mockGetQualificationById.mockResolvedValue(mockQualifications[0]);
-    mockGetMatchingRoles.mockImplementation(async ({ type }) => {
-      if (type === 'organiser') {
-        return [
-          {
-            type: 'organiser',
-            eventId: 'event1'
-          }
-        ];
-      }
-      return [];
-    });
+    mockGetMatchingRoles.mockResolvedValue([]);
+    mockCheckAuthorisation.mockImplementation(
+      async (criteria) =>
+        !criteria || criteria.some((c) => c.type === 'organiser' && c.eventId === mockEvent.id)
+    );
 
     const page = await UserProfilePage({ params: mockParams, searchParams: mockSearch });
     render(<Theme>{page}</Theme>);
     expect(screen.getByText('Qualification 1')).toBeInTheDocument();
-    expect(screen.getByText('Qualification 2')).toBeInTheDocument();
 
     expect(
       within(screen.getByTestId('qualification-card-qual1')).getByLabelText('remove')
     ).toBeInTheDocument();
-    expect(
-      within(screen.getByTestId('qualification-card-qual2')).queryByLabelText('remove')
-    ).not.toBeInTheDocument();
   });
 
   it('should allow removal if authorised as team lead', async () => {
@@ -344,10 +312,10 @@ describe('UserProfilePage', () => {
 
     mockGetVolunteer.mockResolvedValue(mockVolunteer);
     mockGetQualificationsForUser.mockResolvedValue(mockQualifications);
-    mockGetQualificationsForEvents.mockResolvedValue(mockQualifications);
+    mockGetQualificationsForEvent.mockResolvedValue(mockQualifications);
     mockGetQualificationsForTeams.mockResolvedValue([mockQualifications[1]]);
-    mockGetEventsById.mockResolvedValue([mockEvent]);
-    mockGetTeamsForEvents.mockResolvedValue(mockTeams);
+    mockGetCurrentEvent.mockResolvedValue(mockEvent);
+    mockGetTeamsForEvent.mockResolvedValue(mockTeams);
     mockGetTeamsById.mockResolvedValue([]);
     mockCheckAuthorisation.mockResolvedValue(false);
     mockGetQualificationById.mockResolvedValue(mockQualifications[0]);
@@ -391,8 +359,8 @@ describe('UserProfilePage', () => {
 
     mockGetVolunteer.mockResolvedValue(mockVolunteer);
     mockGetQualificationsForUser.mockResolvedValue(mockQualifications);
-    mockGetEventsById.mockResolvedValue([mockEvent]);
-    mockGetTeamsForEvents.mockResolvedValue(mockTeams);
+    mockGetCurrentEvent.mockResolvedValue(mockEvent);
+    mockGetTeamsForEvent.mockResolvedValue(mockTeams);
     mockGetTeamsById.mockResolvedValue([]);
     mockCheckAuthorisation.mockResolvedValue(true);
     mockGetQualificationById.mockResolvedValue(mockQualifications[0]);
@@ -414,9 +382,9 @@ describe('UserProfilePage', () => {
     mockGetVolunteer.mockResolvedValue(mockVolunteer);
     mockCheckAuthorisation.mockResolvedValue(true);
     mockGetQualificationsForUser.mockResolvedValue([]);
-    mockGetEvents.mockResolvedValue([mockEvent]);
+    mockGetCurrentEvent.mockResolvedValue(mockEvent);
     mockGetTeamsById.mockResolvedValue([]);
-    mockGetQualificationsForEvents.mockResolvedValue([
+    mockGetQualificationsForEvent.mockResolvedValue([
       {
         id: 'qual1',
         name: 'Qualification 1',
@@ -431,27 +399,20 @@ describe('UserProfilePage', () => {
 
     expect(screen.getByLabelText('addQualification')).toBeInTheDocument();
     fireEvent.click(screen.getByLabelText('addQualification'));
-    expect(screen.getByRole('option', { name: 'Qualification 1 (Event 1)' })).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: 'Qualification 1' })).toBeInTheDocument();
   });
 
   it('should allow adding qualifications if authorised as organiser', async () => {
     const mockParams = Promise.resolve({ userId: '1' });
     const mockSearch = Promise.resolve({});
     mockGetVolunteer.mockResolvedValue(mockVolunteer);
-    mockCheckAuthorisation.mockResolvedValue(false);
-    mockGetMatchingRoles.mockImplementation(async ({ type }) => {
-      if (type === 'organiser') {
-        return [
-          {
-            type: 'organiser',
-            eventId: 'event1'
-          }
-        ];
-      }
-      return [];
-    });
+    mockGetMatchingRoles.mockResolvedValue([]);
+    mockCheckAuthorisation.mockImplementation(
+      async (criteria) =>
+        !criteria || criteria.some((c) => c.type === 'organiser' && c.eventId === mockEvent.id)
+    );
     mockGetQualificationsForUser.mockResolvedValue([]);
-    mockGetQualificationsForEvents.mockResolvedValue([
+    mockGetQualificationsForEvent.mockResolvedValue([
       {
         id: 'qual1',
         name: 'Qualification 1',
@@ -460,19 +421,14 @@ describe('UserProfilePage', () => {
       }
     ]);
     mockGetQualificationsForTeams.mockResolvedValue([]);
-    mockGetEventsById.mockImplementation(async (ids: EventId[]) => {
-      if (ids.includes('event1')) {
-        return [mockEvent];
-      }
-      return [];
-    });
+    mockGetCurrentEvent.mockResolvedValue(mockEvent);
 
     const page = await UserProfilePage({ params: mockParams, searchParams: mockSearch });
     render(<Theme>{page}</Theme>);
 
     expect(screen.getByLabelText('addQualification')).toBeInTheDocument();
     fireEvent.click(screen.getByLabelText('addQualification'));
-    expect(screen.getByRole('option', { name: 'Qualification 1 (Event 1)' })).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: 'Qualification 1' })).toBeInTheDocument();
   });
 
   it('should allow adding qualifications if authorised as team-lead', async () => {
@@ -499,14 +455,9 @@ describe('UserProfilePage', () => {
       return [];
     });
     mockGetQualificationsForUser.mockResolvedValue([]);
-    mockGetQualificationsForEvents.mockResolvedValue([]);
+    mockGetQualificationsForEvent.mockResolvedValue([]);
     mockGetQualificationsForTeams.mockResolvedValue([mockQualfication]);
-    mockGetEventsById.mockImplementation(async (ids: EventId[]) => {
-      if (ids.includes('event1')) {
-        return [mockEvent];
-      }
-      return [];
-    });
+    mockGetCurrentEvent.mockResolvedValue(mockEvent);
     mockGetTeamsById.mockImplementation(async (ids: TeamId[]) => {
       return mockTeams.filter((team) => ids.includes(team.id));
     });
@@ -516,6 +467,6 @@ describe('UserProfilePage', () => {
 
     expect(screen.getByLabelText('addQualification')).toBeInTheDocument();
     fireEvent.click(screen.getByLabelText('addQualification'));
-    expect(screen.getByRole('option', { name: 'Qualification 1 (Event 1)' })).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: 'Qualification 1' })).toBeInTheDocument();
   });
 });
