@@ -6,12 +6,12 @@ set -e
 SECRETS_DIR="/run/secrets"
 
 if [ -d "$SECRETS_DIR" ]; then
-  for secret_file in "$SECRETS_DIR"/*_FILE; do
+  for secret_file in "$SECRETS_DIR"/*; do
     # Skip if glob found no matches
     [ -f "$secret_file" ] || continue
 
     filename=$(basename "$secret_file")
-    env_var="${filename%_FILE}"
+    env_var="${filename}"
     secret_value=$(cat "$secret_file")
 
     export "$env_var=$secret_value"
