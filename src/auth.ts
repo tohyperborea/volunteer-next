@@ -18,6 +18,7 @@ import {
   recordSuccessfulLogin,
   checkSignInRateLimit
 } from '@/lib/login-security';
+import { addRoleToUser, getRoleCount } from './service/user-service';
 
 /** oauth = Pretix/OAuth provider, credentials = email/password. Defaults to oauth. */
 export const AUTH_MODE = (process.env.AUTH_MODE ?? 'oauth') as 'oauth' | 'credentials';
@@ -49,7 +50,14 @@ const plugins = [
 
 const afterHook = createAuthMiddleware(async (ctx) => {
   if (ctx.path.startsWith('/sign-up')) {
-    console.log('SIGNUP:: ', ctx.context);
+    if ((await getRoleCount('admin')) === 0) {
+      // Make the first registered user an admin
+      console.info('[auth] Sytem has no admins, granting admin role to new user');
+      const returned = ctx.context.returned as { user?: { id: string } } | Error | undefined;
+      if (returned && !(returned instanceof Error) && returned.user) {
+        await addRoleToUser({ type: 'admin' }, returned.user.id);
+      }
+    }
     return;
   }
   if (!useOAuth && ctx.path === '/sign-in/email') {

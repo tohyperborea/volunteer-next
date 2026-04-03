@@ -359,6 +359,16 @@ export const removeRoleFromUsers = async (
 };
 
 /**
+ * Gets the count of users with a specific role type.
+ * @param type - The role type to count.
+ * @returns The count of users with the specified role type.
+ */
+export const getRoleCount = cache(async (type: UserRoleType) => {
+  const result = await pool.query('SELECT COUNT(*) FROM role WHERE type = $1', [type]);
+  return parseInt(result.rows[0].count, 10);
+});
+
+/**
  * Marks a user as deleted.
  * @param userId - The ID of the user to mark as deleted.
  * @param client - Optional database client for transaction support.
