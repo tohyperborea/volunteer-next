@@ -8,7 +8,7 @@ import path from 'path';
 const readSecret = (name: string, defaultValue?: string): string => {
   const secretPath = path.join('/run/secrets', name);
   if (fs.existsSync(secretPath)) {
-    return fs.readFileSync(secretPath, 'utf-8').trim();
+    return fs.readFileSync(secretPath, 'utf-8').trimEnd();
   }
   return process.env[name] || defaultValue || '';
 };
@@ -77,8 +77,8 @@ cron.schedule(CRON_SCHEDULE, async () => {
       `,
       values
     );
-    const sentIds: number[] = [];
-    const failedIds: number[] = [];
+    const sentIds: string[] = [];
+    const failedIds: string[] = [];
     for (const row of result.rows) {
       const { to, subject, body } = row;
       try {
