@@ -47,10 +47,39 @@ const plugins = [
   nextCookies()
 ];
 
-const signInEmailBeforeHook = createAuthMiddleware(async (ctx) => {
-  if (ctx.path !== '/sign-in/email') return;
+const afterHook = createAuthMiddleware(async (ctx) => {
+  if (ctx.path.startsWith('/sign-up')) {
+    console.log('SIGNUP:: ', ctx.context);
+    return;
+  }
+  if (!useOAuth && ctx.path === '/sign-in/email') {
+    const email = typeof ctx.body?.email === 'string' ? ctx.body.email.trim() : '';
+    if (!email) {
+      return;
+    }
+    // Only clear lockout on success; failed attempts are recorded in the sign-in server action
+    const returned = ctx.context.returned as { statusCode?: number } | Error | undefined;
+    const isFailure =
+      returned &&
+      (returned instanceof Error ||
+        (typeof returned === 'object' &&
+          typeof (returned as { statusCode?: number }).statusCode === 'number' &&
+          (returned as { statusCode: number }).statusCode >= 400));
+    if (!isFailure) {
+      recordSuccessfulLogin(email);
+    }
+    return;
+  }
+});
+
+const beforeHook = createAuthMiddleware(async (ctx) => {
+  if (useOAuth || ctx.path !== '/sign-in/email') {
+    return;
+  }
   const email = typeof ctx.body?.email === 'string' ? ctx.body.email.trim() : '';
-  if (!email) return;
+  if (!email) {
+    return;
+  }
   if (!checkLoginLockout(email)) {
     throw new APIError('TOO_MANY_REQUESTS', {
       message: 'Too many failed attempts. Try again in 15 minutes.'
@@ -63,21 +92,6 @@ const signInEmailBeforeHook = createAuthMiddleware(async (ctx) => {
       message: 'Too many requests. Try again later.'
     });
   }
-});
-
-const signInEmailAfterHook = createAuthMiddleware(async (ctx) => {
-  if (ctx.path !== '/sign-in/email') return;
-  const email = typeof ctx.body?.email === 'string' ? ctx.body.email.trim() : '';
-  if (!email) return;
-  // Only clear lockout on success; failed attempts are recorded in the sign-in server action
-  const returned = ctx.context.returned as { statusCode?: number } | Error | undefined;
-  const isFailure =
-    returned &&
-    (returned instanceof Error ||
-      (typeof returned === 'object' &&
-        typeof (returned as { statusCode?: number }).statusCode === 'number' &&
-        (returned as { statusCode: number }).statusCode >= 400));
-  if (!isFailure) recordSuccessfulLogin(email);
 });
 
 export const auth = betterAuth({
@@ -93,12 +107,10 @@ export const auth = betterAuth({
       }
     }
   },
-  hooks: useOAuth
-    ? undefined
-    : {
-        before: signInEmailBeforeHook,
-        after: signInEmailAfterHook
-      },
+  hooks: {
+    before: beforeHook,
+    after: afterHook
+  },
   emailAndPassword: useOAuth
     ? undefined
     : {
