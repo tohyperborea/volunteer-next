@@ -10,7 +10,7 @@ import { betterAuth } from 'better-auth';
 import { createAuthMiddleware, APIError, getIp } from 'better-auth/api';
 import { nextCookies } from 'better-auth/next-js';
 import { genericOAuth } from 'better-auth/plugins';
-import db from '@/db';
+import db, { inTransaction } from '@/db';
 import { sendEmail } from '@/email';
 import enMessages from '../messages/en.json';
 import {
@@ -50,14 +50,16 @@ const plugins = [
 
 const afterHook = createAuthMiddleware(async (ctx) => {
   if (ctx.path.startsWith('/sign-up')) {
-    if ((await getRoleCount('admin')) === 0) {
-      // Make the first registered user an admin
-      console.info('[auth] Sytem has no admins, granting admin role to new user');
-      const returned = ctx.context.returned as { user?: { id: string } } | Error | undefined;
-      if (returned && !(returned instanceof Error) && returned.user) {
-        await addRoleToUser({ type: 'admin' }, returned.user.id);
+    inTransaction(async (client) => {
+      if ((await getRoleCount('admin', client)) === 0) {
+        // Make the first registered user an admin
+        console.info('[auth] System has no admins, granting admin role to new user');
+        const returned = ctx.context.returned as { user?: { id: string } } | Error | undefined;
+        if (returned && !(returned instanceof Error) && returned.user) {
+          await addRoleToUser({ type: 'admin' }, returned.user.id, client);
+        }
       }
-    }
+    });
     return;
   }
   if (!useOAuth && ctx.path === '/sign-in/email') {
