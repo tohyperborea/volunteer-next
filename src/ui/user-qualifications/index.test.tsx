@@ -36,22 +36,13 @@ describe('UserQualifications', () => {
       errorMessage: 'error'
     }
   ];
-  const mockEvents: EventInfo[] = [
-    {
-      id: 'event1',
-      name: 'Event 1',
-      slug: 'event-1',
-      startDate: new Date(),
-      endDate: new Date()
-    },
-    {
-      id: 'event2',
-      name: 'Event 2',
-      slug: 'event-2',
-      startDate: new Date(),
-      endDate: new Date()
-    }
-  ];
+  const mockEvent: EventInfo = {
+    id: 'event1',
+    name: 'Event 1',
+    slug: 'event-1',
+    startDate: new Date(),
+    endDate: new Date()
+  };
   const mockTeams: TeamInfo[] = [
     {
       id: 'team1',
@@ -73,11 +64,7 @@ describe('UserQualifications', () => {
 
   it('renders with required props', () => {
     render(
-      <UserQualifications
-        qualifications={mockQualifications}
-        events={mockEvents}
-        teams={mockTeams}
-      />
+      <UserQualifications qualifications={mockQualifications} event={mockEvent} teams={mockTeams} />
     );
 
     for (const qualification of mockQualifications) {
@@ -91,7 +78,7 @@ describe('UserQualifications', () => {
     render(
       <UserQualifications
         qualifications={mockQualifications}
-        events={mockEvents}
+        event={mockEvent}
         teams={mockTeams}
         onRemove={mockOnRemove}
         authorised={true}
@@ -111,44 +98,10 @@ describe('UserQualifications', () => {
 
   it('does not render remove button when not authorised', () => {
     render(
-      <UserQualifications
-        qualifications={mockQualifications}
-        events={mockEvents}
-        teams={mockTeams}
-      />
+      <UserQualifications qualifications={mockQualifications} event={mockEvent} teams={mockTeams} />
     );
 
     expect(screen.queryByLabelText('remove')).not.toBeInTheDocument();
-  });
-
-  it('renders remove button for authorised events', () => {
-    const mockOnRemove = jest.fn();
-
-    render(
-      <UserQualifications
-        qualifications={mockQualifications}
-        events={mockEvents}
-        teams={mockTeams}
-        onRemove={mockOnRemove}
-        authorisedEvents={['event1']}
-      />
-    );
-
-    for (const { id, eventId } of mockQualifications) {
-      if (eventId === 'event1') {
-        const removeButton = within(screen.getByTestId(`qualification-card-${id}`)).getByLabelText(
-          'remove'
-        );
-        expect(removeButton).toBeInTheDocument();
-
-        fireEvent.click(removeButton);
-        expect(mockOnRemove).toHaveBeenCalledWith(id);
-      } else {
-        expect(
-          within(screen.getByTestId(`qualification-card-${id}`)).queryByLabelText('remove')
-        ).not.toBeInTheDocument();
-      }
-    }
   });
 
   it('renders remove button for authorised teams', () => {
@@ -157,7 +110,7 @@ describe('UserQualifications', () => {
     render(
       <UserQualifications
         qualifications={mockQualifications}
-        events={mockEvents}
+        event={mockEvent}
         teams={mockTeams}
         onRemove={mockOnRemove}
         authorisedTeams={['team2']}
