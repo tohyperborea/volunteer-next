@@ -144,6 +144,7 @@ export default function TeamForm({
               variant="soft"
               style={{ maxWidth: '284px', flexBasis: '40%', flexGrow: 1 }}
               type="submit"
+              formAction={onSubmit}
             >
               {t(editingTeam ? 'updateButton' : 'createButton')}
             </Button>

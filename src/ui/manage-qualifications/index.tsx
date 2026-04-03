@@ -52,7 +52,7 @@ export default function ManageQualifications({
       <SearchBar />
       <QualificationList
         qualifications={qualifications}
-        events={[event]}
+        event={event}
         teams={teams}
         itemActions={(qualification) => {
           const isEditable =

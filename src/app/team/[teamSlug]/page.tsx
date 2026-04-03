@@ -87,7 +87,7 @@ export default async function TeamPage({ params, searchParams }: PageProps<`/tea
     (await getShiftsForVolunteer(event.id, permissions.userId)).map((s) => s.id)
   );
   const userQualifications = new Set(
-    (await getQualificationsForUser(permissions.userId)).map((q) => q.id)
+    (await getQualificationsForUser(permissions.userId, event.id)).map((q) => q.id)
   );
 
   const onSaveShift = async (data: FormData) => {
@@ -133,7 +133,7 @@ export default async function TeamPage({ params, searchParams }: PageProps<`/tea
     }
 
     if (shift.requirement) {
-      const qualifications = await getQualificationsForUser(permissions.userId);
+      const qualifications = await getQualificationsForUser(permissions.userId, event.id);
       const hasRequiredQualification = qualifications.some((q) => q.id === shift.requirement);
       if (!hasRequiredQualification) {
         throw new Error('User does not have the required qualification for this shift');

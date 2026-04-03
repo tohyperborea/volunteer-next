@@ -13,34 +13,30 @@ import { useTranslations } from 'next-intl';
 
 interface Props {
   qualifications: QualificationInfo[];
-  events: EventInfo[];
+  event: EventInfo;
   teams: TeamInfo[];
   onRemove?: (qualificationId: QualificationId) => Promise<void>;
   authorised?: boolean;
-  authorisedEvents?: EventId[];
   authorisedTeams?: TeamId[];
 }
 
 export default function UserQualifications({
   qualifications,
-  events,
+  event,
   teams,
   onRemove,
   authorised = false,
-  authorisedEvents = [],
   authorisedTeams = []
 }: Props) {
   const t = useTranslations('UserQualifications');
-  const eventSet = new Set(authorisedEvents);
   const teamSet = new Set(authorisedTeams);
   return (
     <QualificationList
       qualifications={qualifications}
-      events={events}
+      event={event}
       teams={teams}
       itemActions={(qual) => {
-        const canRemove =
-          authorised || eventSet.has(qual.eventId) || (qual.teamId && teamSet.has(qual.teamId));
+        const canRemove = authorised || (qual.teamId && teamSet.has(qual.teamId));
         return (
           onRemove &&
           canRemove && (
