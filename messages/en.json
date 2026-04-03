@@ -9,7 +9,7 @@
     "your": "Your",
     "shifts": "Shifts",
     "totalHours": "Total Hours",
-    "signUpHere": "Sign up for a shift",
+    "signUpHere": "Sign up for a shift here",
     "upcomingShifts": "Upcoming Shifts",
     "gettingStarted": "Getting Started",
     "gettingStartedDescription": "Start by exploring volunteer roles, browsing shifts, and finding where you fit in the community. Community is built on shared effort—everyone contributes a little to create something bigger together. By showing up, you help shape a more vibrant, connected experience for everyone.",
@@ -57,7 +57,12 @@
     "VolunteersTab": {
       "title": "Volunteers",
       "shifts": "Shifts",
-      "export": "Export volunteers"
+      "export": "Export volunteers",
+      "notifyVolunteers": "Notify volunteers",
+      "emailSuccessTitle": "Emails sent",
+      "emailSuccessMessage": "Your notifications have been sent!",
+      "emailFailureTitle": "Oops",
+      "emailFailureMessage": "Something went wrong. Please try again later."
     }
   },
   "SignInPage": {
@@ -139,12 +144,17 @@
   "EventShiftsPage": {
     "title": "Shifts",
     "allShifts": "All Current Shifts",
-    "export": "Export Shifts"
+    "export": "Export shifts",
+    "notifyVolunteers": "Notify volunteers",
+    "emailSuccessTitle": "Emails sent",
+    "emailSuccessMessage": "Your notifications have been sent!",
+    "emailFailureTitle": "Oops",
+    "emailFailureMessage": "Something went wrong. Please try again later."
   },
   "MyShiftsPage": {
     "title": "My Shifts",
-    "export": "Export Shifts",
-    "emailMyShifts": "Email Me",
+    "export": "Export shifts",
+    "emailMyShifts": "Email me",
     "emailSuccessTitle": "Email sent",
     "emailSuccessMessage": "We've sent an email with your upcoming shifts. Check your inbox soon!",
     "emailFailureTitle": "Oops",
@@ -192,6 +202,9 @@
     "thanks": "Thanks for signing up to volunteer with {eventName} - we are excited to see you, and definitely can't make all the magic happen without your help.",
     "yourShifts": "Here are the shifts you have signed up for:",
     "closing": "Thanks again and can’t wait to see you at {eventName}!"
+  },
+  "NotifyEmail": {
+    "yourShifts": "Here are the shifts you have signed up for:"
   },
 
   "AuthContainer": {
@@ -403,6 +416,13 @@
     "label": "{filled}/{total} Spots"
   },
   "SendEmailButton": {
+    "notifyAll": "Notify All Volunteers",
+    "notifyAllDescription": "This will send an email to {numEmails} volunteers in {emailContext}.",
+    "emailSubject": "Email Subject",
+    "emailBody": "Email Body",
+    "includeShifts": "Include shift details in the email",
+    "send": "Send {numEmails, plural, one {# email} other {# emails}}",
+    "cancel": "Cancel",
     "close": "Close"
   }
 }

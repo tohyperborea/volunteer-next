@@ -65,6 +65,7 @@ export default async function MyShifts() {
             href={getVolunteerShiftsApiPath(event.slug, user.id, { format: 'csv' })}
             rel="noopener noreferrer"
             target="_blank"
+            data-umami-event="Export shifts"
           >
             <Share2Icon />
             {t('export')}

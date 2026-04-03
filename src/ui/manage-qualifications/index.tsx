@@ -66,6 +66,9 @@ export default function ManageQualifications({
                 e.preventDefault();
                 setEditing(qualification);
               }}
+              data-umami-event="Edit qualification"
+              data-umami-event-team={qualification.teamId}
+              data-umami-event-qualification={qualification.name}
             >
               <Pencil2Icon width={20} height={20} />
             </Button>

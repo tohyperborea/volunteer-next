@@ -51,7 +51,9 @@ export default async function TeamLayout({ params, children }: Props) {
       <Heading my="4" align="center">
         {team.name}
       </Heading>
-      <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{team.description}</pre>
+      <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', fontFamily: 'inherit' }}>
+        {team.description}
+      </pre>
       <DataList.Root my="4">
         <DataList.Item>
           <DataList.Label>{t('contact')}</DataList.Label>

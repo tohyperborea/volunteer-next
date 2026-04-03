@@ -9,6 +9,7 @@ import './globals.css';
 import '@radix-ui/themes/styles.css';
 import './theme-overrides.css';
 import { ThemeProvider } from 'next-themes';
+import Script from 'next/script';
 import { NextIntlClientProvider } from 'next-intl';
 import { Theme, Flex } from '@radix-ui/themes';
 import NavigationFrame from '@/ui/navigation-frame';
@@ -66,6 +67,14 @@ export default async function RootLayout({
             </Theme>
           </ThemeProvider>
         </NextIntlClientProvider>
+        {process.env.UMAMI_WEBSITE_ID && (
+          <Script
+            async
+            strategy="lazyOnload"
+            src="https://cloud.umami.is/script.js"
+            data-website-id={process.env.UMAMI_WEBSITE_ID}
+          />
+        )}
       </body>
     </html>
   );

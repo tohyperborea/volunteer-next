@@ -126,12 +126,25 @@ export default function ShiftCard({
               {hasButtons && (
                 <Flex minWidth="110px" justify="end">
                   {onSignup && (
-                    <Button disabled={!canSignup} onClick={onSignup} title={cantSignupMessage}>
+                    <Button
+                      disabled={!canSignup}
+                      onClick={onSignup}
+                      title={cantSignupMessage}
+                      data-umami-event="Shift sign up"
+                      data-umami-event-team={shift.teamId}
+                      data-umami-event-shift={shift.title}
+                    >
                       {t('signup')}
                     </Button>
                   )}
                   {onCancel && (
-                    <Button onClick={onCancel} color="red">
+                    <Button
+                      onClick={onCancel}
+                      color="red"
+                      data-umami-event="Shift cancel"
+                      data-umami-event-team={shift.teamId}
+                      data-umami-event-shift={shift.title}
+                    >
                       {t('cancel')}
                     </Button>
                   )}
@@ -169,7 +182,14 @@ export default function ShiftCard({
             right="3"
           >
             {onEdit && (
-              <IconButton aria-label={t('editShift')} variant="ghost" onClick={onEdit}>
+              <IconButton
+                aria-label={t('editShift')}
+                variant="ghost"
+                onClick={onEdit}
+                data-umami-event="Edit shift"
+                data-umami-event-team={shift.teamId}
+                data-umami-event-shift={shift.title}
+              >
                 <Pencil2Icon width={20} height={20} />
               </IconButton>
             )}

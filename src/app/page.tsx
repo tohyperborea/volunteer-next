@@ -15,7 +15,7 @@ import ShiftOverviewList from '@/ui/shift-overview-list';
 import { getTeamsForEvent } from '@/service/team-service';
 import { getVolunteersForShifts } from '@/service/user-service';
 import { getPermissionsProfile } from '@/utils/permissions';
-import { CheckIcon } from '@radix-ui/react-icons';
+import { ArrowRightIcon } from '@radix-ui/react-icons';
 
 const PAGE_KEY = 'DashboardPage';
 
@@ -63,14 +63,16 @@ export default async function DashboardPage() {
 
       {/* Sign Up CTA */}
       <Flex asChild justify="start">
-        <Button variant="solid" highContrast size="4" asChild>
-          <Box asChild py="6">
-            <NextLink href={getTeamsPath()}>
-              <CheckIcon width={20} height={20} />
-              {t('signUpHere')}
-            </NextLink>
-          </Box>
-        </Button>
+        <Link asChild>
+          <Button variant="solid" highContrast size="4" asChild>
+            <Box asChild py="6">
+              <NextLink href={getTeamsPath()}>
+                <ArrowRightIcon width={20} height={20} />
+                {t('signUpHere')}
+              </NextLink>
+            </Box>
+          </Button>
+        </Link>
       </Flex>
 
       {/* Upcoming Shifts list */}
