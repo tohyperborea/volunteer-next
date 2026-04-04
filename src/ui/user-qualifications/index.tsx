@@ -16,8 +16,7 @@ interface Props {
   event: EventInfo;
   teams: TeamInfo[];
   onRemove?: (qualificationId: QualificationId) => Promise<void>;
-  authorised?: boolean;
-  authorisedTeams?: TeamId[];
+  managedQualificationIds?: Set<QualificationId>;
 }
 
 export default function UserQualifications({
@@ -25,18 +24,16 @@ export default function UserQualifications({
   event,
   teams,
   onRemove,
-  authorised = false,
-  authorisedTeams = []
+  managedQualificationIds = new Set()
 }: Props) {
   const t = useTranslations('UserQualifications');
-  const teamSet = new Set(authorisedTeams);
   return (
     <QualificationList
       qualifications={qualifications}
       event={event}
       teams={teams}
       itemActions={(qual) => {
-        const canRemove = authorised || (qual.teamId && teamSet.has(qual.teamId));
+        const canRemove = managedQualificationIds.has(qual.id);
         return (
           onRemove &&
           canRemove && (

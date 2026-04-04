@@ -56,7 +56,7 @@ export const hasEventStarted = (event: EventInfo): boolean => {
 export const hasEventEnded = (event: EventInfo): boolean => {
   const now = new Date();
   const utcDate = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
-  return utcDate < event.endDate;
+  return utcDate > event.endDate;
 };
 
 export const hasShiftStarted = (event: EventInfo, shift: ShiftInfo): boolean => {

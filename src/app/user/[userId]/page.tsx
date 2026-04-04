@@ -13,7 +13,7 @@ import { getEditUserPath, getUserProfilePath } from '@/utils/path';
 import { Box, Button, Flex, Heading, IconButton, Select } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
 import { revalidatePath } from 'next/cache';
-import { notFound, redirect } from 'next/navigation';
+import { notFound, redirect, unauthorized } from 'next/navigation';
 import { getManagedQualifications } from '@/lib/qualification';
 import { FormField } from '@/ui/form-dialog';
 import { ExitIcon, Pencil2Icon, PlusIcon } from '@radix-ui/react-icons';
@@ -22,6 +22,7 @@ import { getPermissionsProfile } from '@/utils/permissions';
 import { auth } from '@/auth';
 import { headers } from 'next/headers';
 import NextLink from 'next/link';
+import { hasEventEnded } from '@/utils/date';
 
 const PAGE_KEY = 'VolunteerProfilePage';
 
@@ -59,16 +60,19 @@ export default async function VolunteerProfilePage({ params }: PageProps<'/user/
     : [];
   const leadsTeams = await getTeamsById(leadsTeamIds);
 
-  const canManageQualifications = isAdmin || organisesEvent || leadsTeams.length > 0;
-  const managedQualifications =
-    canManageQualifications && event
-      ? await getManagedQualifications({
-          eventId: event.id,
-          isAdmin,
-          organisesEvent,
-          leadsTeams: leadsTeamIds
-        })
-      : [];
+  const canManageQualifications =
+    event && !hasEventEnded(event) && (isAdmin || organisesEvent || leadsTeams.length > 0);
+  const managedQualifications = canManageQualifications
+    ? await getManagedQualifications({
+        event,
+        isAdmin,
+        organisesEvent,
+        leadsTeams: leadsTeamIds
+      })
+    : [];
+  const managedQualificationIds = new Set(
+    managedQualifications.map((qualification) => qualification.id)
+  );
 
   const qualifications = event ? await getQualificationsForUser(userId, event.id) : [];
 
@@ -105,6 +109,9 @@ export default async function VolunteerProfilePage({ params }: PageProps<'/user/
     if (typeof qualificationId !== 'string') {
       throw new Error('Invalid qualification ID');
     }
+    if (!managedQualificationIds.has(qualificationId)) {
+      unauthorized();
+    }
     const qualification = await getQualificationById(qualificationId);
     if (!qualification) {
       throw new Error('Qualification not found');
@@ -116,6 +123,9 @@ export default async function VolunteerProfilePage({ params }: PageProps<'/user/
 
   const onRemove = async (qualificationId: QualificationId) => {
     'use server';
+    if (!managedQualificationIds.has(qualificationId)) {
+      unauthorized();
+    }
     const qualification = await getQualificationById(qualificationId);
     if (!qualification) {
       throw new Error('Qualification not found');
@@ -171,8 +181,7 @@ export default async function VolunteerProfilePage({ params }: PageProps<'/user/
             event={event}
             teams={teams}
             onRemove={onRemove}
-            authorised={isAdmin || organisesEvent}
-            authorisedTeams={leadsTeamIds}
+            managedQualificationIds={managedQualificationIds}
           />
           {canManageQualifications && (
             <Flex direction="column" gap="2" asChild>
