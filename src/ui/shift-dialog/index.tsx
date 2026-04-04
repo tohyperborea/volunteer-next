@@ -17,7 +17,7 @@ interface Props {
   startDate: Date;
   teamId: TeamId;
   qualifications: QualificationInfo[];
-  editing?: ShiftInfo;
+  editing?: PartialBy<ShiftInfo, 'id'>;
   creating?: boolean;
   onClose?: () => void;
   onSubmit?: (data: FormData) => Promise<void>;
@@ -36,7 +36,7 @@ export default function ShiftDialog({
 }: Props) {
   const open = creating || Boolean(editing);
   const t = useTranslations('ShiftDialog');
-  const title = t(editing ? 'editShift' : 'addShift');
+  const title = t(editing ? (editing.id ? 'editShift' : 'copyShift') : 'addShift');
   const [currentMin, setCurrentMin] = useState<number>(editing?.minVolunteers ?? 0);
   useEffect(() => {
     if (open) {
@@ -52,13 +52,13 @@ export default function ShiftDialog({
           {title}
         </Dialog.Title>
 
-        {editing && onDelete && (
+        {editing?.id && editing.id && onDelete && (
           <DeleteButton
             title={t('deleteShift')}
             variant="soft"
             color="red"
             onDelete={async () => {
-              await onDelete(editing.id);
+              await onDelete(editing!.id!); // Guarded in the condition above
               onClose && onClose();
             }}
             description={t('deleteShiftConfirmation')}
