@@ -2,17 +2,27 @@ import cron from 'node-cron';
 import { createTransport } from 'nodemailer';
 import { htmlToText } from 'html-to-text';
 import { Pool } from 'pg';
+import fs from 'fs';
+import path from 'path';
+
+const readSecret = (name: string, defaultValue?: string): string => {
+  const secretPath = path.join('/run/secrets', name);
+  if (fs.existsSync(secretPath)) {
+    return fs.readFileSync(secretPath, 'utf-8').trimEnd();
+  }
+  return process.env[name] || defaultValue || '';
+};
 
 const CRON_SCHEDULE = process.env.CRON_SCHEDULE || '0 0 * * *';
 const RATE_LIMIT = Number(process.env.RATE_LIMIT) || 100; // emails per cron tick
 const POSTGRES_HOST = process.env.POSTGRES_HOST || 'localhost';
 const POSTGRES_USER = process.env.POSTGRES_USER || 'postgres';
-const POSTGRES_PASSWORD = process.env.POSTGRES_PASSWORD || 'example';
+const POSTGRES_PASSWORD = readSecret('POSTGRES_PASSWORD', 'example');
 const POSTGRES_DB = process.env.POSTGRES_DB || 'postgres';
 const POSTGRES_PORT = Number(process.env.POSTGRES_PORT) || 5432;
 const SMTP_HOST = process.env.SMTP_HOST || 'smtp.example.com';
 const SMTP_USER = process.env.SMTP_USER || 'smtp_user';
-const SMTP_PASSWORD = process.env.SMTP_PASSWORD || 'smtp_password';
+const SMTP_PASSWORD = readSecret('SMTP_PASSWORD', 'smtp_password');
 const SMTP_PORT = Number(process.env.SMTP_PORT) || 587;
 const SMTP_SECURE = process.env.SMTP_SECURE === 'true';
 const SMTP_FROM = process.env.SMTP_FROM ?? SMTP_USER ?? 'noreply@localhost';
@@ -67,8 +77,8 @@ cron.schedule(CRON_SCHEDULE, async () => {
       `,
       values
     );
-    const sentIds = [];
-    const failedIds = [];
+    const sentIds: string[] = [];
+    const failedIds: string[] = [];
     for (const row of result.rows) {
       const { to, subject, body } = row;
       try {
