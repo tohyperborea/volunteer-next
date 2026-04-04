@@ -1,4 +1,5 @@
 import type { Locale } from 'next-intl';
+import { eventDayToDate } from './datetime';
 
 export const getEventDateRangeDisplayText = (
   { event }: { event: EventInfo },
@@ -44,4 +45,33 @@ export const getListByDate = <T>(
     },
     {} as Record<string, T[]>
   );
+};
+
+export const hasEventStarted = (event: EventInfo): boolean => {
+  const now = new Date();
+  const utcDate = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
+  return utcDate >= event.startDate;
+};
+
+export const hasEventEnded = (event: EventInfo): boolean => {
+  const now = new Date();
+  const utcDate = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
+  return utcDate > event.endDate;
+};
+
+export const hasShiftStarted = (event: EventInfo, shift: ShiftInfo): boolean => {
+  const now = new Date();
+  // Ignoring time, and comparing only days, to avoid dealing with timezones
+  const utcDate = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
+  const shiftStart = eventDayToDate(event.startDate, shift.eventDay);
+  return utcDate >= shiftStart;
+};
+
+export const hasShiftEnded = (event: EventInfo, shift: ShiftInfo): boolean => {
+  const now = new Date();
+  // Ignoring time, and comparing only days, to avoid dealing with timezones
+  const utcDate = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
+  const shiftStart = eventDayToDate(event.startDate, shift.eventDay);
+  // Assume no shifts over 24 hours long
+  return utcDate > shiftStart;
 };

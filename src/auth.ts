@@ -10,7 +10,7 @@ import { betterAuth } from 'better-auth';
 import { createAuthMiddleware, APIError, getIp } from 'better-auth/api';
 import { nextCookies } from 'better-auth/next-js';
 import { genericOAuth } from 'better-auth/plugins';
-import db from '@/db';
+import db, { inTransaction } from '@/db';
 import { sendEmail } from '@/email';
 import enMessages from '../messages/en.json';
 import {
@@ -18,6 +18,7 @@ import {
   recordSuccessfulLogin,
   checkSignInRateLimit
 } from '@/lib/login-security';
+import { addRoleToUser, getRoleCount } from './service/user-service';
 
 /** oauth = Pretix/OAuth provider, credentials = email/password. Defaults to oauth. */
 export const AUTH_MODE = (process.env.AUTH_MODE ?? 'oauth') as 'oauth' | 'credentials';
@@ -47,10 +48,48 @@ const plugins = [
   nextCookies()
 ];
 
-const signInEmailBeforeHook = createAuthMiddleware(async (ctx) => {
-  if (ctx.path !== '/sign-in/email') return;
+const afterHook = createAuthMiddleware(async (ctx) => {
+  if (ctx.path.startsWith('/sign-up')) {
+    await inTransaction(async (client) => {
+      if ((await getRoleCount('admin', client)) === 0) {
+        // Make the first registered user an admin
+        console.info('[auth] System has no admins, granting admin role to new user');
+        const returned = ctx.context.returned as { user?: { id: string } } | Error | undefined;
+        if (returned && !(returned instanceof Error) && returned.user) {
+          await addRoleToUser({ type: 'admin' }, returned.user.id, client);
+        }
+      }
+    });
+    return;
+  }
+  if (!useOAuth && ctx.path === '/sign-in/email') {
+    const email = typeof ctx.body?.email === 'string' ? ctx.body.email.trim() : '';
+    if (!email) {
+      return;
+    }
+    // Only clear lockout on success; failed attempts are recorded in the sign-in server action
+    const returned = ctx.context.returned as { statusCode?: number } | Error | undefined;
+    const isFailure =
+      returned &&
+      (returned instanceof Error ||
+        (typeof returned === 'object' &&
+          typeof (returned as { statusCode?: number }).statusCode === 'number' &&
+          (returned as { statusCode: number }).statusCode >= 400));
+    if (!isFailure) {
+      recordSuccessfulLogin(email);
+    }
+    return;
+  }
+});
+
+const beforeHook = createAuthMiddleware(async (ctx) => {
+  if (useOAuth || ctx.path !== '/sign-in/email') {
+    return;
+  }
   const email = typeof ctx.body?.email === 'string' ? ctx.body.email.trim() : '';
-  if (!email) return;
+  if (!email) {
+    return;
+  }
   if (!checkLoginLockout(email)) {
     throw new APIError('TOO_MANY_REQUESTS', {
       message: 'Too many failed attempts. Try again in 15 minutes.'
@@ -63,21 +102,6 @@ const signInEmailBeforeHook = createAuthMiddleware(async (ctx) => {
       message: 'Too many requests. Try again later.'
     });
   }
-});
-
-const signInEmailAfterHook = createAuthMiddleware(async (ctx) => {
-  if (ctx.path !== '/sign-in/email') return;
-  const email = typeof ctx.body?.email === 'string' ? ctx.body.email.trim() : '';
-  if (!email) return;
-  // Only clear lockout on success; failed attempts are recorded in the sign-in server action
-  const returned = ctx.context.returned as { statusCode?: number } | Error | undefined;
-  const isFailure =
-    returned &&
-    (returned instanceof Error ||
-      (typeof returned === 'object' &&
-        typeof (returned as { statusCode?: number }).statusCode === 'number' &&
-        (returned as { statusCode: number }).statusCode >= 400));
-  if (!isFailure) recordSuccessfulLogin(email);
 });
 
 export const auth = betterAuth({
@@ -93,12 +117,10 @@ export const auth = betterAuth({
       }
     }
   },
-  hooks: useOAuth
-    ? undefined
-    : {
-        before: signInEmailBeforeHook,
-        after: signInEmailAfterHook
-      },
+  hooks: {
+    before: beforeHook,
+    after: afterHook
+  },
   emailAndPassword: useOAuth
     ? undefined
     : {

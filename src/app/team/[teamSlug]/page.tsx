@@ -26,8 +26,13 @@ import {
   getCurrentEventOrRedirect
 } from '@/session';
 import ShiftList from '@/ui/shift-list';
+import { hasShiftStarted } from '@/utils/date';
 import { getTeamShiftsApiPath, getTeamShiftsPath } from '@/utils/path';
-import { getPermissionsProfile } from '@/utils/permissions';
+import {
+  canCancelShiftSignup,
+  canSignupForShift,
+  getPermissionsProfile
+} from '@/utils/permissions';
 import { recordToShiftFilters } from '@/utils/shift-filters';
 import { validateNewShift } from '@/validator/shift-validator';
 import { Flex, Heading } from '@radix-ui/themes';
@@ -92,10 +97,16 @@ export default async function TeamPage({ params, searchParams }: PageProps<`/tea
 
   const onSaveShift = async (data: FormData) => {
     'use server';
-    console.info('Saving shift with data:', Object.fromEntries(data.entries()));
+    if (!isEditable) {
+      unauthorized();
+    }
     await checkAuthorisation(editorRoles);
     const shift = validateNewShift(data);
     const shiftId = data.get('id')?.toString();
+    const existingShift = shiftId ? await getShiftById(shiftId) : null;
+    if (existingShift && hasShiftStarted(event, existingShift)) {
+      unauthorized();
+    }
     if (shiftId) {
       await updateShift({ id: shiftId, ...shift });
     } else {
@@ -108,7 +119,16 @@ export default async function TeamPage({ params, searchParams }: PageProps<`/tea
 
   const onDeleteShift = async (shiftId: ShiftId) => {
     'use server';
-    console.info('Deleting shiftId: ', shiftId);
+    if (!isEditable) {
+      unauthorized();
+    }
+    const shift = await getShiftById(shiftId);
+    if (!shift) {
+      notFound();
+    }
+    if (hasShiftStarted(event, shift)) {
+      unauthorized();
+    }
     await checkAuthorisation(editorRoles);
     if (!shiftId) {
       throw new Error('Shift id is required for deletion');
@@ -120,7 +140,6 @@ export default async function TeamPage({ params, searchParams }: PageProps<`/tea
 
   const onSignup = async (shiftId: ShiftId) => {
     'use server';
-    console.info(`Signing up volunteer ${permissions.userId} for shift ${shiftId}`);
     if (!permissions.userId) {
       unauthorized();
     }
@@ -138,6 +157,10 @@ export default async function TeamPage({ params, searchParams }: PageProps<`/tea
       if (!hasRequiredQualification) {
         throw new Error('User does not have the required qualification for this shift');
       }
+    }
+
+    if (!canSignupForShift(event, shift)) {
+      unauthorized();
     }
 
     await inTransaction(async (client) => {
@@ -162,14 +185,30 @@ export default async function TeamPage({ params, searchParams }: PageProps<`/tea
 
   const onCancel = async (shiftId: ShiftId) => {
     'use server';
-    console.info(`Cancelling volunteer ${permissions.userId} for shift ${shiftId}`);
     if (!permissions.userId) {
       unauthorized();
     }
+
+    const shift = await getShiftById(shiftId);
+    if (!shift) {
+      notFound();
+    }
+    if (shift.teamId !== team.id) {
+      throw new Error('Shift does not belong to this team');
+    }
+
+    if (!canCancelShiftSignup(event, shift)) {
+      unauthorized();
+    }
+
     await removeVolunteerFromShift(shiftId, permissions.userId);
     const path = getTeamShiftsPath(teamSlug);
     revalidatePath(path);
   };
+
+  const editableShifts = new Set(
+    isEditable ? shifts.filter((s) => !hasShiftStarted(event, s)).map((s) => s.id) : []
+  );
 
   return (
     <Flex direction="column" gap="2">
@@ -189,6 +228,7 @@ export default async function TeamPage({ params, searchParams }: PageProps<`/tea
         exportLink={getTeamShiftsApiPath(event.slug, teamSlug, { format: 'csv' })}
         onSaveShift={isEditable ? onSaveShift : undefined}
         onDeleteShift={isEditable ? onDeleteShift : undefined}
+        editableShifts={editableShifts}
         onSignup={onSignup}
         onCancel={onCancel}
       />

@@ -1,5 +1,5 @@
 import metadata from '@/i18n/metadata';
-import { notFound, redirect } from 'next/navigation';
+import { notFound, redirect, unauthorized } from 'next/navigation';
 import { Flex, Heading, Card } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
 import { updateEvent, getEventsById } from '@/service/event-service';
@@ -17,6 +17,7 @@ import { validateUserId } from '@/validator/user-validator';
 import { usersToVolunteers, userToVolunteer } from '@/lib/volunteer';
 import { getPermissionsProfile } from '@/utils/permissions';
 import { getEventsPath } from '@/utils/path';
+import { hasEventStarted } from '@/utils/date';
 
 const PAGE_KEY = 'UpdateEventPage';
 
@@ -30,6 +31,14 @@ export default async function UpdateEvent({ params }: PageProps<`/update-event/[
 
     const newEvent = validateExistingEvent(data);
     const organiser = validateUserId(data, 'organiserId');
+
+    const event = (await getEventsById([newEvent.id]))[0];
+    if (!event) {
+      notFound();
+    }
+    if (hasEventStarted(event)) {
+      unauthorized();
+    }
 
     const roleToAdd: UserRole = { type: 'organiser', eventId: newEvent.id };
     const existingOrganisers = await getUsersWithRole(roleToAdd);

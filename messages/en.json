@@ -214,6 +214,8 @@
   "MenuCard": {
     "update": "Update",
     "delete": "Delete",
+    "archive": "Archive",
+    "unarchive": "Unarchive",
     "cancel": "Cancel",
     "confirmDeletion": "Confirm Deletion",
     "confirmText": "Are you sure you want to delete \"{title}\"?"
@@ -229,7 +231,8 @@
     "cancelButton": "Cancel"
   },
   "EventCard": {
-    "dateSpan": "{startDate} to {endDate}"
+    "dateSpan": "{startDate} to {endDate}",
+    "archived": "Archived"
   },
   "TeamCard": {
     "volunteers": "Volunteers",
@@ -254,6 +257,12 @@
   },
   "ShiftFilters": {
     "filters": "Filters",
+    "clear": "Clear"
+  },
+  "EventFilters": {
+    "filters": "Filters",
+    "searchPlaceholder": "Search events...",
+    "showArchived": "Show archived events",
     "clear": "Clear"
   },
   "UserForm": {

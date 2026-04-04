@@ -12,7 +12,7 @@ import SearchBar from '../search-bar';
 import { paramsToUserFilters } from '@/utils/user-filters';
 import { useTranslations } from 'next-intl';
 import { FormField } from '../form-dialog';
-import styles from './styles.module.css';
+import SlideIn from '../slide-in';
 import { useDebouncedCallback } from 'use-debounce';
 
 interface Props {
@@ -91,63 +91,66 @@ export default function VolunteerFilters({ currentEventId, withFilters = [] }: P
             </Button>
           </Flex>
           {filtersOpen && (
-            <Card variant="classic" className={styles.easeInTransition}>
-              <Flex direction="column" gap="4">
-                {hasFilter.has('roleType') && (
-                  <FormField name={t('roleFilterLabel')} ariaId="roleFilter">
-                    <Box>
-                      <Select.Root
-                        value={currentFilters.roleType ?? 'all'}
-                        onValueChange={(value) =>
-                          onFilterChange('roleType', value === 'all' ? undefined : value)
-                        }
-                      >
-                        <Select.Trigger />
-                        <Select.Content>
-                          <Select.Item value="all">{t('allRoles')}</Select.Item>
-                          <Select.Item value="admin">{t('admin')}</Select.Item>
-                          <Select.Item value="organiser">{t('organiser')}</Select.Item>
-                          <Select.Item value="team-lead">{t('teamLead')}</Select.Item>
-                        </Select.Content>
-                      </Select.Root>
-                    </Box>
-                  </FormField>
-                )}
-                {hasFilter.has('eventHours') && currentEventId && (
-                  <FormField name={t('eventHoursFilterLabel')} ariaId="eventHoursFilter">
-                    <Box style={{ alignSelf: 'start' }}>
-                      <TextField.Root
-                        aria-label={t('eventHoursFilterLabel')}
-                        placeholder={t('eventHoursPlaceholder')}
-                        type="number"
-                        defaultValue={currentFilters.eventHours}
-                        min={0}
-                        step={1}
-                        onChange={(e) => debouncedEventHoursChange(e.currentTarget.value)}
-                      />
-                    </Box>
-                  </FormField>
-                )}
-                {hasFilter.has('showDeleted') && (
-                  <Text as="label" size="2">
-                    <Flex align="center" gap="2">
-                      <Checkbox
-                        checked={currentFilters.showDeleted}
-                        onCheckedChange={(checked) =>
-                          onFilterChange('showDeleted', checked ? 'true' : undefined)
-                        }
-                      />
-                      {t('showDeleted')}
-                    </Flex>
-                  </Text>
-                )}
-                <Box>
-                  <Button variant="outline" color="blue" onClick={onClearFilters}>
-                    {t('clear')}
-                  </Button>
-                </Box>
-              </Flex>
-            </Card>
+            <SlideIn>
+              <Card variant="classic">
+                <Flex direction="column" gap="4">
+                  {hasFilter.has('roleType') && (
+                    <FormField name={t('roleFilterLabel')} ariaId="roleFilter">
+                      <Box>
+                        <Select.Root
+                          value={currentFilters.roleType ?? 'all'}
+                          onValueChange={(value) =>
+                            onFilterChange('roleType', value === 'all' ? undefined : value)
+                          }
+                        >
+                          <Select.Trigger />
+                          <Select.Content>
+                            <Select.Item value="all">{t('allRoles')}</Select.Item>
+                            <Select.Item value="admin">{t('admin')}</Select.Item>
+                            <Select.Item value="organiser">{t('organiser')}</Select.Item>
+                            <Select.Item value="team-lead">{t('teamLead')}</Select.Item>
+                          </Select.Content>
+                        </Select.Root>
+                      </Box>
+                    </FormField>
+                  )}
+                  {hasFilter.has('eventHours') && currentEventId && (
+                    <FormField name={t('eventHoursFilterLabel')} ariaId="eventHoursFilter">
+                      <Box style={{ alignSelf: 'start' }}>
+                        <TextField.Root
+                          aria-label={t('eventHoursFilterLabel')}
+                          placeholder={t('eventHoursPlaceholder')}
+                          type="number"
+                          defaultValue={currentFilters.eventHours}
+                          min={0}
+                          step={1}
+                          onChange={(e) => debouncedEventHoursChange(e.currentTarget.value)}
+                        />
+                      </Box>
+                    </FormField>
+                  )}
+
+                  {hasFilter.has('showDeleted') && (
+                    <Text as="label" size="2">
+                      <Flex align="center" gap="2">
+                        <Checkbox
+                          checked={currentFilters.showDeleted}
+                          onCheckedChange={(checked) =>
+                            onFilterChange('showDeleted', checked ? 'true' : undefined)
+                          }
+                        />
+                        {t('showDeleted')}
+                      </Flex>
+                    </Text>
+                  )}
+                  <Box>
+                    <Button variant="outline" color="blue" onClick={onClearFilters}>
+                      {t('clear')}
+                    </Button>
+                  </Box>
+                </Flex>
+              </Card>
+            </SlideIn>
           )}
         </Flex>
       )}
