@@ -89,7 +89,11 @@ export default function ShiftDialog({
           >
             <EventDayTimePicker
               startDate={startDate}
-              defaultValue={editing && { day: editing.eventDay, time: editing.startTime }}
+              defaultValue={
+                editing
+                  ? { day: editing.eventDay, time: editing.startTime }
+                  : { day: 0, time: '00:00' }
+              }
               aria-labelledby="shift-start"
               name="startTime"
               required
