@@ -1,5 +1,5 @@
 import metadata from '@/i18n/metadata';
-import { deleteEvent, getFilteredEvents } from '@/service/event-service';
+import { archiveEvent, deleteEvent, getFilteredEvents } from '@/service/event-service';
 import { Heading, Flex, Card, Text, Button, Box } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
 import { PlusIcon } from '@radix-ui/react-icons';
@@ -8,7 +8,7 @@ import EventCard from '@/ui/event-card';
 import NextLink from 'next/link';
 import { revalidatePath } from 'next/cache';
 import { getCreateEventPath, getEventsPath } from '@/utils/path';
-import { hasEventStarted } from '@/utils/date';
+import { hasEventEnded, hasEventStarted } from '@/utils/date';
 import { unauthorized } from 'next/navigation';
 import { recordToEventFilters } from '@/utils/event-filters';
 import EventFilters from '@/ui/event-filters';
@@ -38,6 +38,20 @@ export default async function EventsDashboard({ searchParams }: PageProps<`/even
     revalidatePath(getEventsPath());
   };
 
+  const archiveAction = async (id: EventId, archived: boolean) => {
+    'use server';
+    const event = events.find((e) => e.id === id);
+    if (!event) {
+      return;
+    }
+    if (!hasEventEnded(event)) {
+      unauthorized();
+    }
+    await checkAuthorisation([{ type: 'admin' }]);
+    await archiveEvent(id, archived);
+    revalidatePath(getEventsPath());
+  };
+
   return (
     <Flex direction="column" gap="4">
       <Heading my="4">{t('title')}</Heading>
@@ -58,6 +72,7 @@ export default async function EventsDashboard({ searchParams }: PageProps<`/even
         <EventCard
           event={event}
           onDelete={!hasEventStarted(event) ? deleteAction : undefined}
+          onArchive={hasEventEnded(event) ? archiveAction : undefined}
           key={event.id}
           asLink
         />

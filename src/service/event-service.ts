@@ -157,3 +157,24 @@ export const deleteEvent = async (eventId: EventId, client?: PoolClient): Promis
   await db.query('DELETE FROM event WHERE id = $1', [eventId]);
   console.info('Deleted event with id:', eventId);
 };
+
+/**
+ * Archives or unarchives an event
+ * @param eventId - The ID of the event to archive or unarchive.
+ * @param archived - Whether to archive (true) or unarchive (false) the event.
+ * @param client - Optional database client for transaction support.
+ */
+export const archiveEvent = async (
+  eventId: EventId,
+  archived: boolean,
+  client?: PoolClient
+): Promise<void> => {
+  const db = client || pool;
+  if (archived) {
+    await db.query('UPDATE event SET "archivedAt" = CURRENT_TIMESTAMP WHERE id = $1', [eventId]);
+    console.info('Archived event with id:', eventId);
+  } else {
+    await db.query('UPDATE event SET "archivedAt" = NULL WHERE id = $1', [eventId]);
+    console.info('Unarchived event with id:', eventId);
+  }
+};

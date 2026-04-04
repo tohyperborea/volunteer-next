@@ -213,6 +213,8 @@
   "MenuCard": {
     "update": "Update",
     "delete": "Delete",
+    "archive": "Archive",
+    "unarchive": "Unarchive",
     "cancel": "Cancel",
     "confirmDeletion": "Confirm Deletion",
     "confirmText": "Are you sure you want to delete \"{title}\"?"
@@ -228,7 +230,8 @@
     "cancelButton": "Cancel"
   },
   "EventCard": {
-    "dateSpan": "{startDate} to {endDate}"
+    "dateSpan": "{startDate} to {endDate}",
+    "archived": "Archived"
   },
   "TeamCard": {
     "volunteers": "Volunteers",

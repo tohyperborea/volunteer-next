@@ -11,7 +11,7 @@ import { recordToTeamFilters } from '@/utils/team-filters';
 import { getVolunteersForShifts } from '@/service/user-service';
 import { getPermissionsProfile } from '@/utils/permissions';
 import NextLink from 'next/link';
-import { hasEventStarted } from '@/utils/date';
+import { hasEventEnded, hasEventStarted } from '@/utils/date';
 
 const PAGE_KEY = 'TeamsDashboardPage';
 
@@ -65,6 +65,7 @@ export default async function EventsDashboard({ searchParams }: PageProps<'/team
         shifts={shifts}
         shiftVolunteers={shiftVolunteers}
         itemActions={itemActions}
+        showSignup={!hasEventEnded(event)}
       />
     </Flex>
   );
