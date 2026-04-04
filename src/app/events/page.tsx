@@ -8,6 +8,8 @@ import EventCard from '@/ui/event-card';
 import NextLink from 'next/link';
 import { revalidatePath } from 'next/cache';
 import { getCreateEventPath, getEventsPath } from '@/utils/path';
+import { hasEventStarted } from '@/utils/date';
+import { unauthorized } from 'next/navigation';
 
 const PAGE_KEY = 'EventsManagementPage';
 
@@ -21,6 +23,13 @@ export default async function EventsDashboard() {
 
   const deleteAction = async (id: EventId) => {
     'use server';
+    const event = events.find((e) => e.id === id);
+    if (!event) {
+      return;
+    }
+    if (hasEventStarted(event)) {
+      unauthorized();
+    }
     await checkAuthorisation([{ type: 'admin' }]);
     await deleteEvent(id);
     revalidatePath(getEventsPath());
@@ -42,7 +51,12 @@ export default async function EventsDashboard() {
         </Card>
       )}
       {events.map((event) => (
-        <EventCard event={event} onDelete={deleteAction} key={event.id} asLink />
+        <EventCard
+          event={event}
+          onDelete={!hasEventStarted(event) ? deleteAction : undefined}
+          key={event.id}
+          asLink
+        />
       ))}
     </Flex>
   );

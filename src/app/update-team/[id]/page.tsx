@@ -1,5 +1,5 @@
 import metadata from '@/i18n/metadata';
-import { notFound, redirect } from 'next/navigation';
+import { notFound, redirect, unauthorized } from 'next/navigation';
 import { Flex, Heading } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
 import {
@@ -17,6 +17,7 @@ import { deleteTeam, getTeamById, updateTeam } from '@/service/team-service';
 import { usersToVolunteers, userToVolunteer } from '@/lib/volunteer';
 import { getPermissionsProfile } from '@/utils/permissions';
 import { getTeamsPath } from '@/utils/path';
+import { hasEventStarted } from '@/utils/date';
 
 const PAGE_KEY = 'UpdateTeamPage';
 
@@ -28,6 +29,9 @@ export default async function UpdateTeam({ params }: PageProps<'/update-team/[id
   const team = id ? await getTeamById(id) : null;
   if (!team || team.eventId !== event.id) {
     notFound();
+  }
+  if (hasEventStarted(event)) {
+    unauthorized();
   }
   await checkAuthorisation([{ type: 'admin' }, { type: 'organiser', eventId: team.eventId }]);
   const t = await getTranslations(PAGE_KEY);

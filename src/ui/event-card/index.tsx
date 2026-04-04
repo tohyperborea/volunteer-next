@@ -12,6 +12,7 @@ import MenuCard from '@/ui/menu-card';
 import { getUpdateEventPath } from '@/utils/path';
 import { EventCookie, getCookie, setCookie } from '@/utils/cookie';
 import EventLink from '../event-link';
+import { hasEventStarted } from '@/utils/date';
 
 const localeOptions: Intl.DateTimeFormatOptions = {
   timeZone: 'UTC',
@@ -23,12 +24,12 @@ const localeOptions: Intl.DateTimeFormatOptions = {
 
 interface Props {
   event: EventInfo;
-  onDelete: (id: EventId) => Promise<void>;
+  onDelete?: (id: EventId) => Promise<void>;
   asLink?: boolean;
 }
 export default function EventCard({ event, onDelete, asLink }: Props) {
   const t = useTranslations('EventCard');
-
+  const editable = !hasEventStarted(event);
   return (
     <MenuCard
       title={event.name}
@@ -39,13 +40,17 @@ export default function EventCard({ event, onDelete, asLink }: Props) {
           </EventLink>
         ) : undefined
       }
-      updateUri={getUpdateEventPath(event.id)}
-      onDelete={async () => {
-        await onDelete(event.id);
-        if (getCookie(EventCookie.name) === event.id) {
-          setCookie(EventCookie, '');
-        }
-      }}
+      updateUri={editable ? getUpdateEventPath(event.id) : undefined}
+      onDelete={
+        editable && onDelete
+          ? async () => {
+              await onDelete(event.id);
+              if (getCookie(EventCookie.name) === event.id) {
+                setCookie(EventCookie, '');
+              }
+            }
+          : undefined
+      }
     >
       <Text size="1">
         {t('dateSpan', {
