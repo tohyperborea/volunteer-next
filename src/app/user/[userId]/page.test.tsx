@@ -141,7 +141,7 @@ describe('UserProfilePage', () => {
 
     const page = await UserProfilePage({ params: mockParams, searchParams: mockSearch });
     render(<Theme>{page}</Theme>);
-    expect(mockGetVolunteer).toHaveBeenCalledWith('1', { id: 'permissionsProfile' });
+    expect(mockGetVolunteer).toHaveBeenCalledWith('1', 'event1', { id: 'permissionsProfile' });
     expect(screen.getByText('John Doe')).toBeInTheDocument();
   });
 
@@ -155,7 +155,7 @@ describe('UserProfilePage', () => {
       UserProfilePage({ params: mockParams, searchParams: mockSearch })
     ).rejects.toThrow();
 
-    expect(mockGetVolunteer).toHaveBeenCalledWith('2', { id: 'permissionsProfile' });
+    expect(mockGetVolunteer).toHaveBeenCalledWith('2', 'event1', { id: 'permissionsProfile' });
     expect(mockNotFound).toHaveBeenCalled();
   });
 

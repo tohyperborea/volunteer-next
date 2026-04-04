@@ -26,7 +26,8 @@ export default async function MyShifts() {
   const shifts = await getShiftsForVolunteer(event.id, user.id);
   const shiftVolunteers = await getVolunteersForShifts(
     shifts.map((shift) => shift.id),
-    getPermissionsProfile(user)
+    getPermissionsProfile(user),
+    event.id
   );
   const teams = await getTeamsForEvent(event.id);
   const showEmailButton =

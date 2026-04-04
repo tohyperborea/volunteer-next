@@ -29,7 +29,8 @@ export default async function EventsDashboard({ searchParams }: PageProps<'/team
   const shifts = await getShiftsForEvent(event.id);
   const shiftVolunteers = await getVolunteersForShifts(
     shifts.map((shift) => shift.id),
-    getPermissionsProfile(await currentUser())
+    getPermissionsProfile(await currentUser()),
+    event.id
   );
   const isEditable = (await checkAuthorisation(editorRoles, true)) && !hasEventStarted(event);
 

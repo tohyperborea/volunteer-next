@@ -36,7 +36,8 @@ export default async function EventShifts() {
   const shiftMap = Object.fromEntries(shifts.map((shift) => [shift.id, shift]));
   const shiftVolunteers = await getVolunteersForShifts(
     Object.keys(shiftMap),
-    getPermissionsProfile(await currentUser())
+    getPermissionsProfile(await currentUser()),
+    event.id
   );
   const shiftsByVolunteerId = Object.entries(shiftVolunteers).reduce<Record<UserId, ShiftInfo[]>>(
     (acc, [shiftId, volunteers]) => {

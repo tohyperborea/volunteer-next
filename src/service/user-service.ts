@@ -30,20 +30,6 @@ const roleFromRow = (row: any): UserRole => {
   }
 };
 
-const USER_QUERY = `
-    SELECT
-      u.id,
-      u.name,
-      u."chosenName",
-      u.email,
-      u."deletedAt",
-      r.type,
-      r."eventId",
-      r."teamId"
-    FROM "user" u
-    LEFT JOIN role r ON u.id = r."userId"
-  `;
-
 const usersFromRows = (rows: any[]): User[] => {
   const usersMap = new Map<UserId, User>();
 
@@ -76,15 +62,27 @@ const usersFromRows = (rows: any[]): User[] => {
 /**
  * Fetches a user by their ID.
  * @param userId - The unique identifier of the user.
+ * @param eventId - Optional event ID to filter roles by (only include roles for the specified event or global roles).
  * @returns The User object if found, or null if not found.
  */
-export const getUser = cache(async (userId: UserId): Promise<User | null> => {
+export const getUser = cache(async (userId: UserId, eventId?: EventId): Promise<User | null> => {
   const result = await pool.query(
     `
-    ${USER_QUERY}
+    SELECT
+      u.id,
+      u.name,
+      u."chosenName",
+      u.email,
+      u."deletedAt",
+      r.type,
+      r."eventId",
+      r."teamId"
+    FROM "user" u
+    LEFT JOIN role r ON u.id = r."userId"
+      AND (r."eventId" IS NULL OR r."eventId" = $2)
     WHERE u.id = $1
   `,
-    [userId]
+    [userId, eventId ?? null]
   );
 
   if (result.rows.length === 0) {
@@ -96,24 +94,48 @@ export const getUser = cache(async (userId: UserId): Promise<User | null> => {
 
 /**
  * Retrieves all the users in the system.
+ * @param eventId - Optional event ID to filter roles by (only include roles for the specified event or global roles).
  * @returns A promise that resolves to an array of users.
  * @throws {Error} If the database query fails.
  */
-export const getUsers = cache(async (): Promise<User[]> => {
-  const result = await pool.query(USER_QUERY);
+export const getUsers = cache(async (eventId?: EventId): Promise<User[]> => {
+  const result = await pool.query(
+    `
+    SELECT
+      u.id,
+      u.name,
+      u."chosenName",
+      u.email,
+      u."deletedAt",
+      r.type,
+      r."eventId",
+      r."teamId"
+    FROM "user" u
+    LEFT JOIN role r ON u.id = r."userId"
+      AND (r."eventId" IS NULL OR r."eventId" = $2)
+    `,
+    [eventId ?? null]
+  );
 
   return usersFromRows(result.rows);
 });
 
 /**
  * Versatile fetch based on a UserFilters object
+ * @param filters - The filters to apply when fetching users.
+ * @param permissionsProfile - The permissions profile of the requesting user, used to determine which fields can be searched.
+ * @param eventId - Optional event ID to filter roles by (only include roles for the specified event or global roles).
  * @returns A promise that resolves to an array of users matching the filters.
  * @throws {Error} If the database query fails.
  */
 export const getFilteredUsers = cache(
-  async (filters: UserFilters, permissionsProfile: PermissionsProfile): Promise<User[]> => {
+  async (
+    filters: UserFilters,
+    permissionsProfile: PermissionsProfile,
+    eventId?: EventId
+  ): Promise<User[]> => {
     const queryParts: string[] = [];
-    const queryParams: any[] = [];
+    const queryParams: any[] = [eventId ?? null];
 
     if (filters.searchQuery) {
       // This method of searching is slow, but will be fine for < 400k users
@@ -177,7 +199,18 @@ export const getFilteredUsers = cache(
 
     const result = await pool.query(
       `
-      ${USER_QUERY}
+      SELECT
+        u.id,
+        u.name,
+        u."chosenName",
+        u.email,
+        u."deletedAt",
+        r.type,
+        r."eventId",
+        r."teamId"
+      FROM "user" u
+      LEFT JOIN role r ON u.id = r."userId"
+        AND (r."eventId" IS NULL OR r."eventId" = $1)
       ${whereClause}
       ORDER BY u."chosenName" ASC
     `,
@@ -192,14 +225,16 @@ export const getFilteredUsers = cache(
  * Fetches volunteers based on filters and permissions profile.
  * @param filters - The filters to apply when fetching volunteers.
  * @param permissionsProfile - The permissions profile of the requesting user
+ * @param eventId - Optional event ID to filter roles by (only include roles for the specified event or global roles).
  * @returns A promise that resolves to an array of VolunteerInfo objects
  */
 export const getFilteredVolunteers = cache(
   async (
     filters: UserFilters,
-    permissionsProfile: PermissionsProfile
+    permissionsProfile: PermissionsProfile,
+    eventId?: EventId
   ): Promise<VolunteerInfo[]> => {
-    const users = await getFilteredUsers(filters, permissionsProfile);
+    const users = await getFilteredUsers(filters, permissionsProfile, eventId);
     return usersToVolunteers(users, permissionsProfile);
   }
 );
@@ -207,39 +242,61 @@ export const getFilteredVolunteers = cache(
 /**
  * Fetches all users with a specific role.
  * @param role - The role to filter users by.
+ * @param eventId - Optional event ID to filter roles by (only include roles for the specified event or global roles).
  * @returns An array of User objects that have the specified role.
  */
-export const getUsersWithRole = cache(async (role: UserRole): Promise<User[]> => {
-  const roleQuery = [`select 1 from role where "userId" = u.id and type=$1`];
-  const queryParams: string[] = [role.type];
-  if (role.type === 'organiser' || role.type === 'team-lead') {
-    roleQuery.push(`"eventId" = $2`);
-    queryParams.push(role.eventId);
-  }
-  if (role.type === 'team-lead') {
-    roleQuery.push(`"teamId" = $3`);
-    queryParams.push(role.teamId);
-  }
-  const result = await pool.query(
-    `
-    ${USER_QUERY}
+export const getUsersWithRole = cache(
+  async (role: UserRole, eventId?: EventId): Promise<User[]> => {
+    const roleQuery = [`select 1 from role where "userId" = u.id and type=$2`];
+    const queryParams = [eventId ?? null, role.type];
+    if (role.type === 'organiser' || role.type === 'team-lead') {
+      roleQuery.push(`"eventId" = $3`);
+      queryParams.push(role.eventId);
+    }
+    if (role.type === 'team-lead') {
+      roleQuery.push(`"teamId" = $4`);
+      queryParams.push(role.teamId);
+    }
+    const result = await pool.query(
+      `
+    SELECT
+      u.id,
+      u.name,
+      u."chosenName",
+      u.email,
+      u."deletedAt",
+      r.type,
+      r."eventId",
+      r."teamId"
+    FROM "user" u
+    LEFT JOIN role r ON u.id = r."userId"
+      AND (r."eventId" IS NULL OR r."eventId" = $1)
     WHERE EXISTS (${roleQuery.join(' AND ')})
   `,
-    queryParams
-  );
+      queryParams
+    );
 
-  return usersFromRows(result.rows);
-});
+    return usersFromRows(result.rows);
+  }
+);
 
 /**
  * Fetches all roles associated with a given user.
  * @param userId - The ID of the user to fetch roles for.
  * @returns An array of UserRole objects associated with the user.
  */
-export const getUserRoles = cache(async (userId: UserId): Promise<UserRole[]> => {
+export const getUserRoles = cache(async (userId: UserId, eventId: EventId): Promise<UserRole[]> => {
   const result = await pool.query(
-    'SELECT "type", "eventId", "teamId" FROM role WHERE "userId" = $1',
-    [userId]
+    `
+    SELECT 
+      "type", 
+      "eventId", 
+      "teamId" 
+    FROM role 
+    WHERE "userId" = $1
+    AND ("eventId" IS NULL OR "eventId" = $2)
+    `,
+    [userId, eventId]
   );
   return result.rows.map(roleFromRow);
 });
@@ -416,23 +473,37 @@ export const undeleteUser = async (userId: UserId, client?: PoolClient): Promise
 /**
  * Fetches all team leads for a given team.
  * @param teamId - The ID of the team to fetch leads for.
+ * @param eventId - Optional event ID to filter roles by (only include roles for the specified event or global roles).
  * @returns An array of User objects that are team leads for the specified team.
  */
-export const getTeamLeadsForTeam = cache(async (teamId: TeamId): Promise<User[]> => {
-  const result = await pool.query(
-    `
-    ${USER_QUERY}
-    WHERE r.type = 'team-lead' AND r."teamId" = $1
+export const getTeamLeadsForTeam = cache(
+  async (teamId: TeamId, eventId: EventId): Promise<User[]> => {
+    const result = await pool.query(
+      `
+    SELECT
+      u.id,
+      u.name,
+      u."chosenName",
+      u.email,
+      u."deletedAt",
+      r.type,
+      r."eventId",
+      r."teamId"
+    FROM "user" u
+    LEFT JOIN role r ON u.id = r."userId"
+      AND (r."eventId" IS NULL OR r."eventId" = $1)
+    WHERE r.type = 'team-lead' AND r."teamId" = $2
   `,
-    [teamId]
-  );
+      [eventId ?? null, teamId]
+    );
 
-  if (result.rows.length === 0) {
-    return [];
+    if (result.rows.length === 0) {
+      return [];
+    }
+
+    return usersFromRows(result.rows);
   }
-
-  return usersFromRows(result.rows);
-});
+);
 
 /**
  * Fetches all volunteers for a given list of shifts
@@ -443,7 +514,8 @@ export const getTeamLeadsForTeam = cache(async (teamId: TeamId): Promise<User[]>
 export const getVolunteersForShifts = cache(
   async (
     shiftIds: ShiftId[],
-    permissionsProfile: PermissionsProfile
+    permissionsProfile: PermissionsProfile,
+    eventId: EventId
   ): Promise<Record<ShiftId, VolunteerInfo[]>> => {
     const result = await pool.query(
       `
@@ -459,10 +531,11 @@ export const getVolunteersForShifts = cache(
       sv.shift_id
     FROM "user" u
     LEFT JOIN role r ON u.id = r."userId"
+      AND (r."eventId" IS NULL OR r."eventId" = $2)
     JOIN shift_volunteer sv ON sv.user_id = u.id
     WHERE sv.shift_id = ANY($1::uuid[])
   `,
-      [shiftIds]
+      [shiftIds, eventId]
     );
 
     const volunteersByShift: Record<ShiftId, VolunteerInfo[]> = {};

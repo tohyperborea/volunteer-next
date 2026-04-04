@@ -30,7 +30,7 @@ export default async function UsersDashboardPage({ searchParams }: PageProps<'/u
   const t = await getTranslations(PAGE_KEY);
   const filters = recordToUserFilters(await searchParams);
   const event = await getCurrentEvent();
-  const users = await getFilteredUsers(filters, permissionsProfile);
+  const users = await getFilteredUsers(filters, permissionsProfile, event?.id);
   const volunteers = usersToVolunteers(users, permissionsProfile);
   const withFilters: (keyof UserFilters)[] = ['searchQuery', 'roleType', 'eventHours'];
   if (canEdit) {
