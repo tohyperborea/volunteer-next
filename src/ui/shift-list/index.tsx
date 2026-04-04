@@ -15,6 +15,7 @@ import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { eventDayToDate } from '@/utils/datetime';
 import ShiftFilters from '../shift-filters';
+import { canCancelShiftSignup, canSignupForShift } from '@/utils/permissions';
 
 interface Props {
   event: EventInfo;
@@ -50,8 +51,10 @@ export default function ShiftList({
   const [creatingShift, setCreatingShift] = useState(false);
   const [editingShift, setEditingShift] = useState<ShiftInfo | undefined>(undefined);
   const qualificationMap = new Map(qualifications.map((q) => [q.id, q]));
-  const showSignup = (shiftId: ShiftId) => onSignup && userShifts && !userShifts.has(shiftId);
-  const showCancel = (shiftId: ShiftId) => onCancel && userShifts && userShifts.has(shiftId);
+  const showSignup = (shift: ShiftInfo) =>
+    onSignup && userShifts && !userShifts.has(shift.id) && canSignupForShift(event, shift);
+  const showCancel = (shift: ShiftInfo) =>
+    onCancel && userShifts && userShifts.has(shift.id) && canCancelShiftSignup(event, shift);
 
   return (
     <Flex direction="column" gap="6">
@@ -95,8 +98,8 @@ export default function ShiftList({
               volunteers={shiftVolunteers[shift.id] || []}
               key={shift.id}
               onEdit={canEdit ? () => setEditingShift(shift) : undefined}
-              onSignup={showSignup(shift.id) ? () => onSignup!(shift.id) : undefined}
-              onCancel={showCancel(shift.id) ? () => onCancel!(shift.id) : undefined}
+              onSignup={showSignup(shift) ? () => onSignup!(shift.id) : undefined}
+              onCancel={showCancel(shift) ? () => onCancel!(shift.id) : undefined}
               isQualified={
                 shift.requirement
                   ? userQualifications

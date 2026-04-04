@@ -4,6 +4,8 @@
  * @author Michael Townsend <@continuities>
  */
 
+import { hasShiftEnded, hasShiftStarted } from './date';
+
 interface SecuredTypes {
   VolunteerInfo: VolunteerInfo;
 }
@@ -87,4 +89,24 @@ export const canAccess = <T extends keyof SecuredTypes, P extends OptionalKeys<S
     }
   }
   return false;
+};
+
+/**
+ * Check whether a user can sign up for a shift
+ * @param event - The event the shift belongs to
+ * @param shift - The shift to check
+ * @returns Whether the user can sign up for the shift
+ */
+export const canSignupForShift = (event: EventInfo, shift: ShiftInfo): boolean => {
+  return !hasShiftEnded(event, shift);
+};
+
+/**
+ * Check whether a user can cancel a sign up for a shift
+ * @param event - The event the shift belongs to
+ * @param shift - The shift to check
+ * @returns Whether the user can cancel a sign up for the shift
+ */
+export const canCancelShiftSignup = (event: EventInfo, shift: ShiftInfo): boolean => {
+  return !hasShiftStarted(event, shift);
 };

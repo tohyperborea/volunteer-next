@@ -26,8 +26,13 @@ import {
   getCurrentEventOrRedirect
 } from '@/session';
 import ShiftList from '@/ui/shift-list';
+import { hasEventStarted, hasShiftEnded, hasShiftStarted } from '@/utils/date';
 import { getTeamShiftsApiPath, getTeamShiftsPath } from '@/utils/path';
-import { getPermissionsProfile } from '@/utils/permissions';
+import {
+  canCancelShiftSignup,
+  canSignupForShift,
+  getPermissionsProfile
+} from '@/utils/permissions';
 import { recordToShiftFilters } from '@/utils/shift-filters';
 import { validateNewShift } from '@/validator/shift-validator';
 import { Flex, Heading } from '@radix-ui/themes';
@@ -75,7 +80,7 @@ export default async function TeamPage({ params, searchParams }: PageProps<`/tea
     { type: 'team-lead', eventId: team.eventId, teamId: team.id }
   ];
 
-  const isEditable = await checkAuthorisation(editorRoles, true);
+  const isEditable = !hasEventStarted(event) && (await checkAuthorisation(editorRoles, true));
   const t = await getTranslations(PAGE_KEY);
   const user = (await currentUser())!; // checkAuthorisation guarantees this is not null
   const permissions = getPermissionsProfile(user);
@@ -92,6 +97,9 @@ export default async function TeamPage({ params, searchParams }: PageProps<`/tea
 
   const onSaveShift = async (data: FormData) => {
     'use server';
+    if (!isEditable) {
+      throw new Error('Cannot edit shifts for this event');
+    }
     console.info('Saving shift with data:', Object.fromEntries(data.entries()));
     await checkAuthorisation(editorRoles);
     const shift = validateNewShift(data);
@@ -108,6 +116,9 @@ export default async function TeamPage({ params, searchParams }: PageProps<`/tea
 
   const onDeleteShift = async (shiftId: ShiftId) => {
     'use server';
+    if (!isEditable) {
+      throw new Error('Cannot edit shifts for this event');
+    }
     console.info('Deleting shiftId: ', shiftId);
     await checkAuthorisation(editorRoles);
     if (!shiftId) {
@@ -140,6 +151,10 @@ export default async function TeamPage({ params, searchParams }: PageProps<`/tea
       }
     }
 
+    if (!canSignupForShift(event, shift)) {
+      throw new Error('Cannot sign up for this shift');
+    }
+
     await inTransaction(async (client) => {
       await getShiftLock(shiftId, client);
       const numVolunteers = await getShiftSignupCount(shiftId, client);
@@ -166,6 +181,19 @@ export default async function TeamPage({ params, searchParams }: PageProps<`/tea
     if (!permissions.userId) {
       unauthorized();
     }
+
+    const shift = await getShiftById(shiftId);
+    if (!shift) {
+      notFound();
+    }
+    if (shift.teamId !== team.id) {
+      throw new Error('Shift does not belong to this team');
+    }
+
+    if (!canCancelShiftSignup(event, shift)) {
+      throw new Error('Cannot cancel this shift');
+    }
+
     await removeVolunteerFromShift(shiftId, permissions.userId);
     const path = getTeamShiftsPath(teamSlug);
     revalidatePath(path);
