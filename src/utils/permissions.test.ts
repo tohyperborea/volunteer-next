@@ -46,6 +46,7 @@ describe('getPermissionsProfile', () => {
 describe('canAccess', () => {
   it('should deny access if no permissions are defined for the property', () => {
     const profile = { admin: false, organiser: false, 'team-lead': false, userId: '1' };
+    jest.spyOn(console, 'warn').mockImplementation(() => {}); // Suppress console warnings in test output
     const result = canAccess('VolunteerInfo', 'nonExistentProperty' as any, profile);
     expect(result).toBe(false);
   });
