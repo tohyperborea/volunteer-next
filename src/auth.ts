@@ -50,7 +50,7 @@ const plugins = [
 
 const afterHook = createAuthMiddleware(async (ctx) => {
   if (ctx.path.startsWith('/sign-up')) {
-    inTransaction(async (client) => {
+    await inTransaction(async (client) => {
       if ((await getRoleCount('admin', client)) === 0) {
         // Make the first registered user an admin
         console.info('[auth] System has no admins, granting admin role to new user');
