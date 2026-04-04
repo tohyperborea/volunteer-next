@@ -13,7 +13,8 @@ const rowToEvent = (row: any): EventInfo => ({
   slug: row.slug,
   name: row.name,
   startDate: row.startDate,
-  endDate: row.endDate
+  endDate: row.endDate,
+  archived: row.archivedAt !== null
 });
 
 /**
@@ -22,6 +23,36 @@ const rowToEvent = (row: any): EventInfo => ({
  */
 export const getEvents = cache(async (): Promise<EventInfo[]> => {
   const result = await pool.query('SELECT id, name, "slug", "startDate", "endDate" FROM event');
+  return result.rows.map(rowToEvent);
+});
+
+export const getFilteredEvents = cache(async (filter: EventFilters): Promise<EventInfo[]> => {
+  const filterConditions: string[] = [];
+  const filterValues: any[] = [];
+
+  if (filter.searchQuery) {
+    filterValues.push(`%${filter.searchQuery}%`);
+    filterConditions.push(`name ILIKE $${filterValues.length}`);
+  }
+
+  if (!filter.showArchived) {
+    filterConditions.push(`"archivedAt" IS NULL`);
+  }
+
+  const result = await pool.query(
+    `
+    SELECT 
+      id, 
+      name,
+      "slug", 
+      "startDate",
+      "endDate",
+      "archivedAt"
+    FROM event 
+    ${filterConditions.length > 0 ? `WHERE ${filterConditions.join(' AND ')}` : ''}
+    `,
+    filterValues
+  );
   return result.rows.map(rowToEvent);
 });
 
@@ -37,7 +68,8 @@ export const getActiveEvents = cache(async (): Promise<EventInfo[]> => {
         name,
         "slug",
         "startDate",
-        "endDate"
+        "endDate",
+        "archivedAt"
       FROM event
       WHERE "endDate" >= CURRENT_DATE
       ORDER BY "startDate" ASC
@@ -56,7 +88,7 @@ export const getEventsById = cache(async (eventIds: EventId[]): Promise<EventInf
     return [];
   }
   const result = await pool.query(
-    `SELECT id, name, "slug", "startDate", "endDate" FROM event WHERE id = ANY($1)`,
+    `SELECT id, name, "slug", "startDate", "endDate", "archivedAt" FROM event WHERE id = ANY($1)`,
     [eventIds]
   );
   return result.rows.map(rowToEvent);
@@ -69,7 +101,7 @@ export const getEventsById = cache(async (eventIds: EventId[]): Promise<EventInf
  */
 export const getEventBySlug = cache(async (slug: string): Promise<EventInfo | null> => {
   const result = await pool.query(
-    'SELECT id, name, "slug", "startDate", "endDate" FROM event WHERE "slug" = $1',
+    'SELECT id, name, "slug", "startDate", "endDate", "archivedAt" FROM event WHERE "slug" = $1',
     [slug]
   );
   if (result.rows.length === 0) {

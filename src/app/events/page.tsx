@@ -1,5 +1,5 @@
 import metadata from '@/i18n/metadata';
-import { deleteEvent, getEvents } from '@/service/event-service';
+import { deleteEvent, getFilteredEvents } from '@/service/event-service';
 import { Heading, Flex, Card, Text, Button, Box } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
 import { PlusIcon } from '@radix-ui/react-icons';
@@ -10,16 +10,19 @@ import { revalidatePath } from 'next/cache';
 import { getCreateEventPath, getEventsPath } from '@/utils/path';
 import { hasEventStarted } from '@/utils/date';
 import { unauthorized } from 'next/navigation';
+import { recordToEventFilters } from '@/utils/event-filters';
+import EventFilters from '@/ui/event-filters';
 
 const PAGE_KEY = 'EventsManagementPage';
 
 export const generateMetadata = metadata(PAGE_KEY);
 
-export default async function EventsDashboard() {
+export default async function EventsDashboard({ searchParams }: PageProps<`/events`>) {
   await checkAuthorisation([{ type: 'admin' }, { type: 'organiser' }]);
 
+  const filters = recordToEventFilters(await searchParams);
   const t = await getTranslations(PAGE_KEY);
-  const events = await getEvents();
+  const events = await getFilteredEvents(filters);
 
   const deleteAction = async (id: EventId) => {
     'use server';
@@ -45,6 +48,7 @@ export default async function EventsDashboard() {
           </NextLink>
         </Button>
       </Box>
+      <EventFilters withFilters={['searchQuery', 'showArchived']} />
       {events.length === 0 && (
         <Card>
           <Text>{t('noEvents')}</Text>

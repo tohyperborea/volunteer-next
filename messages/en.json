@@ -253,6 +253,12 @@
     "filters": "Filters",
     "clear": "Clear"
   },
+  "EventFilters": {
+    "filters": "Filters",
+    "searchPlaceholder": "Search events...",
+    "showArchived": "Show archived events",
+    "clear": "Clear"
+  },
   "UserForm": {
     "userName": "Real Name",
     "displayName": "Chosen Name",
