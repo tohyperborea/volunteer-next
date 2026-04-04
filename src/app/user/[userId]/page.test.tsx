@@ -13,6 +13,7 @@ import { notFound } from 'next/navigation';
 import { getCurrentEvent, checkAuthorisation, getMatchingRoles } from '@/session';
 import { Theme } from '@radix-ui/themes';
 import { getPermissionsProfile } from '@/utils/permissions';
+import { hasEventEnded } from '@/utils/date';
 
 jest.mock('next-intl', () => ({
   useTranslations: () => (key: string) => key,
@@ -65,6 +66,10 @@ jest.mock('@/auth', () => ({
     }
   }
 }));
+jest.mock('@/utils/date', () => ({
+  ...jest.requireActual('@/utils/date'),
+  hasEventEnded: jest.fn()
+}));
 
 const mockGetCurrentEvent = getCurrentEvent as jest.MockedFunction<typeof getCurrentEvent>;
 const mockCheckAuthorisation = checkAuthorisation as jest.MockedFunction<typeof checkAuthorisation>;
@@ -91,6 +96,7 @@ const mockGetTeamsById = getTeamsById as jest.MockedFunction<typeof getTeamsById
 const mockGetPermissionsProfile = getPermissionsProfile as jest.MockedFunction<
   typeof getPermissionsProfile
 >;
+const mockHasEventEnded = hasEventEnded as jest.MockedFunction<typeof hasEventEnded>;
 
 describe('UserProfilePage', () => {
   const mockVolunteer: VolunteerInfo = {
@@ -310,13 +316,14 @@ describe('UserProfilePage', () => {
     const mockParams = Promise.resolve({ userId: '1' });
     const mockSearch = Promise.resolve({});
 
+    mockHasEventEnded.mockReturnValue(false);
     mockGetVolunteer.mockResolvedValue(mockVolunteer);
     mockGetQualificationsForUser.mockResolvedValue(mockQualifications);
     mockGetQualificationsForEvent.mockResolvedValue(mockQualifications);
     mockGetQualificationsForTeams.mockResolvedValue([mockQualifications[1]]);
     mockGetCurrentEvent.mockResolvedValue(mockEvent);
     mockGetTeamsForEvent.mockResolvedValue(mockTeams);
-    mockGetTeamsById.mockResolvedValue([]);
+    mockGetTeamsById.mockResolvedValue(mockTeams);
     mockCheckAuthorisation.mockResolvedValue(false);
     mockGetQualificationById.mockResolvedValue(mockQualifications[0]);
     mockGetMatchingRoles.mockImplementation(async ({ type }) => {

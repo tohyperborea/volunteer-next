@@ -12,6 +12,7 @@ import {
   getMatchingRoles
 } from '@/session';
 import ManageQualifications from '@/ui/manage-qualifications';
+import { hasEventEnded } from '@/utils/date';
 import { getQualificationsPath } from '@/utils/path';
 import {
   parseTeamId,
@@ -21,7 +22,7 @@ import {
 import { Flex, Heading } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
 import { revalidatePath } from 'next/cache';
-import { notFound, redirect } from 'next/navigation';
+import { redirect, unauthorized } from 'next/navigation';
 
 const PAGE_KEY = 'QualificationsPage';
 
@@ -47,7 +48,8 @@ export default async function QualificationsPage() {
     : await getMatchingRoles({ type: 'team-lead', eventId: event.id }).then((roles) =>
         roles.filter((role) => role.type === 'team-lead').map((role) => role.teamId)
       );
-  const editable = Boolean(editableTeams?.length) || canEditAll;
+
+  const editable = !hasEventEnded(event) && (Boolean(editableTeams?.length) || canEditAll);
 
   const teams = await getTeamsForEvent(event.id);
   const qualifications = await getQualificationsForEvent(event.id);
@@ -67,6 +69,9 @@ export default async function QualificationsPage() {
 
   const onCreate = async (data: FormData) => {
     'use server';
+    if (!editable || hasEventEnded(event)) {
+      unauthorized();
+    }
     await checkQualificationAuthorisation(data);
     const qualification = validateNewQualification(data);
     await createQualification(qualification);
@@ -77,6 +82,9 @@ export default async function QualificationsPage() {
 
   const onUpdate = async (data: FormData) => {
     'use server';
+    if (!editable || hasEventEnded(event)) {
+      unauthorized();
+    }
     await checkQualificationAuthorisation(data);
     const qualification = validateExistingQualification(data);
     await updateQualification(qualification);

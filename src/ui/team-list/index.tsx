@@ -16,9 +16,16 @@ interface Props {
   shifts: ShiftInfo[];
   shiftVolunteers: Record<ShiftId, VolunteerInfo[]>;
   itemActions?: Record<TeamId, React.ReactNode>;
+  showSignup?: boolean;
 }
 
-export default function TeamList({ teams, shifts, shiftVolunteers, itemActions = {} }: Props) {
+export default function TeamList({
+  teams,
+  shifts,
+  shiftVolunteers,
+  itemActions = {},
+  showSignup
+}: Props) {
   const t = useTranslations('TeamList');
   if (teams.length === 0) {
     return (
@@ -47,7 +54,7 @@ export default function TeamList({ teams, shifts, shiftVolunteers, itemActions =
                   shifts={shiftsByTeamId[team.id] ?? []}
                   shiftVolunteers={shiftVolunteers}
                   actions={itemActions[team.id]}
-                  showSignup
+                  showSignup={showSignup}
                 />
               </li>
             </Box>

@@ -18,11 +18,21 @@ interface Props {
   children?: React.ReactNode;
   updateUri?: string;
   onDelete?: () => Promise<void>;
+  onArchive?: () => Promise<void>;
+  onUnarchive?: () => Promise<void>;
 }
-export default function MenuCard({ title = '', titleNode, children, updateUri, onDelete }: Props) {
+export default function MenuCard({
+  title = '',
+  titleNode,
+  children,
+  updateUri,
+  onDelete,
+  onArchive,
+  onUnarchive
+}: Props) {
   const deleteRef = useRef<HTMLButtonElement>(null);
   const t = useTranslations('MenuCard');
-  const showMenu = updateUri || onDelete;
+  const showMenu = updateUri || onDelete || onArchive || onUnarchive;
   return (
     <Card>
       <Flex justify="between" align="center">
@@ -37,6 +47,12 @@ export default function MenuCard({ title = '', titleNode, children, updateUri, o
               </IconButton>
             </DropdownMenu.Trigger>
             <DropdownMenu.Content>
+              {onArchive && (
+                <DropdownMenu.Item onSelect={onArchive}>{t('archive')}</DropdownMenu.Item>
+              )}
+              {onUnarchive && (
+                <DropdownMenu.Item onSelect={onUnarchive}>{t('unarchive')}</DropdownMenu.Item>
+              )}
               {updateUri && (
                 <DropdownMenu.Item asChild>
                   <NextLink href={updateUri}>{t('update')}</NextLink>

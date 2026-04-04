@@ -3,6 +3,7 @@ import {
   getQualificationsForEvent,
   getQualificationsForTeams
 } from '@/service/qualification-service';
+import { hasEventEnded } from '@/utils/date';
 
 const mockGetQualificationsForEvent = getQualificationsForEvent as jest.MockedFunction<
   typeof getQualificationsForEvent
@@ -20,23 +21,20 @@ jest.mock('@/service/qualification-service', () => ({
   getQualificationsForTeams: jest.fn()
 }));
 
+jest.mock('@/utils/date', () => ({
+  hasEventEnded: jest.fn()
+}));
+
+const mockHasEventEnded = hasEventEnded as jest.MockedFunction<typeof hasEventEnded>;
+
 describe('getManagedQualifications', () => {
-  const mockEvents = [
-    {
-      id: 'event1',
-      name: 'Event 1',
-      slug: 'event1',
-      startDate: new Date(),
-      endDate: new Date()
-    },
-    {
-      id: 'event2',
-      name: 'Event 2',
-      slug: 'event2',
-      startDate: new Date(),
-      endDate: new Date()
-    }
-  ];
+  const mockEvent = {
+    id: 'event1',
+    name: 'Event 1',
+    slug: 'event1',
+    startDate: new Date(),
+    endDate: new Date()
+  };
   const mockQualifications: QualificationInfo[] = [
     {
       id: 'qual1',
@@ -60,7 +58,7 @@ describe('getManagedQualifications', () => {
     mockGetQualificationsForEvent.mockResolvedValue([mockQualifications[0]]);
 
     const result = await getManagedQualifications({
-      eventId: 'event1',
+      event: mockEvent,
       isAdmin: true,
       organisesEvent: false,
       leadsTeams: []
@@ -74,7 +72,7 @@ describe('getManagedQualifications', () => {
     mockGetQualificationsForEvent.mockResolvedValue([mockQualifications[0]]);
 
     const result = await getManagedQualifications({
-      eventId: 'event1',
+      event: mockEvent,
       isAdmin: false,
       organisesEvent: true,
       leadsTeams: []
@@ -88,7 +86,7 @@ describe('getManagedQualifications', () => {
     mockGetQualificationsForTeams.mockResolvedValue([mockQualifications[0]]);
 
     const result = await getManagedQualifications({
-      eventId: 'event1',
+      event: mockEvent,
       isAdmin: false,
       organisesEvent: false,
       leadsTeams: ['team1']
@@ -107,7 +105,7 @@ describe('getManagedQualifications', () => {
     mockGetQualificationsForTeams.mockResolvedValue(overlappingQualifications);
 
     const result = await getManagedQualifications({
-      eventId: 'event1',
+      event: mockEvent,
       isAdmin: false,
       organisesEvent: true,
       leadsTeams: ['team1']
@@ -120,8 +118,22 @@ describe('getManagedQualifications', () => {
 
   it('should return an empty array if the user has no roles', async () => {
     const result = await getManagedQualifications({
-      eventId: 'event1',
+      event: mockEvent,
       isAdmin: false,
+      organisesEvent: false,
+      leadsTeams: []
+    });
+
+    expect(mockGetQualificationsForEvent).not.toHaveBeenCalled();
+    expect(mockGetQualificationsForTeams).not.toHaveBeenCalled();
+    expect(result).toEqual([]);
+  });
+
+  it('should return an empty array if the event has ended', async () => {
+    mockHasEventEnded.mockReturnValue(true);
+    const result = await getManagedQualifications({
+      event: mockEvent,
+      isAdmin: true,
       organisesEvent: false,
       leadsTeams: []
     });

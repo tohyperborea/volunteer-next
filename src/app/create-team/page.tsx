@@ -1,5 +1,5 @@
 import metadata from '@/i18n/metadata';
-import { redirect } from 'next/navigation';
+import { redirect, unauthorized } from 'next/navigation';
 import { Flex, Heading } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
 import { addRoleToUser, getUsers } from '@/service/user-service';
@@ -12,6 +12,7 @@ import { createTeam } from '@/service/team-service';
 import { usersToVolunteers } from '@/lib/volunteer';
 import { getPermissionsProfile } from '@/utils/permissions';
 import { getTeamsPath } from '@/utils/path';
+import { hasEventStarted } from '@/utils/date';
 
 const PAGE_KEY = 'CreateTeamPage';
 
@@ -27,6 +28,10 @@ export default async function CreateTeam() {
 
   const onSubmit = async (data: FormData) => {
     'use server';
+
+    if (hasEventStarted(event)) {
+      unauthorized();
+    }
 
     await checkAuthorisation([{ type: 'admin' }, { type: 'organiser', eventId: event.id }]);
 

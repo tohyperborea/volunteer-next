@@ -1,34 +1,35 @@
 /**
- * Component for filtering volunteers based on various criteria.
- * @since 2026-03-16
+ * Component for filtering events based on various criteria.
+ * @since 2026-04-03
  * @author Michael Townsend <@continuities>
  */
 
+'use client';
+
 import { MixerVerticalIcon } from '@radix-ui/react-icons';
-import { Flex, Button, Card, Select, Checkbox, Text, Box } from '@radix-ui/themes';
+import { Flex, Button, Card, Box, Text, Checkbox } from '@radix-ui/themes';
 import { useSearchParams, usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import SearchBar from '../search-bar';
-import { paramsToUserFilters } from '@/utils/user-filters';
+import { paramsToEventFilters } from '@/utils/event-filters';
 import { useTranslations } from 'next-intl';
-import { FormField } from '../form-dialog';
 import SlideIn from '../slide-in';
 
 interface Props {
-  withFilters?: (keyof UserFilters)[];
+  withFilters?: (keyof EventFilters)[];
 }
 
-export default function VolunteerFilters({ withFilters = [] }: Props) {
-  const t = useTranslations('VolunteerFilters');
+export default function EventFilters({ withFilters = [] }: Props) {
+  const t = useTranslations('EventFilters');
   const hasFilter = new Set(withFilters);
   const showFilterPanel = hasFilter.difference(new Set(['searchQuery'])).size > 0;
   const [filtersOpen, setFiltersOpen] = useState(false);
   const searchParams = useSearchParams();
-  const currentFilters = paramsToUserFilters(searchParams);
+  const currentFilters = paramsToEventFilters(searchParams);
   const pathname = usePathname();
   const { replace } = useRouter();
 
-  const onFilterChange = (filter: keyof UserFilters, value: string | undefined) => {
+  const onFilterChange = (filter: keyof EventFilters, value: string | undefined) => {
     const params = new URLSearchParams(searchParams);
     if (value) {
       params.set(filter, value);
@@ -71,34 +72,16 @@ export default function VolunteerFilters({ withFilters = [] }: Props) {
             <SlideIn>
               <Card variant="classic">
                 <Flex direction="column" gap="4">
-                  {hasFilter.has('roleType') && (
-                    <FormField name={t('roleFilterLabel')} ariaId="roleFilter">
-                      <Select.Root
-                        value={currentFilters.roleType ?? 'all'}
-                        onValueChange={(value) =>
-                          onFilterChange('roleType', value === 'all' ? undefined : value)
-                        }
-                      >
-                        <Select.Trigger />
-                        <Select.Content>
-                          <Select.Item value="all">{t('allRoles')}</Select.Item>
-                          <Select.Item value="admin">{t('admin')}</Select.Item>
-                          <Select.Item value="organiser">{t('organiser')}</Select.Item>
-                          <Select.Item value="team-lead">{t('teamLead')}</Select.Item>
-                        </Select.Content>
-                      </Select.Root>
-                    </FormField>
-                  )}
-                  {hasFilter.has('showDeleted') && (
+                  {hasFilter.has('showArchived') && (
                     <Text as="label" size="2">
                       <Flex align="center" gap="2">
                         <Checkbox
-                          checked={currentFilters.showDeleted}
+                          checked={currentFilters.showArchived}
                           onCheckedChange={(checked) =>
-                            onFilterChange('showDeleted', checked ? 'true' : undefined)
+                            onFilterChange('showArchived', checked ? 'true' : undefined)
                           }
                         />
-                        {t('showDeleted')}
+                        {t('showArchived')}
                       </Flex>
                     </Text>
                   )}

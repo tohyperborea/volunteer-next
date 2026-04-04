@@ -91,6 +91,7 @@ declare global {
     slug: UrlSlug;
     startDate: Date;
     endDate: Date;
+    archived?: boolean;
   }
 
   interface TeamInfo {
@@ -130,6 +131,11 @@ declare global {
 
   interface ShiftFilters {
     searchQuery?: string;
+  }
+
+  interface EventFilters {
+    searchQuery?: string;
+    showArchived?: boolean;
   }
 
   type ThemeMode = 'light' | 'dark' | 'system';

@@ -15,6 +15,7 @@ import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { eventDayToDate } from '@/utils/datetime';
 import ShiftFilters from '../shift-filters';
+import { canCancelShiftSignup, canSignupForShift } from '@/utils/permissions';
 
 interface Props {
   event: EventInfo;
@@ -25,6 +26,7 @@ interface Props {
   exportLink: string;
   userShifts?: Set<ShiftId>;
   userQualifications?: Set<QualificationId>;
+  editableShifts?: Set<ShiftId>;
   onSaveShift?: (data: FormData) => Promise<void>;
   onDeleteShift?: (shiftId: ShiftId) => Promise<void>;
   onSignup?: (shiftId: ShiftId) => Promise<void>;
@@ -43,15 +45,21 @@ export default function ShiftList({
   onSignup,
   onCancel,
   userShifts,
-  userQualifications
+  userQualifications,
+  editableShifts
 }: Props) {
   const t = useTranslations('ShiftList');
   const canEdit = Boolean(onSaveShift);
   const [creatingShift, setCreatingShift] = useState(false);
   const [editingShift, setEditingShift] = useState<ShiftInfo | undefined>(undefined);
   const qualificationMap = new Map(qualifications.map((q) => [q.id, q]));
-  const showSignup = (shiftId: ShiftId) => onSignup && userShifts && !userShifts.has(shiftId);
-  const showCancel = (shiftId: ShiftId) => onCancel && userShifts && userShifts.has(shiftId);
+  const showSignup = (shift: ShiftInfo) =>
+    onSignup && userShifts && !userShifts.has(shift.id) && canSignupForShift(event, shift);
+  const showCancel = (shift: ShiftInfo) =>
+    onCancel && userShifts && userShifts.has(shift.id) && canCancelShiftSignup(event, shift);
+
+  const showEdit = (shift: ShiftInfo) =>
+    canEdit && (!editableShifts || editableShifts.has(shift.id));
 
   return (
     <Flex direction="column" gap="6">
@@ -94,9 +102,9 @@ export default function ShiftList({
               }
               volunteers={shiftVolunteers[shift.id] || []}
               key={shift.id}
-              onEdit={canEdit ? () => setEditingShift(shift) : undefined}
-              onSignup={showSignup(shift.id) ? () => onSignup!(shift.id) : undefined}
-              onCancel={showCancel(shift.id) ? () => onCancel!(shift.id) : undefined}
+              onEdit={showEdit(shift) ? () => setEditingShift(shift) : undefined}
+              onSignup={showSignup(shift) ? () => onSignup!(shift.id) : undefined}
+              onCancel={showCancel(shift) ? () => onCancel!(shift.id) : undefined}
               isQualified={
                 shift.requirement
                   ? userQualifications

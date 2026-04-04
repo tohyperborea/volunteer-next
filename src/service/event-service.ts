@@ -13,7 +13,8 @@ const rowToEvent = (row: any): EventInfo => ({
   slug: row.slug,
   name: row.name,
   startDate: row.startDate,
-  endDate: row.endDate
+  endDate: row.endDate,
+  archived: Boolean(row.archivedAt)
 });
 
 /**
@@ -21,7 +22,39 @@ const rowToEvent = (row: any): EventInfo => ({
  * @return An array of EventInfo objects.
  */
 export const getEvents = cache(async (): Promise<EventInfo[]> => {
-  const result = await pool.query('SELECT id, name, "slug", "startDate", "endDate" FROM event');
+  const result = await pool.query(
+    'SELECT id, name, "slug", "startDate", "endDate", "archivedAt" FROM event'
+  );
+  return result.rows.map(rowToEvent);
+});
+
+export const getFilteredEvents = cache(async (filter: EventFilters): Promise<EventInfo[]> => {
+  const filterConditions: string[] = [];
+  const filterValues: any[] = [];
+
+  if (filter.searchQuery) {
+    filterValues.push(`%${filter.searchQuery}%`);
+    filterConditions.push(`name ILIKE $${filterValues.length}`);
+  }
+
+  if (!filter.showArchived) {
+    filterConditions.push(`"archivedAt" IS NULL`);
+  }
+
+  const result = await pool.query(
+    `
+    SELECT 
+      id, 
+      name,
+      "slug", 
+      "startDate",
+      "endDate",
+      "archivedAt"
+    FROM event 
+    ${filterConditions.length > 0 ? `WHERE ${filterConditions.join(' AND ')}` : ''}
+    `,
+    filterValues
+  );
   return result.rows.map(rowToEvent);
 });
 
@@ -37,7 +70,8 @@ export const getActiveEvents = cache(async (): Promise<EventInfo[]> => {
         name,
         "slug",
         "startDate",
-        "endDate"
+        "endDate",
+        "archivedAt"
       FROM event
       WHERE "endDate" >= CURRENT_DATE
       ORDER BY "startDate" ASC
@@ -56,7 +90,7 @@ export const getEventsById = cache(async (eventIds: EventId[]): Promise<EventInf
     return [];
   }
   const result = await pool.query(
-    `SELECT id, name, "slug", "startDate", "endDate" FROM event WHERE id = ANY($1)`,
+    `SELECT id, name, "slug", "startDate", "endDate", "archivedAt" FROM event WHERE id = ANY($1)`,
     [eventIds]
   );
   return result.rows.map(rowToEvent);
@@ -69,7 +103,7 @@ export const getEventsById = cache(async (eventIds: EventId[]): Promise<EventInf
  */
 export const getEventBySlug = cache(async (slug: string): Promise<EventInfo | null> => {
   const result = await pool.query(
-    'SELECT id, name, "slug", "startDate", "endDate" FROM event WHERE "slug" = $1',
+    'SELECT id, name, "slug", "startDate", "endDate", "archivedAt" FROM event WHERE "slug" = $1',
     [slug]
   );
   if (result.rows.length === 0) {
@@ -124,4 +158,25 @@ export const deleteEvent = async (eventId: EventId, client?: PoolClient): Promis
   const db = client || pool;
   await db.query('DELETE FROM event WHERE id = $1', [eventId]);
   console.info('Deleted event with id:', eventId);
+};
+
+/**
+ * Archives or unarchives an event
+ * @param eventId - The ID of the event to archive or unarchive.
+ * @param archived - Whether to archive (true) or unarchive (false) the event.
+ * @param client - Optional database client for transaction support.
+ */
+export const archiveEvent = async (
+  eventId: EventId,
+  archived: boolean,
+  client?: PoolClient
+): Promise<void> => {
+  const db = client || pool;
+  if (archived) {
+    await db.query('UPDATE event SET "archivedAt" = CURRENT_TIMESTAMP WHERE id = $1', [eventId]);
+    console.info('Archived event with id:', eventId);
+  } else {
+    await db.query('UPDATE event SET "archivedAt" = NULL WHERE id = $1', [eventId]);
+    console.info('Unarchived event with id:', eventId);
+  }
 };

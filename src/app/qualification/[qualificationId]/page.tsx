@@ -18,6 +18,7 @@ import {
 import AssignQualification from '@/ui/assign-qualification';
 import QualificationDetails from '@/ui/qualification-details';
 import VolunteerList from '@/ui/volunteer-list';
+import { hasEventEnded } from '@/utils/date';
 import { getQualificationDetailsPath, getQualificationsPath } from '@/utils/path';
 import { getPermissionsProfile } from '@/utils/permissions';
 import { validateExistingQualification } from '@/validator/qualification-validator';
@@ -25,7 +26,7 @@ import { Cross1Icon } from '@radix-ui/react-icons';
 import { Flex, Heading, IconButton } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
 import { revalidatePath } from 'next/cache';
-import { notFound, redirect } from 'next/navigation';
+import { notFound, redirect, unauthorized } from 'next/navigation';
 
 const PAGE_KEY = 'QualificationDetailsPage';
 
@@ -89,10 +90,13 @@ export default async function QualificationsPage(
       teamId: qualification.teamId
     });
   }
-  const editable = await checkAuthorisation(editorRoles, true);
+  const editable = (await checkAuthorisation(editorRoles, true)) && !hasEventEnded(event);
 
   const onSave = async (data: FormData) => {
     'use server';
+    if (!editable || hasEventEnded(event)) {
+      unauthorized();
+    }
     await checkAuthorisation(editorRoles);
     const updatedQualification = validateExistingQualification(data);
     await updateQualification(updatedQualification);
@@ -104,6 +108,9 @@ export default async function QualificationsPage(
 
   const onDelete = async () => {
     'use server';
+    if (!editable || hasEventEnded(event)) {
+      unauthorized();
+    }
     await checkAuthorisation(editorRoles);
     await deleteQualification(qualification.id);
 
@@ -114,6 +121,9 @@ export default async function QualificationsPage(
 
   const onAssignQualification = async (data: FormData) => {
     'use server';
+    if (!editable || hasEventEnded(event)) {
+      unauthorized();
+    }
     const volunteerIds = data.getAll('volunteers') as UserId[];
     await checkAuthorisation(editorRoles);
     await assignQualificationToUsers(qualification.id, volunteerIds);
@@ -124,6 +134,9 @@ export default async function QualificationsPage(
 
   const onRemoveQualification = async (volunteerId: UserId) => {
     'use server';
+    if (!editable || hasEventEnded(event)) {
+      unauthorized();
+    }
     if (!volunteerId) {
       throw new Error('Volunteer ID is required');
     }

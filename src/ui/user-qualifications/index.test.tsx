@@ -72,30 +72,6 @@ describe('UserQualifications', () => {
     }
   });
 
-  it('renders all remove buttons when fully authorised', () => {
-    const mockOnRemove = jest.fn();
-
-    render(
-      <UserQualifications
-        qualifications={mockQualifications}
-        event={mockEvent}
-        teams={mockTeams}
-        onRemove={mockOnRemove}
-        authorised={true}
-      />
-    );
-
-    for (const { id } of mockQualifications) {
-      const removeButton = within(screen.getByTestId(`qualification-card-${id}`)).getByLabelText(
-        'remove'
-      );
-      expect(removeButton).toBeInTheDocument();
-
-      fireEvent.click(removeButton);
-      expect(mockOnRemove).toHaveBeenCalledWith(id);
-    }
-  });
-
   it('does not render remove button when not authorised', () => {
     render(
       <UserQualifications qualifications={mockQualifications} event={mockEvent} teams={mockTeams} />
@@ -104,7 +80,7 @@ describe('UserQualifications', () => {
     expect(screen.queryByLabelText('remove')).not.toBeInTheDocument();
   });
 
-  it('renders remove button for authorised teams', () => {
+  it('renders remove button for managed qualifications', () => {
     const mockOnRemove = jest.fn();
 
     render(
@@ -113,12 +89,12 @@ describe('UserQualifications', () => {
         event={mockEvent}
         teams={mockTeams}
         onRemove={mockOnRemove}
-        authorisedTeams={['team2']}
+        managedQualificationIds={new Set(['2'])}
       />
     );
 
-    for (const { id, teamId } of mockQualifications) {
-      if (teamId === 'team2') {
+    for (const { id } of mockQualifications) {
+      if (id === '2') {
         const removeButton = within(screen.getByTestId(`qualification-card-${id}`)).getByLabelText(
           'remove'
         );
