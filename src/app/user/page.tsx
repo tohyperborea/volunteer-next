@@ -82,7 +82,7 @@ export default async function UsersDashboardPage({ searchParams }: PageProps<'/u
   }
 
   const itemContent: Record<UserId, React.ReactNode> = {};
-  if (filters.eventHours && event) {
+  if (filters.eventHours !== undefined && event) {
     const hours = await getHoursForVolunteers(
       event.id,
       volunteers.map((v) => v.id)
@@ -91,7 +91,7 @@ export default async function UsersDashboardPage({ searchParams }: PageProps<'/u
       itemContent[volunteer.id] = (
         <Badge variant="soft" color="blue">
           <Text>{t('hoursLabel')}:</Text>
-          <Text>{hours[volunteer.id]}</Text>
+          <Text>{hours[volunteer.id] ?? 0}</Text>
         </Badge>
       );
     }

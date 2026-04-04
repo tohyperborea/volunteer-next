@@ -38,7 +38,9 @@ describe('paramsToUserFilters', () => {
       showDeleted: false,
       withQualification: undefined,
       withoutQualification: undefined,
-      onTeam: undefined
+      onTeam: undefined,
+      eventHours: undefined,
+      eventId: undefined
     });
   });
 });
@@ -51,7 +53,9 @@ describe('userFiltersToParams', () => {
       showDeleted: true,
       withQualification: 'certified',
       withoutQualification: 'uncertified',
-      onTeam: 'team123'
+      onTeam: 'team123',
+      eventHours: undefined,
+      eventId: undefined
     };
 
     const result = userFiltersToParams(filters);
@@ -68,7 +72,9 @@ describe('userFiltersToParams', () => {
       showDeleted: false,
       withQualification: undefined,
       withoutQualification: undefined,
-      onTeam: undefined
+      onTeam: undefined,
+      eventHours: undefined,
+      eventId: undefined
     };
 
     const result = userFiltersToParams(filters);
@@ -82,7 +88,9 @@ describe('userFiltersToParams', () => {
       searchQuery: 'test',
       showDeleted: true,
       withQualification: undefined,
-      withoutQualification: undefined
+      withoutQualification: undefined,
+      eventHours: undefined,
+      eventId: undefined
     };
     const existingParams = new URLSearchParams({ page: '1', sort: 'asc' });
 
@@ -102,7 +110,9 @@ describe('recordToUserFilters', () => {
       showDeleted: 'true',
       withQualification: 'certified',
       withoutQualification: 'uncertified',
-      onTeam: 'team123'
+      onTeam: 'team123',
+      eventHours: undefined,
+      eventId: undefined
     };
 
     const result = recordToUserFilters(record);
@@ -113,7 +123,9 @@ describe('recordToUserFilters', () => {
       showDeleted: true,
       withQualification: 'certified',
       withoutQualification: 'uncertified',
-      onTeam: 'team123'
+      onTeam: 'team123',
+      eventHours: undefined,
+      eventId: undefined
     });
   });
 
@@ -124,7 +136,9 @@ describe('recordToUserFilters', () => {
       showDeleted: undefined,
       withQualification: undefined,
       withoutQualification: undefined,
-      onTeam: undefined
+      onTeam: undefined,
+      eventHours: undefined,
+      eventId: undefined
     };
 
     const result = recordToUserFilters(record);
@@ -135,7 +149,9 @@ describe('recordToUserFilters', () => {
       showDeleted: false,
       withQualification: undefined,
       withoutQualification: undefined,
-      onTeam: undefined
+      onTeam: undefined,
+      eventHours: undefined,
+      eventId: undefined
     });
   });
 

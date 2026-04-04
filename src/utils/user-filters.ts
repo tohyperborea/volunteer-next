@@ -6,6 +6,14 @@
 
 import { normalise } from './list';
 
+const asPositiveInteger = (value: string | null | undefined): number | undefined => {
+  if (!value) {
+    return undefined;
+  }
+  const num = Number(value);
+  return isNaN(num) || num < 0 ? undefined : num;
+};
+
 /**
  * Converts URLSearchParams to a UserFilters object
  * @param searchParams URLSearchParams from the request or current URL
@@ -19,7 +27,7 @@ export function paramsToUserFilters(searchParams: URLSearchParams): UserFilters 
     withQualification: searchParams.get('withQualification') || undefined,
     withoutQualification: searchParams.get('withoutQualification') || undefined,
     onTeam: searchParams.get('onTeam') || undefined,
-    eventHours: searchParams.get('eventHours') ? Number(searchParams.get('eventHours')) : undefined,
+    eventHours: asPositiveInteger(searchParams.get('eventHours')),
     eventId: searchParams.get('eventId') || undefined
   };
 }
@@ -39,7 +47,7 @@ export function recordToUserFilters(
     withQualification: normalise(record['withQualification']),
     withoutQualification: normalise(record['withoutQualification']),
     onTeam: normalise(record['onTeam']),
-    eventHours: record['eventHours'] ? Number(record['eventHours']) : undefined,
+    eventHours: asPositiveInteger(normalise(record['eventHours'])),
     eventId: normalise(record['eventId'])
   };
 }

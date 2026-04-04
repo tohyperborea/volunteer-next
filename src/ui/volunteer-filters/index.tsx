@@ -7,7 +7,7 @@
 import { MixerVerticalIcon } from '@radix-ui/react-icons';
 import { Flex, Button, Card, Select, Checkbox, Text, Box, TextField } from '@radix-ui/themes';
 import { useSearchParams, usePathname, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import SearchBar from '../search-bar';
 import { paramsToUserFilters } from '@/utils/user-filters';
 import { useTranslations } from 'next-intl';

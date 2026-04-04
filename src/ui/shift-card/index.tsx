@@ -72,7 +72,7 @@ export default function ShiftCard({
       : undefined;
   const canSignup = !cantSignupMessage;
   const hasButtons = onSignup || onCancel;
-  const hasActions = onEdit || collapsible;
+  const hasActions = onEdit || onCopy || collapsible;
 
   return (
     <Card className={isExpanded ? styles.expanded : undefined}>

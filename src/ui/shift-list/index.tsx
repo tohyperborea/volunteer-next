@@ -51,7 +51,7 @@ export default function ShiftList({
   const t = useTranslations('ShiftList');
   const canEdit = Boolean(onSaveShift);
   const [creatingShift, setCreatingShift] = useState(false);
-  const [editingShift, setEditingShift] = useState<ShiftInfo | Omit<ShiftInfo, 'id'> | undefined>(
+  const [editingShift, setEditingShift] = useState<PartialBy<ShiftInfo, 'id'> | undefined>(
     undefined
   );
   const qualificationMap = new Map(qualifications.map((q) => [q.id, q]));

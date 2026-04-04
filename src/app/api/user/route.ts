@@ -24,7 +24,7 @@ export const GET = async (request: NextRequest): Promise<Response> => {
     permissionsProfile
   ).sort((a, b) => a.displayName.localeCompare(b.displayName));
   const hours =
-    filter.eventHours && filter.eventId
+    filter.eventHours !== undefined && filter.eventId
       ? await getHoursForVolunteers(
           filter.eventId,
           volunteers.map((v) => v.id)
