@@ -69,7 +69,7 @@ export default async function QualificationsPage() {
 
   const onCreate = async (data: FormData) => {
     'use server';
-    if (!editable) {
+    if (!editable || hasEventEnded(event)) {
       unauthorized();
     }
     await checkQualificationAuthorisation(data);
@@ -82,7 +82,7 @@ export default async function QualificationsPage() {
 
   const onUpdate = async (data: FormData) => {
     'use server';
-    if (!editable) {
+    if (!editable || hasEventEnded(event)) {
       unauthorized();
     }
     await checkQualificationAuthorisation(data);

@@ -26,6 +26,7 @@ interface Props {
   exportLink: string;
   userShifts?: Set<ShiftId>;
   userQualifications?: Set<QualificationId>;
+  editableShifts?: Set<ShiftId>;
   onSaveShift?: (data: FormData) => Promise<void>;
   onDeleteShift?: (shiftId: ShiftId) => Promise<void>;
   onSignup?: (shiftId: ShiftId) => Promise<void>;
@@ -44,7 +45,8 @@ export default function ShiftList({
   onSignup,
   onCancel,
   userShifts,
-  userQualifications
+  userQualifications,
+  editableShifts
 }: Props) {
   const t = useTranslations('ShiftList');
   const canEdit = Boolean(onSaveShift);
@@ -55,6 +57,9 @@ export default function ShiftList({
     onSignup && userShifts && !userShifts.has(shift.id) && canSignupForShift(event, shift);
   const showCancel = (shift: ShiftInfo) =>
     onCancel && userShifts && userShifts.has(shift.id) && canCancelShiftSignup(event, shift);
+
+  const showEdit = (shift: ShiftInfo) =>
+    canEdit && (!editableShifts || editableShifts.has(shift.id));
 
   return (
     <Flex direction="column" gap="6">
@@ -97,7 +102,7 @@ export default function ShiftList({
               }
               volunteers={shiftVolunteers[shift.id] || []}
               key={shift.id}
-              onEdit={canEdit ? () => setEditingShift(shift) : undefined}
+              onEdit={showEdit(shift) ? () => setEditingShift(shift) : undefined}
               onSignup={showSignup(shift) ? () => onSignup!(shift.id) : undefined}
               onCancel={showCancel(shift) ? () => onCancel!(shift.id) : undefined}
               isQualified={

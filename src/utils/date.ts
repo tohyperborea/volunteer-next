@@ -1,5 +1,5 @@
 import type { Locale } from 'next-intl';
-import { addHoursToTimeString, eventDayTimeToDate, eventDayToDate } from './datetime';
+import { eventDayToDate } from './datetime';
 
 export const getEventDateRangeDisplayText = (
   { event }: { event: EventInfo },

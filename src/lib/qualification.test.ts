@@ -3,6 +3,7 @@ import {
   getQualificationsForEvent,
   getQualificationsForTeams
 } from '@/service/qualification-service';
+import { hasEventEnded } from '@/utils/date';
 
 const mockGetQualificationsForEvent = getQualificationsForEvent as jest.MockedFunction<
   typeof getQualificationsForEvent
@@ -19,6 +20,12 @@ jest.mock('@/service/qualification-service', () => ({
   getQualificationsForEvent: jest.fn(),
   getQualificationsForTeams: jest.fn()
 }));
+
+jest.mock('@/utils/date', () => ({
+  hasEventEnded: jest.fn()
+}));
+
+const mockHasEventEnded = hasEventEnded as jest.MockedFunction<typeof hasEventEnded>;
 
 describe('getManagedQualifications', () => {
   const mockEvent = {
@@ -113,6 +120,20 @@ describe('getManagedQualifications', () => {
     const result = await getManagedQualifications({
       event: mockEvent,
       isAdmin: false,
+      organisesEvent: false,
+      leadsTeams: []
+    });
+
+    expect(mockGetQualificationsForEvent).not.toHaveBeenCalled();
+    expect(mockGetQualificationsForTeams).not.toHaveBeenCalled();
+    expect(result).toEqual([]);
+  });
+
+  it('should return an empty array if the event has ended', async () => {
+    mockHasEventEnded.mockReturnValue(true);
+    const result = await getManagedQualifications({
+      event: mockEvent,
+      isAdmin: true,
       organisesEvent: false,
       leadsTeams: []
     });

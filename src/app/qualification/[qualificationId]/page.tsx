@@ -94,7 +94,7 @@ export default async function QualificationsPage(
 
   const onSave = async (data: FormData) => {
     'use server';
-    if (!editable) {
+    if (!editable || hasEventEnded(event)) {
       unauthorized();
     }
     await checkAuthorisation(editorRoles);
@@ -108,7 +108,7 @@ export default async function QualificationsPage(
 
   const onDelete = async () => {
     'use server';
-    if (!editable) {
+    if (!editable || hasEventEnded(event)) {
       unauthorized();
     }
     await checkAuthorisation(editorRoles);
@@ -121,7 +121,7 @@ export default async function QualificationsPage(
 
   const onAssignQualification = async (data: FormData) => {
     'use server';
-    if (!editable) {
+    if (!editable || hasEventEnded(event)) {
       unauthorized();
     }
     const volunteerIds = data.getAll('volunteers') as UserId[];
@@ -134,7 +134,7 @@ export default async function QualificationsPage(
 
   const onRemoveQualification = async (volunteerId: UserId) => {
     'use server';
-    if (!editable) {
+    if (!editable || hasEventEnded(event)) {
       unauthorized();
     }
     if (!volunteerId) {

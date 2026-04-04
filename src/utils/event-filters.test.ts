@@ -1,4 +1,4 @@
-import { paramsToEventFilters, recordToEventFilters, EventFiltersToParams } from './event-filters';
+import { paramsToEventFilters, recordToEventFilters, eventFiltersToParams } from './event-filters';
 
 describe('paramsToEventFilters', () => {
   it('should convert URLSearchParams to EventFilters object', () => {
@@ -57,14 +57,14 @@ describe('recordToEventFilters', () => {
   });
 });
 
-describe('EventFiltersToParams', () => {
+describe('eventFiltersToParams', () => {
   it('should convert EventFilters to URLSearchParams', () => {
     const filters = {
       searchQuery: 'test',
       showArchived: true
     };
 
-    const result = EventFiltersToParams(filters);
+    const result = eventFiltersToParams(filters);
 
     expect(result.get('searchQuery')).toBe('test');
     expect(result.get('showArchived')).toBe('true');
@@ -76,7 +76,7 @@ describe('EventFiltersToParams', () => {
       showArchived: false
     };
 
-    const result = EventFiltersToParams(filters);
+    const result = eventFiltersToParams(filters);
 
     expect(result.has('searchQuery')).toBe(false);
     expect(result.has('showArchived')).toBe(false);
@@ -91,7 +91,7 @@ describe('EventFiltersToParams', () => {
       otherParam: 'value'
     });
 
-    const result = EventFiltersToParams(filters, existing);
+    const result = eventFiltersToParams(filters, existing);
 
     expect(result.get('searchQuery')).toBe('newQuery');
     expect(result.get('showArchived')).toBe('true');

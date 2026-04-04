@@ -109,7 +109,7 @@ export default async function VolunteerProfilePage({ params }: PageProps<'/user/
     if (typeof qualificationId !== 'string') {
       throw new Error('Invalid qualification ID');
     }
-    if (!managedQualificationIds.has(qualificationId)) {
+    if (!managedQualificationIds.has(qualificationId) || (event && hasEventEnded(event))) {
       unauthorized();
     }
     const qualification = await getQualificationById(qualificationId);
@@ -123,7 +123,7 @@ export default async function VolunteerProfilePage({ params }: PageProps<'/user/
 
   const onRemove = async (qualificationId: QualificationId) => {
     'use server';
-    if (!managedQualificationIds.has(qualificationId)) {
+    if (!managedQualificationIds.has(qualificationId) || (event && hasEventEnded(event))) {
       unauthorized();
     }
     const qualification = await getQualificationById(qualificationId);

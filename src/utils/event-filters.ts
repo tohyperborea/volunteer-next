@@ -39,7 +39,7 @@ export function recordToEventFilters(
  * @param existing Optional existing URLSearchParams to merge with (useful for preserving other params)
  * @returns
  */
-export function EventFiltersToParams(
+export function eventFiltersToParams(
   filters: EventFilters,
   existing?: URLSearchParams
 ): URLSearchParams {

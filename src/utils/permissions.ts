@@ -4,7 +4,7 @@
  * @author Michael Townsend <@continuities>
  */
 
-import { hasShiftEnded, hasShiftStarted } from './date';
+import { hasShiftEnded, hasShiftStarted } from '@/utils/date';
 
 interface SecuredTypes {
   VolunteerInfo: VolunteerInfo;

@@ -44,6 +44,9 @@ describe('getPermissionsProfile', () => {
 });
 
 describe('canAccess', () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
   it('should deny access if no permissions are defined for the property', () => {
     const profile = { admin: false, organiser: false, 'team-lead': false, userId: '1' };
     jest.spyOn(console, 'warn').mockImplementation(() => {}); // Suppress console warnings in test output
@@ -100,7 +103,7 @@ describe('canCancelShiftSignup', () => {
   it('should return true if the shift has not started', () => {
     const event = {};
     const shift = {};
-    mockHasShiftEnded.mockReturnValue(false);
+    mockHasShiftStarted.mockReturnValue(false);
     const result = canCancelShiftSignup(event as any, shift as any);
     expect(result).toBe(true);
   });
