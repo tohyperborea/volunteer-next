@@ -157,6 +157,21 @@ export const getFilteredUsers = cache(
         `EXISTS (SELECT 1 FROM shift_volunteer sv JOIN shift s ON sv.shift_id = s.id WHERE sv.user_id = u.id AND s."teamId" = $${queryParams.length})`
       );
     }
+    if (filters.eventHours !== undefined && filters.eventId) {
+      queryParams.push(filters.eventId, filters.eventHours);
+      queryParts.push(
+        `
+        (
+        SELECT SUM(s."durationHours")
+        FROM shift_volunteer sv 
+        JOIN shift s ON s.id=sv.shift_id 
+        JOIN team t ON s."teamId" = t.id
+        AND t."eventId"=$${queryParams.length - 1}
+        WHERE sv.user_id = u.id
+        ) >= $${queryParams.length}
+        `
+      );
+    }
 
     const whereClause = queryParts.length > 0 ? `WHERE ${queryParts.join(' AND ')}` : '';
 

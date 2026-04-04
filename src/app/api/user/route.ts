@@ -6,6 +6,7 @@
 
 import { CSVResponse, NotImplementedResponse } from '@/lib/response';
 import { usersToVolunteers } from '@/lib/volunteer';
+import { getHoursForVolunteers } from '@/service/shift-service';
 import { getFilteredUsers } from '@/service/user-service';
 import { checkAuthorisation, currentUser } from '@/session';
 import { volunteersToCSV } from '@/utils/csv-export';
@@ -22,9 +23,16 @@ export const GET = async (request: NextRequest): Promise<Response> => {
     await getFilteredUsers(filter, permissionsProfile),
     permissionsProfile
   ).sort((a, b) => a.displayName.localeCompare(b.displayName));
+  const hours =
+    filter.eventHours && filter.eventId
+      ? await getHoursForVolunteers(
+          filter.eventId,
+          volunteers.map((v) => v.id)
+        )
+      : undefined;
   switch (searchParams.get('format')) {
     case 'csv': {
-      const csvContent = volunteersToCSV(volunteers);
+      const csvContent = volunteersToCSV(volunteers, hours);
       return CSVResponse(csvContent, 'volunteers');
     }
     case 'json':

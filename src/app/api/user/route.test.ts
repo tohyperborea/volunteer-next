@@ -1,5 +1,6 @@
 import { usersToVolunteers } from '@/lib/volunteer';
 import { getFilteredUsers } from '@/service/user-service';
+import { getHoursForVolunteers } from '@/service/shift-service';
 import { checkAuthorisation } from '@/session';
 import { paramsToUserFilters } from '@/utils/user-filters';
 import { NextRequest } from 'next/server';
@@ -23,6 +24,9 @@ jest.mock('@/session', () => ({
 }));
 jest.mock('@/service/user-service', () => ({
   getFilteredUsers: jest.fn()
+}));
+jest.mock('@/service/shift-service', () => ({
+  getHoursForVolunteers: jest.fn()
 }));
 
 jest.mock('@/utils/user-filters', () => ({
@@ -59,6 +63,9 @@ const mockParamsToUserFilters = paramsToUserFilters as jest.MockedFunction<
 >;
 const mockUsersToVolunteers = usersToVolunteers as jest.MockedFunction<typeof usersToVolunteers>;
 const mockNextResponseJson = NextResponse.json as jest.MockedFunction<typeof NextResponse.json>;
+const mockGetHoursForVolunteers = getHoursForVolunteers as jest.MockedFunction<
+  typeof getHoursForVolunteers
+>;
 
 describe('GET /api/user', () => {
   beforeEach(() => {
@@ -111,7 +118,7 @@ describe('GET /api/user', () => {
   });
 
   it('should return a CSV response when format is csv', async () => {
-    const mockFilter: UserFilters = { roleType: 'admin' };
+    const mockFilter: UserFilters = { roleType: 'admin', eventHours: 1, eventId: 'event1' };
     const mockUsers: User[] = [
       {
         id: 'user1',
@@ -121,6 +128,7 @@ describe('GET /api/user', () => {
         roles: []
       }
     ];
+    const mockHours: Record<UserId, number> = { [mockUsers[0].id]: 5 };
     const mockVolunteers: VolunteerInfo[] = [{ id: 'user1', displayName: 'Johnny' }];
     const mockCSVContent = 'id,displayName\nuser1,Johnny';
 
@@ -128,6 +136,7 @@ describe('GET /api/user', () => {
     mockGetFilteredUsers.mockResolvedValue(mockUsers);
     mockUsersToVolunteers.mockReturnValue(mockVolunteers);
     mockVolunteersToCSV.mockReturnValue(mockCSVContent);
+    mockGetHoursForVolunteers.mockResolvedValue(mockHours);
 
     const request = {
       nextUrl: { searchParams: new URLSearchParams({ roleType: 'admin', format: 'csv' }) }
@@ -139,7 +148,7 @@ describe('GET /api/user', () => {
     expect(mockCheckAuthorisation).toHaveBeenCalled();
     expect(mockGetFilteredUsers).toHaveBeenCalledWith(mockFilter, { id: 'permissionsProfile' });
     expect(mockUsersToVolunteers).toHaveBeenCalledWith(mockUsers, { id: 'permissionsProfile' });
-    expect(mockVolunteersToCSV).toHaveBeenCalledWith(mockVolunteers);
+    expect(mockVolunteersToCSV).toHaveBeenCalledWith(mockVolunteers, mockHours);
     expect(mockCSVResponse).toHaveBeenCalledWith(mockCSVContent, 'volunteers');
   });
 

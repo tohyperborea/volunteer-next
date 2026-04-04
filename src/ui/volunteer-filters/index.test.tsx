@@ -1,4 +1,4 @@
-import { screen, render, fireEvent } from '@/test-utils';
+import { screen, render, fireEvent, waitFor } from '@/test-utils';
 import userEvent from '@testing-library/user-event';
 import VolunteerFilters from '.';
 
@@ -35,9 +35,10 @@ describe('VolunteerFilters', () => {
     { filters: ['searchQuery', 'roleType'] },
     { filters: ['searchQuery', 'showDeleted'] },
     { filters: ['roleType', 'showDeleted'] },
+    { filters: ['eventHours'] },
     { filters: ['searchQuery', 'roleType', 'showDeleted'] }
   ])('renders the correct filters for $filters', ({ filters }) => {
-    render(<VolunteerFilters withFilters={filters} />);
+    render(<VolunteerFilters withFilters={filters} currentEventId="event-id" />);
     if (filters.includes('searchQuery')) {
       expect(screen.getByPlaceholderText('placeholder')).toBeInTheDocument();
     } else {
@@ -60,13 +61,18 @@ describe('VolunteerFilters', () => {
       } else {
         expect(screen.queryByLabelText('showDeleted')).not.toBeInTheDocument();
       }
+      if (filters.includes('eventHours')) {
+        expect(screen.getByLabelText('eventHoursFilterLabel')).toBeInTheDocument();
+      } else {
+        expect(screen.queryByLabelText('eventHoursFilterLabel')).not.toBeInTheDocument();
+      }
     } else {
       expect(screen.queryByRole('button', { name: 'filters' })).not.toBeInTheDocument();
     }
   });
 
   it('toggles the filter panel when the filter button is clicked', () => {
-    render(<VolunteerFilters withFilters={['roleType']} />);
+    render(<VolunteerFilters withFilters={['roleType']} currentEventId="" />);
     const filterButton = screen.getByRole('button', { name: 'filters' });
 
     expect(screen.queryByText('allRoles')).not.toBeInTheDocument();
@@ -77,7 +83,7 @@ describe('VolunteerFilters', () => {
   });
 
   it('calls onFilterChange when a filter value is changed', async () => {
-    render(<VolunteerFilters withFilters={['roleType']} />);
+    render(<VolunteerFilters withFilters={['roleType']} currentEventId="" />);
     const user = userEvent.setup();
     await user.click(screen.getByRole('button', { name: 'filters' }));
 
@@ -89,7 +95,7 @@ describe('VolunteerFilters', () => {
   });
 
   it('clears all filters when the clear button is clicked', async () => {
-    render(<VolunteerFilters withFilters={['roleType', 'showDeleted']} />);
+    render(<VolunteerFilters withFilters={['roleType', 'showDeleted']} currentEventId="" />);
     const user = userEvent.setup();
     await user.click(screen.getByRole('button', { name: 'filters' }));
 
@@ -100,15 +106,41 @@ describe('VolunteerFilters', () => {
   });
 
   it('renders the checkbox for "showDeleted" filter and toggles its state', async () => {
-    const { rerender } = render(<VolunteerFilters withFilters={['showDeleted']} />);
+    const { rerender } = render(
+      <VolunteerFilters withFilters={['showDeleted']} currentEventId="" />
+    );
     const user = userEvent.setup();
     await user.click(screen.getByRole('button', { name: 'filters' }));
     expect(screen.getByLabelText('showDeleted')).not.toBeChecked();
     await user.click(screen.getByLabelText('showDeleted'));
     expect(window.location.search).toContain('showDeleted=true');
     // rerender is required to update searchParams after the URL change
-    rerender(<VolunteerFilters withFilters={['showDeleted']} />);
+    rerender(<VolunteerFilters withFilters={['showDeleted']} currentEventId="" />);
     await user.click(screen.getByLabelText('showDeleted'));
     expect(window.location.search).not.toContain('showDeleted=true');
+  });
+
+  it('renders the input for "eventHours" filter and updates its value', async () => {
+    const { rerender } = render(
+      <VolunteerFilters withFilters={['eventHours']} currentEventId="event-id" />
+    );
+    const user = userEvent.setup();
+    await user.click(screen.getByRole('button', { name: 'filters' }));
+    const eventHoursInput = screen.getByLabelText('eventHoursFilterLabel');
+    expect(eventHoursInput).toBeInTheDocument();
+    fireEvent.change(eventHoursInput, { target: { value: '5' } });
+    // Wait for the debounce to trigger
+    await waitFor(() => {
+      expect(window.location.search).toContain('eventHours=5');
+      expect(window.location.search).toContain('eventId=event-id');
+    });
+    // rerender is required to update searchParams after the URL change
+    rerender(<VolunteerFilters withFilters={['eventHours']} currentEventId="event-id" />);
+    fireEvent.change(screen.getByLabelText('eventHoursFilterLabel'), { target: { value: '' } });
+    // Wait for the debounce to trigger
+    await waitFor(() => {
+      expect(window.location.search).not.toContain('eventHours=5');
+      expect(window.location.search).not.toContain('eventId=event-id');
+    });
   });
 });

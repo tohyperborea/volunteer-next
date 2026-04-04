@@ -110,6 +110,8 @@ declare global {
     withQualification?: QualificationId;
     withoutQualification?: QualificationId;
     onTeam?: TeamId;
+    eventHours?: number;
+    eventId?: EventId;
   }
 
   interface ShiftInfo {

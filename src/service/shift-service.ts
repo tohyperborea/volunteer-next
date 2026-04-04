@@ -477,3 +477,38 @@ export const getShiftsForVolunteers = cache(
     return volunteerShifts;
   }
 );
+
+/**
+ * Fetches the total number of hours a given volunteer is signed up for in a given event.
+ * @param eventId - The ID of the event to fetch hours for.
+ * @param volunteerIds - An array of volunteer IDs to fetch hours for.
+ * @return An object mapping volunteer IDs to total hours signed up for.
+ */
+export const getHoursForVolunteers = cache(
+  async (eventId: EventId, volunteerIds: UserId[]): Promise<Record<UserId, number>> => {
+    if (volunteerIds.length === 0) {
+      return {};
+    }
+
+    const result = await pool.query(
+      `
+      SELECT
+      sv.user_id,
+      SUM(s."durationHours") AS total_hours
+      FROM shift_volunteer sv
+      JOIN shift s ON sv.shift_id = s.id
+      WHERE sv.user_id = ANY($1)
+      AND s."teamId" IN (
+        SELECT id FROM team WHERE "eventId" = $2
+      )
+      GROUP BY sv.user_id
+      `,
+      [volunteerIds, eventId]
+    );
+    const hours: Record<UserId, number> = {};
+    for (const row of result.rows) {
+      hours[row.user_id] = parseInt(row.total_hours, 10);
+    }
+    return hours;
+  }
+);

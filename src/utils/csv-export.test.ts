@@ -320,4 +320,21 @@ describe('volunteersToCSV', () => {
 
     expect(result).toBe(expectedCSV);
   });
+
+  it('should include event hours if hours parameter is provided', () => {
+    const volunteers: VolunteerInfo[] = [
+      { id: 'user1', displayName: 'John D.' },
+      { id: 'user2', displayName: 'Jane S.' }
+    ];
+    const hours = {
+      user1: 5,
+      user2: 3
+    };
+
+    const result = volunteersToCSV(volunteers, hours);
+
+    const expectedCSV = ['Chosen Name,Event Hours', 'John D.,5', 'Jane S.,3'].join('\r\n');
+
+    expect(result).toBe(expectedCSV);
+  });
 });

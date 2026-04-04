@@ -85,9 +85,13 @@ export const shiftsToCSV = ({
 /**
  * Exports volunteer data to CSV format
  * @param volunteers A list of VolunteerInfo objects to export
+ * @param hours An optional mapping of volunteer IDs to their total hours
  * @returns A string in CSV format representing the volunteer data
  */
-export const volunteersToCSV = (volunteers: VolunteerInfo[]): string => {
+export const volunteersToCSV = (
+  volunteers: VolunteerInfo[],
+  hours?: Record<UserId, number>
+): string => {
   const showFullName = volunteers.some((v) => Boolean(v.fullName));
   const showEmail = volunteers.some((v) => Boolean(v.email));
   const headers = ['Chosen Name'];
@@ -96,6 +100,9 @@ export const volunteersToCSV = (volunteers: VolunteerInfo[]): string => {
   }
   if (showEmail) {
     headers.push('Email');
+  }
+  if (hours) {
+    headers.push('Event Hours');
   }
   return [
     headers.join(','),
@@ -106,6 +113,9 @@ export const volunteersToCSV = (volunteers: VolunteerInfo[]): string => {
       }
       if (showEmail) {
         row.push(escapeForCSV(preventCSVInjection(volunteer.email ?? '')));
+      }
+      if (hours) {
+        row.push(hours[volunteer.id]?.toString() ?? '0');
       }
       return row.join(',');
     })

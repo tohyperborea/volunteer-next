@@ -19,19 +19,19 @@ describe('VolunteerList', () => {
   ];
 
   it('renders a list of volunteers', () => {
-    render(<VolunteerList volunteers={mockVolunteers} />);
+    render(<VolunteerList volunteers={mockVolunteers} currentEventId="" />);
 
     expect(screen.getByText('John Doe')).toBeInTheDocument();
     expect(screen.getByText('Jane Smith')).toBeInTheDocument();
   });
 
   it('renders a message when the volunteer list is empty', () => {
-    render(<VolunteerList volunteers={[]} />);
+    render(<VolunteerList volunteers={[]} currentEventId="" />);
     expect(screen.getByText('empty')).toBeInTheDocument();
   });
 
   it('renders filters when withFilters prop is provided', () => {
-    render(<VolunteerList volunteers={[]} withFilters={['searchQuery']} />);
+    render(<VolunteerList volunteers={[]} withFilters={['searchQuery']} currentEventId="" />);
     expect(screen.getByTestId('volunteer-filters')).toBeInTheDocument();
   });
 
@@ -40,7 +40,9 @@ describe('VolunteerList', () => {
       [mockVolunteers[0].id]: <button>Action 1</button>,
       [mockVolunteers[1].id]: <button>Action 2</button>
     };
-    render(<VolunteerList volunteers={mockVolunteers} itemActions={mockActions} />);
+    render(
+      <VolunteerList volunteers={mockVolunteers} itemActions={mockActions} currentEventId="" />
+    );
 
     expect(screen.getByText('Action 1')).toBeInTheDocument();
     expect(screen.getByText('Action 2')).toBeInTheDocument();

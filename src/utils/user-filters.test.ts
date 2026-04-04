@@ -8,7 +8,9 @@ describe('paramsToUserFilters', () => {
       showDeleted: 'true',
       withQualification: 'certified',
       withoutQualification: 'uncertified',
-      onTeam: 'team123'
+      onTeam: 'team123',
+      eventHours: '5',
+      eventId: 'event456'
     });
 
     const result = paramsToUserFilters(searchParams);
@@ -19,7 +21,9 @@ describe('paramsToUserFilters', () => {
       showDeleted: true,
       withQualification: 'certified',
       withoutQualification: 'uncertified',
-      onTeam: 'team123'
+      onTeam: 'team123',
+      eventHours: 5,
+      eventId: 'event456'
     });
   });
 
