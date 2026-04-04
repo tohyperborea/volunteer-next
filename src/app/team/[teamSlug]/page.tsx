@@ -100,13 +100,12 @@ export default async function TeamPage({ params, searchParams }: PageProps<`/tea
     if (!isEditable) {
       unauthorized();
     }
-    console.info('Saving shift with data:', Object.fromEntries(data.entries()));
     await checkAuthorisation(editorRoles);
     const shift = validateNewShift(data);
     const shiftId = data.get('id')?.toString();
     const existingShift = shiftId ? await getShiftById(shiftId) : null;
     if (existingShift && hasShiftStarted(event, existingShift)) {
-      throw new Error('Cannot edit a shift that has already started');
+      unauthorized();
     }
     if (shiftId) {
       await updateShift({ id: shiftId, ...shift });
@@ -130,7 +129,6 @@ export default async function TeamPage({ params, searchParams }: PageProps<`/tea
     if (hasShiftStarted(event, shift)) {
       unauthorized();
     }
-    console.info('Deleting shiftId: ', shiftId);
     await checkAuthorisation(editorRoles);
     if (!shiftId) {
       throw new Error('Shift id is required for deletion');
@@ -142,7 +140,6 @@ export default async function TeamPage({ params, searchParams }: PageProps<`/tea
 
   const onSignup = async (shiftId: ShiftId) => {
     'use server';
-    console.info(`Signing up volunteer ${permissions.userId} for shift ${shiftId}`);
     if (!permissions.userId) {
       unauthorized();
     }
@@ -163,7 +160,7 @@ export default async function TeamPage({ params, searchParams }: PageProps<`/tea
     }
 
     if (!canSignupForShift(event, shift)) {
-      throw new Error('Cannot sign up for this shift');
+      unauthorized();
     }
 
     await inTransaction(async (client) => {
@@ -188,7 +185,6 @@ export default async function TeamPage({ params, searchParams }: PageProps<`/tea
 
   const onCancel = async (shiftId: ShiftId) => {
     'use server';
-    console.info(`Cancelling volunteer ${permissions.userId} for shift ${shiftId}`);
     if (!permissions.userId) {
       unauthorized();
     }
@@ -202,7 +198,7 @@ export default async function TeamPage({ params, searchParams }: PageProps<`/tea
     }
 
     if (!canCancelShiftSignup(event, shift)) {
-      throw new Error('Cannot cancel this shift');
+      unauthorized();
     }
 
     await removeVolunteerFromShift(shiftId, permissions.userId);
