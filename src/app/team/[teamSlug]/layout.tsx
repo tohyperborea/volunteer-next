@@ -42,7 +42,10 @@ export default async function TeamLayout({ params, children }: Props) {
 
   const t = await getTranslations(PAGE_KEY);
   const permissionsProfile = getPermissionsProfile(await currentUser());
-  const teamLeads = usersToVolunteers(await getTeamLeadsForTeam(team.id), permissionsProfile);
+  const teamLeads = usersToVolunteers(
+    await getTeamLeadsForTeam(team.id, event.id),
+    permissionsProfile
+  );
 
   const shiftsPath = getTeamShiftsPath(teamSlug);
   const volunteersPath = getTeamVolunteersPath(teamSlug);

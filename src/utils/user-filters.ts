@@ -6,6 +6,16 @@
 
 import { normalise } from './list';
 
+const asPositiveInteger = (value: string | null | undefined): number | undefined => {
+  if (!value) {
+    return undefined;
+  }
+  const num = Number(value);
+  return isNaN(num) || num <= 0 || !Number.isFinite(num) || !Number.isInteger(num)
+    ? undefined
+    : num;
+};
+
 /**
  * Converts URLSearchParams to a UserFilters object
  * @param searchParams URLSearchParams from the request or current URL
@@ -18,7 +28,8 @@ export function paramsToUserFilters(searchParams: URLSearchParams): UserFilters 
     showDeleted: searchParams.get('showDeleted') === 'true' || false,
     withQualification: searchParams.get('withQualification') || undefined,
     withoutQualification: searchParams.get('withoutQualification') || undefined,
-    onTeam: searchParams.get('onTeam') || undefined
+    onTeam: searchParams.get('onTeam') || undefined,
+    eventHours: asPositiveInteger(searchParams.get('eventHours'))
   };
 }
 
@@ -36,7 +47,8 @@ export function recordToUserFilters(
     showDeleted: record['showDeleted'] === 'true',
     withQualification: normalise(record['withQualification']),
     withoutQualification: normalise(record['withoutQualification']),
-    onTeam: normalise(record['onTeam'])
+    onTeam: normalise(record['onTeam']),
+    eventHours: asPositiveInteger(normalise(record['eventHours']))
   };
 }
 
@@ -80,6 +92,11 @@ export function userFiltersToParams(
     params.set('onTeam', filters.onTeam);
   } else {
     params.delete('onTeam');
+  }
+  if (filters.eventHours !== undefined) {
+    params.set('eventHours', String(filters.eventHours));
+  } else {
+    params.delete('eventHours');
   }
   return params;
 }

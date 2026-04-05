@@ -25,7 +25,7 @@ jest.mock('./auth', () => ({
 }));
 
 jest.mock('next/headers', () => ({
-  headers: jest.fn()
+  headers: jest.fn().mockResolvedValue(new Headers())
 }));
 
 jest.mock('next/navigation', () => ({

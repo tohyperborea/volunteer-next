@@ -65,12 +65,13 @@ export function usersToVolunteers(
  * @returns A VolunteerInfo object for the specified user, or null if the user does not exist or no userId is provided
  */
 export async function getVolunteerById(
-  userId: string | null,
+  userId: UserId | null,
+  eventId: EventId | null,
   permissionsProfile: PermissionsProfile
 ): Promise<VolunteerInfo | null> {
   if (!userId) {
     return null;
   }
-  const user = await getUser(userId);
+  const user = await getUser(userId, eventId ?? undefined);
   return user ? stripPII(user, permissionsProfile) : null;
 }

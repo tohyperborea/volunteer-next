@@ -5,14 +5,15 @@
  */
 
 import { MixerVerticalIcon } from '@radix-ui/react-icons';
-import { Flex, Button, Card, Select, Checkbox, Text, Box } from '@radix-ui/themes';
+import { Flex, Button, Card, Select, Checkbox, Text, Box, TextField } from '@radix-ui/themes';
 import { useSearchParams, usePathname, useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import SearchBar from '../search-bar';
 import { paramsToUserFilters } from '@/utils/user-filters';
 import { useTranslations } from 'next-intl';
 import { FormField } from '../form-dialog';
 import SlideIn from '../slide-in';
+import { useDebouncedCallback } from 'use-debounce';
 
 interface Props {
   withFilters?: (keyof UserFilters)[];
@@ -25,8 +26,25 @@ export default function VolunteerFilters({ withFilters = [] }: Props) {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const searchParams = useSearchParams();
   const currentFilters = paramsToUserFilters(searchParams);
+  const [searchQuery, setSearchQuery] = useState(currentFilters.searchQuery || '');
+  const [hoursFilter, setHoursFilter] = useState<string>(
+    currentFilters.eventHours ? String(currentFilters.eventHours) : ''
+  );
   const pathname = usePathname();
   const { replace } = useRouter();
+  const debouncedEventHoursChange = useDebouncedCallback((value) => {
+    onFilterChange('eventHours', value || undefined);
+  }, 500);
+  const debouncedSearchQueryChange = useDebouncedCallback((value) => {
+    onFilterChange('searchQuery', value || undefined);
+  }, 500);
+
+  useEffect(() => {
+    setHoursFilter(currentFilters.eventHours ? String(currentFilters.eventHours) : '');
+  }, [currentFilters.eventHours]);
+  useEffect(() => {
+    setSearchQuery(currentFilters.searchQuery || '');
+  }, [currentFilters.searchQuery]);
 
   const onFilterChange = (filter: keyof UserFilters, value: string | undefined) => {
     const params = new URLSearchParams(searchParams);
@@ -42,6 +60,9 @@ export default function VolunteerFilters({ withFilters = [] }: Props) {
     const params = new URLSearchParams(searchParams);
     for (const filter of withFilters) {
       params.delete(filter);
+      if (filter === 'eventHours') {
+        params.delete('eventId');
+      }
     }
     replace(`${pathname}${params.size > 0 ? `?${params.toString()}` : ''}`);
   };
@@ -50,8 +71,11 @@ export default function VolunteerFilters({ withFilters = [] }: Props) {
     <Flex direction="column" gap="2">
       {hasFilter.has('searchQuery') && (
         <SearchBar
-          defaultValue={currentFilters.searchQuery}
-          onChange={onFilterChange.bind(null, 'searchQuery')}
+          value={searchQuery}
+          onChange={(value) => {
+            setSearchQuery(value);
+            debouncedSearchQueryChange(value);
+          }}
         />
       )}
       {showFilterPanel && (
@@ -73,22 +97,43 @@ export default function VolunteerFilters({ withFilters = [] }: Props) {
                 <Flex direction="column" gap="4">
                   {hasFilter.has('roleType') && (
                     <FormField name={t('roleFilterLabel')} ariaId="roleFilter">
-                      <Select.Root
-                        value={currentFilters.roleType ?? 'all'}
-                        onValueChange={(value) =>
-                          onFilterChange('roleType', value === 'all' ? undefined : value)
-                        }
-                      >
-                        <Select.Trigger />
-                        <Select.Content>
-                          <Select.Item value="all">{t('allRoles')}</Select.Item>
-                          <Select.Item value="admin">{t('admin')}</Select.Item>
-                          <Select.Item value="organiser">{t('organiser')}</Select.Item>
-                          <Select.Item value="team-lead">{t('teamLead')}</Select.Item>
-                        </Select.Content>
-                      </Select.Root>
+                      <Box>
+                        <Select.Root
+                          value={currentFilters.roleType ?? 'all'}
+                          onValueChange={(value) =>
+                            onFilterChange('roleType', value === 'all' ? undefined : value)
+                          }
+                        >
+                          <Select.Trigger />
+                          <Select.Content>
+                            <Select.Item value="all">{t('allRoles')}</Select.Item>
+                            <Select.Item value="admin">{t('admin')}</Select.Item>
+                            <Select.Item value="organiser">{t('organiser')}</Select.Item>
+                            <Select.Item value="team-lead">{t('teamLead')}</Select.Item>
+                          </Select.Content>
+                        </Select.Root>
+                      </Box>
                     </FormField>
                   )}
+                  {hasFilter.has('eventHours') && (
+                    <FormField name={t('eventHoursFilterLabel')} ariaId="eventHoursFilter">
+                      <Box style={{ alignSelf: 'start' }}>
+                        <TextField.Root
+                          aria-label={t('eventHoursFilterLabel')}
+                          placeholder={t('eventHoursPlaceholder')}
+                          type="number"
+                          value={hoursFilter}
+                          min={0}
+                          step={1}
+                          onChange={(e) => {
+                            setHoursFilter(e.currentTarget.value);
+                            debouncedEventHoursChange(e.currentTarget.value);
+                          }}
+                        />
+                      </Box>
+                    </FormField>
+                  )}
+
                   {hasFilter.has('showDeleted') && (
                     <Text as="label" size="2">
                       <Flex align="center" gap="2">

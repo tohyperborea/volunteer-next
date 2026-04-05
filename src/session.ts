@@ -72,7 +72,8 @@ export const currentUser = cache(async (): Promise<User | null> => {
   if (!session?.user) {
     return null;
   }
-  return getUser(session.user.id);
+  const eventId = (await getCurrentEventId()) ?? undefined;
+  return getUser(session.user.id, eventId);
 });
 
 /**
@@ -117,16 +118,25 @@ export const getMatchingRoles = async (toMatch: UserRoleMatchCriteria): Promise<
 };
 
 /**
+ * Retrieves the current event ID from the 'x-event-id' header.
+ * @returns The current event ID, or null if not found.
+ */
+export const getCurrentEventId = cache(async (): Promise<EventId | null> => {
+  const eventId = (await headers()).get('x-event-id');
+  return eventId ?? null;
+});
+
+/**
  * Retrieves the current event based on the 'x-event-id' header.
  * @returns The current event based on the 'x-event-id' header, or null if not found.
  */
-export const getCurrentEvent = async (): Promise<EventInfo | null> => {
-  const eventId = (await headers()).get('x-event-id');
+export const getCurrentEvent = cache(async (): Promise<EventInfo | null> => {
+  const eventId = await getCurrentEventId();
   if (!eventId) {
     return null;
   }
   return (await getEventsById([eventId]))[0] ?? null;
-};
+});
 
 /**
  * Retrieves the current event based on the 'x-event-id' header, or redirects to the event list page if not found.

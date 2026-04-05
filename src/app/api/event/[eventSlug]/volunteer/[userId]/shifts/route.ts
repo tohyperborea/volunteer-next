@@ -24,7 +24,11 @@ export const GET = async (
   if (format === 'csv') {
     const { eventSlug, userId } = await params;
     const event = await getEventBySlug(eventSlug);
-    const volunteer = await getVolunteerById(userId, getPermissionsProfile(await currentUser()));
+    const volunteer = await getVolunteerById(
+      userId,
+      event?.id ?? null,
+      getPermissionsProfile(await currentUser())
+    );
     if (!event || !volunteer) {
       return NotFoundResponse();
     }
@@ -32,7 +36,8 @@ export const GET = async (
     const shifts = await getShiftsForVolunteer(event.id, userId);
     const shiftVolunteers = await getVolunteersForShifts(
       shifts.map((shift) => shift.id),
-      getPermissionsProfile(await currentUser())
+      getPermissionsProfile(await currentUser()),
+      event.id
     );
 
     const csvContent = shiftsToCSV({

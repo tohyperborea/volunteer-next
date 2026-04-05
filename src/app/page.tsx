@@ -42,7 +42,8 @@ export default async function DashboardPage() {
   const teams = await getTeamsForEvent(event.id);
   const upcomingShiftVolunteers = await getVolunteersForShifts(
     upcomingShifts.map((s) => s.id),
-    permissionsProfile
+    permissionsProfile,
+    event.id
   );
 
   return (

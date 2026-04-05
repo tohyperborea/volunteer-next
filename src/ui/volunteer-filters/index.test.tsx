@@ -1,4 +1,4 @@
-import { screen, render, fireEvent } from '@/test-utils';
+import { screen, render, fireEvent, waitFor } from '@/test-utils';
 import userEvent from '@testing-library/user-event';
 import VolunteerFilters from '.';
 
@@ -35,6 +35,7 @@ describe('VolunteerFilters', () => {
     { filters: ['searchQuery', 'roleType'] },
     { filters: ['searchQuery', 'showDeleted'] },
     { filters: ['roleType', 'showDeleted'] },
+    { filters: ['eventHours'] },
     { filters: ['searchQuery', 'roleType', 'showDeleted'] }
   ])('renders the correct filters for $filters', ({ filters }) => {
     render(<VolunteerFilters withFilters={filters} />);
@@ -59,6 +60,11 @@ describe('VolunteerFilters', () => {
         expect(screen.getByLabelText('showDeleted')).toBeInTheDocument();
       } else {
         expect(screen.queryByLabelText('showDeleted')).not.toBeInTheDocument();
+      }
+      if (filters.includes('eventHours')) {
+        expect(screen.getByLabelText('eventHoursFilterLabel')).toBeInTheDocument();
+      } else {
+        expect(screen.queryByLabelText('eventHoursFilterLabel')).not.toBeInTheDocument();
       }
     } else {
       expect(screen.queryByRole('button', { name: 'filters' })).not.toBeInTheDocument();
@@ -110,5 +116,25 @@ describe('VolunteerFilters', () => {
     rerender(<VolunteerFilters withFilters={['showDeleted']} />);
     await user.click(screen.getByLabelText('showDeleted'));
     expect(window.location.search).not.toContain('showDeleted=true');
+  });
+
+  it('renders the input for "eventHours" filter and updates its value', async () => {
+    const { rerender } = render(<VolunteerFilters withFilters={['eventHours']} />);
+    const user = userEvent.setup();
+    await user.click(screen.getByRole('button', { name: 'filters' }));
+    const eventHoursInput = screen.getByLabelText('eventHoursFilterLabel');
+    expect(eventHoursInput).toBeInTheDocument();
+    fireEvent.change(eventHoursInput, { target: { value: '5' } });
+    // Wait for the debounce to trigger
+    await waitFor(() => {
+      expect(window.location.search).toContain('eventHours=5');
+    });
+    // rerender is required to update searchParams after the URL change
+    rerender(<VolunteerFilters withFilters={['eventHours']} />);
+    fireEvent.change(screen.getByLabelText('eventHoursFilterLabel'), { target: { value: '' } });
+    // Wait for the debounce to trigger
+    await waitFor(() => {
+      expect(window.location.search).not.toContain('eventHours=5');
+    });
   });
 });

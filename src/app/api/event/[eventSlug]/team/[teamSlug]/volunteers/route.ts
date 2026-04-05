@@ -35,7 +35,8 @@ export const GET = async (
     const shifts = await getShiftsForTeam(team.id);
     const shiftVolunteers = await getVolunteersForShifts(
       shifts.map((shift) => shift.id),
-      getPermissionsProfile(await currentUser())
+      getPermissionsProfile(await currentUser()),
+      event.id
     );
     const volunteers = deduplicateBy(Object.values(shiftVolunteers).flat(), (v) => v.id);
     const csvContent = volunteersToCSV(volunteers);

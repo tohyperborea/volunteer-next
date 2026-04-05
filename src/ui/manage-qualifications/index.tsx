@@ -12,7 +12,6 @@ import QualificationList from '../qualification-list';
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import QualificationDialog from '../qualification-dialog';
-import SearchBar from '../search-bar';
 
 interface Props {
   qualifications: QualificationInfo[];
@@ -49,7 +48,6 @@ export default function ManageQualifications({
           {t('add')}
         </Button>
       )}
-      <SearchBar />
       <QualificationList
         qualifications={qualifications}
         event={event}

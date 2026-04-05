@@ -69,7 +69,8 @@ export default async function QualificationsPage(
         withQualification: qualification.id,
         searchQuery: query
       },
-      permissionsProfile
+      permissionsProfile,
+      event.id
     ),
     permissionsProfile
   );

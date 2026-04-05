@@ -1,7 +1,7 @@
 import metadata from '@/i18n/metadata';
-import { Heading, Flex, Button } from '@radix-ui/themes';
+import { Heading, Flex, Button, Text, Badge } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
-import { checkAuthorisation, currentUser } from '@/session';
+import { checkAuthorisation, currentUser, getCurrentEvent } from '@/session';
 import { getFilteredUsers } from '@/service/user-service';
 import { markUserAsDeleted, undeleteUser } from '@/service/user-service';
 import { revalidatePath } from 'next/cache';
@@ -18,6 +18,7 @@ import DeleteButton from '@/ui/delete-button';
 import { recordToUserFilters } from '@/utils/user-filters';
 import { getPermissionsProfile } from '@/utils/permissions';
 import NextLink from 'next/link';
+import { getHoursForVolunteers } from '@/service/shift-service';
 
 const PAGE_KEY = 'UsersDashboardPage';
 export const generateMetadata = metadata(PAGE_KEY);
@@ -28,9 +29,10 @@ export default async function UsersDashboardPage({ searchParams }: PageProps<'/u
   const permissionsProfile = getPermissionsProfile(await currentUser());
   const t = await getTranslations(PAGE_KEY);
   const filters = recordToUserFilters(await searchParams);
-  const users = await getFilteredUsers(filters, permissionsProfile);
+  const event = await getCurrentEvent();
+  const users = await getFilteredUsers(filters, permissionsProfile, event?.id);
   const volunteers = usersToVolunteers(users, permissionsProfile);
-  const withFilters: (keyof UserFilters)[] = ['searchQuery', 'roleType'];
+  const withFilters: (keyof UserFilters)[] = ['searchQuery', 'roleType', 'eventHours'];
   if (canEdit) {
     withFilters.push('showDeleted');
   }
@@ -79,6 +81,22 @@ export default async function UsersDashboardPage({ searchParams }: PageProps<'/u
     }
   }
 
+  const itemContent: Record<UserId, React.ReactNode> = {};
+  if (filters.eventHours !== undefined && event) {
+    const hours = await getHoursForVolunteers(
+      event.id,
+      volunteers.map((v) => v.id)
+    );
+    for (const volunteer of volunteers) {
+      itemContent[volunteer.id] = (
+        <Badge variant="soft" color="blue">
+          <Text>{t('hoursLabel')}:</Text>
+          <Text>{hours[volunteer.id] ?? 0}</Text>
+        </Badge>
+      );
+    }
+  }
+
   return (
     <Flex direction="column" gap="4">
       <Heading my="4" as="h1" align="center">
@@ -105,7 +123,12 @@ export default async function UsersDashboardPage({ searchParams }: PageProps<'/u
           </NextLink>
         </Button>
       </Flex>
-      <VolunteerList volunteers={volunteers} withFilters={withFilters} itemActions={itemActions} />
+      <VolunteerList
+        volunteers={volunteers}
+        withFilters={withFilters}
+        itemActions={itemActions}
+        itemContent={itemContent}
+      />
     </Flex>
   );
 }

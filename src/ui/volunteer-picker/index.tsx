@@ -13,6 +13,7 @@ import SearchBar from '../search-bar';
 import { useEffect, useState } from 'react';
 import { VolunteerCardContent } from '../volunteer-card';
 import { getUserApiPath } from '@/utils/path';
+import { useDebouncedCallback } from 'use-debounce';
 
 interface Props {
   title: string;
@@ -25,7 +26,12 @@ interface Props {
 export default function VolunteerPicker({ title, open, onClose, onSubmit, filter }: Props) {
   const t = useTranslations('VolunteerPicker');
   const [volunteers, setVolunteers] = useState<VolunteerInfo[]>([]);
+  const [searchQuery, setSearchQuery] = useState<string>('');
   const [search, setSearch] = useState<string | undefined>(undefined);
+
+  const debouncedSetSearch = useDebouncedCallback((value: string) => {
+    setSearch(value);
+  }, 500);
 
   const fetchVolunteers = async (searchQuery: string | undefined) => {
     const requestFilter: UserFilters | undefined = searchQuery
@@ -53,8 +59,10 @@ export default function VolunteerPicker({ title, open, onClose, onSubmit, filter
           {title}
         </Dialog.Title>
         <SearchBar
+          value={searchQuery}
           onChange={(value) => {
-            setSearch(value);
+            setSearchQuery(value);
+            debouncedSetSearch(value);
           }}
         />
         <CheckboxCards.Root columns="1" mt="4" name="volunteers">
