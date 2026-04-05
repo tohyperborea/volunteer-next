@@ -7,7 +7,7 @@
 import { MixerVerticalIcon } from '@radix-ui/react-icons';
 import { Flex, Button, Card, Select, Checkbox, Text, Box, TextField } from '@radix-ui/themes';
 import { useSearchParams, usePathname, useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import SearchBar from '../search-bar';
 import { paramsToUserFilters } from '@/utils/user-filters';
 import { useTranslations } from 'next-intl';
@@ -27,6 +27,10 @@ export default function VolunteerFilters({ currentEventId, withFilters = [] }: P
   const [filtersOpen, setFiltersOpen] = useState(false);
   const searchParams = useSearchParams();
   const currentFilters = paramsToUserFilters(searchParams);
+  const [searchQuery, setSearchQuery] = useState(currentFilters.searchQuery || '');
+  const [hoursFilter, setHoursFilter] = useState<string>(
+    currentFilters.eventHours ? String(currentFilters.eventHours) : ''
+  );
   const pathname = usePathname();
   const { replace } = useRouter();
   const debouncedEventHoursChange = useDebouncedCallback((value) => {
@@ -35,6 +39,16 @@ export default function VolunteerFilters({ currentEventId, withFilters = [] }: P
       ['eventId', value ? currentEventId : undefined]
     ]);
   }, 500);
+  const debouncedSearchQueryChange = useDebouncedCallback((value) => {
+    onFilterChange('searchQuery', value || undefined);
+  }, 500);
+
+  useEffect(() => {
+    setHoursFilter(currentFilters.eventHours ? String(currentFilters.eventHours) : '');
+  }, [currentFilters.eventHours]);
+  useEffect(() => {
+    setSearchQuery(currentFilters.searchQuery || '');
+  }, [currentFilters.searchQuery]);
 
   const onFiltersChange = (changes: [keyof UserFilters, string | undefined][]) => {
     const params = new URLSearchParams(searchParams);
@@ -73,8 +87,11 @@ export default function VolunteerFilters({ currentEventId, withFilters = [] }: P
     <Flex direction="column" gap="2">
       {hasFilter.has('searchQuery') && (
         <SearchBar
-          defaultValue={currentFilters.searchQuery}
-          onChange={onFilterChange.bind(null, 'searchQuery')}
+          value={searchQuery}
+          onChange={(value) => {
+            setSearchQuery(value);
+            debouncedSearchQueryChange(value);
+          }}
         />
       )}
       {showFilterPanel && (
@@ -121,10 +138,13 @@ export default function VolunteerFilters({ currentEventId, withFilters = [] }: P
                           aria-label={t('eventHoursFilterLabel')}
                           placeholder={t('eventHoursPlaceholder')}
                           type="number"
-                          defaultValue={currentFilters.eventHours}
+                          value={hoursFilter}
                           min={0}
                           step={1}
-                          onChange={(e) => debouncedEventHoursChange(e.currentTarget.value)}
+                          onChange={(e) => {
+                            setHoursFilter(e.currentTarget.value);
+                            debouncedEventHoursChange(e.currentTarget.value);
+                          }}
                         />
                       </Box>
                     </FormField>

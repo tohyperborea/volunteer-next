@@ -4,7 +4,6 @@ import { getShiftsForEvent } from '@/service/shift-service';
 import { getTeamsForEvent } from '@/service/team-service';
 import { getVolunteersForShifts } from '@/service/user-service';
 import { checkAuthorisation, currentUser, getCurrentEventOrRedirect } from '@/session';
-import SearchBar from '@/ui/search-bar';
 import SendEmailButton from '@/ui/send-email-button';
 import ShiftOverviewList from '@/ui/shift-overview-list';
 import { deduplicateBy } from '@/utils/list';
@@ -100,7 +99,6 @@ export default async function EventShifts() {
           </SendEmailButton>
         )}
       </Flex>
-      <SearchBar />
       <ShiftOverviewList
         event={event}
         teams={teams}

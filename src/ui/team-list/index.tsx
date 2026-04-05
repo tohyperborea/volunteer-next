@@ -27,13 +27,6 @@ export default function TeamList({
   showSignup
 }: Props) {
   const t = useTranslations('TeamList');
-  if (teams.length === 0) {
-    return (
-      <Card>
-        <Text>{t('noTeams')}</Text>
-      </Card>
-    );
-  }
   const shiftsByTeamId = shifts.reduce<Record<TeamId, ShiftInfo[]>>((acc, shift) => {
     if (!acc[shift.teamId]) {
       acc[shift.teamId] = [];
@@ -45,21 +38,29 @@ export default function TeamList({
     <Flex direction="column" gap="4">
       <TeamFilters withFilters={['searchQuery']} />
       <Flex direction="column" gap="4" asChild m="0" p="0">
-        <ul style={{ listStyle: 'none' }}>
-          {teams.map((team) => (
-            <Box asChild m="0" p="0" key={team.id}>
-              <li>
-                <TeamCard
-                  team={team}
-                  shifts={shiftsByTeamId[team.id] ?? []}
-                  shiftVolunteers={shiftVolunteers}
-                  actions={itemActions[team.id]}
-                  showSignup={showSignup}
-                />
-              </li>
-            </Box>
-          ))}
-        </ul>
+        {teams.length === 0 ? (
+          <Box asChild p="4">
+            <Card>
+              <Text>{t('noTeams')}</Text>
+            </Card>
+          </Box>
+        ) : (
+          <ul style={{ listStyle: 'none' }}>
+            {teams.map((team) => (
+              <Box asChild m="0" p="0" key={team.id}>
+                <li>
+                  <TeamCard
+                    team={team}
+                    shifts={shiftsByTeamId[team.id] ?? []}
+                    shiftVolunteers={shiftVolunteers}
+                    actions={itemActions[team.id]}
+                    showSignup={showSignup}
+                  />
+                </li>
+              </Box>
+            ))}
+          </ul>
+        )}
       </Flex>
     </Flex>
   );

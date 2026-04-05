@@ -11,7 +11,9 @@ const asPositiveInteger = (value: string | null | undefined): number | undefined
     return undefined;
   }
   const num = Number(value);
-  return isNaN(num) || num < 0 ? undefined : num;
+  return isNaN(num) || num <= 0 || !Number.isFinite(num) || !Number.isInteger(num)
+    ? undefined
+    : num;
 };
 
 /**

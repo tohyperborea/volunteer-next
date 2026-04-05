@@ -117,7 +117,11 @@ export const getMatchingRoles = async (toMatch: UserRoleMatchCriteria): Promise<
   return user.roles.filter((userRole) => roleMatches(userRole, toMatch));
 };
 
-const getCurrentEventId = cache(async (): Promise<EventId | null> => {
+/**
+ * Retrieves the current event ID from the 'x-event-id' header.
+ * @returns The current event ID, or null if not found.
+ */
+export const getCurrentEventId = cache(async (): Promise<EventId | null> => {
   const eventId = (await headers()).get('x-event-id');
   return eventId ?? null;
 });

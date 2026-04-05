@@ -20,7 +20,8 @@ jest.mock('next/server', () => ({
 }));
 jest.mock('@/session', () => ({
   checkAuthorisation: jest.fn().mockResolvedValue(true),
-  currentUser: jest.fn().mockResolvedValue({ id: 'currentUser' })
+  currentUser: jest.fn().mockResolvedValue({ id: 'currentUser' }),
+  getCurrentEventId: jest.fn().mockResolvedValue('currentEvent')
 }));
 jest.mock('@/service/user-service', () => ({
   getFilteredUsers: jest.fn()
@@ -111,7 +112,11 @@ describe('GET /api/user', () => {
 
     expect(mockParamsToUserFilters).toHaveBeenCalledWith(request.nextUrl.searchParams);
     expect(mockCheckAuthorisation).toHaveBeenCalled();
-    expect(mockGetFilteredUsers).toHaveBeenCalledWith(mockFilter, { id: 'permissionsProfile' });
+    expect(mockGetFilteredUsers).toHaveBeenCalledWith(
+      mockFilter,
+      { id: 'permissionsProfile' },
+      'currentEvent'
+    );
     expect(mockUsersToVolunteers).toHaveBeenCalledWith(mockUsers, { id: 'permissionsProfile' });
 
     expect(mockNextResponseJson).toHaveBeenCalledWith(mockVolunteers);
@@ -146,7 +151,11 @@ describe('GET /api/user', () => {
 
     expect(mockParamsToUserFilters).toHaveBeenCalledWith(request.nextUrl.searchParams);
     expect(mockCheckAuthorisation).toHaveBeenCalled();
-    expect(mockGetFilteredUsers).toHaveBeenCalledWith(mockFilter, { id: 'permissionsProfile' });
+    expect(mockGetFilteredUsers).toHaveBeenCalledWith(
+      mockFilter,
+      { id: 'permissionsProfile' },
+      'currentEvent'
+    );
     expect(mockUsersToVolunteers).toHaveBeenCalledWith(mockUsers, { id: 'permissionsProfile' });
     expect(mockVolunteersToCSV).toHaveBeenCalledWith(mockVolunteers, mockHours);
     expect(mockCSVResponse).toHaveBeenCalledWith(mockCSVContent, 'volunteers');

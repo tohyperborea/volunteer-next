@@ -9,10 +9,11 @@
 import { MixerVerticalIcon } from '@radix-ui/react-icons';
 import { Flex, Button, Card, Box } from '@radix-ui/themes';
 import { useSearchParams, usePathname, useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import SearchBar from '../search-bar';
 import { paramsToTeamFilters } from '@/utils/team-filters';
 import { useTranslations } from 'next-intl';
+import { useDebouncedCallback } from 'use-debounce';
 
 interface Props {
   withFilters?: (keyof TeamFilters)[];
@@ -25,8 +26,16 @@ export default function TeamFilters({ withFilters = [] }: Props) {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const searchParams = useSearchParams();
   const currentFilters = paramsToTeamFilters(searchParams);
+  const [searchQuery, setSearchQuery] = useState(currentFilters.searchQuery || '');
+  useEffect(() => {
+    setSearchQuery(currentFilters.searchQuery || '');
+  }, [currentFilters.searchQuery]);
   const pathname = usePathname();
   const { replace } = useRouter();
+
+  const debouncedSearchQueryChange = useDebouncedCallback((value) => {
+    onFilterChange('searchQuery', value || undefined);
+  }, 500);
 
   const onFilterChange = (filter: keyof TeamFilters, value: string | undefined) => {
     const params = new URLSearchParams(searchParams);
@@ -50,8 +59,11 @@ export default function TeamFilters({ withFilters = [] }: Props) {
     <Flex direction="column" gap="2">
       {hasFilter.has('searchQuery') && (
         <SearchBar
-          defaultValue={currentFilters.searchQuery}
-          onChange={onFilterChange.bind(null, 'searchQuery')}
+          value={searchQuery}
+          onChange={(value) => {
+            setSearchQuery(value);
+            debouncedSearchQueryChange(value);
+          }}
         />
       )}
       {showFilterPanel && (

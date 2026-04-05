@@ -112,7 +112,7 @@ export const getUsers = cache(async (eventId?: EventId): Promise<User[]> => {
       r."teamId"
     FROM "user" u
     LEFT JOIN role r ON u.id = r."userId"
-      AND (r."eventId" IS NULL OR r."eventId" = $2)
+      AND (r."eventId" IS NULL OR r."eventId" = $1)
     `,
     [eventId ?? null]
   );
@@ -283,6 +283,7 @@ export const getUsersWithRole = cache(
 /**
  * Fetches all roles associated with a given user.
  * @param userId - The ID of the user to fetch roles for.
+ * @param eventId - Optional event ID to filter roles by (only include roles for the specified event or global roles).
  * @returns An array of UserRole objects associated with the user.
  */
 export const getUserRoles = cache(async (userId: UserId, eventId: EventId): Promise<UserRole[]> => {
@@ -509,6 +510,7 @@ export const getTeamLeadsForTeam = cache(
  * Fetches all volunteers for a given list of shifts
  * @param shiftIds - An array of shift IDs to fetch volunteers for
  * @param permissionsProfile - The permissions profile of the requesting user
+ * @param eventId - Optional event ID to filter roles by (only include roles for the specified event or global roles).
  * @returns A record mapping ShiftID to VolunteerInfo[]
  */
 export const getVolunteersForShifts = cache(

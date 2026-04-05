@@ -8,7 +8,7 @@ import { CSVResponse, NotImplementedResponse } from '@/lib/response';
 import { usersToVolunteers } from '@/lib/volunteer';
 import { getHoursForVolunteers } from '@/service/shift-service';
 import { getFilteredUsers } from '@/service/user-service';
-import { checkAuthorisation, currentUser } from '@/session';
+import { checkAuthorisation, currentUser, getCurrentEventId } from '@/session';
 import { volunteersToCSV } from '@/utils/csv-export';
 import { getPermissionsProfile } from '@/utils/permissions';
 import { paramsToUserFilters } from '@/utils/user-filters';
@@ -19,8 +19,9 @@ export const GET = async (request: NextRequest): Promise<Response> => {
   const searchParams = request.nextUrl.searchParams;
   const filter = paramsToUserFilters(searchParams);
   const permissionsProfile = getPermissionsProfile(await currentUser());
+  const currentEventId = await getCurrentEventId();
   const volunteers = usersToVolunteers(
-    await getFilteredUsers(filter, permissionsProfile),
+    await getFilteredUsers(filter, permissionsProfile, currentEventId ?? undefined),
     permissionsProfile
   ).sort((a, b) => a.displayName.localeCompare(b.displayName));
   const hours =
