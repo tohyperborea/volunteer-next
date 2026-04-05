@@ -124,7 +124,6 @@ export default async function UsersDashboardPage({ searchParams }: PageProps<'/u
         </Button>
       </Flex>
       <VolunteerList
-        currentEventId={event?.id}
         volunteers={volunteers}
         withFilters={withFilters}
         itemActions={itemActions}

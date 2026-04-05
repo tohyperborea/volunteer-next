@@ -156,9 +156,17 @@ export const getFilteredUsers = cache(
       queryParts.push(`u."deletedAt" IS NULL`);
     }
     if (filters.roleType) {
-      queryParams.push(filters.roleType);
+      queryParams.push(filters.roleType, eventId ?? null);
       queryParts.push(
-        `EXISTS (SELECT 1 FROM role r WHERE r."userId" = u.id AND r.type = $${queryParams.length})`
+        `
+        EXISTS (
+          SELECT 1 
+          FROM role r 
+          WHERE r."userId" = u.id 
+          AND r.type = $${queryParams.length - 1}
+          AND (r."eventId" IS NULL OR r."eventId" = $${queryParams.length})
+        )
+        `
       );
     }
     if (filters.withQualification) {
@@ -179,8 +187,8 @@ export const getFilteredUsers = cache(
         `EXISTS (SELECT 1 FROM shift_volunteer sv JOIN shift s ON sv.shift_id = s.id WHERE sv.user_id = u.id AND s."teamId" = $${queryParams.length})`
       );
     }
-    if (filters.eventHours !== undefined && filters.eventId) {
-      queryParams.push(filters.eventId, filters.eventHours);
+    if (filters.eventHours !== undefined) {
+      queryParams.push(eventId, filters.eventHours);
       queryParts.push(
         `
         (

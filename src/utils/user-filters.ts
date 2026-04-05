@@ -29,8 +29,7 @@ export function paramsToUserFilters(searchParams: URLSearchParams): UserFilters 
     withQualification: searchParams.get('withQualification') || undefined,
     withoutQualification: searchParams.get('withoutQualification') || undefined,
     onTeam: searchParams.get('onTeam') || undefined,
-    eventHours: asPositiveInteger(searchParams.get('eventHours')),
-    eventId: searchParams.get('eventId') || undefined
+    eventHours: asPositiveInteger(searchParams.get('eventHours'))
   };
 }
 
@@ -49,8 +48,7 @@ export function recordToUserFilters(
     withQualification: normalise(record['withQualification']),
     withoutQualification: normalise(record['withoutQualification']),
     onTeam: normalise(record['onTeam']),
-    eventHours: asPositiveInteger(normalise(record['eventHours'])),
-    eventId: normalise(record['eventId'])
+    eventHours: asPositiveInteger(normalise(record['eventHours']))
   };
 }
 
@@ -99,11 +97,6 @@ export function userFiltersToParams(
     params.set('eventHours', String(filters.eventHours));
   } else {
     params.delete('eventHours');
-  }
-  if (filters.eventId) {
-    params.set('eventId', filters.eventId);
-  } else {
-    params.delete('eventId');
   }
   return params;
 }

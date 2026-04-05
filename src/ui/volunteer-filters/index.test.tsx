@@ -38,7 +38,7 @@ describe('VolunteerFilters', () => {
     { filters: ['eventHours'] },
     { filters: ['searchQuery', 'roleType', 'showDeleted'] }
   ])('renders the correct filters for $filters', ({ filters }) => {
-    render(<VolunteerFilters withFilters={filters} currentEventId="event-id" />);
+    render(<VolunteerFilters withFilters={filters} />);
     if (filters.includes('searchQuery')) {
       expect(screen.getByPlaceholderText('placeholder')).toBeInTheDocument();
     } else {
@@ -72,7 +72,7 @@ describe('VolunteerFilters', () => {
   });
 
   it('toggles the filter panel when the filter button is clicked', () => {
-    render(<VolunteerFilters withFilters={['roleType']} currentEventId="" />);
+    render(<VolunteerFilters withFilters={['roleType']} />);
     const filterButton = screen.getByRole('button', { name: 'filters' });
 
     expect(screen.queryByText('allRoles')).not.toBeInTheDocument();
@@ -83,7 +83,7 @@ describe('VolunteerFilters', () => {
   });
 
   it('calls onFilterChange when a filter value is changed', async () => {
-    render(<VolunteerFilters withFilters={['roleType']} currentEventId="" />);
+    render(<VolunteerFilters withFilters={['roleType']} />);
     const user = userEvent.setup();
     await user.click(screen.getByRole('button', { name: 'filters' }));
 
@@ -95,7 +95,7 @@ describe('VolunteerFilters', () => {
   });
 
   it('clears all filters when the clear button is clicked', async () => {
-    render(<VolunteerFilters withFilters={['roleType', 'showDeleted']} currentEventId="" />);
+    render(<VolunteerFilters withFilters={['roleType', 'showDeleted']} />);
     const user = userEvent.setup();
     await user.click(screen.getByRole('button', { name: 'filters' }));
 
@@ -106,24 +106,20 @@ describe('VolunteerFilters', () => {
   });
 
   it('renders the checkbox for "showDeleted" filter and toggles its state', async () => {
-    const { rerender } = render(
-      <VolunteerFilters withFilters={['showDeleted']} currentEventId="" />
-    );
+    const { rerender } = render(<VolunteerFilters withFilters={['showDeleted']} />);
     const user = userEvent.setup();
     await user.click(screen.getByRole('button', { name: 'filters' }));
     expect(screen.getByLabelText('showDeleted')).not.toBeChecked();
     await user.click(screen.getByLabelText('showDeleted'));
     expect(window.location.search).toContain('showDeleted=true');
     // rerender is required to update searchParams after the URL change
-    rerender(<VolunteerFilters withFilters={['showDeleted']} currentEventId="" />);
+    rerender(<VolunteerFilters withFilters={['showDeleted']} />);
     await user.click(screen.getByLabelText('showDeleted'));
     expect(window.location.search).not.toContain('showDeleted=true');
   });
 
   it('renders the input for "eventHours" filter and updates its value', async () => {
-    const { rerender } = render(
-      <VolunteerFilters withFilters={['eventHours']} currentEventId="event-id" />
-    );
+    const { rerender } = render(<VolunteerFilters withFilters={['eventHours']} />);
     const user = userEvent.setup();
     await user.click(screen.getByRole('button', { name: 'filters' }));
     const eventHoursInput = screen.getByLabelText('eventHoursFilterLabel');
@@ -132,15 +128,13 @@ describe('VolunteerFilters', () => {
     // Wait for the debounce to trigger
     await waitFor(() => {
       expect(window.location.search).toContain('eventHours=5');
-      expect(window.location.search).toContain('eventId=event-id');
     });
     // rerender is required to update searchParams after the URL change
-    rerender(<VolunteerFilters withFilters={['eventHours']} currentEventId="event-id" />);
+    rerender(<VolunteerFilters withFilters={['eventHours']} />);
     fireEvent.change(screen.getByLabelText('eventHoursFilterLabel'), { target: { value: '' } });
     // Wait for the debounce to trigger
     await waitFor(() => {
       expect(window.location.search).not.toContain('eventHours=5');
-      expect(window.location.search).not.toContain('eventId=event-id');
     });
   });
 });

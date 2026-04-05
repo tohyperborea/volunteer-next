@@ -123,7 +123,7 @@ describe('GET /api/user', () => {
   });
 
   it('should return a CSV response when format is csv', async () => {
-    const mockFilter: UserFilters = { roleType: 'admin', eventHours: 1, eventId: 'event1' };
+    const mockFilter: UserFilters = { roleType: 'admin', eventHours: 1 };
     const mockUsers: User[] = [
       {
         id: 'user1',

@@ -17,10 +17,9 @@ import { useDebouncedCallback } from 'use-debounce';
 
 interface Props {
   withFilters?: (keyof UserFilters)[];
-  currentEventId?: EventId;
 }
 
-export default function VolunteerFilters({ currentEventId, withFilters = [] }: Props) {
+export default function VolunteerFilters({ withFilters = [] }: Props) {
   const t = useTranslations('VolunteerFilters');
   const hasFilter = new Set(withFilters);
   const showFilterPanel = hasFilter.difference(new Set(['searchQuery'])).size > 0;
@@ -34,10 +33,7 @@ export default function VolunteerFilters({ currentEventId, withFilters = [] }: P
   const pathname = usePathname();
   const { replace } = useRouter();
   const debouncedEventHoursChange = useDebouncedCallback((value) => {
-    onFiltersChange([
-      ['eventHours', value || undefined],
-      ['eventId', value ? currentEventId : undefined]
-    ]);
+    onFilterChange('eventHours', value || undefined);
   }, 500);
   const debouncedSearchQueryChange = useDebouncedCallback((value) => {
     onFilterChange('searchQuery', value || undefined);
@@ -49,18 +45,6 @@ export default function VolunteerFilters({ currentEventId, withFilters = [] }: P
   useEffect(() => {
     setSearchQuery(currentFilters.searchQuery || '');
   }, [currentFilters.searchQuery]);
-
-  const onFiltersChange = (changes: [keyof UserFilters, string | undefined][]) => {
-    const params = new URLSearchParams(searchParams);
-    for (const [filter, value] of changes) {
-      if (value) {
-        params.set(filter, value);
-      } else {
-        params.delete(filter);
-      }
-    }
-    replace(`${pathname}${params.size > 0 ? `?${params.toString()}` : ''}`);
-  };
 
   const onFilterChange = (filter: keyof UserFilters, value: string | undefined) => {
     const params = new URLSearchParams(searchParams);
@@ -131,7 +115,7 @@ export default function VolunteerFilters({ currentEventId, withFilters = [] }: P
                       </Box>
                     </FormField>
                   )}
-                  {hasFilter.has('eventHours') && currentEventId && (
+                  {hasFilter.has('eventHours') && (
                     <FormField name={t('eventHoursFilterLabel')} ariaId="eventHoursFilter">
                       <Box style={{ alignSelf: 'start' }}>
                         <TextField.Root
