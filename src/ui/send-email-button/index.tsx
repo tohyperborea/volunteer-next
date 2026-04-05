@@ -149,7 +149,7 @@ export default function SendEmailButton({
                     name="email-body"
                     placeholder={t('emailBody')}
                     aria-labelledby="email-body"
-                    size="3"
+                    rows={10}
                     resize="vertical"
                     autoComplete="off"
                     data-1p-ignore

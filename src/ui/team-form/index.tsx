@@ -91,6 +91,8 @@ export default function TeamForm({
               aria-labelledby="team-description-label"
               placeholder={t('teamDescription')}
               defaultValue={editingTeam?.description}
+              resize="vertical"
+              rows={10}
               required
             />
           </FormField>
