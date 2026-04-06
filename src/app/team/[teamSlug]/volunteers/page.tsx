@@ -56,7 +56,7 @@ export default async function TeamVolunteers({
   const permissionsProfile = getPermissionsProfile(await currentUser());
   const filters = recordToUserFilters(await searchParams);
   filters.onTeam = team.id;
-  const volunteers = await getFilteredVolunteers(filters, permissionsProfile);
+  const volunteers = await getFilteredVolunteers(filters, permissionsProfile, event.id);
   const emailableVolunteers = volunteers.filter((v) => v.email);
   const shifts = await getShiftsForVolunteers(
     volunteers.map((v) => v.id),

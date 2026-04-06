@@ -166,7 +166,8 @@
     "confirmDeletion": "Confirm deletion",
     "confirmDeleteText": "Are you sure you want to delete \"{userName}\"? The record will be permanently deleted after 30 days.",
     "undelete": "Undelete",
-    "export": "Export volunteers"
+    "export": "Export volunteers",
+    "hoursLabel": "Event Hours"
   },
   "CreateUserPage": {
     "title": "Create User",
@@ -246,6 +247,8 @@
     "admin": "Admin",
     "organiser": "Organiser",
     "teamLead": "Team Lead",
+    "eventHoursFilterLabel": "Filter by event hours",
+    "eventHoursPlaceholder": "Min. hours volunteered",
     "clear": "Clear"
   },
   "TeamFilters": {
@@ -338,6 +341,7 @@
     "requires": "Requires",
     "volunteers": "Volunteers",
     "editShift": "Edit Shift",
+    "copyShift": "Copy Shift",
     "expand": "Expand shift details",
     "collapse": "Collapse shift details",
     "signup": "Sign up",
@@ -348,6 +352,7 @@
     "cancel": "Cancel",
     "save": "Save Changes",
     "editShift": "Edit Shift",
+    "copyShift": "Copy Shift",
     "addShift": "Add Shift",
     "deleteShift": "Delete Shift",
     "deleteShiftConfirmation": "Are you sure you want to delete this shift? This action cannot be undone.",

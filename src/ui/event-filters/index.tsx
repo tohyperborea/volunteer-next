@@ -9,11 +9,12 @@
 import { MixerVerticalIcon } from '@radix-ui/react-icons';
 import { Flex, Button, Card, Box, Text, Checkbox } from '@radix-ui/themes';
 import { useSearchParams, usePathname, useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import SearchBar from '../search-bar';
 import { paramsToEventFilters } from '@/utils/event-filters';
 import { useTranslations } from 'next-intl';
 import SlideIn from '../slide-in';
+import { useDebouncedCallback } from 'use-debounce';
 
 interface Props {
   withFilters?: (keyof EventFilters)[];
@@ -26,8 +27,16 @@ export default function EventFilters({ withFilters = [] }: Props) {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const searchParams = useSearchParams();
   const currentFilters = paramsToEventFilters(searchParams);
+  const [searchQuery, setSearchQuery] = useState(currentFilters.searchQuery || '');
   const pathname = usePathname();
   const { replace } = useRouter();
+  const debouncedSearchQueryChange = useDebouncedCallback((value) => {
+    onFilterChange('searchQuery', value || undefined);
+  }, 500);
+
+  useEffect(() => {
+    setSearchQuery(currentFilters.searchQuery || '');
+  }, [currentFilters.searchQuery]);
 
   const onFilterChange = (filter: keyof EventFilters, value: string | undefined) => {
     const params = new URLSearchParams(searchParams);
@@ -51,8 +60,11 @@ export default function EventFilters({ withFilters = [] }: Props) {
     <Flex direction="column" gap="2">
       {hasFilter.has('searchQuery') && (
         <SearchBar
-          defaultValue={currentFilters.searchQuery}
-          onChange={onFilterChange.bind(null, 'searchQuery')}
+          value={searchQuery}
+          onChange={(value) => {
+            setSearchQuery(value);
+            debouncedSearchQueryChange(value);
+          }}
         />
       )}
       {showFilterPanel && (

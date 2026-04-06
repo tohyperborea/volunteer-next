@@ -3,7 +3,7 @@ import { notFound, redirect, unauthorized } from 'next/navigation';
 import { Flex, Heading, Card } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
 import { getUser, updateUser, removeRoleFromUsers, addRoleToUser } from '@/service/user-service';
-import { checkAuthorisation, currentUser } from '@/session';
+import { checkAuthorisation, currentUser, getCurrentEvent } from '@/session';
 import { inTransaction } from '@/db';
 import UserForm from '@/ui/user-form';
 import { getEvents } from '@/service/event-service';
@@ -35,7 +35,8 @@ export default async function EditUser({
     unauthorized();
   }
 
-  const user = await getUser(userId);
+  const event = await getCurrentEvent();
+  const user = await getUser(userId, event?.id);
   if (!user) {
     throw new Error('User not found');
   }

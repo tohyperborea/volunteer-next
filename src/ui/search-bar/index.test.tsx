@@ -8,8 +8,8 @@ jest.mock('next-intl', () => ({
 }));
 
 describe('SearchBar', () => {
-  it('renders the search bar with default value', () => {
-    render(<SearchBar defaultValue="test" />);
+  it('renders the search bar with value', () => {
+    render(<SearchBar value="test" />);
     const input = screen.getByDisplayValue('test');
     expect(input).toBeInTheDocument();
   });
@@ -18,22 +18,5 @@ describe('SearchBar', () => {
     render(<SearchBar />);
     const icon = screen.getByRole('img');
     expect(icon).toBeInTheDocument();
-  });
-
-  it('debounces onChange calls', async () => {
-    jest.useFakeTimers();
-    const mockOnChange = jest.fn();
-    render(<SearchBar onChange={mockOnChange} debounceDelay={300} />);
-    const input = screen.getByPlaceholderText('placeholder');
-
-    fireEvent.change(input, { target: { value: 'a' } });
-    fireEvent.change(input, { target: { value: 'ab' } });
-    fireEvent.change(input, { target: { value: 'abc' } });
-
-    jest.advanceTimersByTime(300);
-
-    expect(mockOnChange).toHaveBeenCalledTimes(1);
-    expect(mockOnChange).toHaveBeenCalledWith('abc');
-    jest.useRealTimers();
   });
 });

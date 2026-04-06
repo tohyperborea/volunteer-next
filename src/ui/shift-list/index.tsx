@@ -51,7 +51,9 @@ export default function ShiftList({
   const t = useTranslations('ShiftList');
   const canEdit = Boolean(onSaveShift);
   const [creatingShift, setCreatingShift] = useState(false);
-  const [editingShift, setEditingShift] = useState<ShiftInfo | undefined>(undefined);
+  const [editingShift, setEditingShift] = useState<PartialBy<ShiftInfo, 'id'> | undefined>(
+    undefined
+  );
   const qualificationMap = new Map(qualifications.map((q) => [q.id, q]));
   const showSignup = (shift: ShiftInfo) =>
     onSignup && userShifts && !userShifts.has(shift.id) && canSignupForShift(event, shift);
@@ -103,6 +105,7 @@ export default function ShiftList({
               volunteers={shiftVolunteers[shift.id] || []}
               key={shift.id}
               onEdit={showEdit(shift) ? () => setEditingShift(shift) : undefined}
+              onCopy={canEdit ? () => setEditingShift({ ...shift, id: undefined }) : undefined}
               onSignup={showSignup(shift) ? () => onSignup!(shift.id) : undefined}
               onCancel={showCancel(shift) ? () => onCancel!(shift.id) : undefined}
               isQualified={

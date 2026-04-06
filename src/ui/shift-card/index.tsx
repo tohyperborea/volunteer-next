@@ -11,7 +11,7 @@ import TimeSpan from '../time-span';
 import { useTranslations } from 'next-intl';
 import styles from './styles.module.css';
 import Collapsible from '../collapsible';
-import { Pencil2Icon, ChevronDownIcon } from '@radix-ui/react-icons';
+import { Pencil2Icon, ChevronDownIcon, CopyIcon } from '@radix-ui/react-icons';
 import { addHoursToTimeString } from '@/utils/datetime';
 import { getQualificationDetailsPath } from '@/utils/path';
 import { useState } from 'react';
@@ -25,6 +25,7 @@ interface Props {
   isQualified?: boolean;
   collapsible?: boolean;
   onEdit?: () => void;
+  onCopy?: () => void;
   onSignup?: () => void;
   onCancel?: () => void;
 }
@@ -47,6 +48,7 @@ export default function ShiftCard({
   volunteers,
   qualification,
   onEdit,
+  onCopy,
   onSignup,
   onCancel,
   collapsible,
@@ -70,7 +72,7 @@ export default function ShiftCard({
       : undefined;
   const canSignup = !cantSignupMessage;
   const hasButtons = onSignup || onCancel;
-  const hasActions = onEdit || collapsible;
+  const hasActions = onEdit || onCopy || collapsible;
 
   return (
     <Card className={isExpanded ? styles.expanded : undefined}>
@@ -181,6 +183,18 @@ export default function ShiftCard({
             top="3"
             right="3"
           >
+            {onCopy && (
+              <IconButton
+                aria-label={t('copyShift')}
+                variant="ghost"
+                onClick={onCopy}
+                data-umami-event="Copy shift"
+                data-umami-event-team={shift.teamId}
+                data-umami-event-shift={shift.title}
+              >
+                <CopyIcon width={20} height={20} />
+              </IconButton>
+            )}
             {onEdit && (
               <IconButton
                 aria-label={t('editShift')}

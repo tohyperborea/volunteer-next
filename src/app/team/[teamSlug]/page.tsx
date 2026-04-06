@@ -86,7 +86,8 @@ export default async function TeamPage({ params, searchParams }: PageProps<`/tea
   const permissions = getPermissionsProfile(user);
   const shiftVolunteers = await getVolunteersForShifts(
     shifts.map((s) => s.id),
-    permissions
+    permissions,
+    event.id
   );
   const userShifts = new Set(
     (await getShiftsForVolunteer(event.id, permissions.userId)).map((s) => s.id)

@@ -31,7 +31,8 @@ export const generateMetadata = metadata(PAGE_KEY, {
     const { userId } = params;
     const t = await getTranslations(PAGE_KEY);
     const permissionsProfile = getPermissionsProfile(await currentUser());
-    const user = await getVolunteerById(userId ?? null, permissionsProfile);
+    const event = await getCurrentEvent();
+    const user = await getVolunteerById(userId ?? null, event?.id ?? null, permissionsProfile);
     return t('title', {
       name: user?.displayName ?? ''
     });
@@ -42,12 +43,12 @@ export default async function VolunteerProfilePage({ params }: PageProps<'/user/
   const { userId } = await params;
   const t = await getTranslations(PAGE_KEY);
   const permissionsProfile = getPermissionsProfile(await currentUser());
-  const volunteer = await getVolunteerById(userId, permissionsProfile);
+  const event = await getCurrentEvent();
+
+  const volunteer = await getVolunteerById(userId, event?.id ?? null, permissionsProfile);
   if (!volunteer) {
     notFound();
   }
-
-  const event = await getCurrentEvent();
 
   const isAdmin = await checkAuthorisation([{ type: 'admin' }], true);
   const isOwnProfile = volunteer.id === permissionsProfile.userId;

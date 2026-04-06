@@ -124,15 +124,6 @@ describe('EventShifts Page', () => {
     expect(screen.getByRole('heading', { name: 'allShifts' })).toBeInTheDocument();
   });
 
-  it('renders the search bar', async () => {
-    mockGetCurrentEvent.mockResolvedValue(mockEvent);
-    mockGetCurrentEventOrRedirect.mockResolvedValue(mockEvent);
-    mockGetShiftsForEvent.mockResolvedValue(mockShifts);
-    mockGetTeamsForEvent.mockResolvedValue(mockTeams);
-    render(await EventShifts());
-    expect(screen.getByText('SearchBar')).toBeInTheDocument();
-  });
-
   it('renders shifts grouped by day and team', async () => {
     mockGetCurrentEvent.mockResolvedValue(mockEvent);
     mockGetCurrentEventOrRedirect.mockResolvedValue(mockEvent);

@@ -13,6 +13,7 @@ declare global {
     searchParams: Promise<S>;
   };
   type WithRequired<T, K extends keyof T> = T & Required<Pick<T, K>>;
+  type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
   type PartialWithRequired<T, R extends keyof T> = Partial<T> & Pick<T, R>;
   type OptionalKeys<T> = {
     [K in keyof T]-?: undefined extends T[K] ? K : never;
@@ -110,6 +111,7 @@ declare global {
     withQualification?: QualificationId;
     withoutQualification?: QualificationId;
     onTeam?: TeamId;
+    eventHours?: number;
   }
 
   interface ShiftInfo {
