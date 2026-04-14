@@ -527,6 +527,9 @@ export const getVolunteersForShifts = cache(
     permissionsProfile: PermissionsProfile,
     eventId: EventId
   ): Promise<Record<ShiftId, VolunteerInfo[]>> => {
+    if (shiftIds.length === 0) {
+      return {};
+    }
     const result = await pool.query(
       `
     SELECT

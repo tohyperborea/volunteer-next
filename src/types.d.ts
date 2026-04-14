@@ -68,15 +68,10 @@ declare global {
   /* These align with the role_type enum in the database
    * If you change this, you must also change the role_type enum in psql */
   type UserRoleType = 'admin' | 'organiser' | 'team-lead';
-  type UserRole =
-    // Global platform-wide control
-    | { type: 'admin' }
-
-    //Full control over all event specific data, users, and settings
-    | { type: 'organiser'; eventId: EventId }
-
-    // Manage volunteers in assigned area
-    | { type: 'team-lead'; eventId: EventId; teamId: TeamId };
+  type AdminRole = { type: 'admin' }; // Global platform-wide control
+  type OrganiserRole = { type: 'organiser'; eventId: EventId }; //Full control over all event specific data, users, and settings
+  type TeamLeadRole = { type: 'team-lead'; eventId: EventId; teamId: TeamId }; // Manage volunteers in assigned area
+  type UserRole = AdminRole | OrganiserRole | TeamLeadRole;
 
   type PermissionsProfile = {
     userId: UserId;

@@ -16,25 +16,28 @@ import NextLink from 'next/link';
 
 interface Props {
   team: TeamInfo;
-  shifts: ShiftInfo[];
+  shifts?: ShiftInfo[];
   shiftVolunteers?: Record<ShiftId, VolunteerInfo[]>;
   actions?: React.ReactNode;
   showSignup?: boolean;
 }
 export default function TeamCard({ team, shifts, shiftVolunteers, actions, showSignup }: Props) {
   const t = useTranslations('TeamCard');
-  const shiftSpots = shifts.reduce((spots, shift) => spots + shift.maxVolunteers, 0);
-  const filledSpots = shifts.reduce((spots, shift) => {
-    const volunteers = shiftVolunteers?.[shift.id] ?? [];
-    return spots + volunteers.length;
-  }, 0);
-  const volunteerNames = deduplicateBy(
-    shifts.flatMap((shift) => {
+  const shiftSpots = shifts?.reduce((spots, shift) => spots + shift.maxVolunteers, 0) ?? 0;
+  const filledSpots =
+    shifts?.reduce((spots, shift) => {
       const volunteers = shiftVolunteers?.[shift.id] ?? [];
-      return volunteers.map((volunteer) => volunteer.displayName);
-    }),
-    (name) => name
-  );
+      return spots + volunteers.length;
+    }, 0) ?? 0;
+  const volunteerNames = shifts
+    ? deduplicateBy(
+        shifts.flatMap((shift) => {
+          const volunteers = shiftVolunteers?.[shift.id] ?? [];
+          return volunteers.map((volunteer) => volunteer.displayName);
+        }),
+        (name) => name
+      )
+    : [];
   const isFull = filledSpots >= shiftSpots;
   return (
     <Card>
@@ -55,11 +58,13 @@ export default function TeamCard({ team, shifts, shiftVolunteers, actions, showS
               </NextLink>
             </Link>
             <Flex justify={{ initial: 'between', sm: 'end' }} align="center" flexGrow="1" gap="4">
-              <ProgressBar
-                colour={getStatusColour(shifts, shiftVolunteers)}
-                filled={shiftSpots - filledSpots}
-                total={shiftSpots}
-              />
+              {shifts && (
+                <ProgressBar
+                  colour={getStatusColour(shifts, shiftVolunteers)}
+                  filled={shiftSpots - filledSpots}
+                  total={shiftSpots}
+                />
+              )}
               {showSignup && (
                 <Button asChild={!isFull} disabled={isFull} title={isFull ? t('full') : undefined}>
                   {isFull ? (

@@ -10,6 +10,7 @@
     "shifts": "Shifts",
     "totalHours": "Total Hours",
     "signUpHere": "Sign up for a shift here",
+    "yourTeams": "Your teams",
     "upcomingShifts": "Upcoming Shifts",
     "gettingStarted": "Getting Started",
     "gettingStartedDescription": "Start by exploring volunteer roles, browsing shifts, and finding where you fit in the community. Community is built on shared effort—everyone contributes a little to create something bigger together. By showing up, you help shape a more vibrant, connected experience for everyone.",
@@ -32,6 +33,8 @@
   },
   "TeamsDashboardPage": {
     "title": "All teams",
+    "description": "Select a team to view and sign up for shifts.",
+    "descriptionAdmin": "Select a team to manage its shifts or create a shift directly.",
     "createTeam": "Add Team",
     "edit": "Edit Team: {teamName}"
   },
@@ -356,6 +359,8 @@
     "addShift": "Add Shift",
     "deleteShift": "Delete Shift",
     "deleteShiftConfirmation": "Are you sure you want to delete this shift? This action cannot be undone.",
+    "team": "Team",
+    "teamDescription": "Choose the team responsible for this shift",
     "title": "Title of Shift",
     "titleDescription": "Description",
     "titlePlaceholder": "Title",
@@ -438,5 +443,8 @@
     "send": "Send {numEmails, plural, one {# email} other {# emails}}",
     "cancel": "Cancel",
     "close": "Close"
+  },
+  "AddShiftButton": {
+    "addShift": "Add Shift"
   }
 }
