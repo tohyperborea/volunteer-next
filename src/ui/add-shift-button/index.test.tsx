@@ -1,6 +1,5 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import AddShiftButton from './index';
-import { useTranslations } from 'next-intl';
 
 jest.mock('next-intl', () => ({
   useTranslations: () => (key: string) => key,

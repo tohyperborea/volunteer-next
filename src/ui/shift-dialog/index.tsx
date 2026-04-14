@@ -43,12 +43,13 @@ export default function ShiftDialog({
   const t = useTranslations('ShiftDialog');
   const title = t(editing ? (editing.id ? 'editShift' : 'copyShift') : 'addShift');
   const [currentMin, setCurrentMin] = useState<number>(editing?.minVolunteers ?? 0);
+  const [currentTeam, setCurrentTeam] = useState<TeamId | undefined>(editing?.teamId ?? teamId);
   useEffect(() => {
     if (open) {
+      setCurrentTeam(editing?.teamId ?? teamId);
       setCurrentMin(editing?.minVolunteers ?? 0);
     }
   }, [open]);
-  const [currentTeam, setCurrentTeam] = useState<TeamId | undefined>(editing?.teamId ?? teamId);
   const qualificationOptions = qualifications.filter((q) => !q.teamId || q.teamId === currentTeam);
   return (
     <FormDialog description={title} open={open} onClose={onClose}>

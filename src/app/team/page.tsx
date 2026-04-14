@@ -1,5 +1,5 @@
 import metadata from '@/i18n/metadata';
-import { Heading, Flex, Button, Box, Text, IconButton } from '@radix-ui/themes';
+import { Heading, Flex, Button, Text, IconButton } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
 import { Pencil2Icon, PlusIcon } from '@radix-ui/react-icons';
 import {
@@ -76,7 +76,7 @@ export default async function EventsDashboard({ searchParams }: PageProps<'/team
       { type: 'team-lead', eventId: event.id, teamId: shift.teamId }
     ]);
     await createShift(shift);
-    const teamSlug = teams.find((t) => t.id === shift.teamId)!.slug;
+    const teamSlug = managedTeams.find((t) => t.id === shift.teamId)!.slug;
     redirect(getTeamShiftsPath(teamSlug));
   };
 

@@ -11,11 +11,7 @@ import {
   getMatchingRoles
 } from '@/session';
 import { getMyShiftsPath, getTeamsPath } from '@/utils/path';
-import {
-  getShiftsForTeam,
-  getShiftsForTeams,
-  getShiftsForVolunteer
-} from '@/service/shift-service';
+import { getShiftsForTeams, getShiftsForVolunteer } from '@/service/shift-service';
 import ShiftOverviewList from '@/ui/shift-overview-list';
 import { getTeamsForEvent } from '@/service/team-service';
 import { getVolunteersForShifts } from '@/service/user-service';

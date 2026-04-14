@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import ShiftDialog from '../shift-dialog';
+import ShiftDialog from '@/ui/shift-dialog';
 import { Button } from '@radix-ui/themes';
 import { PlusIcon } from '@radix-ui/react-icons';
 import { useTranslations } from 'next-intl';
