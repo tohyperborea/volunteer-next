@@ -229,6 +229,7 @@
     "startDate": "Start Date",
     "endDate": "End Date",
     "eventOrganiser": "Event Organiser",
+    "eventLogo": "Event Logo",
     "createButton": "Create Event",
     "updateButton": "Update Event",
     "cancelButton": "Cancel"
@@ -446,5 +447,8 @@
   },
   "AddShiftButton": {
     "addShift": "Add Shift"
+  },
+  "ImageSelector": {
+    "selectImage": "Select Image"
   }
 }

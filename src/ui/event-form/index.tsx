@@ -12,6 +12,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import DatePicker from '../datepicker';
 import { EVENT_SLUG_PATTERN } from '@/validator/event-validator';
+import ImageSelector from '../image-selector';
 
 const FormItem = ({ children }: { children: React.ReactNode }) => (
   <Flex direction="column" gap="1">
@@ -21,6 +22,7 @@ const FormItem = ({ children }: { children: React.ReactNode }) => (
 
 interface Props {
   onSubmit: (data: FormData) => Promise<void>;
+  onUpload: (file: File) => Promise<string>;
   backOnCancel?: boolean;
   organiserOptions: VolunteerInfo[];
   editingEvent?: EventInfo;
@@ -29,6 +31,7 @@ interface Props {
 
 export default function EventForm({
   onSubmit,
+  onUpload,
   backOnCancel,
   organiserOptions,
   editingEvent,
@@ -124,6 +127,12 @@ export default function EventForm({
               ))}
             </Select.Content>
           </Select.Root>
+        </FormItem>
+        <FormItem>
+          <Text as="label" id="event-logo-label" htmlFor="event-logo" size="2" weight="bold">
+            {t('eventLogo')}
+          </Text>
+          <ImageSelector name="logo" onSelect={onUpload} />
         </FormItem>
         <Flex gap="2" justify="end">
           <Button type="submit">{t(editingEvent ? 'updateButton' : 'createButton')}</Button>

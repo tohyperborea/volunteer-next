@@ -12,6 +12,7 @@ import { validateUserId } from '@/validator/user-validator';
 import { usersToVolunteers } from '@/lib/volunteer';
 import { getPermissionsProfile } from '@/utils/permissions';
 import { getEventsPath } from '@/utils/path';
+import { uploadImageAction } from '@/lib/image';
 
 const PAGE_KEY = 'CreateEventPage';
 
@@ -42,7 +43,12 @@ export default async function CreateEvent() {
     <Flex direction="column" gap="4">
       <Heading my="4">{t('title')}</Heading>
       <Card>
-        <EventForm onSubmit={onSubmit} backOnCancel organiserOptions={volunteers} />
+        <EventForm
+          onUpload={uploadImageAction}
+          onSubmit={onSubmit}
+          backOnCancel
+          organiserOptions={volunteers}
+        />
       </Card>
     </Flex>
   );
