@@ -1,17 +1,26 @@
 import metadata from '@/i18n/metadata';
-import { Heading, Flex, Button, Box, Link, IconButton } from '@radix-ui/themes';
+import { Heading, Flex, Button, Box, Text, IconButton } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
 import { Pencil2Icon, PlusIcon } from '@radix-ui/react-icons';
-import { checkAuthorisation, currentUser, getCurrentEventOrRedirect } from '@/session';
-import { getFilteredTeamsForEvent } from '@/service/team-service';
+import {
+  checkAuthorisation,
+  currentUser,
+  getCurrentEventOrRedirect,
+  getMatchingRoles
+} from '@/session';
+import { getFilteredTeamsForEvent, getTeamsById, getTeamsForEvent } from '@/service/team-service';
 import TeamList from '@/ui/team-list';
-import { getCreateTeamPath, getUpdateTeamPath } from '@/utils/path';
-import { getShiftsForEvent } from '@/service/shift-service';
+import { getCreateTeamPath, getTeamShiftsPath, getUpdateTeamPath } from '@/utils/path';
+import { createShift, getShiftsForEvent } from '@/service/shift-service';
 import { recordToTeamFilters } from '@/utils/team-filters';
 import { getVolunteersForShifts } from '@/service/user-service';
 import { getPermissionsProfile } from '@/utils/permissions';
 import NextLink from 'next/link';
 import { hasEventEnded, hasEventStarted } from '@/utils/date';
+import { getQualificationsForEvent } from '@/service/qualification-service';
+import AddShiftButton from '@/ui/add-shift-button';
+import { redirect, unauthorized } from 'next/navigation';
+import { validateNewShift } from '@/validator/shift-validator';
 
 const PAGE_KEY = 'TeamsDashboardPage';
 
@@ -32,7 +41,15 @@ export default async function EventsDashboard({ searchParams }: PageProps<'/team
     getPermissionsProfile(await currentUser()),
     event.id
   );
-  const isEditable = (await checkAuthorisation(editorRoles, true)) && !hasEventStarted(event);
+  const hasEventAccess = await checkAuthorisation(editorRoles, true);
+  const leadTeamsIds = (await getMatchingRoles({ type: 'team-lead', eventId: event.id })).map(
+    (role) => (role as TeamLeadRole).teamId
+  );
+  const isEditable = !hasEventStarted(event) && (hasEventAccess || leadTeamsIds.length > 0);
+  const qualifications = isEditable ? await getQualificationsForEvent(event.id) : [];
+  const managedTeams = hasEventAccess
+    ? await getTeamsForEvent(event.id)
+    : await getTeamsById(leadTeamsIds);
 
   const itemActions = !isEditable
     ? {}
@@ -47,19 +64,45 @@ export default async function EventsDashboard({ searchParams }: PageProps<'/team
         return actions;
       }, {});
 
+  const onSaveShift = async (data: FormData) => {
+    'use server';
+    if (!isEditable) {
+      unauthorized();
+    }
+    const shift = validateNewShift(data);
+    await checkAuthorisation([
+      { type: 'admin' },
+      { type: 'organiser', eventId: event.id },
+      { type: 'team-lead', eventId: event.id, teamId: shift.teamId }
+    ]);
+    await createShift(shift);
+    const teamSlug = teams.find((t) => t.id === shift.teamId)!.slug;
+    redirect(getTeamShiftsPath(teamSlug));
+  };
+
   return (
     <Flex direction="column" gap="4">
-      <Heading my="4" as="h1" align="center">
-        {t('title')}
+      <Heading as="h1" align="center" mt="4">
+        {event.name}
       </Heading>
+      <Flex direction="column" mb="4">
+        <Heading as="h2">{t('title')}</Heading>
+        <Text>{t(isEditable ? 'descriptionAdmin' : 'description')}</Text>
+      </Flex>
       {isEditable && (
-        <Box>
-          <Button asChild>
+        <Flex gap="2">
+          <Button asChild variant="soft">
             <NextLink href={getCreateTeamPath()}>
               <PlusIcon /> {t('createTeam')}
             </NextLink>
           </Button>
-        </Box>
+          <AddShiftButton
+            event={event}
+            teams={managedTeams}
+            qualifications={qualifications}
+            onSaveShift={onSaveShift}
+          />
+        </Flex>
       )}
       <TeamList
         teams={teams}

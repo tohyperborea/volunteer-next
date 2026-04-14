@@ -13,9 +13,8 @@ import FormDialog, { FormField } from '../form-dialog';
 import { useEffect, useState } from 'react';
 import DeleteButton from '../delete-button';
 
-interface Props {
+interface BaseProps {
   startDate: Date;
-  teamId: TeamId;
   qualifications: QualificationInfo[];
   editing?: PartialBy<ShiftInfo, 'id'>;
   creating?: boolean;
@@ -24,9 +23,15 @@ interface Props {
   onDelete?: (shiftId: ShiftId) => Promise<void>;
 }
 
+type PropsWithTeam = BaseProps & { teamId: TeamId; teams?: never };
+type PropsWithoutTeam = BaseProps & { teamId?: never; teams: TeamInfo[] };
+
+type Props = PropsWithTeam | PropsWithoutTeam;
+
 export default function ShiftDialog({
   startDate,
   teamId,
+  teams,
   qualifications,
   creating = false,
   editing = undefined,
@@ -43,10 +48,12 @@ export default function ShiftDialog({
       setCurrentMin(editing?.minVolunteers ?? 0);
     }
   }, [open]);
+  const [currentTeam, setCurrentTeam] = useState<TeamId | undefined>(editing?.teamId ?? teamId);
+  const qualificationOptions = qualifications.filter((q) => !q.teamId || q.teamId === currentTeam);
   return (
     <FormDialog description={title} open={open} onClose={onClose}>
       <input type="hidden" name="id" value={editing?.id ?? ''} />
-      <input type="hidden" name="teamId" value={teamId} />
+      {teamId && <input type="hidden" name="teamId" value={teamId} />}
       <Flex direction="column" align="start" height="100%">
         <Dialog.Title as="h2" mt="4" mb="6">
           {title}
@@ -73,6 +80,25 @@ export default function ShiftDialog({
               {t('active')}
             </Flex>
           </Text>
+          {teams && (
+            <FormField ariaId="shift-team" name={t('team')} description={t('teamDescription')}>
+              <Select.Root
+                required
+                name="teamId"
+                defaultValue={editing?.teamId}
+                onValueChange={(value) => setCurrentTeam(value)}
+              >
+                <Select.Trigger placeholder={t('team')} />
+                <Select.Content>
+                  {teams.map((team) => (
+                    <Select.Item key={team.id} value={team.id}>
+                      {team.name}
+                    </Select.Item>
+                  ))}
+                </Select.Content>
+              </Select.Root>
+            </FormField>
+          )}
           <FormField ariaId="shift-title" name={t('title')} description={t('titleDescription')}>
             <TextField.Root
               defaultValue={editing?.title}
@@ -157,7 +183,7 @@ export default function ShiftDialog({
                 </Select.Group>
                 <Select.Separator />
                 <Select.Group>
-                  {qualifications.map((q) => (
+                  {qualificationOptions.map((q) => (
                     <Select.Item key={q.id} value={q.id}>
                       {q.name}
                     </Select.Item>
