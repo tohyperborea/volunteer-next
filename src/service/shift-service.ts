@@ -112,6 +112,39 @@ export const getShiftsForTeam = cache(async (teamId: TeamId): Promise<ShiftInfo[
 });
 
 /**
+ * Fetches a list of shifts for multiple teams from the database.
+ * @param teamIds - An array of team IDs to fetch shifts for.
+ * @return An object mapping team IDs to arrays of ShiftInfo objects.
+ */
+export const getShiftsForTeams = cache(
+  async (teamIds: TeamId[]): Promise<Record<TeamId, ShiftInfo[]>> => {
+    if (teamIds.length === 0) {
+      return {};
+    }
+    const result = await pool.query(
+      `
+      ${SHIFT_QUERY}
+      WHERE "teamId" = ANY($1)
+      ORDER BY s."eventDay", s."startTime"
+      `,
+      [teamIds]
+    );
+    const shifts = rowsToShifts(result.rows);
+    const shiftsByTeam = shifts.reduce(
+      (acc, shift) => {
+        if (!acc[shift.teamId]) {
+          acc[shift.teamId] = [];
+        }
+        acc[shift.teamId].push(shift);
+        return acc;
+      },
+      {} as Record<TeamId, ShiftInfo[]>
+    );
+    return shiftsByTeam;
+  }
+);
+
+/**
  * Fetches a list of shifts for a given team, filtered by the provided criteria.
  * @param teamId - The ID of the team to fetch shifts for.
  * @param filters - A ShiftFilters object

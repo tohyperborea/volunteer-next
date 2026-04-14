@@ -7,15 +7,21 @@ import {
   checkAuthorisation,
   currentUser,
   getCurrentEvent,
-  getCurrentEventOrRedirect
+  getCurrentEventOrRedirect,
+  getMatchingRoles
 } from '@/session';
 import { getMyShiftsPath, getTeamsPath } from '@/utils/path';
-import { getShiftsForVolunteer } from '@/service/shift-service';
+import {
+  getShiftsForTeam,
+  getShiftsForTeams,
+  getShiftsForVolunteer
+} from '@/service/shift-service';
 import ShiftOverviewList from '@/ui/shift-overview-list';
 import { getTeamsForEvent } from '@/service/team-service';
 import { getVolunteersForShifts } from '@/service/user-service';
 import { getPermissionsProfile } from '@/utils/permissions';
 import { ArrowRightIcon } from '@radix-ui/react-icons';
+import TeamCard from '@/ui/team-card';
 
 const PAGE_KEY = 'DashboardPage';
 
@@ -42,6 +48,21 @@ export default async function DashboardPage() {
   const teams = await getTeamsForEvent(event.id);
   const upcomingShiftVolunteers = await getVolunteersForShifts(
     upcomingShifts.map((s) => s.id),
+    permissionsProfile,
+    event.id
+  );
+  const myTeamIds = new Set(
+    (await getMatchingRoles({ type: 'team-lead', eventId: event.id })).map(
+      (role) => (role as TeamLeadRole).teamId
+    )
+  );
+  const myTeams = teams.filter((team) => myTeamIds.has(team.id));
+  const myTeamShifts = await getShiftsForTeams(Array.from(myTeamIds));
+  const myTeamShiftIds = Object.values(myTeamShifts).flatMap((shifts) =>
+    shifts.map((shift) => shift.id)
+  );
+  const myTeamVolunteers = await getVolunteersForShifts(
+    myTeamShiftIds,
     permissionsProfile,
     event.id
   );
@@ -75,6 +96,23 @@ export default async function DashboardPage() {
           </Button>
         </Link>
       </Flex>
+
+      {/* My Teams list */}
+      {myTeams.length > 0 && (
+        <Flex direction="column" gap="2">
+          <Heading as="h2">{t('yourTeams')}:</Heading>
+          <Flex direction="column" gap="3">
+            {myTeams.map((team) => (
+              <TeamCard
+                key={team.id}
+                team={team}
+                shifts={myTeamShifts[team.id]}
+                shiftVolunteers={myTeamVolunteers}
+              />
+            ))}
+          </Flex>
+        </Flex>
+      )}
 
       {/* Upcoming Shifts list */}
       {shifts.length > 0 && (
