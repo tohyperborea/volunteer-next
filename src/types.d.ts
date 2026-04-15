@@ -88,6 +88,9 @@ declare global {
     startDate: Date;
     endDate: Date;
     archived?: boolean;
+    logo?: string;
+    logoDark?: string;
+    favicon?: string;
   }
 
   interface TeamInfo {

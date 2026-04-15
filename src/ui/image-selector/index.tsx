@@ -8,11 +8,12 @@ import { useRef, useState } from 'react';
 interface Props {
   name: string;
   onSelect: (file: File) => Promise<string>;
+  defaultValue?: string;
 }
 
-export default function ImageSelector({ name, onSelect }: Props) {
+export default function ImageSelector({ name, onSelect, defaultValue }: Props) {
   const [isUploading, setIsUploading] = useState(false);
-  const [imagePath, setImagePath] = useState<string | null>(null);
+  const [imagePath, setImagePath] = useState<string | null>(defaultValue ?? null);
   const t = useTranslations('ImageSelector');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {

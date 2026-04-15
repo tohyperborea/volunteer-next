@@ -132,7 +132,7 @@ export default function EventForm({
           <Text as="label" id="event-logo-label" htmlFor="event-logo" size="2" weight="bold">
             {t('eventLogo')}
           </Text>
-          <ImageSelector name="logo" onSelect={onUpload} />
+          <ImageSelector name="logo" onSelect={onUpload} defaultValue={editingEvent?.logo} />
         </FormItem>
         <Flex gap="2" justify="end">
           <Button type="submit">{t(editingEvent ? 'updateButton' : 'createButton')}</Button>

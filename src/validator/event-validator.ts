@@ -59,10 +59,15 @@ export const validateNewEvent = (data: FormData): Omit<EventInfo, 'id'> => {
     throw new Error('End date cannot be before start date');
   }
 
+  const logo = data.get('logo')?.toString() ?? undefined;
+  const favicon = data.get('favicon')?.toString() ?? undefined;
+
   return {
     slug,
     name,
     startDate,
-    endDate
+    endDate,
+    logo,
+    favicon
   };
 };

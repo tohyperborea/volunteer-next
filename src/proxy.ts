@@ -23,6 +23,18 @@ export async function proxy(request: NextRequest) {
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set('x-pathname', pathname);
 
+  // Set the x-event-id header
+  const eventIdFromCookie = request.cookies.get(EventCookie.name)?.value;
+  if (eventIdFromCookie) {
+    requestHeaders.set('x-event-id', eventIdFromCookie);
+  }
+  if (!requestHeaders.get('x-event-id')) {
+    const activeEvents = await getActiveEvents();
+    if (activeEvents.length > 0) {
+      requestHeaders.set('x-event-id', activeEvents[0].id);
+    }
+  }
+
   // Rate limit auth endpoints (POST only)
   if (request.method === 'POST') {
     const ip = await getClientIp();
@@ -30,19 +42,19 @@ export async function proxy(request: NextRequest) {
       if (!checkRateLimit(ip, AUTH_ENDPOINT_LIMITS.signup)) {
         const url = new URL(pathname, request.url);
         url.searchParams.set('error', 'rate_limit');
-        return NextResponse.redirect(url);
+        return NextResponse.redirect(url, { headers: requestHeaders });
       }
     } else if (pathname === '/forgot-password') {
       if (!checkRateLimit(ip, PASSWORD_RESET_LIMITS.requestReset)) {
         const url = new URL(pathname, request.url);
         url.searchParams.set('error', 'rate_limit');
-        return NextResponse.redirect(url);
+        return NextResponse.redirect(url, { headers: requestHeaders });
       }
     } else if (pathname === '/reset-password') {
       if (!checkRateLimit(ip, PASSWORD_RESET_LIMITS.resetPassword)) {
         const url = new URL(pathname, request.url);
         url.searchParams.set('error', 'rate_limit');
-        return NextResponse.redirect(url);
+        return NextResponse.redirect(url, { headers: requestHeaders });
       }
     }
   }
@@ -59,7 +71,11 @@ export async function proxy(request: NextRequest) {
   // Allow access to auth pages (no session required)
   const publicAuthPaths = ['/signin', '/signup', '/forgot-password', '/reset-password'];
   if (publicAuthPaths.includes(pathname)) {
-    return NextResponse.next();
+    return NextResponse.next({
+      request: {
+        headers: requestHeaders
+      }
+    });
   }
 
   if (
@@ -87,19 +103,7 @@ export async function proxy(request: NextRequest) {
     const signInUrl = new URL('/signin', request.url);
     // Preserve the original URL as a query parameter for redirect after signin
     signInUrl.searchParams.set('callbackUrl', pathname);
-    return NextResponse.redirect(signInUrl);
-  }
-
-  // Set the x-event-id header
-  const eventIdFromCookie = request.cookies.get(EventCookie.name)?.value;
-  if (eventIdFromCookie) {
-    requestHeaders.set('x-event-id', eventIdFromCookie);
-  }
-  if (!requestHeaders.get('x-event-id')) {
-    const activeEvents = await getActiveEvents();
-    if (activeEvents.length > 0) {
-      requestHeaders.set('x-event-id', activeEvents[0].id);
-    }
+    return NextResponse.redirect(signInUrl, { headers: requestHeaders });
   }
 
   // User is authenticated, allow the request
