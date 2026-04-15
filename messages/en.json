@@ -2,7 +2,7 @@
   "EventsManagementPage": {
     "title": "Events Dashboard",
     "noEvents": "No events yet!",
-    "createEvent": "Create New Event"
+    "createEvent": "Add event"
   },
   "DashboardPage": {
     "yourDashboard": "Your dashboard",
@@ -35,7 +35,7 @@
     "title": "All teams",
     "description": "Select a team to view and sign up for shifts.",
     "descriptionAdmin": "Select a team to manage its shifts or create a shift directly.",
-    "createTeam": "Add Team",
+    "createTeam": "Add team",
     "edit": "Edit Team: {teamName}"
   },
   "CreateTeamPage": {
@@ -235,7 +235,11 @@
     "eventOrganiser": "Event Organiser",
     "eventOrganiserDescription": "The main point of contact for the event. This person will have admin access to the event and all its teams.",
     "eventLogo": "Event Logo",
-    "eventLogoDescription": "Select a file to upload. Supported file types are SVG, PNG, JPG, and WEBP.",
+    "eventLogoDescription": "Select an image to upload. Supported file types are SVG, PNG, JPG, and WEBP.",
+    "eventLogoDark": "Event Logo (Dark)",
+    "eventLogoDarkDescription": "Select an image to upload. Supported file types are SVG, PNG, JPG, and WEBP.",
+    "favicon": "Favicon",
+    "faviconDescription": "Select a 16x16px image to upload. Supported file types are ICO, SVG, PNG, JPG, and WEBP.",
     "createButton": "Create Event",
     "updateButton": "Update Event",
     "cancelButton": "Cancel"
@@ -452,9 +456,9 @@
     "close": "Close"
   },
   "AddShiftButton": {
-    "addShift": "Add Shift"
+    "addShift": "Add shift"
   },
   "ImageSelector": {
-    "selectImage": "Select Image"
+    "selectImage": "Choose a File"
   }
 }

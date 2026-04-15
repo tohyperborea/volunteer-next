@@ -48,9 +48,6 @@ export default function EventForm({
             description={t('eventNameDescription')}
             ariaId="event-name-label"
           >
-            <Text as="label" id="event-name-label" htmlFor="event-name" size="2" weight="bold">
-              {t('eventName')}
-            </Text>
             <TextField.Root
               name="name"
               aria-labelledby="event-name-label"
@@ -66,9 +63,6 @@ export default function EventForm({
             description={t('eventSlugDescription')}
             ariaId="event-slug-label"
           >
-            <Text as="label" id="event-slug-label" htmlFor="event-slug" size="2" weight="bold">
-              {t('eventSlug')}
-            </Text>
             <TextField.Root
               name="slug"
               aria-labelledby="event-slug-label"
@@ -85,9 +79,6 @@ export default function EventForm({
             description={t('startDateDescription')}
             ariaId="start-date-label"
           >
-            <Text as="label" id="start-date-label" htmlFor="start-date" size="2" weight="bold">
-              {t('startDate')}
-            </Text>
             <DatePicker
               name="startDate"
               id="start-date"
@@ -105,9 +96,6 @@ export default function EventForm({
             description={t('endDateDescription')}
             ariaId="end-date-label"
           >
-            <Text as="label" id="end-date-label" htmlFor="end-date" size="2" weight="bold">
-              {t('endDate')}
-            </Text>
             <DatePicker
               name="endDate"
               id="end-date"
@@ -124,15 +112,6 @@ export default function EventForm({
             description={t('eventOrganiserDescription')}
             ariaId="event-organiser-label"
           >
-            <Text
-              as="label"
-              id="event-organiser-label"
-              htmlFor="event-organiser"
-              size="2"
-              weight="bold"
-            >
-              {t('eventOrganiser')}
-            </Text>
             <Select.Root required name="organiserId" defaultValue={editingOrganiser?.id}>
               <Select.Trigger placeholder={t('eventOrganiser')} />
               <Select.Content>
@@ -149,10 +128,30 @@ export default function EventForm({
             description={t('eventLogoDescription')}
             ariaId="event-logo-label"
           >
-            <Text as="label" id="event-logo-label" htmlFor="event-logo" size="2" weight="bold">
-              {t('eventLogo')}
-            </Text>
             <ImageSelector name="logo" onSelect={onUpload} defaultValue={editingEvent?.logo} />
+          </FormField>
+          <FormField
+            name={t('eventLogoDark')}
+            description={t('eventLogoDarkDescription')}
+            ariaId="event-logo-dark-label"
+          >
+            <ImageSelector
+              name="logoDark"
+              onSelect={onUpload}
+              defaultValue={editingEvent?.logoDark}
+            />
+          </FormField>
+          <FormField
+            name={t('favicon')}
+            description={t('faviconDescription')}
+            ariaId="favicon-label"
+          >
+            <ImageSelector
+              size="small"
+              name="favicon"
+              onSelect={onUpload}
+              defaultValue={editingEvent?.favicon}
+            />
           </FormField>
 
           <Flex gap="2" my="6">

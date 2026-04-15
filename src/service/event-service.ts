@@ -16,6 +16,7 @@ const rowToEvent = (row: any): EventInfo => ({
   endDate: row.endDate,
   archived: Boolean(row.archivedAt),
   logo: row.logo ?? undefined,
+  logoDark: row.logo_dark ?? undefined,
   favicon: row.favicon ?? undefined
 });
 
@@ -53,6 +54,7 @@ export const getFilteredEvents = cache(async (filter: EventFilters): Promise<Eve
       "endDate",
       "archivedAt",
       "logo",
+      "logo_dark",
       "favicon"
 
     FROM event 
@@ -78,6 +80,7 @@ export const getActiveEvents = cache(async (): Promise<EventInfo[]> => {
         "endDate",
         "archivedAt",
         "logo",
+        "logo_dark",
         "favicon"
         
       FROM event
@@ -98,7 +101,7 @@ export const getEventsById = cache(async (eventIds: EventId[]): Promise<EventInf
     return [];
   }
   const result = await pool.query(
-    `SELECT id, name, "slug", "startDate", "endDate", "archivedAt", "logo", "favicon" FROM event WHERE id = ANY($1)`,
+    `SELECT id, name, "slug", "startDate", "endDate", "archivedAt", "logo", "logo_dark","favicon" FROM event WHERE id = ANY($1)`,
     [eventIds]
   );
   return result.rows.map(rowToEvent);
@@ -111,7 +114,7 @@ export const getEventsById = cache(async (eventIds: EventId[]): Promise<EventInf
  */
 export const getEventBySlug = cache(async (slug: string): Promise<EventInfo | null> => {
   const result = await pool.query(
-    'SELECT id, name, "slug", "startDate", "endDate", "archivedAt", "logo", "favicon" FROM event WHERE "slug" = $1',
+    'SELECT id, name, "slug", "startDate", "endDate", "archivedAt", "logo", "logo_dark","favicon" FROM event WHERE "slug" = $1',
     [slug]
   );
   if (result.rows.length === 0) {
@@ -132,13 +135,32 @@ export const createEvent = async (
 ): Promise<EventInfo> => {
   const db = client || pool;
   const result = await db.query(
-    'INSERT INTO event (name, "slug", "startDate", "endDate", "logo", "favicon") VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, "slug", name, "startDate", "endDate", "logo", "favicon"',
+    `
+    INSERT INTO event (
+      name, 
+      "slug", 
+      "startDate", 
+      "endDate", 
+      "logo", 
+      "logo_dark", 
+      "favicon"
+    ) VALUES ($1, $2, $3, $4, $5, $6, $7) 
+    RETURNING 
+      id, 
+      "slug", 
+      name, 
+      "startDate", 
+      "endDate", 
+      "logo", 
+      "logo_dark",
+      "favicon"`,
     [
       event.name,
       event.slug,
       event.startDate.toISOString(),
       event.endDate.toISOString(),
       event.logo,
+      event.logoDark,
       event.favicon
     ]
   );
@@ -156,13 +178,32 @@ export const createEvent = async (
 export const updateEvent = async (event: EventInfo, client?: PoolClient): Promise<EventInfo> => {
   const db = client || pool;
   const result = await db.query(
-    'UPDATE event SET name = $1, "slug" = $2, "startDate" = $3, "endDate" = $4, "logo" = $5, "favicon" = $6 WHERE id = $7 RETURNING id, name, "slug", "startDate", "endDate", "logo", "favicon"',
+    `UPDATE event 
+    SET 
+      name = $1, 
+      "slug" = $2, 
+      "startDate" = $3, 
+      "endDate" = $4, 
+      "logo" = $5, 
+      "logo_dark" = $6,
+      "favicon" = $7 
+    WHERE id = $8 
+    RETURNING 
+      id, 
+      name, 
+      "slug", 
+      "startDate", 
+      "endDate", 
+      "logo", 
+      "logo_dark", 
+      "favicon"`,
     [
       event.name,
       event.slug,
       event.startDate.toISOString(),
       event.endDate.toISOString(),
       event.logo,
+      event.logoDark,
       event.favicon,
       event.id
     ]

@@ -60,6 +60,7 @@ export const validateNewEvent = (data: FormData): Omit<EventInfo, 'id'> => {
   }
 
   const logo = data.get('logo')?.toString() ?? undefined;
+  const logoDark = data.get('logoDark')?.toString() ?? undefined;
   const favicon = data.get('favicon')?.toString() ?? undefined;
 
   return {
@@ -68,6 +69,7 @@ export const validateNewEvent = (data: FormData): Omit<EventInfo, 'id'> => {
     startDate,
     endDate,
     logo,
+    logoDark,
     favicon
   };
 };
