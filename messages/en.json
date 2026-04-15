@@ -225,11 +225,17 @@
   },
   "EventForm": {
     "eventName": "Event Name",
+    "eventNameDescription": "This will be the event's display name.",
     "eventSlug": "URL Slug",
+    "eventSlugDescription": "This will be used for the event's URL. It must be unique among events, and can only contain lowercase letters, numbers, and hyphens.",
     "startDate": "Start Date",
+    "startDateDescription": "When the event begins.",
     "endDate": "End Date",
+    "endDateDescription": "When the event ends.",
     "eventOrganiser": "Event Organiser",
+    "eventOrganiserDescription": "The main point of contact for the event. This person will have admin access to the event and all its teams.",
     "eventLogo": "Event Logo",
+    "eventLogoDescription": "Select a file to upload. Supported file types are SVG, PNG, JPG, and WEBP.",
     "createButton": "Create Event",
     "updateButton": "Update Event",
     "cancelButton": "Cancel"

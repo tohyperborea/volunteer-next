@@ -81,16 +81,14 @@ export default async function UpdateEvent({ params }: PageProps<`/update-event/[
   return (
     <Flex direction="column" gap="4">
       <Heading my="4">{t('title')}</Heading>
-      <Card>
-        <EventForm
-          onSubmit={onSubmit}
-          onUpload={uploadImageAction}
-          backOnCancel
-          organiserOptions={volunteers}
-          editingEvent={event}
-          editingOrganiser={organiser}
-        />
-      </Card>
+      <EventForm
+        onSubmit={onSubmit}
+        onUpload={uploadImageAction}
+        backOnCancel
+        organiserOptions={volunteers}
+        editingEvent={event}
+        editingOrganiser={organiser}
+      />
     </Flex>
   );
 }
