@@ -19,7 +19,8 @@ import {
   getEventsPath,
   getCreateEventPath,
   getUpdateEventPath,
-  getMyShiftsPath
+  getMyShiftsPath,
+  getNoEventsPath
 } from './path';
 
 describe('getTeamsPath', () => {
@@ -258,5 +259,12 @@ describe('getMyShiftsPath', () => {
   it('should return the correct path for my shifts', () => {
     const result = getMyShiftsPath();
     expect(result).toBe('/my-shifts');
+  });
+});
+
+describe('getNoEventsPath', () => {
+  it('should return the correct path for no events', () => {
+    const result = getNoEventsPath();
+    expect(result).toBe('/no-events');
   });
 });

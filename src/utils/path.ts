@@ -29,6 +29,7 @@ export const getQualificationDetailsPath = (qualificationId: string) =>
 
 // Event paths
 export const getEventsPath = () => '/events';
+export const getNoEventsPath = () => '/no-events';
 export const getCreateEventPath = () => '/create-event';
 export const getUpdateEventPath = (eventId: string) => `/update-event/${eventId}`;
 export const getEventShiftsPath = (): string => `/shifts`;

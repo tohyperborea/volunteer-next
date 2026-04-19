@@ -195,6 +195,10 @@
     "edit": "Edit Profile",
     "signOut": "Sign Out"
   },
+  "NoEventsPage": {
+    "title": "No events",
+    "description": "There are currently no events available. Please check back later or contact your event organiser for more information."
+  },
 
   "ResetPasswordEmail": {
     "subject": "Reset your password",
