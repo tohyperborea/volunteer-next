@@ -7,6 +7,11 @@ jest.mock('next-intl', () => ({
   useLocale: () => 'en'
 }));
 
+jest.mock('@/ui/datepicker', () => ({
+  EventDaySelect: ({ name }: any) => <select aria-label={name} />,
+  TimeSelect: ({ name }: any) => <input type="time" aria-label={name} />
+}));
+
 describe('ShiftDialog', () => {
   it('renders correctly when creating a new shift', () => {
     const mockOnClose = jest.fn();
@@ -98,9 +103,6 @@ describe('ShiftDialog', () => {
     fireEvent.change(getByPlaceholderText('titlePlaceholder'), {
       target: { value: 'New Shift' }
     });
-    fireEvent.change(getByLabelText('startTime'), {
-      target: { value: '2024-01-01T09:00' }
-    });
     fireEvent.change(getByLabelText('length'), {
       target: { value: '4' }
     });
@@ -132,7 +134,7 @@ describe('ShiftDialog', () => {
       />
     );
 
-    fireEvent.click(getByRole('combobox'));
+    fireEvent.click(getByRole('combobox', { name: 'requirements' }));
     expect(getByRole('option', { name: 'CPR Certified' })).toBeInTheDocument();
     expect(getByRole('option', { name: 'First Aid' })).toBeInTheDocument();
   });

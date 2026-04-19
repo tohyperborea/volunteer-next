@@ -8,7 +8,7 @@
 
 import { Button, Dialog, Flex, TextField, Text, Checkbox, Select } from '@radix-ui/themes';
 import { useTranslations } from 'next-intl';
-import { EventDayTimePicker } from '../datepicker';
+import { EventDaySelect, TimeSelect } from '../datepicker';
 import FormDialog, { FormField } from '../form-dialog';
 import { useEffect, useState } from 'react';
 import DeleteButton from '../delete-button';
@@ -109,20 +109,24 @@ export default function ShiftDialog({
               required
             />
           </FormField>
-          <FormField
-            ariaId="shift-start"
-            name={t('startTime')}
-            description={t('startTimeDescription')}
-          >
-            <EventDayTimePicker
+          <FormField ariaId="shift-day" name={t('shiftDay')} description={t('shiftDayDescription')}>
+            <EventDaySelect
               startDate={startDate}
-              defaultValue={
-                editing
-                  ? { day: editing.eventDay, time: editing.startTime }
-                  : { day: 0, time: '00:00' }
-              }
-              aria-labelledby="shift-start"
-              name="startTime"
+              defaultValue={editing?.eventDay ?? 0}
+              ariaLabel={t('shiftDay')}
+              name="shift-day"
+              required
+            />
+          </FormField>
+          <FormField
+            ariaId="shift-time"
+            name={t('shiftTime')}
+            description={t('shiftTimeDescription')}
+          >
+            <TimeSelect
+              defaultValue={editing?.startTime}
+              ariaLabel={t('shiftTime')}
+              name="shift-time"
               required
             />
           </FormField>
@@ -177,7 +181,7 @@ export default function ShiftDialog({
             description={t('requirementsDescription')}
           >
             <Select.Root name="requirement" defaultValue={editing?.requirement ?? 'null'}>
-              <Select.Trigger />
+              <Select.Trigger aria-labelledby="shift-requirements" />
               <Select.Content>
                 <Select.Group>
                   <Select.Item value="null">{t('none')}</Select.Item>

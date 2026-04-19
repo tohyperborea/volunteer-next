@@ -375,8 +375,10 @@
     "title": "Title of Shift",
     "titleDescription": "Description",
     "titlePlaceholder": "Title",
-    "startTime": "Start Time",
-    "startTimeDescription": "Description",
+    "shiftDay": "Shift Date",
+    "shiftDayDescription": "Date when the shift starts",
+    "shiftTime": "Shift Start Time",
+    "shiftTimeDescription": "Time when the shift starts",
     "length": "Length of Shift",
     "lengthDescription": "Length of the shift in HOURS",
     "minVolunteers": "Minimum Volunteers Needed",
@@ -460,5 +462,14 @@
   },
   "ImageSelector": {
     "selectImage": "Choose a File"
+  },
+  "EventDaySelect": {
+    "day": "{parent} day",
+    "month": "{parent} month",
+    "year": "{parent} year"
+  },
+  "TimeSelect": {
+    "hour": "{parent} hour",
+    "minute": "{parent} minute"
   }
 }
