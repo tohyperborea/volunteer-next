@@ -13,7 +13,7 @@ const readSecret = (name: string, defaultValue?: string): string => {
   return process.env[name] || defaultValue || '';
 };
 
-const CRON_SCHEDULE = process.env.CRON_SCHEDULE || '0 0 * * *';
+const CRON_SCHEDULE = process.env.CRON_SCHEDULE || '0 * * * *';
 const RATE_LIMIT = Number(process.env.RATE_LIMIT) || 100; // emails per cron tick
 const POSTGRES_HOST = process.env.POSTGRES_HOST || 'localhost';
 const POSTGRES_USER = process.env.POSTGRES_USER || 'postgres';

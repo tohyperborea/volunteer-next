@@ -8,7 +8,7 @@ The service requires the following environment variables:
 
 | Variable          | Description                                         | Default                          |
 | ----------------- | --------------------------------------------------- | -------------------------------- |
-| CRON_SCHEDULE     | Mailer schedule in crontab syntax                   | 0 0 \* \* \*                     |
+| CRON_SCHEDULE     | Mailer schedule in crontab syntax                   | 0 \* \* \* \*                    |
 | RATE_LIMIT        | Max number of mails to process per tick             | 100                              |
 | POSTGRES_HOST     | Postgres host for the mail queue                    | localhost                        |
 | POSTGRES_USER     | Postgres user for the mail queue                    | postgres                         |
