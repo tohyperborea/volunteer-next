@@ -33,8 +33,6 @@ export default async function UpdateEvent({ params }: PageProps<`/update-event/[
     const newEvent = validateExistingEvent(data);
     const organiser = validateUserId(data, 'organiserId');
 
-    console.log('Updating event with data:', newEvent);
-
     const event = (await getEventsById([newEvent.id]))[0];
     if (!event) {
       notFound();
