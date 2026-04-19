@@ -5,6 +5,16 @@
  */
 
 /**
+ * Builds a time string in HH:MM format from hours and minutes.
+ * @param hours - Hours in 24 hour format
+ * @param minutes - Minutes
+ * @returns A string in the form HH:MM
+ */
+export const buildTime = (hours: number, minutes: number): TimeString => {
+  return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}` as TimeString;
+};
+
+/**
  * Converts a time string in HH:MM format to a TimeString type, validating the format.
  * @param timeStr - A string in HH:MM(:SS)? format
  * @returns A string in the form HH:MM

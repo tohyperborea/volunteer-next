@@ -15,8 +15,8 @@ describe('validateNewShift', () => {
     const formData = createFormData({
       teamId: 'team-123',
       title: 'Morning Shift',
-      'startTime-day': '1',
-      'startTime-time': '08:00',
+      'shift-day': '1',
+      'shift-time': '08:00',
       durationHours: '4',
       minVolunteers: '2',
       maxVolunteers: '5',
@@ -42,8 +42,8 @@ describe('validateNewShift', () => {
   it('throws an error if teamId is missing', () => {
     const formData = createFormData({
       title: 'Morning Shift',
-      'startTime-day': '1',
-      'startTime-time': '08:00',
+      'shift-day': '1',
+      'shift-time': '08:00',
       durationHours: '4',
       minVolunteers: '2',
       maxVolunteers: '5',
@@ -56,8 +56,8 @@ describe('validateNewShift', () => {
   it('throws an error if title is missing', () => {
     const formData = createFormData({
       teamId: 'team-123',
-      'startTime-day': '1',
-      'startTime-time': '08:00',
+      'shift-day': '1',
+      'shift-time': '08:00',
       durationHours: '4',
       minVolunteers: '2',
       maxVolunteers: '5',
@@ -67,41 +67,41 @@ describe('validateNewShift', () => {
     expect(() => validateNewShift(formData)).toThrow('Shift title is required');
   });
 
-  it('throws an error if startTime-day is missing', () => {
+  it('throws an error if shift-day is missing', () => {
     const formData = createFormData({
       teamId: 'team-123',
       title: 'Morning Shift',
-      'startTime-time': '08:00',
+      'shift-time': '08:00',
       durationHours: '4',
       minVolunteers: '2',
       maxVolunteers: '5',
       isActive: 'on'
     });
 
-    expect(() => validateNewShift(formData)).toThrow('Shift startTime-day is required');
+    expect(() => validateNewShift(formData)).toThrow('Shift day is required');
   });
 
-  it('throws an error if startTime-day is not a valid number', () => {
+  it('throws an error if shift-day is not a valid number', () => {
     const formData = createFormData({
       teamId: 'team-123',
       title: 'Morning Shift',
-      'startTime-day': 'invalid',
-      'startTime-time': '08:00',
+      'shift-day': 'invalid',
+      'shift-time': '08:00',
       durationHours: '4',
       minVolunteers: '2',
       maxVolunteers: '5',
       isActive: 'on'
     });
 
-    expect(() => validateNewShift(formData)).toThrow('Shift startTime-day must be a valid number');
+    expect(() => validateNewShift(formData)).toThrow('Shift day must be a valid number');
   });
 
   it('throws an error if durationHours is missing', () => {
     const formData = createFormData({
       teamId: 'team-123',
       title: 'Morning Shift',
-      'startTime-day': '1',
-      'startTime-time': '08:00',
+      'shift-day': '1',
+      'shift-time': '08:00',
       minVolunteers: '2',
       maxVolunteers: '5',
       isActive: 'on'
@@ -114,8 +114,8 @@ describe('validateNewShift', () => {
     const formData = createFormData({
       teamId: 'team-123',
       title: 'Morning Shift',
-      'startTime-day': '1',
-      'startTime-time': '08:00',
+      'shift-day': '1',
+      'shift-time': '08:00',
       durationHours: '-1',
       minVolunteers: '2',
       maxVolunteers: '5',
@@ -131,8 +131,8 @@ describe('validateNewShift', () => {
     const formData = createFormData({
       teamId: 'team-123',
       title: 'Morning Shift',
-      'startTime-day': '1',
-      'startTime-time': '08:00',
+      'shift-day': '1',
+      'shift-time': '08:00',
       durationHours: '4',
       maxVolunteers: '5',
       isActive: 'on'
@@ -145,8 +145,8 @@ describe('validateNewShift', () => {
     const formData = createFormData({
       teamId: 'team-123',
       title: 'Morning Shift',
-      'startTime-day': '1',
-      'startTime-time': '08:00',
+      'shift-day': '1',
+      'shift-time': '08:00',
       durationHours: '4',
       minVolunteers: '-1',
       maxVolunteers: '5',
@@ -162,8 +162,8 @@ describe('validateNewShift', () => {
     const formData = createFormData({
       teamId: 'team-123',
       title: 'Morning Shift',
-      'startTime-day': '1',
-      'startTime-time': '08:00',
+      'shift-day': '1',
+      'shift-time': '08:00',
       durationHours: '4',
       minVolunteers: '2',
       isActive: 'on'
@@ -176,8 +176,8 @@ describe('validateNewShift', () => {
     const formData = createFormData({
       teamId: 'team-123',
       title: 'Morning Shift',
-      'startTime-day': '1',
-      'startTime-time': '08:00',
+      'shift-day': '1',
+      'shift-time': '08:00',
       durationHours: '4',
       minVolunteers: '5',
       maxVolunteers: '2',
@@ -193,8 +193,8 @@ describe('validateNewShift', () => {
     const formData = createFormData({
       teamId: 'team-123',
       title: 'Morning Shift',
-      'startTime-day': '1',
-      'startTime-time': '08:00',
+      'shift-day': '1',
+      'shift-time': '08:00',
       durationHours: '4',
       minVolunteers: '2',
       maxVolunteers: '5'
@@ -209,8 +209,8 @@ describe('validateNewShift', () => {
     const formData = createFormData({
       teamId: 'team-123',
       title: 'Morning Shift',
-      'startTime-day': '1',
-      'startTime-time': '08:00',
+      'shift-day': '1',
+      'shift-time': '08:00',
       durationHours: '4',
       minVolunteers: '2',
       maxVolunteers: '5',
@@ -230,8 +230,8 @@ describe('validateExistingShift', () => {
       id: 'shift-123',
       teamId: 'team-123',
       title: 'Morning Shift',
-      'startTime-day': '1',
-      'startTime-time': '08:00',
+      'shift-day': '1',
+      'shift-time': '08:00',
       durationHours: '4',
       minVolunteers: '2',
       maxVolunteers: '5',
@@ -257,8 +257,8 @@ describe('validateExistingShift', () => {
     const formData = createFormData({
       teamId: 'team-123',
       title: 'Morning Shift',
-      'startTime-day': '1',
-      'startTime-time': '08:00',
+      'shift-day': '1',
+      'shift-time': '08:00',
       durationHours: '4',
       minVolunteers: '2',
       maxVolunteers: '5',
@@ -273,8 +273,8 @@ describe('validateExistingShift', () => {
       id: '',
       teamId: 'team-123',
       title: 'Morning Shift',
-      'startTime-day': '1',
-      'startTime-time': '08:00',
+      'shift-day': '1',
+      'shift-time': '08:00',
       durationHours: '4',
       minVolunteers: '2',
       maxVolunteers: '5',

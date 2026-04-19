@@ -56,7 +56,7 @@ export default async function EventsDashboard({ searchParams }: PageProps<`/even
     <Flex direction="column" gap="4">
       <Heading my="4">{t('title')}</Heading>
       <Box>
-        <Button asChild>
+        <Button variant="soft" asChild>
           <NextLink href={getCreateEventPath()}>
             <PlusIcon /> {t('createEvent')}
           </NextLink>

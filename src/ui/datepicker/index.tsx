@@ -6,10 +6,11 @@
 
 'use client';
 
-import { TextField } from '@radix-ui/themes';
+import { Flex, Select, TextField } from '@radix-ui/themes';
 import styles from './styles.module.css';
-import { dateToEventDay, eventDayTimeToDate } from '@/utils/datetime';
-import { useState } from 'react';
+import { buildTime, dateToEventDay, eventDayToDate } from '@/utils/datetime';
+import { useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
 
 const dateToString = (date: Date | string, includeTime: boolean) => {
   if (!(date instanceof Date)) {
@@ -66,45 +67,156 @@ export default function DatePicker({
   );
 }
 
-type EventDayTimePickerProps = {
+interface EventDaySelectProps {
   startDate: Date;
-  defaultValue?: EventDayTime;
-} & Omit<Props, 'defaultValue' | 'timepicker'>;
+  defaultValue?: EventDay;
+  onChange?: (eventDay: EventDay) => void;
+  name?: string;
+  required?: boolean;
+  ariaLabel: string;
+}
 
-/**
- * A special date and time picker that works with an event's start date and event day/time format.
- * It renders two hidden inputs for the event day and time, named {name}-day and {name}-time respectively.
- */
-export function EventDayTimePicker({
+export function EventDaySelect({
+  required,
   startDate,
   defaultValue,
   onChange,
   name,
-  ...rest
-}: EventDayTimePickerProps) {
+  ariaLabel
+}: EventDaySelectProps) {
   const defaultDate =
-    defaultValue && eventDayTimeToDate(startDate, defaultValue.day, defaultValue.time);
-  const [dayTime, setDayTime] = useState<EventDayTime | undefined>(defaultValue);
+    defaultValue !== undefined ? eventDayToDate(startDate, defaultValue) : undefined;
+  const [eventDay, setEventDay] = useState<EventDay | undefined>(defaultValue);
+  const [day, setDay] = useState<number | undefined>(defaultDate && defaultDate.getUTCDate());
+  const [month, setMonth] = useState<number | undefined>(defaultDate && defaultDate.getUTCMonth());
+  const [year, setYear] = useState<number | undefined>(defaultDate && defaultDate.getUTCFullYear());
+
+  const knowsDays = month !== undefined && year !== undefined;
+  const daysInMonth = knowsDays ? new Date(year, month + 1, 0).getUTCDate() : 31;
+  const currentYear = new Date().getUTCFullYear();
+
+  const t = useTranslations('EventDaySelect');
+
+  const dayLabel = (date: number): string => {
+    if (knowsDays) {
+      const dateObj = new Date(Date.UTC(year, month, date));
+      return dateObj.toLocaleDateString('default', { weekday: 'short', day: 'numeric' });
+    }
+    return date.toString();
+  };
+
+  useEffect(() => {
+    if (day !== undefined && month !== undefined && year !== undefined) {
+      const date = new Date(Date.UTC(year, month, day));
+      const eventDay = dateToEventDay(startDate, date);
+      setEventDay(eventDay);
+      onChange && onChange(eventDay);
+    }
+  }, [day, month, year]);
   return (
-    <>
-      <DatePicker
-        {...rest}
-        defaultValue={defaultDate}
-        timepicker
-        onChange={(value) => {
-          const day = dateToEventDay(startDate, new Date(value));
-          const time = value.slice(11, 16) as TimeString;
-          if (!isNaN(day) && time) {
-            setDayTime({
-              day: dateToEventDay(startDate, new Date(value)),
-              time: value.slice(11, 16) as TimeString
-            });
-          }
-          onChange && onChange(value);
+    <Flex gap="2">
+      <Select.Root
+        required={required}
+        value={day?.toString() ?? ''}
+        onValueChange={(v) => setDay(parseInt(v, 10))}
+      >
+        <Select.Trigger placeholder="DD" aria-label={t('day', { parent: ariaLabel })} />
+        <Select.Content>
+          {Array.from({ length: daysInMonth }, (_, i) => (
+            <Select.Item key={i} value={(i + 1).toString()}>
+              {dayLabel(i + 1)}
+            </Select.Item>
+          ))}
+        </Select.Content>
+      </Select.Root>
+
+      <Select.Root
+        required={required}
+        value={month?.toString() ?? ''}
+        onValueChange={(v) => setMonth(parseInt(v, 10))}
+      >
+        <Select.Trigger placeholder="MM" aria-label={t('month', { parent: ariaLabel })} />
+        <Select.Content>
+          {Array.from({ length: 12 }, (_, i) => (
+            <Select.Item key={i} value={i.toString()}>
+              {new Date(0, i).toLocaleString('default', { month: 'short' })}
+            </Select.Item>
+          ))}
+        </Select.Content>
+      </Select.Root>
+
+      <Select.Root
+        required={required}
+        value={year?.toString() ?? ''}
+        onValueChange={(v) => setYear(parseInt(v, 10))}
+      >
+        <Select.Trigger placeholder="YYYY" aria-label={t('year', { parent: ariaLabel })} />
+        <Select.Content>
+          {Array.from({ length: 10 }, (_, i) => (
+            <Select.Item key={i} value={(currentYear + i).toString()}>
+              {currentYear + i}
+            </Select.Item>
+          ))}
+        </Select.Content>
+      </Select.Root>
+
+      <input type="hidden" name={name} value={eventDay ?? ''} />
+    </Flex>
+  );
+}
+
+interface TimeSelectProps {
+  name?: string;
+  defaultValue?: TimeString;
+  onChange?: (time: TimeString) => void;
+  required?: boolean;
+  ariaLabel: string;
+}
+
+export function TimeSelect({ name, defaultValue, onChange, required, ariaLabel }: TimeSelectProps) {
+  const [time, setTime] = useState<TimeString | undefined>(defaultValue);
+  const [hour, minute] = time ? time.split(':').map(Number) : [undefined, undefined];
+  const t = useTranslations('TimeSelect');
+  return (
+    <Flex gap="2">
+      <Select.Root
+        required={required}
+        value={hour?.toString() ?? ''}
+        onValueChange={(v) => {
+          const newTime = buildTime(parseInt(v, 10), minute ?? 0);
+          setTime(newTime);
+          onChange && onChange(newTime);
         }}
-      />
-      <input type="hidden" name={name && `${name}-day`} value={dayTime?.day ?? ''} />
-      <input type="hidden" name={name && `${name}-time`} value={dayTime?.time ?? ''} />
-    </>
+      >
+        <Select.Trigger placeholder="HH" aria-label={t('hour', { parent: ariaLabel })} />
+        <Select.Content>
+          {Array.from({ length: 24 }, (_, i) => (
+            <Select.Item key={i} value={i.toString()}>
+              {i.toString().padStart(2, '0')}
+            </Select.Item>
+          ))}
+        </Select.Content>
+      </Select.Root>
+
+      <Select.Root
+        required={required}
+        value={minute?.toString() ?? ''}
+        onValueChange={(v) => {
+          const newTime = buildTime(hour ?? 0, parseInt(v, 10));
+          setTime(newTime);
+          onChange && onChange(newTime);
+        }}
+      >
+        <Select.Trigger placeholder="MM" aria-label={t('minute', { parent: ariaLabel })} />
+        <Select.Content>
+          {Array.from({ length: 4 }, (_, i) => (
+            <Select.Item key={i} value={(i * 15).toString()}>
+              {(i * 15).toString().padStart(2, '0')}
+            </Select.Item>
+          ))}
+        </Select.Content>
+      </Select.Root>
+      <input type="hidden" name={name} value={time ?? ''} />
+    </Flex>
   );
 }

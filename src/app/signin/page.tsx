@@ -8,6 +8,7 @@ import { getTranslations } from 'next-intl/server';
 import SigninContainer from '@/ui/signin-container';
 import { CredentialsForm } from './credentials-form';
 import metadata from '@/i18n/metadata';
+import { getCurrentEvent } from '@/session';
 
 const PAGE_KEY = 'SignInPage';
 export const generateMetadata = metadata(PAGE_KEY);
@@ -23,6 +24,7 @@ export default async function SignInPage({
   const callbackUrl = params.callbackUrl || '/';
   const forgotSent = params.forgotSent === '1';
   const oauthProviderName = process.env.OAUTH_PROVIDER_NAME ?? 'OAuth Provider';
+  const event = await getCurrentEvent();
 
   const signInOAuth = async (formData: FormData) => {
     'use server';
@@ -86,7 +88,11 @@ export default async function SignInPage({
 
   const t = await getTranslations(PAGE_KEY);
   return (
-    <SigninContainer title={t('description', { appName: process.env.APP_NAME ?? '' })}>
+    <SigninContainer
+      title={t('description', { appName: process.env.APP_NAME ?? '' })}
+      logo={event?.logo}
+      logoDark={event?.logoDark}
+    >
       {useOAuth ? (
         <Flex direction="column" gap="4" asChild>
           <form

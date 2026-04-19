@@ -16,8 +16,9 @@ import { validateExistingEvent } from '@/validator/event-validator';
 import { validateUserId } from '@/validator/user-validator';
 import { usersToVolunteers, userToVolunteer } from '@/lib/volunteer';
 import { getPermissionsProfile } from '@/utils/permissions';
-import { getEventsPath } from '@/utils/path';
+import { getEventsPath, getImageApiPath } from '@/utils/path';
 import { hasEventStarted } from '@/utils/date';
+import { uploadImageAction } from '@/lib/image';
 
 const PAGE_KEY = 'UpdateEventPage';
 
@@ -78,15 +79,14 @@ export default async function UpdateEvent({ params }: PageProps<`/update-event/[
   return (
     <Flex direction="column" gap="4">
       <Heading my="4">{t('title')}</Heading>
-      <Card>
-        <EventForm
-          onSubmit={onSubmit}
-          backOnCancel
-          organiserOptions={volunteers}
-          editingEvent={event}
-          editingOrganiser={organiser}
-        />
-      </Card>
+      <EventForm
+        onSubmit={onSubmit}
+        onUpload={uploadImageAction}
+        backOnCancel
+        organiserOptions={volunteers}
+        editingEvent={event}
+        editingOrganiser={organiser}
+      />
     </Flex>
   );
 }

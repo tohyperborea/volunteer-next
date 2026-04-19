@@ -21,9 +21,11 @@ import { getPermissionsProfile } from '@/utils/permissions';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('Metadata');
+  const event = await getCurrentEvent();
   return {
     title: process.env.APP_NAME,
-    description: t('description')
+    description: t('description'),
+    icons: event?.favicon ? [{ rel: 'icon', url: event.favicon }] : undefined
   };
 }
 

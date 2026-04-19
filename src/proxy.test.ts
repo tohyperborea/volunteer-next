@@ -81,7 +81,7 @@ jest.mock('next/server', () => {
 });
 
 jest.mock('@/service/event-service', () => ({
-  getActiveEvents: jest.fn()
+  getActiveEvents: jest.fn().mockResolvedValue([])
 }));
 
 const mockGetActiveEvents = getActiveEvents as jest.MockedFunction<typeof getActiveEvents>;

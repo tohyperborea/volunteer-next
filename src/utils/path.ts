@@ -6,6 +6,8 @@
 
 import { userFiltersToParams } from './user-filters';
 
+export const getDashboardPath = (): string => '/';
+
 // Users paths
 export const getUsersDashboardPath = (): string => '/user';
 export const getCreateUserPath = (): string => '/create-user';
@@ -29,6 +31,7 @@ export const getQualificationDetailsPath = (qualificationId: string) =>
 
 // Event paths
 export const getEventsPath = () => '/events';
+export const getNoEventsPath = () => '/no-events';
 export const getCreateEventPath = () => '/create-event';
 export const getUpdateEventPath = (eventId: string) => `/update-event/${eventId}`;
 export const getEventShiftsPath = (): string => `/shifts`;
@@ -63,3 +66,4 @@ export const getTeamVolunteersApiPath = (
   params?: { format: 'csv' | 'json' }
 ): string =>
   `/api/event/${eventSlug}/team/${teamSlug}/volunteers?format=${params?.format ?? 'json'}`;
+export const getImageApiPath = (filename: string): string => `/api/image/${filename}`;

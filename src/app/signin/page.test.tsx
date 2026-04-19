@@ -6,6 +6,9 @@ import SignInPage from './page';
 jest.mock('next/navigation', () => ({
   redirect: jest.fn()
 }));
+jest.mock('@/session', () => ({
+  getCurrentEvent: jest.fn()
+}));
 
 jest.mock('@/auth', () => ({
   AUTH_MODE: 'oauth',

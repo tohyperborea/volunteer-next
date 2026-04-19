@@ -1,0 +1,10 @@
+{
+  "name": "@volunteer-next/upload-cleaner",
+  "type": "module",
+  "version": "1.0.0",
+  "dependencies": {
+    "@types/pg": "^8.20.0",
+    "node-cron": "^4.2.1",
+    "pg": "^8.20.0"
+  }
+}

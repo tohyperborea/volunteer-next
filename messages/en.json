@@ -2,7 +2,7 @@
   "EventsManagementPage": {
     "title": "Events Dashboard",
     "noEvents": "No events yet!",
-    "createEvent": "Create New Event"
+    "createEvent": "Add event"
   },
   "DashboardPage": {
     "yourDashboard": "Your dashboard",
@@ -35,7 +35,7 @@
     "title": "All teams",
     "description": "Select a team to view and sign up for shifts.",
     "descriptionAdmin": "Select a team to manage its shifts or create a shift directly.",
-    "createTeam": "Add Team",
+    "createTeam": "Add team",
     "edit": "Edit Team: {teamName}"
   },
   "CreateTeamPage": {
@@ -195,6 +195,10 @@
     "edit": "Edit Profile",
     "signOut": "Sign Out"
   },
+  "NoEventsPage": {
+    "title": "No events",
+    "description": "There are currently no events available. Please check back later or contact your event organiser for more information."
+  },
 
   "ResetPasswordEmail": {
     "subject": "Reset your password",
@@ -225,10 +229,21 @@
   },
   "EventForm": {
     "eventName": "Event Name",
+    "eventNameDescription": "This will be the event's display name.",
     "eventSlug": "URL Slug",
+    "eventSlugDescription": "This will be used for the event's URL. It must be unique among events, and can only contain lowercase letters, numbers, and hyphens.",
     "startDate": "Start Date",
+    "startDateDescription": "When the event begins.",
     "endDate": "End Date",
+    "endDateDescription": "When the event ends.",
     "eventOrganiser": "Event Organiser",
+    "eventOrganiserDescription": "The main point of contact for the event. This person will have admin access to the event and all its teams.",
+    "eventLogo": "Event Logo",
+    "eventLogoDescription": "Select an image to upload. Supported file types are SVG, PNG, JPG, and WEBP.",
+    "eventLogoDark": "Event Logo (Dark)",
+    "eventLogoDarkDescription": "Select an image to upload. Supported file types are SVG, PNG, JPG, and WEBP.",
+    "favicon": "Favicon",
+    "faviconDescription": "Select a 16x16px image to upload. Supported file types are ICO, SVG, PNG, JPG, and WEBP.",
     "createButton": "Create Event",
     "updateButton": "Update Event",
     "cancelButton": "Cancel"
@@ -361,17 +376,19 @@
     "deleteShiftConfirmation": "Are you sure you want to delete this shift? This action cannot be undone.",
     "team": "Team",
     "teamDescription": "Choose the team responsible for this shift",
-    "title": "Title of Shift",
-    "titleDescription": "Description",
+    "title": "Shift Title",
+    "titleDescription": "This will be the shift's official title.",
     "titlePlaceholder": "Title",
-    "startTime": "Start Time",
-    "startTimeDescription": "Description",
+    "shiftDay": "Shift Date",
+    "shiftDayDescription": "Date when the shift starts",
+    "shiftTime": "Shift Start Time",
+    "shiftTimeDescription": "Time when the shift starts",
     "length": "Length of Shift",
     "lengthDescription": "Length of the shift in HOURS",
     "minVolunteers": "Minimum Volunteers Needed",
-    "minVolunteersDescription": "Description",
+    "minVolunteersDescription": "The minimum number of volunteers needed.",
     "maxVolunteers": "Maximum Volunteers Needed",
-    "maxVolunteersDescription": "Description",
+    "maxVolunteersDescription": "The maximum number of volunteers needed.",
     "active": "Active",
     "requirements": "Shift Requirements",
     "requirementsDescription": "Qualifications that volunteers must have to sign up for this shift. Optional.",
@@ -445,6 +462,18 @@
     "close": "Close"
   },
   "AddShiftButton": {
-    "addShift": "Add Shift"
+    "addShift": "Add shift"
+  },
+  "ImageSelector": {
+    "selectImage": "Choose a File"
+  },
+  "EventDaySelect": {
+    "day": "{parent} day",
+    "month": "{parent} month",
+    "year": "{parent} year"
+  },
+  "TimeSelect": {
+    "hour": "{parent} hour",
+    "minute": "{parent} minute"
   }
 }

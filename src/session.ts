@@ -10,7 +10,7 @@ import { headers } from 'next/headers';
 import { getUser } from './service/user-service';
 import { redirect, unauthorized } from 'next/navigation';
 import { roleMatches } from './utils/roles';
-import { getEventsPath } from './utils/path';
+import { getEventsPath, getNoEventsPath } from './utils/path';
 import { getEventsById } from './service/event-service';
 
 /**
@@ -146,7 +146,11 @@ export const getCurrentEvent = cache(async (): Promise<EventInfo | null> => {
 export const getCurrentEventOrRedirect = async (): Promise<EventInfo> => {
   const event = await getCurrentEvent();
   if (!event) {
-    redirect(getEventsPath());
+    const isAdmin = await checkAuthorisation([{ type: 'admin' }], true);
+    if (isAdmin) {
+      redirect(getEventsPath());
+    }
+    redirect(getNoEventsPath());
   }
   return event;
 };

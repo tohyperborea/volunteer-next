@@ -39,17 +39,17 @@ export const validateNewShift = (data: FormData): Omit<ShiftInfo, 'id'> => {
   if (!title) {
     throw new Error('Shift title is required');
   }
-  const eventDayStr = data.get('startTime-day')?.toString() ?? null;
+  const eventDayStr = data.get('shift-day')?.toString() ?? null;
   if (!eventDayStr) {
-    throw new Error('Shift startTime-day is required');
+    throw new Error('Shift day is required');
   }
   const eventDay = parseInt(eventDayStr, 10);
   if (isNaN(eventDay)) {
-    throw new Error('Shift startTime-day must be a valid number');
+    throw new Error('Shift day must be a valid number');
   }
-  const startTime = data.get('startTime-time')?.toString() ?? null;
+  const startTime = data.get('shift-time')?.toString() ?? null;
   if (!startTime) {
-    throw new Error('Shift startTime-time is required');
+    throw new Error('Shift time is required');
   }
   const durationHoursStr = data.get('durationHours')?.toString() ?? null;
   if (!durationHoursStr) {
