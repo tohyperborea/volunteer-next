@@ -6,6 +6,8 @@
 
 import { userFiltersToParams } from './user-filters';
 
+export const getDashboardPath = (): string => '/';
+
 // Users paths
 export const getUsersDashboardPath = (): string => '/user';
 export const getCreateUserPath = (): string => '/create-user';

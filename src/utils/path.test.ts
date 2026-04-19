@@ -20,7 +20,8 @@ import {
   getCreateEventPath,
   getUpdateEventPath,
   getMyShiftsPath,
-  getNoEventsPath
+  getNoEventsPath,
+  getDashboardPath
 } from './path';
 
 describe('getTeamsPath', () => {
@@ -266,5 +267,12 @@ describe('getNoEventsPath', () => {
   it('should return the correct path for no events', () => {
     const result = getNoEventsPath();
     expect(result).toBe('/no-events');
+  });
+});
+
+describe('getDashboardPath', () => {
+  it('should return the correct path for the dashboard', () => {
+    const result = getDashboardPath();
+    expect(result).toBe('/');
   });
 });
