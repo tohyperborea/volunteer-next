@@ -19,6 +19,7 @@ const POSTGRES_PASSWORD = readSecret('POSTGRES_PASSWORD', 'example');
 const POSTGRES_DB = process.env.POSTGRES_DB || 'postgres';
 const POSTGRES_PORT = Number(process.env.POSTGRES_PORT) || 5432;
 const UPLOADS_DIR = process.env.UPLOADS_DIR || path.join(import.meta.dirname, '..', 'uploads');
+const FILE_AGE_THRESHOLD_SECONDS = Number(process.env.FILE_AGE_THRESHOLD_SECONDS) || 3600;
 
 console.log(`Upload Cleaner service started with schedule: ${CRON_SCHEDULE}`);
 console.log(`Connecting to PostgreSQL at ${POSTGRES_HOST}:${POSTGRES_PORT} as ${POSTGRES_USER}...`);
@@ -61,7 +62,7 @@ cron.schedule(CRON_SCHEDULE, async () => {
         const filename = path.basename(file);
         const apiPath = `/api/image/${filename}`;
         if (!referencedFiles.has(apiPath)) {
-          return deleteFile(path.join(UPLOADS_DIR, file));
+          return deleteFileIfOld(path.join(UPLOADS_DIR, file));
         }
       })
     );
@@ -70,10 +71,16 @@ cron.schedule(CRON_SCHEDULE, async () => {
   }
 });
 
-const deleteFile = async (filePath: string) => {
+const deleteFileIfOld = async (filePath: string) => {
   try {
-    await fsPromise.unlink(filePath);
-    console.log(`Deleted file: ${filePath}`);
+    const stats = await fsPromise.stat(filePath);
+    const fileAge = (Date.now() - stats.mtime.getTime()) / 1000; // Age in seconds
+    if (fileAge > FILE_AGE_THRESHOLD_SECONDS) {
+      await fsPromise.unlink(filePath);
+      console.log(`Deleted old file: ${filePath}`);
+    } else {
+      console.log(`File ${filePath} is not old enough to delete (age: ${fileAge} seconds).`);
+    }
   } catch (error) {
     console.error(`Error deleting file ${filePath}:`, error);
   }
