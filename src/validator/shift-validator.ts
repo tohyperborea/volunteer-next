@@ -41,15 +41,15 @@ export const validateNewShift = (data: FormData): Omit<ShiftInfo, 'id'> => {
   }
   const eventDayStr = data.get('shift-day')?.toString() ?? null;
   if (!eventDayStr) {
-    throw new Error('Shift shift-day is required');
+    throw new Error('Shift day is required');
   }
   const eventDay = parseInt(eventDayStr, 10);
   if (isNaN(eventDay)) {
-    throw new Error('Shift shift-day must be a valid number');
+    throw new Error('Shift day must be a valid number');
   }
   const startTime = data.get('shift-time')?.toString() ?? null;
   if (!startTime) {
-    throw new Error('Shift shift-time is required');
+    throw new Error('Shift time is required');
   }
   const durationHoursStr = data.get('durationHours')?.toString() ?? null;
   if (!durationHoursStr) {

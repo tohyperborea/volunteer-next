@@ -26,7 +26,20 @@ const rowToEvent = (row: any): EventInfo => ({
  */
 export const getEvents = cache(async (): Promise<EventInfo[]> => {
   const result = await pool.query(
-    'SELECT id, name, "slug", "startDate", "endDate", "archivedAt", "logo", "favicon" FROM event'
+    `
+    SELECT 
+      id, 
+      name,
+      "slug", 
+      "startDate", 
+      "endDate", 
+      "archivedAt", 
+      "logo", 
+      "logo_dark", 
+      "favicon" 
+    FROM event
+    ORDER BY "startDate" DESC
+    `
   );
   return result.rows.map(rowToEvent);
 });

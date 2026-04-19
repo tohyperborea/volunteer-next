@@ -8,7 +8,7 @@ The service requires the following environment variables:
 
 | Variable                   | Description                            | Default      |
 | -------------------------- | -------------------------------------- | ------------ |
-| CRON_SCHEDULE              | Mailer schedule in crontab syntax      | 0 0 \* \* \* |
+| CRON_SCHEDULE              | Service schedule in crontab syntax     | 0 0 \* \* \* |
 | POSTGRES_HOST              | Postgres host                          | localhost    |
 | POSTGRES_USER              | Postgres user                          | postgres     |
 | POSTGRES_PASSWORD          | Postgres password                      | example      |

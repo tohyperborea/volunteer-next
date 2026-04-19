@@ -1,6 +1,5 @@
 import { NextRequest } from 'next/server';
 import fs from 'node:fs/promises';
-import { request } from 'node:http';
 import path from 'node:path';
 
 export const GET = async (
@@ -8,7 +7,9 @@ export const GET = async (
   { params }: RouteContext<'/api/image/[filename]'>
 ): Promise<Response> => {
   const filename = (await params).filename;
-  console.log('Requested image:', filename);
+  if (filename !== path.basename(filename)) {
+    return new Response('Invalid filename', { status: 400 });
+  }
   const filePath = path.join(process.cwd(), 'uploads', filename);
   try {
     const fileBuffer = await fs.readFile(filePath);
@@ -24,6 +25,8 @@ export const GET = async (
       contentType = 'image/svg+xml';
     } else if (fileExt === '.webp') {
       contentType = 'image/webp';
+    } else if (fileExt === '.ico') {
+      contentType = 'image/x-icon';
     }
     return new Response(fileBuffer, {
       headers: { 'Content-Type': contentType }

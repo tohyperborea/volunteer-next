@@ -157,6 +157,7 @@ export default function EventForm({
           <Flex gap="2" my="6">
             {backOnCancel && (
               <Button
+                type="button"
                 style={{ maxWidth: '284px', flexBasis: '40%', flexGrow: 1 }}
                 variant="soft"
                 color="gray"

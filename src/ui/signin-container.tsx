@@ -14,10 +14,16 @@ export default function SigninContainer({ title, logo, logoDark, children }: Sig
   const t = useTranslations('AuthContainer');
   return (
     <Flex direction="column" gap="8" my="5" align="center">
-      <picture>
-        {logoDark && <source srcSet={logoDark} media="(prefers-color-scheme: dark)" />}
-        {logo && <img src={logo} alt={t('logo')} style={{ maxWidth: '60vw', maxHeight: '50vh' }} />}
-      </picture>
+      {(logo || logoDark) && (
+        <picture>
+          {logoDark && <source srcSet={logoDark} media="(prefers-color-scheme: dark)" />}
+          <img
+            src={logo || logoDark}
+            alt={t('logo')}
+            style={{ maxWidth: '60vw', maxHeight: '50vh' }}
+          />
+        </picture>
+      )}
       <Heading as="h1" align="center">
         {title}
       </Heading>

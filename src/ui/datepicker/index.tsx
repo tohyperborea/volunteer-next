@@ -99,7 +99,7 @@ export function EventDaySelect({
 
   const dayLabel = (date: number): string => {
     if (knowsDays) {
-      const dateObj = new Date(year, month, date);
+      const dateObj = new Date(Date.UTC(year, month, date));
       return dateObj.toLocaleDateString('default', { weekday: 'short', day: 'numeric' });
     }
     return date.toString();
@@ -107,7 +107,7 @@ export function EventDaySelect({
 
   useEffect(() => {
     if (day !== undefined && month !== undefined && year !== undefined) {
-      const date = new Date(year, month, day);
+      const date = new Date(Date.UTC(year, month, day));
       const eventDay = dateToEventDay(startDate, date);
       setEventDay(eventDay);
       onChange && onChange(eventDay);

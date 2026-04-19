@@ -78,7 +78,7 @@ describe('validateNewShift', () => {
       isActive: 'on'
     });
 
-    expect(() => validateNewShift(formData)).toThrow('Shift shift-day is required');
+    expect(() => validateNewShift(formData)).toThrow('Shift day is required');
   });
 
   it('throws an error if shift-day is not a valid number', () => {
@@ -93,7 +93,7 @@ describe('validateNewShift', () => {
       isActive: 'on'
     });
 
-    expect(() => validateNewShift(formData)).toThrow('Shift shift-day must be a valid number');
+    expect(() => validateNewShift(formData)).toThrow('Shift day must be a valid number');
   });
 
   it('throws an error if durationHours is missing', () => {

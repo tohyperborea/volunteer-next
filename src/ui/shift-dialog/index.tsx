@@ -8,10 +8,10 @@
 
 import { Button, Dialog, Flex, TextField, Text, Checkbox, Select } from '@radix-ui/themes';
 import { useTranslations } from 'next-intl';
-import { EventDaySelect, TimeSelect } from '../datepicker';
-import FormDialog, { FormField } from '../form-dialog';
+import { EventDaySelect, TimeSelect } from '@/ui/datepicker';
+import FormDialog, { FormField } from '@/ui/form-dialog';
 import { useEffect, useState } from 'react';
-import DeleteButton from '../delete-button';
+import DeleteButton from '@/ui/delete-button';
 
 interface BaseProps {
   startDate: Date;
