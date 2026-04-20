@@ -22,7 +22,7 @@ const pool = new Pool(
 );
 
 // Parse DATE columns as plain strings, then convert to UTC midnight
-types.setTypeParser(1082, (val: string) => {
+types.setTypeParser(types.builtins.DATE, (val: string) => {
   return new Date(`${val}T00:00:00Z`);
 });
 
