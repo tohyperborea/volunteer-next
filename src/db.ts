@@ -5,7 +5,7 @@
  */
 
 import 'server-only';
-import { Pool, PoolClient } from 'pg';
+import { types, Pool, PoolClient } from 'pg';
 
 const connectionString = process.env.POSTGRES_URL;
 
@@ -20,6 +20,11 @@ const pool = new Pool(
         port: Number(process.env.POSTGRES_PORT) || 5432
       }
 );
+
+// Parse DATE columns as plain strings, then convert to UTC midnight
+types.setTypeParser(1082, (val: string) => {
+  return new Date(`${val}T00:00:00Z`);
+});
 
 export const inTransaction = async <R>(
   serviceCalls: (client: PoolClient) => Promise<R>

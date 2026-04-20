@@ -100,7 +100,11 @@ export function EventDaySelect({
   const dayLabel = (date: number): string => {
     if (knowsDays) {
       const dateObj = new Date(Date.UTC(year, month, date));
-      return dateObj.toLocaleDateString('default', { weekday: 'short', day: 'numeric' });
+      return dateObj.toLocaleDateString('default', {
+        weekday: 'short',
+        day: 'numeric',
+        timeZone: 'UTC'
+      });
     }
     return date.toString();
   };
