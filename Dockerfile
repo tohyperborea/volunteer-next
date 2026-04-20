@@ -69,8 +69,8 @@ ENV NEXT_TELEMETRY_DISABLED=1
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-# Copy production assets
-COPY --from=builder --chown=node:node /app/public ./public
+# Copy production assets, if they exist (use glob pattern to prevent failure if the directory doesn't exist)
+COPY --from=builder --chown=node:node /app/publi[c]/ ./public/
 
 # Set the correct permission for prerender cache
 RUN mkdir .next
