@@ -28,6 +28,7 @@ const SMTP_SECURE = process.env.SMTP_SECURE === 'true';
 const SMTP_FROM = process.env.SMTP_FROM ?? SMTP_USER ?? 'noreply@localhost';
 const FAKE_SEND = process.env.FAKE_SEND === 'true';
 const MAX_RETRIES = Number(process.env.MAX_RETRIES) || 3;
+const USE_GOOGLE_WORKSPACE = process.env.USE_GOOGLE_WORKSPACE === 'true';
 
 console.log(
   `Mailer service started with schedule: ${CRON_SCHEDULE} and rate limit: ${RATE_LIMIT || 'none'}`
@@ -42,16 +43,24 @@ const pool = new Pool({
   port: POSTGRES_PORT
 });
 
-console.log(
-  `Setting up SMTP transporter for ${SMTP_HOST}:${SMTP_PORT} (secure: ${SMTP_SECURE})...`
-);
+if (USE_GOOGLE_WORKSPACE) {
+  console.log('Using Google Workspace SMTP settings...');
+} else {
+  console.log(
+    `Setting up SMTP transporter for ${SMTP_HOST}:${SMTP_PORT} (secure: ${SMTP_SECURE})...`
+  );
+}
 
-const smtp = createTransport({
-  host: SMTP_HOST,
-  port: SMTP_PORT,
-  secure: SMTP_SECURE,
-  auth: { user: SMTP_USER, pass: SMTP_PASSWORD }
-});
+const smtp = USE_GOOGLE_WORKSPACE
+  ? createTransport({
+      service: 'GmailWorkspace'
+    })
+  : createTransport({
+      host: SMTP_HOST,
+      port: SMTP_PORT,
+      secure: SMTP_SECURE,
+      auth: { user: SMTP_USER, pass: SMTP_PASSWORD }
+    });
 
 console.log('Starting scheduled task...');
 

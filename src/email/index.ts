@@ -44,6 +44,12 @@ export function validateSmtpConfig(): SmtpConfigValidation {
 }
 
 function getTransporter(): nodemailer.Transporter | null {
+  if (process.env.USE_GOOGLE_WORKSPACE === 'true') {
+    return nodemailer.createTransport({
+      service: 'GmailWorkspace'
+    });
+  }
+
   const validation = validateSmtpConfig();
   if (!validation.valid) return null;
 

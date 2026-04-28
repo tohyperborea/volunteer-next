@@ -53,7 +53,8 @@ services:
       SMTP_PASSWORD: ${SMTP_PASSWORD}
       SMTP_SECURE: ${SMTP_SECURE}
       SMTP_FROM: ${SMTP_FROM}
-      FAKE_SEND: true
+      USE_GOOGLE_WORKSPACE: ${USE_GOOGLE_WORKSPACE}
+      FAKE_SEND: ${FAKE_SEND}
     restart: unless-stopped
     depends_on:
       - db
