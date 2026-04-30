@@ -45,13 +45,22 @@ export function validateSmtpConfig(): SmtpConfigValidation {
 
 function getTransporter(): nodemailer.Transporter | null {
   if (process.env.USE_GOOGLE_WORKSPACE === 'true') {
+    const from = process.env.SMTP_FROM;
+    if (!from) {
+      console.error('[email] Google Workspace transport requires SMTP_FROM to be set');
+      return null;
+    }
     return nodemailer.createTransport({
-      service: 'GmailWorkspace'
+      service: 'GmailWorkspace',
+      host: 'smtp-relay.gmail.com',
+      name: from.split('@')[1] // EHLO name should match sending domain for Google Workspace
     });
   }
 
   const validation = validateSmtpConfig();
-  if (!validation.valid) return null;
+  if (!validation.valid) {
+    return null;
+  }
 
   const host = process.env.SMTP_HOST!.trim();
   const user = process.env.SMTP_USER!.trim();
