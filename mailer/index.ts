@@ -53,7 +53,9 @@ if (USE_GOOGLE_WORKSPACE) {
 
 const smtp = USE_GOOGLE_WORKSPACE
   ? createTransport({
-      service: 'GmailWorkspace'
+      service: 'GmailWorkspace',
+      host: 'smtp-relay.gmail.com',
+      name: SMTP_FROM.split('@')[1] // EHLO name should match sending domain for Google Workspace
     })
   : createTransport({
       host: SMTP_HOST,
