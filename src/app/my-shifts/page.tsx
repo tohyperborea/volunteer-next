@@ -33,6 +33,7 @@ export default async function MyShifts() {
   const showEmailButton =
     process.env.NODE_ENV === 'development' ||
     process.env.USE_EMAIL_QUEUE === 'true' ||
+    process.env.USE_GOOGLE_WORKSPACE === 'true' ||
     validateSmtpConfig().valid;
 
   const onCancelShift = async (shiftId: ShiftId) => {
