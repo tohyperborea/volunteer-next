@@ -39,13 +39,17 @@ export default async function UpdateTeam({ params }: PageProps<'/update-team/[id
     { type: 'team-lead', eventId: team.eventId, teamId: team.id }
   ];
   await checkAuthorisation(authorisedRoles);
+  const canDelete = await checkAuthorisation(
+    [{ type: 'admin' }, { type: 'organiser', eventId: team.eventId }],
+    true
+  );
   const t = await getTranslations(PAGE_KEY);
 
   const onSubmit = async (data: FormData) => {
     'use server';
 
     const newTeam = validateExistingTeam(data);
-    if (newTeam.id !== team.id) {
+    if (newTeam.id !== team.id || newTeam.eventId !== team.eventId) {
       notFound();
     }
 
@@ -96,7 +100,7 @@ export default async function UpdateTeam({ params }: PageProps<'/update-team/[id
       <TeamForm
         eventId={team.eventId}
         onSubmit={onSubmit}
-        onDelete={onDelete}
+        onDelete={canDelete ? onDelete : undefined}
         backOnCancel
         teamleadOptions={volunteers}
         editingTeam={team}

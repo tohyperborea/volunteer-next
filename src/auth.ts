@@ -106,13 +106,12 @@ const beforeHook = createAuthMiddleware(async (ctx) => {
 
 const sessionExpiresIn = Number(process.env.OAUTH_SESSION_EXPIRY_SECONDS);
 const sessionUpdateAge = Number(process.env.OAUTH_SESSION_UPDATE_AGE_SECONDS);
-const sessionConfig =
-  useOAuth && sessionExpiresIn && sessionUpdateAge
-    ? {
-        expiresIn: sessionExpiresIn,
-        updateAge: sessionUpdateAge
-      }
-    : undefined;
+const sessionConfig = useOAuth
+  ? {
+      expiresIn: sessionExpiresIn || 60 * 24 * 7, // 7 days
+      updateAge: sessionUpdateAge || 60 * 24 // 24 hours
+    }
+  : undefined;
 
 export const auth = betterAuth({
   plugins,

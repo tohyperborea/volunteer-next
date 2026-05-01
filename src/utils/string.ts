@@ -4,8 +4,8 @@
  * @author Michael Townsend <@continuities>
  */
 
-const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 export const EMAIL_PATTERN = '[a-zA-Z0-9._%+\\-]+@[a-zA-Z0-9.\\-]+\\.[a-zA-Z]{2,}';
+const EMAIL_REGEX = new RegExp(`^${EMAIL_PATTERN}$`);
 
 /**
  * Validates whether a string is a properly formatted email address

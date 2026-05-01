@@ -19,7 +19,7 @@ import { FormField } from '@/ui/form-dialog';
 import { ExitIcon, Pencil2Icon, PlusIcon } from '@radix-ui/react-icons';
 import { getVolunteerById } from '@/lib/volunteer';
 import { getPermissionsProfile } from '@/utils/permissions';
-import { auth, signOut } from '@/auth';
+import { signOut } from '@/auth';
 import { headers } from 'next/headers';
 import NextLink from 'next/link';
 import { hasEventEnded } from '@/utils/date';
