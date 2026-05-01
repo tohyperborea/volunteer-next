@@ -104,6 +104,16 @@ const beforeHook = createAuthMiddleware(async (ctx) => {
   }
 });
 
+const sessionExpiresIn = Number(process.env.OAUTH_SESSION_EXPIRY_SECONDS);
+const sessionUpdateAge = Number(process.env.OAUTH_SESSION_UPDATE_AGE_SECONDS);
+const sessionConfig =
+  useOAuth && sessionExpiresIn && sessionUpdateAge
+    ? {
+        expiresIn: sessionExpiresIn,
+        updateAge: sessionUpdateAge
+      }
+    : undefined;
+
 export const auth = betterAuth({
   plugins,
   database: db,
@@ -147,6 +157,7 @@ export const auth = betterAuth({
           }
         }
       },
+  session: sessionConfig,
   advanced: {
     defaultCookieAttributes: {
       // 'lax' reduces CSRF risk; use 'none' only if you need cookies on cross-site requests (e.g. embedded iframes).
