@@ -12,6 +12,7 @@ import { useRouter } from 'next/navigation';
 import { FormField } from '../form-dialog';
 import DeleteButton from '../delete-button';
 import { TEAM_SLUG_PATTERN } from '@/validator/team-validator';
+import { EMAIL_PATTERN } from '@/utils/string';
 
 interface Props {
   eventId: EventId;
@@ -110,6 +111,7 @@ export default function TeamForm({
               type="email"
               defaultValue={editingTeam?.contactAddress}
               required
+              pattern={EMAIL_PATTERN}
             />
           </FormField>
           <FormField
