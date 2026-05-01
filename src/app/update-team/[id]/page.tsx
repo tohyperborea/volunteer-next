@@ -33,15 +33,23 @@ export default async function UpdateTeam({ params }: PageProps<'/update-team/[id
   if (hasEventStarted(event)) {
     unauthorized();
   }
-  await checkAuthorisation([{ type: 'admin' }, { type: 'organiser', eventId: team.eventId }]);
+  const authorisedRoles: UserRole[] = [
+    { type: 'admin' },
+    { type: 'organiser', eventId: team.eventId },
+    { type: 'team-lead', eventId: team.eventId, teamId: team.id }
+  ];
+  await checkAuthorisation(authorisedRoles);
   const t = await getTranslations(PAGE_KEY);
 
   const onSubmit = async (data: FormData) => {
     'use server';
 
     const newTeam = validateExistingTeam(data);
+    if (newTeam.id !== team.id) {
+      notFound();
+    }
 
-    await checkAuthorisation([{ type: 'admin' }, { type: 'organiser', eventId: newTeam.eventId }]);
+    await checkAuthorisation(authorisedRoles);
 
     const teamlead = validateUserId(data, 'teamleadId');
 
