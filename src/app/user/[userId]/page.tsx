@@ -19,7 +19,7 @@ import { FormField } from '@/ui/form-dialog';
 import { ExitIcon, Pencil2Icon, PlusIcon } from '@radix-ui/react-icons';
 import { getVolunteerById } from '@/lib/volunteer';
 import { getPermissionsProfile } from '@/utils/permissions';
-import { auth } from '@/auth';
+import { auth, signOut } from '@/auth';
 import { headers } from 'next/headers';
 import NextLink from 'next/link';
 import { hasEventEnded } from '@/utils/date';
@@ -136,12 +136,10 @@ export default async function VolunteerProfilePage({ params }: PageProps<'/user/
     revalidatePath(getUserProfilePath(userId));
   };
 
-  const signOut = async () => {
+  const signOutAction = async () => {
     'use server';
-    await auth.api.signOut({
-      headers: await headers()
-    });
-    redirect('/');
+    const redirectUrl = await signOut(await headers());
+    redirect(redirectUrl);
   };
 
   return (
@@ -163,7 +161,7 @@ export default async function VolunteerProfilePage({ params }: PageProps<'/user/
           <Button
             variant="soft"
             color="red"
-            onClick={signOut}
+            onClick={signOutAction}
             data-umami-event="Sign out"
             data-umami-event-userid={volunteer.id}
           >

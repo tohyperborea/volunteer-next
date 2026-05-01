@@ -157,3 +157,20 @@ export const auth = betterAuth({
     }
   }
 });
+
+/**
+ * Sign out the current user and return the redirect URL
+ * If using OAuth and OAUTH_LOGOUT_URL is set, this will be the URL to log out of the OAuth provider; otherwise, it will be the home page.
+ * @param headers
+ * @returns URL to redirect the user to after signing out
+ */
+export const signOut = async (headers: HeadersInit) => {
+  'use server';
+  await auth.api.signOut({
+    headers
+  });
+  if (useOAuth && process.env.OAUTH_LOGOUT_URL) {
+    return process.env.OAUTH_LOGOUT_URL;
+  }
+  return '/';
+};
