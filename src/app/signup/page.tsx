@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation';
 import NextLink from 'next/link';
 import { Button, Flex, Text, TextField, Link } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
-import { isValidEmail } from '@/utils/string';
+import { EMAIL_PATTERN, isValidEmail } from '@/utils/string';
 import { validatePassword, validateName, getSafeCallbackUrl } from '@/lib/signup-validation';
 import { checkRateLimit, AUTH_ENDPOINT_LIMITS } from '@/lib/rate-limit';
 import { getClientIp } from '@/lib/client-ip';
@@ -185,6 +185,7 @@ export default async function SignUpPage({
                 placeholder={t('emailPlaceholder') ?? ''}
                 autoComplete="email"
                 required
+                pattern={EMAIL_PATTERN}
                 aria-labelledby="email-field"
                 aria-invalid={!!errorEmail}
                 aria-describedby={errorEmail ? 'email-error' : undefined}

@@ -53,7 +53,7 @@ export default async function EventsDashboard({ searchParams }: PageProps<'/team
 
   const itemActions = !isEditable
     ? {}
-    : teams.reduce<Record<TeamId, React.ReactNode>>((actions, team) => {
+    : managedTeams.reduce<Record<TeamId, React.ReactNode>>((actions, team) => {
         actions[team.id] = (
           <NextLink href={getUpdateTeamPath(team.id)}>
             <IconButton variant="ghost" aria-label={t('edit', { teamName: team.name })}>
@@ -91,11 +91,13 @@ export default async function EventsDashboard({ searchParams }: PageProps<'/team
       </Flex>
       {isEditable && (
         <Flex gap="2">
-          <Button asChild variant="soft">
-            <NextLink href={getCreateTeamPath()}>
-              <PlusIcon /> {t('createTeam')}
-            </NextLink>
-          </Button>
+          {hasEventAccess && (
+            <Button asChild variant="soft">
+              <NextLink href={getCreateTeamPath()}>
+                <PlusIcon /> {t('createTeam')}
+              </NextLink>
+            </Button>
+          )}
           <AddShiftButton
             event={event}
             teams={managedTeams}
