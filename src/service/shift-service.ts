@@ -97,7 +97,7 @@ export const getShiftById = cache(async (shiftId: ShiftId): Promise<ShiftInfo | 
   if (result.rows.length === 0) {
     return null;
   }
-  return rowsToShift(result.rows)[0];
+  return rowsToShifts(result.rows)[0];
 });
 
 /**

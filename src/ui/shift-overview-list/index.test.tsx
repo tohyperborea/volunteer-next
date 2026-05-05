@@ -44,7 +44,8 @@ describe('ShiftOverviewList', () => {
       startTime: '',
       durationHours: 0,
       minVolunteers: 0,
-      maxVolunteers: 0
+      maxVolunteers: 0,
+      requirements: []
     },
     {
       id: 'shift2',
@@ -55,7 +56,8 @@ describe('ShiftOverviewList', () => {
       startTime: '',
       durationHours: 0,
       minVolunteers: 0,
-      maxVolunteers: 0
+      maxVolunteers: 0,
+      requirements: []
     },
     {
       id: 'shift3',
@@ -66,7 +68,8 @@ describe('ShiftOverviewList', () => {
       startTime: '',
       durationHours: 0,
       minVolunteers: 0,
-      maxVolunteers: 0
+      maxVolunteers: 0,
+      requirements: []
     }
   ];
 
@@ -87,6 +90,7 @@ describe('ShiftOverviewList', () => {
         teams={mockTeams}
         shifts={mockShifts}
         shiftVolunteers={mockShiftVolunteers}
+        qualifications={[]}
       />
     );
 
@@ -99,6 +103,7 @@ describe('ShiftOverviewList', () => {
     expect(mockShiftCard).toHaveBeenCalledWith(
       expect.objectContaining({
         shift: mockShifts[0],
+        qualifications: [],
         volunteers: mockShiftVolunteers['shift1'],
         collapsible: true
       }),
@@ -107,6 +112,7 @@ describe('ShiftOverviewList', () => {
     expect(mockShiftCard).toHaveBeenCalledWith(
       expect.objectContaining({
         shift: mockShifts[1],
+        qualifications: [],
         volunteers: mockShiftVolunteers['shift2'],
         collapsible: true
       }),
@@ -115,6 +121,7 @@ describe('ShiftOverviewList', () => {
     expect(mockShiftCard).toHaveBeenCalledWith(
       expect.objectContaining({
         shift: mockShifts[2],
+        qualifications: [],
         volunteers: mockShiftVolunteers['shift3'],
         collapsible: true
       }),
@@ -124,7 +131,7 @@ describe('ShiftOverviewList', () => {
 
   it('renders empty state when no shifts are provided', () => {
     render(
-      <ShiftOverviewList event={mockEvent} teams={mockTeams} shifts={[]} shiftVolunteers={{}} />
+      <ShiftOverviewList event={mockEvent} teams={mockTeams} shifts={[]} shiftVolunteers={{}} qualifications={[]} />
     );
 
     // Check that no team names or shifts are rendered
