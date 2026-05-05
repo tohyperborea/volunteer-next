@@ -36,3 +36,7 @@ export const getCookie = (name: string): string | null => {
   }
   return null;
 };
+
+export const deleteCookie = ({ name }: CookieConfig) => {
+  document.cookie = `${encodeURIComponent(name)}=; path=/; max-age=0;`;
+};

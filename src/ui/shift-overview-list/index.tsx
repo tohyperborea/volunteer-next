@@ -55,6 +55,7 @@ export default function ShiftOverviewList({
               <Flex direction="column" gap="2" mt="4">
                 {shifts.map((shift) => (
                   <ShiftCard
+                    date={eventDayToDate(event.startDate, shift.eventDay)}
                     shift={shift}
                     volunteers={shiftVolunteers[shift.id] ?? []}
                     key={shift.id}

@@ -28,6 +28,7 @@ interface Props {
   onCopy?: () => void;
   onSignup?: () => void;
   onCancel?: () => void;
+  date?: Date;
 }
 
 const getStatusColour = (volunteerCount: number, minVolunteers: number, maxVolunteers: number) => {
@@ -45,6 +46,7 @@ const getStatusColour = (volunteerCount: number, minVolunteers: number, maxVolun
 
 export default function ShiftCard({
   shift,
+  date,
   volunteers,
   qualification,
   onEdit,
@@ -54,9 +56,18 @@ export default function ShiftCard({
   collapsible,
   isQualified
 }: Props) {
+  const getShiftDateTime = (date: Date, time: TimeString) => {
+  const [hours, minutes] = time.split(':').map(Number);
+  const result = new Date(date);
+  result.setUTCHours(hours, minutes, 0, 0);
+  return result;
+  };
   const t = useTranslations('ShiftCard');
-  const startTime = shift.startTime;
-  const endTime = addHoursToTimeString(shift.startTime, shift.durationHours);
+  const startTime = date ? getShiftDateTime(date, shift.startTime) : shift.startTime;
+  const endTime =
+  startTime instanceof Date
+    ? new Date(startTime.getTime() + shift.durationHours * 60 * 60 * 1000)
+    : addHoursToTimeString(shift.startTime, shift.durationHours);
   const volunteerCount = volunteers.length;
   const requirementLabel =
     shift.requirement && qualification && qualification.id === shift.requirement
