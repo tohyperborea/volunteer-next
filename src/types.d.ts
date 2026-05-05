@@ -122,7 +122,7 @@ declare global {
     durationHours: number;
     minVolunteers: number;
     maxVolunteers: number;
-    requirement?: QualificationId;
+    requirements: QualificationId[];
   }
 
   interface TeamFilters {

@@ -40,7 +40,7 @@ const rowToShift = (row: any): ShiftInfo => ({
   minVolunteers: row.minVolunteers,
   maxVolunteers: row.maxVolunteers,
   isActive: row.isActive,
-  requirement: row.qualificationId || undefined
+  requirements: []
 });
 
 const rowsToShifts = (rows: any[]): ShiftInfo[] => {
@@ -48,14 +48,18 @@ const rowsToShifts = (rows: any[]): ShiftInfo[] => {
 
   rows.forEach((row) => {
     if (!shiftsMap.has(row.id)) {
-      shiftsMap.set(row.id, rowToShift(row));
+      const shift = rowToShift(row);
+      shift.requirements = [];
+      shiftsMap.set(row.id, shift);
     }
 
     const shift = shiftsMap.get(row.id)!;
 
-    if (row.qualificationId) {
-      // Right now, we only support one requirement per shift
-      shift.requirement = row.qualificationId;
+     if (
+      row.qualificationId &&
+      !shift.requirements.includes(row.qualificationId)
+    ) {
+      shift.requirements.push(row.qualificationId);
     }
   });
 
@@ -93,7 +97,7 @@ export const getShiftById = cache(async (shiftId: ShiftId): Promise<ShiftInfo | 
   if (result.rows.length === 0) {
     return null;
   }
-  return rowToShift(result.rows[0]);
+  return rowsToShifts(result.rows)[0];
 });
 
 /**
@@ -191,6 +195,27 @@ export const getShiftsForEvent = cache(async (eventId: EventId): Promise<ShiftIn
   return rowsToShifts(result.rows);
 });
 
+//Helper for inserting requirements
+const insertShiftRequirements = async (
+  db: PoolClient | typeof pool,
+  shiftId: ShiftId,
+  requirements: QualificationId[] = []
+) => {
+  for (const qualificationId of requirements) {
+    await db.query(
+      `
+      INSERT INTO requirement (
+        "shiftId",
+        "qualificationId"
+      )
+      VALUES ($1, $2)
+      ON CONFLICT ("shiftId", "qualificationId") DO NOTHING
+      `,
+      [shiftId, qualificationId]
+    );
+  }
+};
+
 /**
  * Creates a new shift in the database.
  * @param shift - The shift data, excluding the ID.
@@ -237,18 +262,10 @@ export const createShift = async (
     ]
   );
   const newShift = rowToShift(result.rows[0]);
-  if (shift.requirement) {
-    await db.query(
-      `
-      INSERT INTO requirement (
-        "shiftId",
-        "qualificationId"
-      ) VALUES ($1, $2)
-      `,
-      [newShift.id, shift.requirement]
-    );
-    newShift.requirement = shift.requirement;
-  }
+
+  await insertShiftRequirements(db, newShift.id, shift.requirements);
+  newShift.requirements = shift.requirements ?? [];
+
   console.info('Created new shift:', newShift);
   return newShift;
 };
@@ -295,33 +312,21 @@ export const updateShift = async (shift: ShiftInfo, client?: PoolClient): Promis
       shift.isActive
     ]
   );
+
   const updatedShift = rowToShift(result.rows[0]);
-  if (shift.requirement) {
-    // We currently only support one requirement per shift, so we can use an upsert to simplify logic
-    await db.query(
-      `
-      INSERT INTO requirement (
-        "shiftId",
-        "qualificationId"
-      ) VALUES ($1, $2)
-      ON CONFLICT ("shiftId")
-      DO UPDATE SET
-        "qualificationId" = EXCLUDED."qualificationId",
-        "updatedAt" = NOW()
-      `,
-      [updatedShift.id, shift.requirement]
-    );
-    updatedShift.requirement = shift.requirement;
-  } else {
-    // If no requirement is provided, delete any existing requirement for this shift
-    await db.query(
-      `
-      DELETE FROM requirement
-      WHERE "shiftId" = $1
-      `,
-      [updatedShift.id]
-    );
-  }
+
+  await db.query(
+    `
+    DELETE FROM requirement
+    WHERE "shiftId" = $1
+    `,
+    [updatedShift.id]
+  );
+
+  await insertShiftRequirements(db, updatedShift.id, shift.requirements);
+
+  updatedShift.requirements = shift.requirements ?? [];
+
   console.info('Updated shift:', updatedShift);
   return updatedShift;
 };

@@ -45,7 +45,7 @@ describe('ShiftDialog', () => {
       durationHours: 4,
       minVolunteers: 2,
       maxVolunteers: 5,
-      requirement: 'qualification-1'
+      requirements: ['qualification-1']
     };
 
     const { getByText, getByRole, getByDisplayValue } = render(

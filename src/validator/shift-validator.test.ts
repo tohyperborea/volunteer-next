@@ -21,7 +21,7 @@ describe('validateNewShift', () => {
       minVolunteers: '2',
       maxVolunteers: '5',
       isActive: 'on',
-      requirement: 'qualification-id'
+      requirements: ['qualification-id']
     });
 
     const result = validateNewShift(formData);
@@ -35,7 +35,7 @@ describe('validateNewShift', () => {
       minVolunteers: 2,
       maxVolunteers: 5,
       isActive: true,
-      requirement: 'qualification-id'
+      requirements: ['qualification-id']
     });
   });
 
@@ -205,7 +205,7 @@ describe('validateNewShift', () => {
     expect(result.isActive).toBe(false);
   });
 
-  it('sets requirement to undefined if the value is "null"', () => {
+  it('sets requirements to empty array if none selected', () => {
     const formData = createFormData({
       teamId: 'team-123',
       title: 'Morning Shift',
@@ -214,13 +214,12 @@ describe('validateNewShift', () => {
       durationHours: '4',
       minVolunteers: '2',
       maxVolunteers: '5',
-      requirement: 'null',
       isActive: 'on'
     });
 
     const result = validateNewShift(formData);
 
-    expect(result.requirement).toBeUndefined();
+    expect(result.requirements).toEqual([]);
   });
 });
 

@@ -13,6 +13,7 @@ import { Share2Icon, EnvelopeClosedIcon } from '@radix-ui/react-icons';
 import { Button, Flex, Heading } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
+import { getQualificationsForEvent } from '@/service/qualification-service';
 
 const PAGE_KEY = 'EventShiftsPage';
 
@@ -51,6 +52,7 @@ export default async function EventShifts() {
     {}
   );
   const teams = await getTeamsForEvent(event.id);
+  const qualifications = await getQualificationsForEvent(event.id);
   const emailableVolunteers = deduplicateBy(
     Object.values(shiftVolunteers).flat(),
     ({ id }) => id
@@ -104,6 +106,7 @@ export default async function EventShifts() {
         teams={teams}
         shifts={shifts}
         shiftVolunteers={shiftVolunteers}
+        qualifications={qualifications}
       />
     </Flex>
   );

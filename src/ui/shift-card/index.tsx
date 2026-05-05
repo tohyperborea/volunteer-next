@@ -21,7 +21,7 @@ import NextLink from 'next/link';
 interface Props {
   shift: ShiftInfo;
   volunteers: VolunteerInfo[];
-  qualification?: QualificationInfo;
+  qualifications?: QualificationInfo[];
   isQualified?: boolean;
   collapsible?: boolean;
   onEdit?: () => void;
@@ -48,7 +48,7 @@ export default function ShiftCard({
   shift,
   date,
   volunteers,
-  qualification,
+  qualifications = [],
   onEdit,
   onCopy,
   onSignup,
@@ -69,17 +69,13 @@ export default function ShiftCard({
     ? new Date(startTime.getTime() + shift.durationHours * 60 * 60 * 1000)
     : addHoursToTimeString(shift.startTime, shift.durationHours);
   const volunteerCount = volunteers.length;
-  const requirementLabel =
-    shift.requirement && qualification && qualification.id === shift.requirement
-      ? qualification.name
-      : null;
   const [isExpanded, setIsExpanded] = useState(!collapsible);
 
   const isFull = volunteerCount >= shift.maxVolunteers;
   const cantSignupMessage = isFull
     ? t('full')
-    : shift.requirement && !isQualified
-      ? qualification?.errorMessage
+    : qualifications.length > 0 && !isQualified
+      ? qualifications.map((qualification) => qualification.errorMessage).join('\n')
       : undefined;
   const canSignup = !cantSignupMessage;
   const hasButtons = onSignup || onCancel;
@@ -114,13 +110,13 @@ export default function ShiftCard({
             >
               <Flex direction={{ initial: 'column', sm: 'row' }} flexGrow="1" gap="3" justify="end">
                 <Flex direction="row" gap="2" align="center" wrap="wrap">
-                  {requirementLabel && (
-                    <Badge color="yellow" asChild>
-                      <NextLink href={getQualificationDetailsPath(shift.requirement!)}>
-                        {t('requires')}: {requirementLabel}
+                  {qualifications.map((qualification) => (
+                    <Badge key={qualification.id} color="yellow" asChild>
+                      <NextLink href={getQualificationDetailsPath(qualification.id)}>
+                        {t('requires')}: {qualification.name}
                       </NextLink>
                     </Badge>
-                  )}
+                  ))}
                   <Flex direction="row" gap="2" align="center" wrap="wrap">
                     <Badge color="gray">
                       {t('max')}: {shift.maxVolunteers}

@@ -32,7 +32,7 @@ describe('ShiftCard', () => {
     durationHours: 4,
     maxVolunteers: 10,
     minVolunteers: 2,
-    requirement: 'qualification-id'
+    requirements: ['qualification-id']
   };
   const mockQualification = {
     id: 'qualification-id',
@@ -63,16 +63,16 @@ describe('ShiftCard', () => {
     expect(screen.getByText('min: 2')).toBeInTheDocument();
   });
 
-  it('shows the qualification requirement when present', () => {
+  it('shows required qualifications when present', () => {
     render(
-      <ShiftCard shift={mockShift} qualification={mockQualification} volunteers={mockVolunteers} />
+      <ShiftCard shift={mockShift} qualifications={[mockQualification]} volunteers={mockVolunteers} />
     );
     const badge = screen.getByText('requires: First Aid');
     expect(badge).toBeInTheDocument();
     expect(badge).toHaveAttribute('href', getQualificationDetailsPath(mockQualification.id));
   });
 
-  it('does not show qualification requirement when not present', () => {
+  it('does not show required qualifications when none are present', () => {
     const mockShiftWithoutRequirement = {
       id: 'shift-id',
       teamId: 'team-id',
@@ -82,7 +82,8 @@ describe('ShiftCard', () => {
       startTime: '08:00',
       durationHours: 4,
       maxVolunteers: 10,
-      minVolunteers: 2
+      minVolunteers: 2,
+      requirements: []
     };
     render(<ShiftCard shift={mockShiftWithoutRequirement} volunteers={mockVolunteers} />);
 
@@ -129,35 +130,35 @@ describe('ShiftCard', () => {
 
   test.each<{
     isFull: boolean;
-    requirement: QualificationInfo | null;
+    qualifications: QualificationInfo[];
     isQualified: boolean;
     signupError: string | null;
   }>([
-    { isFull: false, requirement: null, isQualified: false, signupError: null },
-    { isFull: true, requirement: null, isQualified: false, signupError: 'full' },
+    { isFull: false, qualifications: [], isQualified: false, signupError: null },
+    { isFull: true, qualifications: [], isQualified: false, signupError: 'full' },
     {
       isFull: false,
-      requirement: mockQualification,
+      qualifications: [mockQualification],,
       isQualified: false,
       signupError: mockQualification.errorMessage
     },
-    { isFull: false, requirement: mockQualification, isQualified: true, signupError: null },
-    { isFull: true, requirement: mockQualification, isQualified: false, signupError: 'full' },
-    { isFull: true, requirement: mockQualification, isQualified: true, signupError: 'full' }
+    { isFull: false, qualifications: [mockQualification], isQualified: true, signupError: null },
+    { isFull: true, qualifications: [mockQualification], isQualified: false, signupError: 'full' },
+    { isFull: true, qualifications: [mockQualification], isQualified: true, signupError: 'full' }
   ])(
     'renders the signup button when onSignup is provided',
-    ({ isFull, requirement, isQualified, signupError }) => {
+    ({ isFull, qualifications, isQualified, signupError }) => {
       const onSignupMock = jest.fn();
       const shift = {
         ...mockShift,
         maxVolunteers: isFull ? mockVolunteers.length : mockShift.maxVolunteers,
-        requirement: requirement ? requirement.id : undefined
+        requirements: qualifications.map((qualification) => qualification.id)
       };
       render(
         <ShiftCard
           shift={shift}
           volunteers={mockVolunteers}
-          qualification={requirement || undefined}
+          qualifications={qualifications}
           isQualified={isQualified}
           onSignup={onSignupMock}
         />
