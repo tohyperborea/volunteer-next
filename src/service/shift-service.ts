@@ -227,47 +227,66 @@ export const createShift = async (
   client?: PoolClient
 ): Promise<ShiftInfo> => {
   const db = client || pool;
-  const result = await db.query(
-    `
-    INSERT INTO shift (
-      "teamId",
-      "title",
-      "eventDay",
-      "startTime",
-      "durationHours",
-      "minVolunteers",
-      "maxVolunteers",
-      "isActive"
-    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-    RETURNING 
-      "id",
-      "teamId",
-      "title",
-      "eventDay",
-      "startTime",
-      "durationHours",
-      "minVolunteers",
-      "maxVolunteers",
-      "isActive"
-    `,
-    [
-      shift.teamId,
-      shift.title,
-      shift.eventDay,
-      shift.startTime,
-      shift.durationHours,
-      shift.minVolunteers,
-      shift.maxVolunteers,
-      shift.isActive
-    ]
-  );
-  const newShift = rowToShift(result.rows[0]);
+  const useTransaction = !client;
 
-  await insertShiftRequirements(db, newShift.id, shift.requirements);
-  newShift.requirements = shift.requirements ?? [];
+  if (useTransaction) {
+    await db.query('BEGIN');
+  }
 
-  console.info('Created new shift:', newShift);
-  return newShift;
+  try {
+    const result = await db.query(
+      `
+      INSERT INTO shift (
+        "teamId",
+        "title",
+        "eventDay",
+        "startTime",
+        "durationHours",
+        "minVolunteers",
+        "maxVolunteers",
+        "isActive"
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      RETURNING 
+        "id",
+        "teamId",
+        "title",
+        "eventDay",
+        "startTime",
+        "durationHours",
+        "minVolunteers",
+        "maxVolunteers",
+        "isActive"
+      `,
+      [
+        shift.teamId,
+        shift.title,
+        shift.eventDay,
+        shift.startTime,
+        shift.durationHours,
+        shift.minVolunteers,
+        shift.maxVolunteers,
+        shift.isActive
+      ]
+    );
+
+    const newShift = rowToShift(result.rows[0]);
+
+    await insertShiftRequirements(db, newShift.id, shift.requirements);
+    newShift.requirements = shift.requirements ?? [];
+
+    if (useTransaction) {
+      await db.query('COMMIT');
+    }
+
+    console.info('Created new shift:', newShift);
+    return newShift;
+  } catch (error) {
+    if (useTransaction) {
+      await db.query('ROLLBACK');
+    }
+
+    throw error;
+  }
 };
 
 /**
@@ -278,57 +297,75 @@ export const createShift = async (
  */
 export const updateShift = async (shift: ShiftInfo, client?: PoolClient): Promise<ShiftInfo> => {
   const db = client || pool;
-  const result = await db.query(
-    `
-    UPDATE shift SET 
-      "title" = $2,
-      "eventDay" = $3,
-      "startTime" = $4,
-      "durationHours" = $5,
-      "minVolunteers" = $6,
-      "maxVolunteers" = $7,
-      "isActive" = $8,
-      "updatedAt" = NOW()
-    WHERE id = $1
-    RETURNING
-      "id",
-      "teamId",
-      "title",
-      "eventDay",
-      "startTime",
-      "durationHours",
-      "minVolunteers",
-      "maxVolunteers",
-      "isActive"
-    `,
-    [
-      shift.id,
-      shift.title,
-      shift.eventDay,
-      shift.startTime,
-      shift.durationHours,
-      shift.minVolunteers,
-      shift.maxVolunteers,
-      shift.isActive
-    ]
-  );
+  const useTransaction = !client;
 
-  const updatedShift = rowToShift(result.rows[0]);
+  if (useTransaction) {
+    await db.query('BEGIN');
+  }
 
-  await db.query(
-    `
-    DELETE FROM requirement
-    WHERE "shiftId" = $1
-    `,
-    [updatedShift.id]
-  );
+  try {
+    const result = await db.query(
+      `
+      UPDATE shift SET 
+        "title" = $2,
+        "eventDay" = $3,
+        "startTime" = $4,
+        "durationHours" = $5,
+        "minVolunteers" = $6,
+        "maxVolunteers" = $7,
+        "isActive" = $8,
+        "updatedAt" = NOW()
+      WHERE id = $1
+      RETURNING
+        "id",
+        "teamId",
+        "title",
+        "eventDay",
+        "startTime",
+        "durationHours",
+        "minVolunteers",
+        "maxVolunteers",
+        "isActive"
+      `,
+      [
+        shift.id,
+        shift.title,
+        shift.eventDay,
+        shift.startTime,
+        shift.durationHours,
+        shift.minVolunteers,
+        shift.maxVolunteers,
+        shift.isActive
+      ]
+    );
 
-  await insertShiftRequirements(db, updatedShift.id, shift.requirements);
+    const updatedShift = rowToShift(result.rows[0]);
 
-  updatedShift.requirements = shift.requirements ?? [];
+    await db.query(
+      `
+      DELETE FROM requirement
+      WHERE "shiftId" = $1
+      `,
+      [updatedShift.id]
+    );
 
-  console.info('Updated shift:', updatedShift);
-  return updatedShift;
+    await insertShiftRequirements(db, updatedShift.id, shift.requirements);
+
+    updatedShift.requirements = shift.requirements ?? [];
+
+    if (useTransaction) {
+      await db.query('COMMIT');
+    }
+
+    console.info('Updated shift:', updatedShift);
+    return updatedShift;
+  } catch (error) {
+    if (useTransaction) {
+      await db.query('ROLLBACK');
+    }
+
+    throw error;
+  }
 };
 
 /**
