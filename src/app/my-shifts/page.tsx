@@ -13,6 +13,7 @@ import { Share2Icon, EnvelopeClosedIcon } from '@radix-ui/react-icons';
 import { Button, Flex, Heading } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
 import { revalidatePath } from 'next/cache';
+import { getQualificationsForEvent } from '@/service/qualification-service';
 
 const PAGE_KEY = 'MyShiftsPage';
 
@@ -30,6 +31,7 @@ export default async function MyShifts() {
     event.id
   );
   const teams = await getTeamsForEvent(event.id);
+  const qualifications = await getQualificationsForEvent(event.id);
   const showEmailButton =
     process.env.NODE_ENV === 'development' ||
     process.env.USE_EMAIL_QUEUE === 'true' ||
@@ -91,6 +93,7 @@ export default async function MyShifts() {
         teams={teams}
         shifts={shifts}
         shiftVolunteers={shiftVolunteers}
+        qualifications={qualifications}
         onCancelShift={onCancelShift}
       />
     </Flex>

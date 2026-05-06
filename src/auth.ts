@@ -19,6 +19,7 @@ import {
   checkSignInRateLimit
 } from '@/lib/login-security';
 import { addRoleToUser, getRoleCount } from './service/user-service';
+import { cookies } from 'next/headers';
 
 /** oauth = Pretix/OAuth provider, credentials = email/password. Defaults to oauth. */
 export const AUTH_MODE = (process.env.AUTH_MODE ?? 'oauth') as 'oauth' | 'credentials';
@@ -179,6 +180,8 @@ export const signOut = async (headers: HeadersInit) => {
   await auth.api.signOut({
     headers
   });
+  const cookieStore = await cookies();
+  cookieStore.delete('event-id');
   if (useOAuth && process.env.OAUTH_LOGOUT_URL) {
     return process.env.OAUTH_LOGOUT_URL;
   }

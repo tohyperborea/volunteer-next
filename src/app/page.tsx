@@ -18,6 +18,7 @@ import { getVolunteersForShifts } from '@/service/user-service';
 import { getPermissionsProfile } from '@/utils/permissions';
 import { ArrowRightIcon } from '@radix-ui/react-icons';
 import TeamCard from '@/ui/team-card';
+import { getQualificationsForEvent } from '@/service/qualification-service';
 
 const PAGE_KEY = 'DashboardPage';
 
@@ -42,6 +43,7 @@ export default async function DashboardPage() {
   const totalHours = shifts.reduce((sum, shift) => sum + shift.durationHours, 0);
   const upcomingShifts = shifts.slice(0, 2);
   const teams = await getTeamsForEvent(event.id);
+  const qualifications = await getQualificationsForEvent(event.id);
   const upcomingShiftVolunteers = await getVolunteersForShifts(
     upcomingShifts.map((s) => s.id),
     permissionsProfile,
@@ -119,6 +121,7 @@ export default async function DashboardPage() {
             event={event}
             teams={teams}
             shiftVolunteers={upcomingShiftVolunteers}
+            qualifications={qualifications}
           />
         </Flex>
       )}

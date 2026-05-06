@@ -152,11 +152,18 @@ export default async function TeamPage({ params, searchParams }: PageProps<`/tea
       throw new Error('Shift does not belong to this team');
     }
 
-    if (shift.requirement) {
-      const qualifications = await getQualificationsForUser(permissions.userId, event.id);
-      const hasRequiredQualification = qualifications.some((q) => q.id === shift.requirement);
-      if (!hasRequiredQualification) {
-        throw new Error('User does not have the required qualification for this shift');
+    if (shift.requirements.length > 0) {
+      const userQualifications = await getQualificationsForUser(permissions.userId, event.id);
+      const userQualificationIds = new Set(
+        userQualifications.map((qualification) => qualification.id)
+      );
+
+      const hasAllRequiredQualifications = shift.requirements.every((qualificationId) =>
+        userQualificationIds.has(qualificationId)
+      );
+
+      if (!hasAllRequiredQualifications) {
+        throw new Error('User does not have all required qualifications for this shift');
       }
     }
 

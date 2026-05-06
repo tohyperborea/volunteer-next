@@ -16,6 +16,7 @@ interface Props {
   teams: TeamInfo[];
   shifts: ShiftInfo[];
   shiftVolunteers: Record<ShiftId, VolunteerInfo[]>;
+  qualifications: QualificationInfo[];
   onCancelShift?: (shiftId: ShiftId) => Promise<void>;
 }
 
@@ -24,11 +25,15 @@ export default function ShiftOverviewList({
   teams,
   shifts,
   shiftVolunteers,
+  qualifications,
   onCancelShift
 }: Props) {
   const teamNames = teams.reduce<Record<TeamId, string>>(
     (acc, team) => ({ ...acc, [team.id]: team.name }),
     {}
+  );
+  const qualificationMap = new Map(
+    qualifications.map((qualification) => [qualification.id, qualification])
   );
 
   const teamShiftsByDay = shifts.reduce<Record<number, Record<TeamId, ShiftInfo[]>>>(
@@ -53,15 +58,22 @@ export default function ShiftOverviewList({
                 {teamNames[teamId]}
               </Heading>
               <Flex direction="column" gap="2" mt="4">
-                {shifts.map((shift) => (
-                  <ShiftCard
-                    shift={shift}
-                    volunteers={shiftVolunteers[shift.id] ?? []}
-                    key={shift.id}
-                    collapsible
-                    onCancel={onCancelShift?.bind(null, shift.id)}
-                  />
-                ))}
+                {shifts.map((shift) => {
+                  const requiredQualifications = shift.requirements
+                    .map((qualificationId) => qualificationMap.get(qualificationId))
+                    .filter((qualification): qualification is QualificationInfo => Boolean(qualification));
+                  return (
+                    <ShiftCard
+                      eventStartDate={event.startDate}
+                      shift={shift}
+                      qualifications={requiredQualifications}
+                      volunteers={shiftVolunteers[shift.id] ?? []}
+                      key={shift.id}
+                      collapsible
+                      onCancel={onCancelShift?.bind(null, shift.id)}
+                    />
+                  );
+                })}
               </Flex>
             </Card>
           ))}
