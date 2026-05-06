@@ -138,7 +138,7 @@ describe('ShiftCard', () => {
     { isFull: true, qualifications: [], isQualified: false, signupError: 'full' },
     {
       isFull: false,
-      qualifications: [mockQualification],,
+      qualifications: [mockQualification],
       isQualified: false,
       signupError: mockQualification.errorMessage
     },

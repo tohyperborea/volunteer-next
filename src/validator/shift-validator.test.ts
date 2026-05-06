@@ -1,9 +1,13 @@
 import { validateExistingShift, validateNewShift } from './shift-validator';
 
-const createFormData = (data: Record<string, string | undefined>): FormData => {
+const createFormData = (data: Record<string, string | string[]>): FormData => {
   const formData = new FormData();
   Object.entries(data).forEach(([key, value]) => {
-    if (value !== undefined) {
+    if (value === undefined) return;
+
+    if (Array.isArray(value)) {
+      value.forEach((v) => formData.append(key, v));
+    } else {
       formData.append(key, value);
     }
   });
@@ -47,7 +51,8 @@ describe('validateNewShift', () => {
       durationHours: '4',
       minVolunteers: '2',
       maxVolunteers: '5',
-      isActive: 'on'
+      isActive: 'on',
+      requirements: []
     });
 
     expect(() => validateNewShift(formData)).toThrow('Shift teamId is required');
@@ -61,7 +66,8 @@ describe('validateNewShift', () => {
       durationHours: '4',
       minVolunteers: '2',
       maxVolunteers: '5',
-      isActive: 'on'
+      isActive: 'on',
+      requirements: []
     });
 
     expect(() => validateNewShift(formData)).toThrow('Shift title is required');
@@ -75,7 +81,8 @@ describe('validateNewShift', () => {
       durationHours: '4',
       minVolunteers: '2',
       maxVolunteers: '5',
-      isActive: 'on'
+      isActive: 'on',
+      requirements: []
     });
 
     expect(() => validateNewShift(formData)).toThrow('Shift day is required');
@@ -90,7 +97,8 @@ describe('validateNewShift', () => {
       durationHours: '4',
       minVolunteers: '2',
       maxVolunteers: '5',
-      isActive: 'on'
+      isActive: 'on',
+      requirements: []
     });
 
     expect(() => validateNewShift(formData)).toThrow('Shift day must be a valid number');
@@ -104,7 +112,8 @@ describe('validateNewShift', () => {
       'shift-time': '08:00',
       minVolunteers: '2',
       maxVolunteers: '5',
-      isActive: 'on'
+      isActive: 'on',
+      requirements: []
     });
 
     expect(() => validateNewShift(formData)).toThrow('Shift durationHours is required');
@@ -119,7 +128,8 @@ describe('validateNewShift', () => {
       durationHours: '-1',
       minVolunteers: '2',
       maxVolunteers: '5',
-      isActive: 'on'
+      isActive: 'on',
+      requirements: []
     });
 
     expect(() => validateNewShift(formData)).toThrow(
@@ -135,7 +145,8 @@ describe('validateNewShift', () => {
       'shift-time': '08:00',
       durationHours: '4',
       maxVolunteers: '5',
-      isActive: 'on'
+      isActive: 'on',
+      requirements: []
     });
 
     expect(() => validateNewShift(formData)).toThrow('Shift minVolunteers is required');
@@ -150,7 +161,8 @@ describe('validateNewShift', () => {
       durationHours: '4',
       minVolunteers: '-1',
       maxVolunteers: '5',
-      isActive: 'on'
+      isActive: 'on',
+      requirements: []
     });
 
     expect(() => validateNewShift(formData)).toThrow(
@@ -166,7 +178,8 @@ describe('validateNewShift', () => {
       'shift-time': '08:00',
       durationHours: '4',
       minVolunteers: '2',
-      isActive: 'on'
+      isActive: 'on',
+      requirements: []
     });
 
     expect(() => validateNewShift(formData)).toThrow('Shift maxVolunteers is required');
@@ -181,7 +194,8 @@ describe('validateNewShift', () => {
       durationHours: '4',
       minVolunteers: '5',
       maxVolunteers: '2',
-      isActive: 'on'
+      isActive: 'on',
+      requirements: []
     });
 
     expect(() => validateNewShift(formData)).toThrow(
@@ -197,7 +211,8 @@ describe('validateNewShift', () => {
       'shift-time': '08:00',
       durationHours: '4',
       minVolunteers: '2',
-      maxVolunteers: '5'
+      maxVolunteers: '5',
+      requirements: []
     });
 
     const result = validateNewShift(formData);
@@ -234,7 +249,8 @@ describe('validateExistingShift', () => {
       durationHours: '4',
       minVolunteers: '2',
       maxVolunteers: '5',
-      isActive: 'on'
+      isActive: 'on',
+      requirements: []
     });
 
     const result = validateExistingShift(formData);
@@ -248,7 +264,8 @@ describe('validateExistingShift', () => {
       durationHours: 4,
       minVolunteers: 2,
       maxVolunteers: 5,
-      isActive: true
+      isActive: true,
+      requirements: []
     });
   });
 
@@ -261,7 +278,8 @@ describe('validateExistingShift', () => {
       durationHours: '4',
       minVolunteers: '2',
       maxVolunteers: '5',
-      isActive: 'on'
+      isActive: 'on',
+      requirements: []
     });
 
     expect(() => validateExistingShift(formData)).toThrow('Shift ID is required');
@@ -277,7 +295,8 @@ describe('validateExistingShift', () => {
       durationHours: '4',
       minVolunteers: '2',
       maxVolunteers: '5',
-      isActive: 'on'
+      isActive: 'on',
+      requirements: []
     });
 
     expect(() => validateExistingShift(formData)).toThrow('Shift ID is required');

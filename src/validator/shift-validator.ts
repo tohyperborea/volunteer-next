@@ -80,11 +80,11 @@ export const validateNewShift = (data: FormData): Omit<ShiftInfo, 'id'> => {
   const isActiveStr = data.get('isActive')?.toString() ?? null;
   const isActive = isActiveStr === 'on';
 
-  // The form submits the string "null" when no requirement is selected, so that will be our default
+  // The form submits one requirements value per checked box but leave handling for any stale "null" values
   const requirements = data
-  .getAll('requirements')
-  .map((value) => value.toString())
-  .filter((value) => value && value.toLowerCase() !== 'null');
+    .getAll('requirements')
+    .map((value) => value.toString())
+    .filter((value) => value && value.toLowerCase() !== 'null');
 
   const shift: Omit<ShiftInfo, 'id'> = {
     teamId,
