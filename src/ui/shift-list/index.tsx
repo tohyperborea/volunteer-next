@@ -112,7 +112,7 @@ export default function ShiftList({
 
             return (
               <ShiftCard
-                date={eventDayToDate(event.startDate, shift.eventDay)}
+                eventStartDate={event.startDate}
                 shift={shift}
                 qualifications={requiredQualifications}
                 volunteers={shiftVolunteers[shift.id] || []}

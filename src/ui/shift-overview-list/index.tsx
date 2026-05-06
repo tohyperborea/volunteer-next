@@ -64,7 +64,7 @@ export default function ShiftOverviewList({
                     .filter((qualification): qualification is QualificationInfo => Boolean(qualification));
                   return (
                     <ShiftCard
-                      date={eventDayToDate(event.startDate, shift.eventDay)}
+                      eventStartDate={event.startDate}
                       shift={shift}
                       qualifications={requiredQualifications}
                       volunteers={shiftVolunteers[shift.id] ?? []}

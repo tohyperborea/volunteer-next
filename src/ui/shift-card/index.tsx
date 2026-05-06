@@ -12,7 +12,7 @@ import { useTranslations } from 'next-intl';
 import styles from './styles.module.css';
 import Collapsible from '../collapsible';
 import { Pencil2Icon, ChevronDownIcon, CopyIcon } from '@radix-ui/react-icons';
-import { addHoursToTimeString } from '@/utils/datetime';
+import { addHoursToTimeString, eventDayTimeToDate } from '@/utils/datetime';
 import { getQualificationDetailsPath } from '@/utils/path';
 import { useState } from 'react';
 import ProgressBar from '../progress-bar';
@@ -28,7 +28,7 @@ interface Props {
   onCopy?: () => void;
   onSignup?: () => void;
   onCancel?: () => void;
-  date?: Date;
+  eventStartDate?: Date;
 }
 
 const getStatusColour = (volunteerCount: number, minVolunteers: number, maxVolunteers: number) => {
@@ -46,7 +46,7 @@ const getStatusColour = (volunteerCount: number, minVolunteers: number, maxVolun
 
 export default function ShiftCard({
   shift,
-  date,
+  eventStartDate,
   volunteers,
   qualifications = [],
   onEdit,
@@ -56,14 +56,8 @@ export default function ShiftCard({
   collapsible,
   isQualified
 }: Props) {
-  const getShiftDateTime = (date: Date, time: TimeString) => {
-  const [hours, minutes] = time.split(':').map(Number);
-  const result = new Date(date);
-  result.setUTCHours(hours, minutes, 0, 0);
-  return result;
-  };
   const t = useTranslations('ShiftCard');
-  const startTime = date ? getShiftDateTime(date, shift.startTime) : shift.startTime;
+  const startTime = eventStartDate ? eventDayTimeToDate(eventStartDate, shift.eventDay, shift.startTime) : shift.startTime;
   const endTime =
   startTime instanceof Date
     ? new Date(startTime.getTime() + shift.durationHours * 60 * 60 * 1000)
