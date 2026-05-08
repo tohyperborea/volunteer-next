@@ -96,6 +96,7 @@ export default function ShiftFilters({ withFilters = [], teams = [] }: Props) {
                         <Select.Trigger />
                         <Select.Content>
                           <Select.Item value="all">{t('allTeams')}</Select.Item>
+                          <Select.Separator />
                           {teams.map((team) => (
                             <Select.Item key={team.id} value={team.id}>
                               {team.name}
