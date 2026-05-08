@@ -1,5 +1,4 @@
 import { screen, fireEvent, render } from '@/test-utils';
-import userEvent from '@testing-library/user-event';
 import ShiftFilters from '.';
 
 jest.mock('next-intl', () => ({

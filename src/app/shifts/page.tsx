@@ -67,10 +67,11 @@ export default async function EventShifts({ searchParams }: PageProps<`/shifts`>
   const leadTeamsIds = (await getMatchingRoles({ type: 'team-lead', eventId: event.id })).map(
     (role) => (role as TeamLeadRole).teamId
   );
+  const leadTeamsIdsSet = new Set(leadTeamsIds);
   const isEditable = !hasEventStarted(event) && (hasEventAccess || leadTeamsIds.length > 0);
   const managedTeams = hasEventAccess
-    ? await getTeamsForEvent(event.id)
-    : await getTeamsById(leadTeamsIds);
+    ? teams
+    : teams.filter((team) => leadTeamsIdsSet.has(team.id));
 
   const qualifications = await getQualificationsForEvent(event.id);
   const emailableVolunteers = deduplicateBy(

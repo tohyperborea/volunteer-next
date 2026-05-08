@@ -6,12 +6,17 @@ import { revalidatePath } from 'next/cache';
 import { redirect, notFound } from 'next/navigation';
 import { getSaveShiftAction, getDeleteShiftAction } from './shifts';
 import unauthorized from '@/app/unauthorized';
+import { getTeamById } from '@/service/team-service';
 
 jest.mock('@/service/shift-service', () => ({
   createShift: jest.fn(),
   deleteShift: jest.fn(),
   getShiftById: jest.fn(),
   updateShift: jest.fn()
+}));
+
+jest.mock('@/service/team-service', () => ({
+  getTeamById: jest.fn()
 }));
 
 jest.mock('@/session', () => ({
@@ -54,6 +59,7 @@ const mockCreateShift = createShift as jest.MockedFunction<typeof createShift>;
 const mockUpdateShift = updateShift as jest.MockedFunction<typeof updateShift>;
 const mockGetShiftById = getShiftById as jest.MockedFunction<typeof getShiftById>;
 const mockDeleteShift = deleteShift as jest.MockedFunction<typeof deleteShift>;
+const mockGetTeamById = getTeamById as jest.MockedFunction<typeof getTeamById>;
 
 const makeFormData = (values: Record<string, string | undefined>) =>
   ({
@@ -76,6 +82,7 @@ describe('shifts actions', () => {
     test('creates a shift and redirects using string redirectUri', async () => {
       const saved = { id: 'shift-1', teamId: 'team-1' } as any;
       mockCreateShift.mockResolvedValue(saved);
+      mockGetTeamById.mockResolvedValue({ id: saved.teamId, eventId: event.id } as any);
 
       const action = getSaveShiftAction({
         isEditable: true,
@@ -102,6 +109,7 @@ describe('shifts actions', () => {
       mockGetShiftById.mockResolvedValue(existing);
       mockUpdateShift.mockResolvedValue(updated);
       mockValidateNewShift.mockReturnValue(updated);
+      mockGetTeamById.mockResolvedValue({ id: existing.teamId, eventId: event.id } as any);
 
       const redirectUri = jest.fn(async (shift: any) => `/events/event-1/shifts/${shift.id}`);
 
@@ -143,6 +151,21 @@ describe('shifts actions', () => {
       });
 
       await expect(action(makeFormData({ id: 'shift-1' }))).rejects.toThrow('unauthorized');
+      expect(unauthorized).toHaveBeenCalled();
+      expect(mockUpdateShift).not.toHaveBeenCalled();
+      expect(mockCreateShift).not.toHaveBeenCalled();
+    });
+
+    test('throws unauthorized when team does not belong to event', async () => {
+      mockGetTeamById.mockResolvedValue({ id: 'team-1', eventId: 'other-event' } as any);
+
+      const action = getSaveShiftAction({
+        isEditable: true,
+        event,
+        redirectUri: '/x'
+      });
+
+      await expect(action(makeFormData({ teamId: 'team-1' }))).rejects.toThrow('unauthorized');
       expect(unauthorized).toHaveBeenCalled();
       expect(mockUpdateShift).not.toHaveBeenCalled();
       expect(mockCreateShift).not.toHaveBeenCalled();
@@ -203,6 +226,7 @@ describe('shifts actions', () => {
     test('deletes shift and revalidates using string redirectUri', async () => {
       const shift = { id: 'shift-1', teamId: 'team-9' } as any;
       mockGetShiftById.mockResolvedValue(shift);
+      mockGetTeamById.mockResolvedValue({ id: shift.teamId, eventId: event.id } as any);
 
       const action = getDeleteShiftAction({
         isEditable: true,
@@ -224,6 +248,7 @@ describe('shifts actions', () => {
     test('deletes shift and revalidates using function redirectUri', async () => {
       const shift = { id: 'shift-2', teamId: 'team-2' } as any;
       mockGetShiftById.mockResolvedValue(shift);
+      mockGetTeamById.mockResolvedValue({ id: shift.teamId, eventId: event.id } as any);
 
       const redirectUri = jest.fn(async (s: any) => `/events/event-1/shifts/${s.id}`);
 
@@ -238,6 +263,22 @@ describe('shifts actions', () => {
       expect(deleteShift).toHaveBeenCalledWith('shift-2');
       expect(redirectUri).toHaveBeenCalledWith(shift);
       expect(revalidatePath).toHaveBeenCalledWith('/events/event-1/shifts/shift-2');
+    });
+
+    test('throws unauthorized when team does not belong to event', async () => {
+      const shift = { id: 'shift-1', teamId: 'team-9' } as any;
+      mockGetShiftById.mockResolvedValue(shift);
+      mockGetTeamById.mockResolvedValue({ id: shift.teamId, eventId: 'other-event' } as any);
+
+      const action = getDeleteShiftAction({
+        isEditable: true,
+        event,
+        redirectUri: '/x'
+      });
+
+      await expect(action('shift-1')).rejects.toThrow('unauthorized');
+      expect(unauthorized).toHaveBeenCalled();
+      expect(mockDeleteShift).not.toHaveBeenCalled();
     });
   });
 });

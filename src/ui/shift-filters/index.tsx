@@ -93,7 +93,7 @@ export default function ShiftFilters({ withFilters = [], teams = [] }: Props) {
                           onFilterChange('teamId', value === 'all' ? undefined : value)
                         }
                       >
-                        <Select.Trigger />
+                        <Select.Trigger aria-labelledby="teamFilter" />
                         <Select.Content>
                           <Select.Item value="all">{t('allTeams')}</Select.Item>
                           <Select.Separator />

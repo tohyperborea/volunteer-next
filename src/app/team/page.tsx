@@ -19,14 +19,13 @@ import NextLink from 'next/link';
 import { hasEventEnded, hasEventStarted } from '@/utils/date';
 import { getQualificationsForEvent } from '@/service/qualification-service';
 import AddShiftButton from '@/ui/add-shift-button';
-import { redirect } from 'next/navigation';
 import { getSaveShiftAction } from '@/lib/shifts';
 
 const PAGE_KEY = 'TeamsDashboardPage';
 
 export const generateMetadata = metadata(PAGE_KEY);
 
-export default async function EventsDashboard({ searchParams }: PageProps<'/team'>) {
+export default async function TeamsDashboard({ searchParams }: PageProps<'/team'>) {
   const t = await getTranslations(PAGE_KEY);
 
   const event = await getCurrentEventOrRedirect();
