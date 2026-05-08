@@ -103,7 +103,7 @@ export default async function EventShifts({ searchParams }: PageProps<`/shifts`>
       <Heading align="center" as="h1" size="6">
         {t('allShifts')}
       </Heading>
-      <Flex direction="row" gap="2">
+      <Flex direction="row" gap="2" wrap="wrap">
         {isEditable && (
           <AddShiftButton
             event={event}
