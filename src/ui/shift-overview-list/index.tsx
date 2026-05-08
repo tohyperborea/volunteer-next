@@ -119,7 +119,6 @@ export default function ShiftOverviewList({
           onSubmit={onSaveShift}
           onDelete={onDeleteShift}
           onClose={() => {
-            console.log('ONCLOSE');
             setEditingShift(undefined);
           }}
         />

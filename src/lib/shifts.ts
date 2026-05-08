@@ -31,9 +31,7 @@ export const getSaveShiftAction =
   }) =>
   async (data: FormData) => {
     'use server';
-    console.log('IS_EDITABLE', isEditable);
     if (!isEditable) {
-      console.log('NOT EDITABLE');
       unauthorized();
     }
     const teamId = getShiftTeamId(data);
