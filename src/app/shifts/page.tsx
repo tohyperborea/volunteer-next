@@ -1,7 +1,7 @@
 import metadata from '@/i18n/metadata';
 import { getNotifyVolunteersAction } from '@/lib/email';
 import { getFilteredShiftsForEvent } from '@/service/shift-service';
-import { getTeamsById, getTeamsForEvent } from '@/service/team-service';
+import { getTeamsForEvent } from '@/service/team-service';
 import { getVolunteersForShifts } from '@/service/user-service';
 import {
   checkAuthorisation,

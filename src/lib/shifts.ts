@@ -35,11 +35,11 @@ export const getSaveShiftAction =
     if (!isEditable) {
       unauthorized();
     }
-    const teamId = getShiftTeamId(data);
+    const newTeamId = getShiftTeamId(data);
     await checkAuthorisation([
       { type: 'admin' },
       { type: 'organiser', eventId: event.id },
-      { type: 'team-lead', eventId: event.id, teamId }
+      { type: 'team-lead', eventId: event.id, teamId: newTeamId }
     ]);
     const shift = validateNewShift(data);
     const shiftId = data.get('id')?.toString();
@@ -47,8 +47,12 @@ export const getSaveShiftAction =
     if (existingShift && hasShiftStarted(event, existingShift)) {
       unauthorized();
     }
-    const team = await getTeamById(teamId);
-    if (!team || team.eventId !== event.id) {
+    const newTeam = await getTeamById(newTeamId);
+    if (!newTeam || newTeam.eventId !== event.id) {
+      unauthorized();
+    }
+    if (existingShift && existingShift.teamId !== newTeamId) {
+      // We don't currently support moving shifts between teams
       unauthorized();
     }
 

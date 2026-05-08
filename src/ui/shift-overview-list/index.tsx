@@ -74,8 +74,11 @@ export default function ShiftOverviewList({
               <Card key={teamId}>
                 <Heading as="h3" size="4">
                   <Link highContrast asChild>
-                    <NextLink href={getTeamShiftsPath(teamMap.get(teamId)!.slug)} prefetch={false}>
-                      {teamMap.get(teamId)?.name}
+                    <NextLink
+                      href={getTeamShiftsPath(teamMap.get(teamId)?.slug ?? '')}
+                      prefetch={false}
+                    >
+                      {teamMap.get(teamId)?.name ?? ''}
                     </NextLink>
                   </Link>
                 </Heading>

@@ -43,7 +43,7 @@ describe('ShiftFilters', () => {
     if (filters.includes('searchQuery')) {
       expect(screen.getByTestId('search-bar')).toBeInTheDocument();
     } else {
-      expect(screen.queryByPlaceholderText('placeholder')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('search-bar')).not.toBeInTheDocument();
     }
     if (filters.some((f) => f !== 'searchQuery')) {
       expect(screen.getByRole('button', { name: 'filters' })).toBeInTheDocument();

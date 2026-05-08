@@ -7,9 +7,6 @@ import {
   getQualificationsForUser
 } from '@/service/qualification-service';
 import {
-  createShift,
-  updateShift,
-  deleteShift,
   getFilteredShiftsForEvent,
   addVolunteerToShift,
   removeVolunteerFromShift,

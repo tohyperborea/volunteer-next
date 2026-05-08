@@ -170,6 +170,26 @@ describe('shifts actions', () => {
       expect(mockUpdateShift).not.toHaveBeenCalled();
       expect(mockCreateShift).not.toHaveBeenCalled();
     });
+
+    test('throws unauthorized when moving shift between teams', async () => {
+      const existing = { id: 'shift-1', teamId: 'team-1' } as any;
+      mockGetShiftTeamId.mockReturnValue('team-2');
+      mockGetShiftById.mockResolvedValue(existing);
+      mockGetTeamById.mockResolvedValue({ id: 'team-1', eventId: event.id } as any);
+
+      const action = getSaveShiftAction({
+        isEditable: true,
+        event,
+        redirectUri: '/x'
+      });
+
+      await expect(action(makeFormData({ id: 'shift-1', teamId: 'team-2' }))).rejects.toThrow(
+        'unauthorized'
+      );
+      expect(unauthorized).toHaveBeenCalled();
+      expect(mockUpdateShift).not.toHaveBeenCalled();
+      expect(mockCreateShift).not.toHaveBeenCalled();
+    });
   });
 
   describe('getDeleteShiftAction', () => {
