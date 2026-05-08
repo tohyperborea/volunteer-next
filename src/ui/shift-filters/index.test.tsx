@@ -1,4 +1,5 @@
-import { render } from '@testing-library/react';
+import { screen, fireEvent, render } from '@/test-utils';
+import userEvent from '@testing-library/user-event';
 import ShiftFilters from '.';
 
 jest.mock('next-intl', () => ({
@@ -23,20 +24,41 @@ jest.mock('next/navigation', () => ({
 
 jest.mock('@/ui/search-bar', () => jest.fn(() => <div data-testid="search-bar" />));
 
+const teams = [
+  { id: 'team1', name: 'Team 1' },
+  { id: 'team2', name: 'Team 2' }
+] as any;
+
 describe('ShiftFilters', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it('renders the search bar when "searchQuery" filter is provided', () => {
-    const { getByTestId } = render(<ShiftFilters withFilters={['searchQuery']} />);
-
-    expect(getByTestId('search-bar')).toBeInTheDocument();
-  });
-
-  it('does not render the filter panel button when no additional filters are provided', () => {
-    const { queryByRole } = render(<ShiftFilters withFilters={['searchQuery']} />);
-
-    expect(queryByRole('button', { name: /filters/i })).not.toBeInTheDocument();
+  test.each<{ filters: (keyof ShiftFilters)[] }>([
+    { filters: [] },
+    { filters: ['searchQuery'] },
+    { filters: ['searchQuery', 'teamId'] },
+    { filters: ['teamId'] }
+  ])('renders the correct filters for $filters', ({ filters }) => {
+    render(<ShiftFilters withFilters={filters} teams={teams} />);
+    if (filters.includes('searchQuery')) {
+      expect(screen.getByTestId('search-bar')).toBeInTheDocument();
+    } else {
+      expect(screen.queryByPlaceholderText('placeholder')).not.toBeInTheDocument();
+    }
+    if (filters.some((f) => f !== 'searchQuery')) {
+      expect(screen.getByRole('button', { name: 'filters' })).toBeInTheDocument();
+      fireEvent.click(screen.getByRole('button', { name: 'filters' }));
+      if (filters.includes('teamId')) {
+        fireEvent.click(screen.getByRole('combobox'));
+        expect(screen.getByRole('option', { name: 'allTeams' })).toBeInTheDocument();
+        expect(screen.getByRole('option', { name: 'Team 1' })).toBeInTheDocument();
+        expect(screen.getByRole('option', { name: 'Team 2' })).toBeInTheDocument();
+      } else {
+        expect(screen.queryByRole('combobox')).not.toBeInTheDocument();
+      }
+    } else {
+      expect(screen.queryByRole('button', { name: 'filters' })).not.toBeInTheDocument();
+    }
   });
 });

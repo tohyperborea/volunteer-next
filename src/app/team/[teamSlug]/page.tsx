@@ -10,7 +10,7 @@ import {
   createShift,
   updateShift,
   deleteShift,
-  getFilteredShiftsForTeam,
+  getFilteredShiftsForEvent,
   addVolunteerToShift,
   removeVolunteerFromShift,
   getShiftsForVolunteer,
@@ -35,11 +35,10 @@ import {
   getPermissionsProfile
 } from '@/utils/permissions';
 import { recordToShiftFilters } from '@/utils/shift-filters';
-import { validateNewShift } from '@/validator/shift-validator';
 import { Flex, Heading } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
 import { revalidatePath } from 'next/cache';
-import { notFound, redirect, unauthorized } from 'next/navigation';
+import { notFound, unauthorized } from 'next/navigation';
 
 const PAGE_KEY = 'TeamPage.ShiftsTab';
 
@@ -62,11 +61,11 @@ export default async function TeamPage({ params, searchParams }: PageProps<`/tea
     notFound();
   }
 
-  const filters = recordToShiftFilters(await searchParams);
+  const filters = { ...recordToShiftFilters(await searchParams), teamId: team.id };
   const qualifications = await getQualificationsForEvent(team.eventId).then((quals) =>
     quals.filter((q) => !q.teamId || q.teamId === team.id)
   );
-  const shifts = await getFilteredShiftsForTeam(team.id, filters);
+  const shifts = await getFilteredShiftsForEvent(team.eventId, filters);
   shifts.sort((a, b) => {
     const dayDiff = a.eventDay - b.eventDay;
     if (dayDiff !== 0) {

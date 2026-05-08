@@ -102,16 +102,6 @@ declare global {
     contactAddress: string;
   }
 
-  interface UserFilters {
-    roleType?: UserRoleType;
-    searchQuery?: string;
-    showDeleted?: boolean;
-    withQualification?: QualificationId;
-    withoutQualification?: QualificationId;
-    onTeam?: TeamId;
-    eventHours?: number;
-  }
-
   interface ShiftInfo {
     id: ShiftId;
     teamId: TeamId;
@@ -123,19 +113,6 @@ declare global {
     minVolunteers: number;
     maxVolunteers: number;
     requirements: QualificationId[];
-  }
-
-  interface TeamFilters {
-    searchQuery?: string;
-  }
-
-  interface ShiftFilters {
-    searchQuery?: string;
-  }
-
-  interface EventFilters {
-    searchQuery?: string;
-    showArchived?: boolean;
   }
 
   type ThemeMode = 'light' | 'dark' | 'system';
@@ -166,5 +143,30 @@ declare global {
     roles?: UserRole[];
     email?: string;
     fullName?: string;
+  }
+
+  // Filters
+  interface UserFilters {
+    roleType?: UserRoleType;
+    searchQuery?: string;
+    showDeleted?: boolean;
+    withQualification?: QualificationId;
+    withoutQualification?: QualificationId;
+    onTeam?: TeamId;
+    eventHours?: number;
+  }
+
+  interface TeamFilters {
+    searchQuery?: string;
+  }
+
+  interface ShiftFilters {
+    searchQuery?: string;
+    teamId?: TeamId;
+  }
+
+  interface EventFilters {
+    searchQuery?: string;
+    showArchived?: boolean;
   }
 }

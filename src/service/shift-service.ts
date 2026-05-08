@@ -55,10 +55,7 @@ const rowsToShifts = (rows: any[]): ShiftInfo[] => {
 
     const shift = shiftsMap.get(row.id)!;
 
-     if (
-      row.qualificationId &&
-      !shift.requirements.includes(row.qualificationId)
-    ) {
+    if (row.qualificationId && !shift.requirements.includes(row.qualificationId)) {
       shift.requirements.push(row.qualificationId);
     }
   });
@@ -149,17 +146,23 @@ export const getShiftsForTeams = cache(
 );
 
 /**
- * Fetches a list of shifts for a given team, filtered by the provided criteria.
- * @param teamId - The ID of the team to fetch shifts for.
+ * Fetches a list of shifts for a given event, filtered by the provided criteria.
+ * @param eventId - The ID of the event to fetch shifts for.
  * @param filters - A ShiftFilters object
  * @return An array of ShiftInfo objects that match the filter criteria.
  */
-export const getFilteredShiftsForTeam = cache(
-  async (teamId: TeamId, filters: ShiftFilters): Promise<ShiftInfo[]> => {
-    const { searchQuery } = filters;
+export const getFilteredShiftsForEvent = cache(
+  async (eventId: EventId, filters: ShiftFilters): Promise<ShiftInfo[]> => {
+    const { searchQuery, teamId } = filters;
 
-    const params = [teamId];
-    const whereClauses = [`"teamId" = $${params.length}`];
+    const params = [eventId];
+    const whereClauses = [`t."eventId" = $${params.length}`];
+
+    if (teamId) {
+      params.push(teamId);
+      whereClauses.push(`s."teamId" = $${params.length}`);
+    }
+
     if (searchQuery) {
       params.push(`%${searchQuery}%`);
       whereClauses.push(`s."title" ILIKE $${params.length}`);
@@ -168,6 +171,7 @@ export const getFilteredShiftsForTeam = cache(
     const result = await pool.query(
       `
       ${SHIFT_QUERY}
+      JOIN team t ON s."teamId" = t.id
       WHERE ${whereClauses.join(' AND ')}
       ORDER BY s."eventDay", s."startTime"
       `,

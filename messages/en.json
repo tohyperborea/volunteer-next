@@ -275,6 +275,8 @@
   },
   "ShiftFilters": {
     "filters": "Filters",
+    "teamFilterLabel": "Filter by team",
+    "allTeams": "All teams",
     "clear": "Clear"
   },
   "EventFilters": {

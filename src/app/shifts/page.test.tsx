@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import EventShifts from './page';
-import { getShiftsForEvent } from '@/service/shift-service';
+import { getFilteredShiftsForEvent } from '@/service/shift-service';
 import { getTeamsForEvent } from '@/service/team-service';
 import { getCurrentEvent, getCurrentEventOrRedirect } from '@/session';
 import ShiftOverviewList from '@/ui/shift-overview-list';
@@ -21,7 +21,7 @@ jest.mock('@/service/event-service', () => ({
 }));
 
 jest.mock('@/service/shift-service', () => ({
-  getShiftsForEvent: jest.fn(),
+  getFilteredShiftsForEvent: jest.fn(),
   getVolunteersForShifts: jest.fn().mockResolvedValue({})
 }));
 
@@ -65,6 +65,8 @@ jest.mock('@/ui/shift-overview-list', () => jest.fn());
 
 jest.mock('@/ui/add-shift-button', () => jest.fn());
 
+jest.mock('@/ui/shift-filters', () => jest.fn());
+
 jest.mock('@/lib/shifts', () => ({
   getSaveShiftAction: jest.fn(() => jest.fn()),
   getDeleteShiftAction: jest.fn(() => jest.fn())
@@ -78,7 +80,9 @@ const mockGetCurrentEvent = getCurrentEvent as jest.MockedFunction<typeof getCur
 const mockGetCurrentEventOrRedirect = getCurrentEventOrRedirect as jest.MockedFunction<
   typeof getCurrentEventOrRedirect
 >;
-const mockGetShiftsForEvent = getShiftsForEvent as jest.MockedFunction<typeof getShiftsForEvent>;
+const mockGetFilteredShiftsForEvent = getFilteredShiftsForEvent as jest.MockedFunction<
+  typeof getFilteredShiftsForEvent
+>;
 const mockGetTeamsForEvent = getTeamsForEvent as jest.MockedFunction<typeof getTeamsForEvent>;
 const mockShiftOverviewList = ShiftOverviewList as jest.MockedFunction<typeof ShiftOverviewList>;
 const mockAddShiftButton = AddShiftButton as jest.MockedFunction<typeof AddShiftButton>;
@@ -140,21 +144,23 @@ describe('EventShifts Page', () => {
     }
   ];
 
+  const props = { params: Promise.resolve({}), searchParams: Promise.resolve({}) };
+
   it('renders the heading correctly', async () => {
     mockGetCurrentEvent.mockResolvedValue(mockEvent);
     mockGetCurrentEventOrRedirect.mockResolvedValue(mockEvent);
-    mockGetShiftsForEvent.mockResolvedValue(mockShifts);
+    mockGetFilteredShiftsForEvent.mockResolvedValue(mockShifts);
     mockGetTeamsForEvent.mockResolvedValue(mockTeams);
-    render(await EventShifts());
+    render(await EventShifts(props));
     expect(screen.getByRole('heading', { name: 'allShifts' })).toBeInTheDocument();
   });
 
   it('renders the ShiftOverviewList component', async () => {
     mockGetCurrentEvent.mockResolvedValue(mockEvent);
     mockGetCurrentEventOrRedirect.mockResolvedValue(mockEvent);
-    mockGetShiftsForEvent.mockResolvedValue(mockShifts);
+    mockGetFilteredShiftsForEvent.mockResolvedValue(mockShifts);
     mockGetTeamsForEvent.mockResolvedValue(mockTeams);
-    render(await EventShifts());
+    render(await EventShifts(props));
     expect(mockShiftOverviewList).toHaveBeenCalledWith(
       expect.objectContaining({
         event: mockEvent,
@@ -170,18 +176,18 @@ describe('EventShifts Page', () => {
   it('renders the Export Shifts button', async () => {
     mockGetCurrentEvent.mockResolvedValue(mockEvent);
     mockGetCurrentEventOrRedirect.mockResolvedValue(mockEvent);
-    mockGetShiftsForEvent.mockResolvedValue(mockShifts);
+    mockGetFilteredShiftsForEvent.mockResolvedValue(mockShifts);
     mockGetTeamsForEvent.mockResolvedValue(mockTeams);
-    render(await EventShifts());
+    render(await EventShifts(props));
     expect(screen.getByRole('link', { name: 'export' })).toBeInTheDocument();
   });
 
   it('renders the Notify Volunteers button for authorised users', async () => {
     mockGetCurrentEvent.mockResolvedValue(mockEvent);
     mockGetCurrentEventOrRedirect.mockResolvedValue(mockEvent);
-    mockGetShiftsForEvent.mockResolvedValue(mockShifts);
+    mockGetFilteredShiftsForEvent.mockResolvedValue(mockShifts);
     mockGetTeamsForEvent.mockResolvedValue(mockTeams);
-    render(await EventShifts());
+    render(await EventShifts(props));
     expect(screen.getByRole('button', { name: 'notifyVolunteers' })).toBeInTheDocument();
   });
 
@@ -190,9 +196,9 @@ describe('EventShifts Page', () => {
     checkAuthorisation.mockResolvedValue(false);
     mockGetCurrentEvent.mockResolvedValue(mockEvent);
     mockGetCurrentEventOrRedirect.mockResolvedValue(mockEvent);
-    mockGetShiftsForEvent.mockResolvedValue(mockShifts);
+    mockGetFilteredShiftsForEvent.mockResolvedValue(mockShifts);
     mockGetTeamsForEvent.mockResolvedValue(mockTeams);
-    render(await EventShifts());
+    render(await EventShifts(props));
     expect(screen.queryByRole('button', { name: 'notifyVolunteers' })).not.toBeInTheDocument();
   });
 
@@ -201,9 +207,9 @@ describe('EventShifts Page', () => {
     checkAuthorisation.mockResolvedValue(true);
     mockGetCurrentEvent.mockResolvedValue(mockEvent);
     mockGetCurrentEventOrRedirect.mockResolvedValue(mockEvent);
-    mockGetShiftsForEvent.mockResolvedValue(mockShifts);
+    mockGetFilteredShiftsForEvent.mockResolvedValue(mockShifts);
     mockGetTeamsForEvent.mockResolvedValue(mockTeams);
-    render(await EventShifts());
+    render(await EventShifts(props));
     expect(mockAddShiftButton).toHaveBeenCalledWith(
       expect.objectContaining({
         event: mockEvent,
@@ -220,9 +226,9 @@ describe('EventShifts Page', () => {
     checkAuthorisation.mockResolvedValue(false);
     mockGetCurrentEvent.mockResolvedValue(mockEvent);
     mockGetCurrentEventOrRedirect.mockResolvedValue(mockEvent);
-    mockGetShiftsForEvent.mockResolvedValue(mockShifts);
+    mockGetFilteredShiftsForEvent.mockResolvedValue(mockShifts);
     mockGetTeamsForEvent.mockResolvedValue(mockTeams);
-    render(await EventShifts());
+    render(await EventShifts(props));
     expect(mockAddShiftButton).not.toHaveBeenCalled();
   });
 
@@ -233,9 +239,9 @@ describe('EventShifts Page', () => {
     hasEventStarted.mockReturnValue(true);
     mockGetCurrentEvent.mockResolvedValue(mockEvent);
     mockGetCurrentEventOrRedirect.mockResolvedValue(mockEvent);
-    mockGetShiftsForEvent.mockResolvedValue(mockShifts);
+    mockGetFilteredShiftsForEvent.mockResolvedValue(mockShifts);
     mockGetTeamsForEvent.mockResolvedValue(mockTeams);
-    render(await EventShifts());
+    render(await EventShifts(props));
     expect(mockAddShiftButton).not.toHaveBeenCalled();
   });
 });

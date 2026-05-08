@@ -1,6 +1,6 @@
 import metadata from '@/i18n/metadata';
 import { getNotifyVolunteersAction } from '@/lib/email';
-import { getShiftsForEvent } from '@/service/shift-service';
+import { getFilteredShiftsForEvent } from '@/service/shift-service';
 import { getTeamsById, getTeamsForEvent } from '@/service/team-service';
 import { getVolunteersForShifts } from '@/service/user-service';
 import {
@@ -22,12 +22,14 @@ import { getQualificationsForEvent } from '@/service/qualification-service';
 import { hasEventStarted } from '@/utils/date';
 import AddShiftButton from '@/ui/add-shift-button';
 import { getDeleteShiftAction, getSaveShiftAction } from '@/lib/shifts';
+import { recordToShiftFilters } from '@/utils/shift-filters';
+import ShiftFilters from '@/ui/shift-filters';
 
 const PAGE_KEY = 'EventShiftsPage';
 
 export const generateMetadata = metadata(PAGE_KEY);
 
-export default async function EventShifts() {
+export default async function EventShifts({ searchParams }: PageProps<`/shifts`>) {
   const event = await getCurrentEventOrRedirect();
   if (!event) {
     notFound();
@@ -40,7 +42,8 @@ export default async function EventShifts() {
   const hasEventAccess = await checkAuthorisation(eventRoles, true);
 
   const t = await getTranslations(PAGE_KEY);
-  const shifts = await getShiftsForEvent(event.id);
+  const filters = recordToShiftFilters(await searchParams);
+  const shifts = await getFilteredShiftsForEvent(event.id, filters);
   const shiftMap = Object.fromEntries(shifts.map((shift) => [shift.id, shift]));
   const shiftVolunteers = await getVolunteersForShifts(
     Object.keys(shiftMap),
@@ -138,16 +141,19 @@ export default async function EventShifts() {
           </SendEmailButton>
         )}
       </Flex>
-      <ShiftOverviewList
-        event={event}
-        teams={teams}
-        shifts={shifts}
-        shiftVolunteers={shiftVolunteers}
-        qualifications={qualifications}
-        editableTeams={hasEventAccess ? undefined : new Set(leadTeamsIds)}
-        onSaveShift={onSaveShift}
-        onDeleteShift={onDeleteShift}
-      />
+      <Flex direction="column" gap="4">
+        <ShiftFilters withFilters={['searchQuery', 'teamId']} teams={teams} />
+        <ShiftOverviewList
+          event={event}
+          teams={teams}
+          shifts={shifts}
+          shiftVolunteers={shiftVolunteers}
+          qualifications={qualifications}
+          editableTeams={hasEventAccess ? undefined : new Set(leadTeamsIds)}
+          onSaveShift={onSaveShift}
+          onDeleteShift={onDeleteShift}
+        />
+      </Flex>
     </Flex>
   );
 }
