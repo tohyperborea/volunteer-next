@@ -1,6 +1,7 @@
 import { inTransaction } from '@/db';
 import metadata from '@/i18n/metadata';
 import { sendUserShiftEmail } from '@/lib/email';
+import { getDeleteShiftAction, getSaveShiftAction } from '@/lib/shifts';
 import {
   getQualificationsForEvent,
   getQualificationsForUser
@@ -96,48 +97,17 @@ export default async function TeamPage({ params, searchParams }: PageProps<`/tea
     (await getQualificationsForUser(permissions.userId, event.id)).map((q) => q.id)
   );
 
-  const onSaveShift = async (data: FormData) => {
-    'use server';
-    if (!isEditable) {
-      unauthorized();
-    }
-    await checkAuthorisation(editorRoles);
-    const shift = validateNewShift(data);
-    const shiftId = data.get('id')?.toString();
-    const existingShift = shiftId ? await getShiftById(shiftId) : null;
-    if (existingShift && hasShiftStarted(event, existingShift)) {
-      unauthorized();
-    }
-    if (shiftId) {
-      await updateShift({ id: shiftId, ...shift });
-    } else {
-      await createShift(shift);
-    }
-    const path = getTeamShiftsPath(teamSlug);
-    revalidatePath(path);
-    redirect(path);
-  };
+  const onSaveShift = getSaveShiftAction({
+    isEditable,
+    event,
+    redirectUri: getTeamShiftsPath(teamSlug)
+  });
 
-  const onDeleteShift = async (shiftId: ShiftId) => {
-    'use server';
-    if (!isEditable) {
-      unauthorized();
-    }
-    const shift = await getShiftById(shiftId);
-    if (!shift) {
-      notFound();
-    }
-    if (hasShiftStarted(event, shift)) {
-      unauthorized();
-    }
-    await checkAuthorisation(editorRoles);
-    if (!shiftId) {
-      throw new Error('Shift id is required for deletion');
-    }
-    await deleteShift(shiftId);
-    const path = getTeamShiftsPath(teamSlug);
-    revalidatePath(path);
-  };
+  const onDeleteShift = getDeleteShiftAction({
+    isEditable,
+    event,
+    redirectUri: getTeamShiftsPath(teamSlug)
+  });
 
   const onSignup = async (shiftId: ShiftId) => {
     'use server';

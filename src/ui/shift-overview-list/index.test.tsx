@@ -1,10 +1,13 @@
 import { render } from '@testing-library/react';
 import ShiftOverviewList from '.';
 import ShiftCard from '@/ui/shift-card';
+import ShiftDialog from '@/ui/shift-dialog';
 
 jest.mock('@/ui/shift-card', () => jest.fn());
+jest.mock('@/ui/shift-dialog', () => jest.fn());
 
 const mockShiftCard = ShiftCard as jest.MockedFunction<typeof ShiftCard>;
+const mockShiftDialog = ShiftDialog as jest.MockedFunction<typeof ShiftDialog>;
 
 describe('ShiftOverviewList', () => {
   const mockEvent: EventInfo = {
@@ -129,12 +132,140 @@ describe('ShiftOverviewList', () => {
     );
   });
 
+  it('renders editable shifts when onSaveShift is provided', () => {
+    render(
+      <ShiftOverviewList
+        event={mockEvent}
+        teams={mockTeams}
+        shifts={mockShifts}
+        shiftVolunteers={mockShiftVolunteers}
+        qualifications={[]}
+        onSaveShift={async () => {}}
+      />
+    );
+
+    // Check that ShiftCard is rendered with onEdit and onCopy handlers
+    expect(mockShiftCard).toHaveBeenCalledWith(
+      expect.objectContaining({
+        shift: mockShifts[0],
+        qualifications: [],
+        volunteers: mockShiftVolunteers['shift1'],
+        collapsible: true,
+        onEdit: expect.any(Function),
+        onCopy: expect.any(Function)
+      }),
+      undefined
+    );
+  });
+
+  it('should not render edit options when onSaveShift is not provided', () => {
+    render(
+      <ShiftOverviewList
+        event={mockEvent}
+        teams={mockTeams}
+        shifts={mockShifts}
+        shiftVolunteers={mockShiftVolunteers}
+        qualifications={[]}
+      />
+    );
+
+    // Check that ShiftCard is rendered without onEdit and onCopy handlers
+    expect(mockShiftCard).toHaveBeenCalledWith(
+      expect.objectContaining({
+        shift: mockShifts[0],
+        qualifications: [],
+        volunteers: mockShiftVolunteers['shift1'],
+        collapsible: true,
+        onEdit: undefined,
+        onCopy: undefined
+      }),
+      undefined
+    );
+  });
+
+  it('should not render edit options when shift is not in editableTeams', () => {
+    render(
+      <ShiftOverviewList
+        event={mockEvent}
+        teams={mockTeams}
+        shifts={mockShifts}
+        shiftVolunteers={mockShiftVolunteers}
+        qualifications={[]}
+        editableTeams={new Set(['team2'])}
+        onSaveShift={async () => {}}
+      />
+    );
+
+    // Check that ShiftCard for team1 is rendered without onEdit and onCopy handlers
+    expect(mockShiftCard).toHaveBeenCalledWith(
+      expect.objectContaining({
+        shift: mockShifts[0],
+        qualifications: [],
+        volunteers: mockShiftVolunteers['shift1'],
+        collapsible: true,
+        onEdit: undefined,
+        onCopy: undefined
+      }),
+      undefined
+    );
+
+    // Check that ShiftCard for team2 is rendered with onEdit and onCopy handlers
+    expect(mockShiftCard).toHaveBeenCalledWith(
+      expect.objectContaining({
+        shift: mockShifts[1],
+        qualifications: [],
+        volunteers: mockShiftVolunteers['shift2'],
+        collapsible: true,
+        onEdit: expect.any(Function),
+        onCopy: expect.any(Function)
+      }),
+      undefined
+    );
+  });
+
   it('renders empty state when no shifts are provided', () => {
     render(
-      <ShiftOverviewList event={mockEvent} teams={mockTeams} shifts={[]} shiftVolunteers={{}} qualifications={[]} />
+      <ShiftOverviewList
+        event={mockEvent}
+        teams={mockTeams}
+        shifts={[]}
+        shiftVolunteers={{}}
+        qualifications={[]}
+      />
     );
 
     // Check that no team names or shifts are rendered
     expect(mockShiftCard).not.toHaveBeenCalled();
+  });
+
+  it('renders ShiftDialog when editable', () => {
+    render(
+      <ShiftOverviewList
+        event={mockEvent}
+        teams={mockTeams}
+        shifts={mockShifts}
+        shiftVolunteers={mockShiftVolunteers}
+        qualifications={[]}
+        onSaveShift={async () => {}}
+      />
+    );
+
+    // Check that ShiftDialog is rendered
+    expect(mockShiftDialog).toHaveBeenCalled();
+  });
+
+  it('does not render ShiftDialog when not editable', () => {
+    render(
+      <ShiftOverviewList
+        event={mockEvent}
+        teams={mockTeams}
+        shifts={mockShifts}
+        shiftVolunteers={mockShiftVolunteers}
+        qualifications={[]}
+      />
+    );
+
+    // Check that ShiftDialog is not rendered
+    expect(mockShiftDialog).not.toHaveBeenCalled();
   });
 });

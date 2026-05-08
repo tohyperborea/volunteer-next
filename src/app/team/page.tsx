@@ -11,7 +11,7 @@ import {
 import { getFilteredTeamsForEvent, getTeamsById, getTeamsForEvent } from '@/service/team-service';
 import TeamList from '@/ui/team-list';
 import { getCreateTeamPath, getTeamShiftsPath, getUpdateTeamPath } from '@/utils/path';
-import { createShift, getShiftsForEvent } from '@/service/shift-service';
+import { getShiftsForEvent } from '@/service/shift-service';
 import { recordToTeamFilters } from '@/utils/team-filters';
 import { getVolunteersForShifts } from '@/service/user-service';
 import { getPermissionsProfile } from '@/utils/permissions';
@@ -19,8 +19,8 @@ import NextLink from 'next/link';
 import { hasEventEnded, hasEventStarted } from '@/utils/date';
 import { getQualificationsForEvent } from '@/service/qualification-service';
 import AddShiftButton from '@/ui/add-shift-button';
-import { redirect, unauthorized } from 'next/navigation';
-import { validateNewShift } from '@/validator/shift-validator';
+import { redirect } from 'next/navigation';
+import { getSaveShiftAction } from '@/lib/shifts';
 
 const PAGE_KEY = 'TeamsDashboardPage';
 
@@ -64,21 +64,14 @@ export default async function EventsDashboard({ searchParams }: PageProps<'/team
         return actions;
       }, {});
 
-  const onSaveShift = async (data: FormData) => {
-    'use server';
-    if (!isEditable) {
-      unauthorized();
+  const onSaveShift = getSaveShiftAction({
+    isEditable,
+    event,
+    redirectUri: async (shift) => {
+      'use server';
+      return getTeamShiftsPath(managedTeams.find((t) => t.id === shift.teamId)!.slug);
     }
-    const shift = validateNewShift(data);
-    await checkAuthorisation([
-      { type: 'admin' },
-      { type: 'organiser', eventId: event.id },
-      { type: 'team-lead', eventId: event.id, teamId: shift.teamId }
-    ]);
-    await createShift(shift);
-    const teamSlug = managedTeams.find((t) => t.id === shift.teamId)!.slug;
-    redirect(getTeamShiftsPath(teamSlug));
-  };
+  });
 
   return (
     <Flex direction="column" gap="4">

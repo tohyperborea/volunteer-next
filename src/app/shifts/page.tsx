@@ -1,19 +1,27 @@
 import metadata from '@/i18n/metadata';
 import { getNotifyVolunteersAction } from '@/lib/email';
 import { getShiftsForEvent } from '@/service/shift-service';
-import { getTeamsForEvent } from '@/service/team-service';
+import { getTeamsById, getTeamsForEvent } from '@/service/team-service';
 import { getVolunteersForShifts } from '@/service/user-service';
-import { checkAuthorisation, currentUser, getCurrentEventOrRedirect } from '@/session';
+import {
+  checkAuthorisation,
+  currentUser,
+  getCurrentEventOrRedirect,
+  getMatchingRoles
+} from '@/session';
 import SendEmailButton from '@/ui/send-email-button';
 import ShiftOverviewList from '@/ui/shift-overview-list';
 import { deduplicateBy } from '@/utils/list';
-import { getEventShiftsApiPath } from '@/utils/path';
+import { getEventShiftsApiPath, getEventShiftsPath } from '@/utils/path';
 import { getPermissionsProfile } from '@/utils/permissions';
 import { Share2Icon, EnvelopeClosedIcon } from '@radix-ui/react-icons';
 import { Button, Flex, Heading } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { getQualificationsForEvent } from '@/service/qualification-service';
+import { hasEventStarted } from '@/utils/date';
+import AddShiftButton from '@/ui/add-shift-button';
+import { getDeleteShiftAction, getSaveShiftAction } from '@/lib/shifts';
 
 const PAGE_KEY = 'EventShiftsPage';
 
@@ -25,11 +33,11 @@ export default async function EventShifts() {
     notFound();
   }
 
-  const notifyRoles: UserRoleMatchCriteria[] = [
+  const eventRoles: UserRoleMatchCriteria[] = [
     { type: 'admin' },
     { type: 'organiser', eventId: event.id }
   ];
-  const canNotify = await checkAuthorisation(notifyRoles, true);
+  const hasEventAccess = await checkAuthorisation(eventRoles, true);
 
   const t = await getTranslations(PAGE_KEY);
   const shifts = await getShiftsForEvent(event.id);
@@ -51,7 +59,16 @@ export default async function EventShifts() {
     },
     {}
   );
+
   const teams = await getTeamsForEvent(event.id);
+  const leadTeamsIds = (await getMatchingRoles({ type: 'team-lead', eventId: event.id })).map(
+    (role) => (role as TeamLeadRole).teamId
+  );
+  const isEditable = !hasEventStarted(event) && (hasEventAccess || leadTeamsIds.length > 0);
+  const managedTeams = hasEventAccess
+    ? await getTeamsForEvent(event.id)
+    : await getTeamsById(leadTeamsIds);
+
   const qualifications = await getQualificationsForEvent(event.id);
   const emailableVolunteers = deduplicateBy(
     Object.values(shiftVolunteers).flat(),
@@ -63,7 +80,19 @@ export default async function EventShifts() {
     shiftsByVolunteerId,
     event,
     teams,
-    acceptedRoles: notifyRoles
+    acceptedRoles: eventRoles
+  });
+
+  const onSaveShift = getSaveShiftAction({
+    isEditable,
+    event,
+    redirectUri: getEventShiftsPath()
+  });
+
+  const onDeleteShift = getDeleteShiftAction({
+    isEditable,
+    event,
+    redirectUri: getEventShiftsPath()
   });
 
   return (
@@ -72,6 +101,14 @@ export default async function EventShifts() {
         {t('allShifts')}
       </Heading>
       <Flex direction="row" gap="2">
+        {isEditable && (
+          <AddShiftButton
+            event={event}
+            teams={managedTeams}
+            qualifications={qualifications}
+            onSaveShift={onSaveShift}
+          />
+        )}
         <Button variant="soft" asChild>
           <a
             href={getEventShiftsApiPath(event.slug, { format: 'csv' })}
@@ -84,7 +121,7 @@ export default async function EventShifts() {
             {t('export')}
           </a>
         </Button>
-        {canNotify && (
+        {hasEventAccess && (
           <SendEmailButton
             variant="soft"
             successMessage={t('emailSuccessMessage')}
@@ -107,6 +144,9 @@ export default async function EventShifts() {
         shifts={shifts}
         shiftVolunteers={shiftVolunteers}
         qualifications={qualifications}
+        editableTeams={hasEventAccess ? undefined : new Set(leadTeamsIds)}
+        onSaveShift={onSaveShift}
+        onDeleteShift={onDeleteShift}
       />
     </Flex>
   );
