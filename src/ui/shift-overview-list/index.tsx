@@ -7,11 +7,13 @@
 'use client';
 
 import { eventDayToDate } from '@/utils/datetime';
-import { Flex, Card, Heading } from '@radix-ui/themes';
+import { Link, Flex, Card, Heading } from '@radix-ui/themes';
 import DatedList from '../dated-list';
 import ShiftCard from '../shift-card';
 import { useState } from 'react';
 import ShiftDialog from '../shift-dialog';
+import NextLink from 'next/link';
+import { getTeamShiftsPath } from '@/utils/path';
 
 interface Props {
   event: EventInfo;
@@ -42,10 +44,7 @@ export default function ShiftOverviewList({
     undefined
   );
 
-  const teamNames = teams.reduce<Record<TeamId, string>>(
-    (acc, team) => ({ ...acc, [team.id]: team.name }),
-    {}
-  );
+  const teamMap = new Map(teams.map((team) => [team.id, team]));
   const qualificationMap = new Map(
     qualifications.map((qualification) => [qualification.id, qualification])
   );
@@ -74,7 +73,11 @@ export default function ShiftOverviewList({
             {Object.entries(teams).map(([teamId, shifts]) => (
               <Card key={teamId}>
                 <Heading as="h3" size="4">
-                  {teamNames[teamId]}
+                  <Link highContrast asChild>
+                    <NextLink href={getTeamShiftsPath(teamMap.get(teamId)!.slug)} prefetch={false}>
+                      {teamMap.get(teamId)?.name}
+                    </NextLink>
+                  </Link>
                 </Heading>
                 <Flex direction="column" gap="2" mt="4">
                   {shifts.map((shift) => {
