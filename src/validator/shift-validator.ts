@@ -7,17 +7,12 @@
 import { stringToTime } from '@/utils/datetime';
 
 /**
- * Get a TeamId from FormData for a Shift, validating that it is present and a string.
+ * Get a TeamId from FormData for a Shift
  * @param data - FormData for a Shift
- * @returns - TeamId for the saved Shift
+ * @returns - TeamId for the saved Shift, or null if not present
  */
-export const getShiftTeamId = (data: FormData): TeamId => {
-  const teamId = data.get('teamId')?.toString() ?? null;
-  if (!teamId) {
-    throw new Error('Shift teamId is required');
-  }
-  return teamId;
-};
+export const getShiftTeamId = (data: FormData): TeamId | null =>
+  data.get('teamId')?.toString() ?? null;
 
 /**
  * Validates FormData for updating an existing shift, so 'id' field is required.
@@ -45,6 +40,9 @@ export const validateExistingShift = (data: FormData): ShiftInfo => {
  */
 export const validateNewShift = (data: FormData): Omit<ShiftInfo, 'id'> => {
   const teamId = getShiftTeamId(data);
+  if (!teamId) {
+    throw new Error('Shift teamId is required');
+  }
   const title = data.get('title')?.toString() ?? null;
   if (!title) {
     throw new Error('Shift title is required');

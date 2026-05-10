@@ -36,6 +36,9 @@ export const getSaveShiftAction =
       unauthorized();
     }
     const newTeamId = getShiftTeamId(data);
+    if (!newTeamId) {
+      notFound();
+    }
     await checkAuthorisation([
       { type: 'admin' },
       { type: 'organiser', eventId: event.id },
