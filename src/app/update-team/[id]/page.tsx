@@ -2,19 +2,14 @@ import metadata from '@/i18n/metadata';
 import { notFound, redirect, unauthorized } from 'next/navigation';
 import { Flex, Heading } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
-import {
-  addRoleToUser,
-  getUsers,
-  getUsersWithRole,
-  removeRoleFromUsers
-} from '@/service/user-service';
+import { addRoleToUsers, getUsersWithRole, removeRoleFromUsers } from '@/service/user-service';
 import { checkAuthorisation, currentUser, getCurrentEventOrRedirect } from '@/session';
 import { inTransaction } from '@/db';
 import TeamForm from '@/ui/team-form';
 import { validateExistingTeam } from '@/validator/team-validator';
 import { validateUserId } from '@/validator/user-validator';
 import { deleteTeam, getTeamById, updateTeam } from '@/service/team-service';
-import { usersToVolunteers, userToVolunteer } from '@/lib/volunteer';
+import { usersToVolunteers } from '@/lib/volunteer';
 import { getPermissionsProfile } from '@/utils/permissions';
 import { getTeamsPath } from '@/utils/path';
 import { hasEventStarted } from '@/utils/date';
@@ -57,24 +52,18 @@ export default async function UpdateTeam({ params, searchParams }: PageProps<'/u
 
     await checkAuthorisation(authorisedRoles);
 
-    const teamlead = validateUserId(data, 'teamleadId');
-
     const roleToAdd: UserRole = { type: 'team-lead', eventId: newTeam.eventId, teamId: newTeam.id };
-    const existingTeamleads = await getUsersWithRole(roleToAdd);
-    // Only currently supporting a single teamlead, so remove all who aren't the new one
-    // If we are removing all existing teamleads, it means we need to add the new one
-    const toRemove = existingTeamleads
-      .map((user) => user.id)
-      .filter((userId) => userId !== teamlead);
-    const shouldAdd = toRemove.length === existingTeamleads.length;
-
+    const newTeamleads = new Set(validateUserId(data, 'teamleadId'));
+    const existingTeamleads = new Set((await getUsersWithRole(roleToAdd)).map(({ id }) => id));
+    const toRemove = existingTeamleads.difference(newTeamleads);
+    const toAdd = newTeamleads.difference(existingTeamleads);
     await inTransaction(async (client) => {
       await updateTeam(newTeam, client);
-      if (toRemove.length > 0) {
-        await removeRoleFromUsers(roleToAdd, toRemove, client);
+      if (toRemove.size > 0) {
+        await removeRoleFromUsers(roleToAdd, Array.from(toRemove), client);
       }
-      if (shouldAdd) {
-        await addRoleToUser(roleToAdd, teamlead, client);
+      if (toAdd.size > 0) {
+        await addRoleToUsers(roleToAdd, Array.from(toAdd), client);
       }
     });
     redirect(redirectTo);
@@ -89,10 +78,9 @@ export default async function UpdateTeam({ params, searchParams }: PageProps<'/u
   };
 
   const permissionsProfile = getPermissionsProfile(await currentUser());
-  const volunteers = usersToVolunteers(await getUsers(), permissionsProfile);
   const teamleadRole: UserRole = { type: 'team-lead', eventId: team.eventId, teamId: team.id };
-  const teamLeadUser = (await getUsersWithRole(teamleadRole))[0];
-  const teamlead = teamLeadUser ? userToVolunteer(teamLeadUser, permissionsProfile) : undefined;
+  const teamLeadUsers = await getUsersWithRole(teamleadRole);
+  const teamleads = usersToVolunteers(teamLeadUsers, permissionsProfile);
 
   return (
     <Flex direction="column" gap="4">
@@ -104,9 +92,8 @@ export default async function UpdateTeam({ params, searchParams }: PageProps<'/u
         onSubmit={onSubmit}
         onDelete={canDelete ? onDelete : undefined}
         backOnCancel
-        teamleadOptions={volunteers}
         editingTeam={team}
-        editingTeamlead={teamlead}
+        editingTeamleads={teamleads}
       />
     </Flex>
   );

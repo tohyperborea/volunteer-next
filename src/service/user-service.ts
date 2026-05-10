@@ -371,45 +371,65 @@ export const updateUser = async (
 };
 
 /**
- * Adds a role to a user.
- * @param userId - The ID of the user to add the role to.
+ * Adds a role to a list of users.
  * @param role - The role to add.
+ * @param userIds - The IDs of the users to add the role to.
  * @param client - Optional database client for transaction support.
  * @throws {Error} If the database query fails or the role is invalid.
  */
-export const addRoleToUser = async (
+export const addRoleToUsers = async (
   role: UserRole,
-  userId: UserId,
+  userIds: UserId[],
   client?: PoolClient
 ): Promise<void> => {
+  if (userIds.length === 0) {
+    return;
+  }
+
   const db = client || pool;
+
   switch (role.type) {
     case 'admin':
-      await db.query('INSERT INTO role ("userId", "type") VALUES ($1, $2)', [userId, 'admin']);
+      await db.query(
+        `
+        INSERT INTO role ("userId", "type")
+        SELECT UNNEST($1::text[]), $2
+        `,
+        [userIds, 'admin']
+      );
       break;
+
     case 'organiser':
       if (!role.eventId) {
         throw new Error('Organiser role requires an eventId');
       }
-      await db.query('INSERT INTO role ("userId", "type", "eventId") VALUES ($1, $2, $3)', [
-        userId,
-        'organiser',
-        role.eventId
-      ]);
+      await db.query(
+        `
+        INSERT INTO role ("userId", "type", "eventId")
+        SELECT UNNEST($1::text[]), $2, $3
+        `,
+        [userIds, 'organiser', role.eventId]
+      );
       break;
+
     case 'team-lead':
       if (!role.eventId || !role.teamId) {
         throw new Error('Team-lead role requires both eventId and teamId');
       }
       await db.query(
-        'INSERT INTO role ("userId", "type", "eventId", "teamId") VALUES ($1, $2, $3, $4)',
-        [userId, 'team-lead', role.eventId, role.teamId]
+        `
+        INSERT INTO role ("userId", "type", "eventId", "teamId")
+        SELECT UNNEST($1::text[]), $2, $3, $4
+        `,
+        [userIds, 'team-lead', role.eventId, role.teamId]
       );
       break;
+
     default:
       throw new Error(`Invalid role: ${JSON.stringify(role)}`);
   }
-  console.info(`Added role ${JSON.stringify(role)} to user ${userId}`);
+
+  console.info(`Added role ${JSON.stringify(role)} to ${userIds.length} user(s)`);
 };
 
 /**

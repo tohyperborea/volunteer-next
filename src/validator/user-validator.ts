@@ -8,15 +8,15 @@
  * Validates FormData for a user ID.
  * @param data - FormData to validate
  * @param fieldName - Optional field name for user ID
- * @returns - Validated user ID string
+ * @returns - Array of validated user ID strings
  * @throws - Error if validation fails
  */
-export const validateUserId = (data: FormData, fieldName?: string): string => {
-  const userId = data.get(fieldName ?? 'userId')?.toString() ?? null;
-  if (!userId) {
+export const validateUserId = (data: FormData, fieldName?: string): string[] => {
+  const userId = data.getAll(fieldName ?? 'userId');
+  if (!userId || userId.length === 0) {
     throw new Error(`${fieldName ?? 'User ID'} is required`);
   }
-  return userId;
+  return userId.map((id) => id.toString());
 };
 
 /**
