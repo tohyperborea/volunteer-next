@@ -61,7 +61,8 @@ const mockShifts: ShiftInfo[] = [
     durationHours: 4,
     isActive: true,
     minVolunteers: 1,
-    maxVolunteers: 3
+    maxVolunteers: 3,
+    requirements: []
   }
 ];
 const mockQualifications: QualificationInfo[] = [
@@ -173,9 +174,9 @@ describe('ShiftList', () => {
         shift.requirements.length === 0 ||
         Boolean(
           props.userQualifications &&
-            shift.requirements.every((qualificationId) =>
-              props.userQualifications!.has(qualificationId)
-            )
+          shift.requirements.every((qualificationId) =>
+            props.userQualifications!.has(qualificationId)
+          )
         );
       expect(screen.getByTestId(`shift-card:${shift.id}`)).toBeInTheDocument();
       expect(mockShiftCard).toHaveBeenNthCalledWith(

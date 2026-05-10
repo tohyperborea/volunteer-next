@@ -71,7 +71,8 @@ describe('TeamCard', () => {
         eventDay: 0,
         startTime: '',
         durationHours: 0,
-        minVolunteers: 0
+        minVolunteers: 0,
+        requirements: []
       },
       {
         maxVolunteers: 10,
@@ -82,7 +83,8 @@ describe('TeamCard', () => {
         eventDay: 0,
         startTime: '',
         durationHours: 0,
-        minVolunteers: 0
+        minVolunteers: 0,
+        requirements: []
       }
     ];
 
@@ -134,7 +136,8 @@ describe('TeamCard', () => {
         durationHours: 0,
         isActive: true,
         maxVolunteers: 5,
-        minVolunteers: 0
+        minVolunteers: 0,
+        requirements: []
       }
     ];
     const volunteers: Record<ShiftId, VolunteerInfo[]> = {
@@ -168,7 +171,8 @@ describe('TeamCard', () => {
         durationHours: 0,
         isActive: true,
         maxVolunteers: 5,
-        minVolunteers: 0
+        minVolunteers: 0,
+        requirements: []
       }
     ];
 
@@ -198,7 +202,8 @@ describe('TeamCard', () => {
         durationHours: 0,
         isActive: true,
         maxVolunteers: 5,
-        minVolunteers: 0
+        minVolunteers: 0,
+        requirements: []
       }
     ];
     const eventSlug = 'event-2025';

@@ -21,7 +21,8 @@ export const getTeamsPath = (): string => `/team`;
 export const getTeamShiftsPath = (teamSlug: string): string => `${getTeamsPath()}/${teamSlug}`;
 export const getTeamVolunteersPath = (teamSlug: string): string =>
   `${getTeamShiftsPath(teamSlug)}/volunteers`;
-export const getUpdateTeamPath = (teamId: string): string => `/update-team/${teamId}`;
+export const getUpdateTeamPath = (teamId: string, callbackUrl?: string): string =>
+  `/update-team/${teamId}${callbackUrl ? `?callbackUrl=${encodeURIComponent(callbackUrl)}` : ''}`;
 export const getCreateTeamPath = (): string => `/create-team`;
 
 // Qualifications paths

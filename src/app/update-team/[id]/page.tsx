@@ -23,8 +23,10 @@ const PAGE_KEY = 'UpdateTeamPage';
 
 export const generateMetadata = metadata(PAGE_KEY);
 
-export default async function UpdateTeam({ params }: PageProps<'/update-team/[id]'>) {
+export default async function UpdateTeam({ params, searchParams }: PageProps<'/update-team/[id]'>) {
   const { id } = await params;
+  const { callbackUrl } = await searchParams;
+  const redirectTo = Array.isArray(callbackUrl) ? callbackUrl[0] : callbackUrl || getTeamsPath();
   const event = await getCurrentEventOrRedirect();
   const team = id ? await getTeamById(id) : null;
   if (!team || team.eventId !== event.id) {
@@ -75,7 +77,7 @@ export default async function UpdateTeam({ params }: PageProps<'/update-team/[id
         await addRoleToUser(roleToAdd, teamlead, client);
       }
     });
-    redirect(getTeamsPath());
+    redirect(redirectTo);
   };
 
   const onDelete = async () => {
@@ -83,7 +85,7 @@ export default async function UpdateTeam({ params }: PageProps<'/update-team/[id
 
     await checkAuthorisation([{ type: 'admin' }, { type: 'organiser', eventId: team.eventId }]);
     await deleteTeam(team.id);
-    redirect(getTeamsPath());
+    redirect(redirectTo);
   };
 
   const permissionsProfile = getPermissionsProfile(await currentUser());

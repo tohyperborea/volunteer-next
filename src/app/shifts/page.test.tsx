@@ -31,6 +31,10 @@ jest.mock('@/service/user-service', () => ({
   getVolunteersForShifts: jest.fn().mockResolvedValue({})
 }));
 
+jest.mock('@/service/qualification-service', () => ({
+  getQualificationsForEvent: jest.fn().mockResolvedValue([])
+}));
+
 jest.mock('@/session', () => ({
   checkAuthorisation: jest.fn().mockResolvedValue(true),
   currentUser: jest.fn().mockResolvedValue({ id: 'current-user' }),
@@ -100,7 +104,8 @@ describe('EventShifts Page', () => {
       durationHours: 4,
       minVolunteers: 1,
       maxVolunteers: 3,
-      isActive: true
+      isActive: true,
+      requirements: []
     },
     {
       id: 'shift-2',
@@ -111,7 +116,8 @@ describe('EventShifts Page', () => {
       durationHours: 4,
       minVolunteers: 1,
       maxVolunteers: 3,
-      isActive: true
+      isActive: true,
+      requirements: []
     }
   ];
 
