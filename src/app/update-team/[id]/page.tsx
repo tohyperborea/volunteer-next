@@ -11,7 +11,7 @@ import { validateUserId } from '@/validator/user-validator';
 import { deleteTeam, getTeamById, updateTeam } from '@/service/team-service';
 import { usersToVolunteers } from '@/lib/volunteer';
 import { getPermissionsProfile } from '@/utils/permissions';
-import { getTeamsPath } from '@/utils/path';
+import { getCallbackUrl, getTeamsPath } from '@/utils/path';
 import { hasEventStarted } from '@/utils/date';
 
 const PAGE_KEY = 'UpdateTeamPage';
@@ -20,8 +20,7 @@ export const generateMetadata = metadata(PAGE_KEY);
 
 export default async function UpdateTeam({ params, searchParams }: PageProps<'/update-team/[id]'>) {
   const { id } = await params;
-  const { callbackUrl } = await searchParams;
-  const redirectTo = Array.isArray(callbackUrl) ? callbackUrl[0] : callbackUrl || getTeamsPath();
+  const redirectTo = getCallbackUrl(await searchParams) || getTeamsPath();
   const event = await getCurrentEventOrRedirect();
   const team = id ? await getTeamById(id) : null;
   if (!team || team.eventId !== event.id) {
@@ -74,7 +73,7 @@ export default async function UpdateTeam({ params, searchParams }: PageProps<'/u
 
     await checkAuthorisation([{ type: 'admin' }, { type: 'organiser', eventId: team.eventId }]);
     await deleteTeam(team.id);
-    redirect(redirectTo);
+    redirect(getTeamsPath());
   };
 
   const permissionsProfile = getPermissionsProfile(await currentUser());

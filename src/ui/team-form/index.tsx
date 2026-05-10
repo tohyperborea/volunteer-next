@@ -6,7 +6,7 @@
 
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import { Flex, TextField, Button, TextArea, IconButton, Box } from '@radix-ui/themes';
 import { Cross1Icon, PlusIcon } from '@radix-ui/react-icons';
 import { useTranslations } from 'next-intl';

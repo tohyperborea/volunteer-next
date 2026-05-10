@@ -21,8 +21,37 @@ import {
   getUpdateEventPath,
   getMyShiftsPath,
   getNoEventsPath,
-  getDashboardPath
+  getDashboardPath,
+  getCallbackUrl
 } from './path';
+
+describe('getCallbackUrl', () => {
+  it('should return the callback URL from search params', () => {
+    const searchParams = { callbackUrl: '/callback' };
+    const result = getCallbackUrl(searchParams);
+    expect(result).toBe('/callback');
+  });
+
+  it('should return undefined if callback URL is not present', () => {
+    const searchParams = {};
+    const result = getCallbackUrl(searchParams);
+    expect(result).toBeUndefined();
+  });
+
+  it('should return the first callback URL if multiple are present', () => {
+    const searchParams = {
+      callbackUrl: ['/callback1', '/callback2']
+    };
+    const result = getCallbackUrl(searchParams);
+    expect(result).toBe('/callback1');
+  });
+
+  it('should return undefined for non-relative callback URLs', () => {
+    const searchParams = { callbackUrl: 'http://malicious.com' };
+    const result = getCallbackUrl(searchParams);
+    expect(result).toBeUndefined();
+  });
+});
 
 describe('getTeamsPath', () => {
   it('should return the correct path for teams', () => {

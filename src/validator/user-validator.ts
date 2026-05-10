@@ -4,6 +4,8 @@
  * @author Michael Townsend <@continuities>
  */
 
+import { deduplicateBy } from '@/utils/list';
+
 /**
  * Validates FormData for a user ID.
  * @param data - FormData to validate
@@ -16,7 +18,10 @@ export const validateUserId = (data: FormData, fieldName?: string): string[] => 
   if (!userId || userId.length === 0) {
     throw new Error(`${fieldName ?? 'User ID'} is required`);
   }
-  return userId.map((id) => id.toString());
+  return deduplicateBy(
+    userId.map((id) => id.toString().trim()).filter((id) => id.length > 0),
+    (id) => id
+  );
 };
 
 /**

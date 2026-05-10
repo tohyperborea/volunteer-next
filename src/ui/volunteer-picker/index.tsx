@@ -63,7 +63,7 @@ export default function VolunteerPicker({
       fetchVolunteers(search).then(setVolunteers);
       setSelected({});
     }
-  }, [filter, search, open]);
+  }, [filter, search, open, excludeIds]);
 
   return (
     <FormDialog description={title} open={open} onClose={onClose}>

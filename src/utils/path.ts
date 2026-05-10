@@ -6,6 +6,26 @@
 
 import { userFiltersToParams } from './user-filters';
 
+/**
+ * Retrieves a callback URL from query parameters, ensuring it is a relative path starting with '/' or undefined.
+ * @param search - Record of query parameters to validate
+ * @returns - Validated callback URL as a string, or undefined if not provided or invalid
+ */
+export const getCallbackUrl = (
+  search: Record<string, string | string[] | undefined>
+): string | undefined => {
+  const value = search['callbackUrl'];
+  const callbackUrl = Array.isArray(value) ? value[0] : value;
+  if (!callbackUrl) {
+    return undefined;
+  }
+  if (!callbackUrl.startsWith('/')) {
+    // We only allow relative paths for security reasons
+    return undefined;
+  }
+  return callbackUrl;
+};
+
 export const getDashboardPath = (): string => '/';
 
 // Users paths
