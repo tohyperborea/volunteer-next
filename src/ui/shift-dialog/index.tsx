@@ -54,7 +54,9 @@ export default function ShiftDialog({
   return (
     <FormDialog description={title} open={open} onClose={onClose}>
       <input type="hidden" name="id" value={editing?.id ?? ''} />
-      {teamId && <input type="hidden" name="teamId" value={teamId} />}
+      {(editing?.teamId ?? teamId) && (
+        <input type="hidden" name="teamId" value={editing?.teamId ?? teamId} />
+      )}
       <Flex direction="column" align="start" height="100%">
         <Dialog.Title as="h2" mt="4" mb="6">
           {title}
@@ -81,7 +83,7 @@ export default function ShiftDialog({
               {t('active')}
             </Flex>
           </Text>
-          {teams && (
+          {teams && creating && (
             <FormField ariaId="shift-team" name={t('team')} description={t('teamDescription')}>
               <Select.Root
                 required

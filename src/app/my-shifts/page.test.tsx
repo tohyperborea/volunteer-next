@@ -22,6 +22,10 @@ jest.mock('@/service/shift-service', () => ({
   getShiftsForVolunteer: jest.fn()
 }));
 
+jest.mock('@/service/qualification-service', () => ({
+  getQualificationsForEvent: jest.fn().mockResolvedValue([])
+}));
+
 jest.mock('@/service/team-service', () => ({
   getTeamsForEvent: jest.fn()
 }));
@@ -100,7 +104,8 @@ describe('EventShifts Page', () => {
       durationHours: 4,
       minVolunteers: 1,
       maxVolunteers: 3,
-      isActive: true
+      isActive: true,
+      requirements: []
     },
     {
       id: 'shift-2',
@@ -111,7 +116,8 @@ describe('EventShifts Page', () => {
       durationHours: 4,
       minVolunteers: 1,
       maxVolunteers: 3,
-      isActive: true
+      isActive: true,
+      requirements: []
     }
   ];
 

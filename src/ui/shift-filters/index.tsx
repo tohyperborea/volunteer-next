@@ -7,19 +7,21 @@
 'use client';
 
 import { MixerVerticalIcon } from '@radix-ui/react-icons';
-import { Flex, Button, Card, Box } from '@radix-ui/themes';
+import { Flex, Button, Card, Box, Select } from '@radix-ui/themes';
 import { useSearchParams, usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import SearchBar from '../search-bar';
 import { paramsToShiftFilters } from '@/utils/shift-filters';
 import { useTranslations } from 'next-intl';
 import { useDebouncedCallback } from 'use-debounce';
+import { FormField } from '../form-dialog';
 
 interface Props {
   withFilters?: (keyof ShiftFilters)[];
+  teams?: TeamInfo[];
 }
 
-export default function ShiftFilters({ withFilters = [] }: Props) {
+export default function ShiftFilters({ withFilters = [], teams = [] }: Props) {
   const t = useTranslations('ShiftFilters');
   const hasFilter = new Set(withFilters);
   const showFilterPanel = hasFilter.difference(new Set(['searchQuery'])).size > 0;
@@ -82,7 +84,29 @@ export default function ShiftFilters({ withFilters = [] }: Props) {
           {filtersOpen && (
             <Card variant="classic">
               <Flex direction="column" gap="4">
-                {/* No additional filters for now */}
+                {hasFilter.has('teamId') && (
+                  <FormField name={t('teamFilterLabel')} ariaId="teamFilter">
+                    <Box>
+                      <Select.Root
+                        value={currentFilters.teamId ?? 'all'}
+                        onValueChange={(value) =>
+                          onFilterChange('teamId', value === 'all' ? undefined : value)
+                        }
+                      >
+                        <Select.Trigger aria-labelledby="teamFilter" />
+                        <Select.Content>
+                          <Select.Item value="all">{t('allTeams')}</Select.Item>
+                          <Select.Separator />
+                          {teams.map((team) => (
+                            <Select.Item key={team.id} value={team.id}>
+                              {team.name}
+                            </Select.Item>
+                          ))}
+                        </Select.Content>
+                      </Select.Root>
+                    </Box>
+                  </FormField>
+                )}
                 <Box>
                   <Button variant="outline" color="blue" onClick={onClearFilters}>
                     {t('clear')}
