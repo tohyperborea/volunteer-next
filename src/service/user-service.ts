@@ -394,6 +394,7 @@ export const addRoleToUsers = async (
         `
         INSERT INTO role ("userId", "type")
         SELECT UNNEST($1::text[]), $2
+        ON CONFLICT DO NOTHING
         `,
         [userIds, 'admin']
       );
@@ -407,6 +408,7 @@ export const addRoleToUsers = async (
         `
         INSERT INTO role ("userId", "type", "eventId")
         SELECT UNNEST($1::text[]), $2, $3
+        ON CONFLICT DO NOTHING
         `,
         [userIds, 'organiser', role.eventId]
       );
@@ -420,6 +422,7 @@ export const addRoleToUsers = async (
         `
         INSERT INTO role ("userId", "type", "eventId", "teamId")
         SELECT UNNEST($1::text[]), $2, $3, $4
+        ON CONFLICT DO NOTHING
         `,
         [userIds, 'team-lead', role.eventId, role.teamId]
       );
