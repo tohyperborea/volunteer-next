@@ -51,6 +51,12 @@ describe('getCallbackUrl', () => {
     const result = getCallbackUrl(searchParams);
     expect(result).toBeUndefined();
   });
+
+  it('should return undefined for callback URLs with double slashes', () => {
+    const searchParams = { callbackUrl: '//malicious.com' };
+    const result = getCallbackUrl(searchParams);
+    expect(result).toBeUndefined();
+  });
 });
 
 describe('getTeamsPath', () => {

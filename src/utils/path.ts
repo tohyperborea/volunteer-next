@@ -19,7 +19,7 @@ export const getCallbackUrl = (
   if (!callbackUrl) {
     return undefined;
   }
-  if (!callbackUrl.startsWith('/')) {
+  if (!callbackUrl.startsWith('/') || callbackUrl.startsWith('//')) {
     // We only allow relative paths for security reasons
     return undefined;
   }
