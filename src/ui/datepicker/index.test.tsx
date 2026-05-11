@@ -187,22 +187,36 @@ describe('TimeSelect', () => {
     });
   });
 
-  it('calls onChange with a formatted time string when hour is selected', () => {
+  it('does not call onChange when only hour is selected', () => {
     const handleChange = jest.fn();
     render(<TimeSelect ariaLabel="Start time" onChange={handleChange} />);
     fireEvent.click(screen.getByRole('combobox', { name: 'hour' }));
     fireEvent.click(screen.getByRole('option', { name: '09' }));
-    // minute defaults to 0 when not yet set
-    expect(handleChange).toHaveBeenCalledWith('09:00');
+    expect(handleChange).not.toHaveBeenCalled();
   });
 
-  it('calls onChange with a formatted time string when minute is selected', () => {
+  it('does not call onChange when only minute is selected', () => {
     const handleChange = jest.fn();
-    render(<TimeSelect ariaLabel="Start time" defaultValue="10:00" onChange={handleChange} />);
+    render(<TimeSelect ariaLabel="Start time" onChange={handleChange} />);
 
     fireEvent.click(screen.getByRole('combobox', { name: 'minute' }));
     fireEvent.click(screen.getByRole('option', { name: '30' }));
-    expect(handleChange).toHaveBeenCalledWith('10:30');
+    expect(handleChange).not.toHaveBeenCalled();
+  });
+
+  it('calls onChange with a TimeString when both hour and minute are selected', () => {
+    const handleChange = jest.fn();
+    render(<TimeSelect ariaLabel="Start time" onChange={handleChange} />);
+
+    // Select hour
+    fireEvent.click(screen.getByRole('combobox', { name: 'hour' }));
+    fireEvent.click(screen.getByRole('option', { name: '14' }));
+
+    // Select minute
+    fireEvent.click(screen.getByRole('combobox', { name: 'minute' }));
+    fireEvent.click(screen.getByRole('option', { name: '15' }));
+
+    expect(handleChange).toHaveBeenCalledWith('14:15');
   });
 
   it('initialises from defaultValue', () => {
