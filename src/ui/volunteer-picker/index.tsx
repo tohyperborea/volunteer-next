@@ -60,8 +60,13 @@ export default function VolunteerPicker({
 
   useEffect(() => {
     if (open) {
-      fetchVolunteers(search).then(setVolunteers);
       setSelected({});
+    }
+  }, [open]);
+
+  useEffect(() => {
+    if (open) {
+      fetchVolunteers(search).then(setVolunteers);
     }
   }, [filter, search, open, excludeIds]);
 

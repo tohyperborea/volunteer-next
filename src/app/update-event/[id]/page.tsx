@@ -13,7 +13,7 @@ import { checkAuthorisation, currentUser } from '@/session';
 import { inTransaction } from '@/db';
 import EventForm from '@/ui/event-form';
 import { validateExistingEvent } from '@/validator/event-validator';
-import { validateUserId } from '@/validator/user-validator';
+import { validateUserIds } from '@/validator/user-validator';
 import { usersToVolunteers, userToVolunteer } from '@/lib/volunteer';
 import { getPermissionsProfile } from '@/utils/permissions';
 import { getEventsPath } from '@/utils/path';
@@ -31,7 +31,7 @@ export default async function UpdateEvent({ params }: PageProps<`/update-event/[
     await checkAuthorisation([{ type: 'admin' }]);
 
     const newEvent = validateExistingEvent(data);
-    const organiser = validateUserId(data, 'organiserId')[0]; // Only single organiser supported for now
+    const organiser = validateUserIds(data, 'organiserId')[0]; // Only single organiser supported for now
 
     const event = (await getEventsById([newEvent.id]))[0];
     if (!event) {

@@ -61,7 +61,7 @@ export default async function TeamLayout({ params, children }: Props) {
           {canEdit && (
             <IconButton
               variant="ghost"
-              aria-label={t('edit', { teamName: team.name })}
+              aria-label={t('edit')}
               asChild
               style={{ position: 'absolute', right: 0 }}
             >

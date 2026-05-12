@@ -6,7 +6,7 @@ import { addRoleToUsers } from '@/service/user-service';
 import { checkAuthorisation, getCurrentEventOrRedirect } from '@/session';
 import { inTransaction } from '@/db';
 import TeamForm from '@/ui/team-form';
-import { validateUserId } from '@/validator/user-validator';
+import { validateUserIds } from '@/validator/user-validator';
 import { validateNewTeam } from '@/validator/team-validator';
 import { createTeam } from '@/service/team-service';
 import { getTeamsPath } from '@/utils/path';
@@ -32,7 +32,7 @@ export default async function CreateTeam() {
     await checkAuthorisation([{ type: 'admin' }, { type: 'organiser', eventId: event.id }]);
 
     const newTeam = validateNewTeam(data);
-    const teamleads = validateUserId(data, 'teamleadId');
+    const teamleads = validateUserIds(data, 'teamleadId');
 
     await inTransaction(async (client) => {
       const createdTeam = await createTeam(newTeam, client);

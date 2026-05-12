@@ -88,6 +88,12 @@ describe('getUpdateTeamPath', () => {
     const result = getUpdateTeamPath(teamId);
     expect(result).toBe('/update-team/team-456');
   });
+  it('should add a callback URL to the path if provided', () => {
+    const teamId = 'team-456';
+    const callbackUrl = '/dashboard';
+    const result = getUpdateTeamPath(teamId, callbackUrl);
+    expect(result).toBe('/update-team/team-456?callbackUrl=%2Fdashboard');
+  });
 });
 
 describe('getCreateTeamPath', () => {
