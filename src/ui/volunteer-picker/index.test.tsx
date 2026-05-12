@@ -122,4 +122,28 @@ describe('VolunteerPicker', () => {
       expect(screen.getByText('Volunteer 3')).toBeInTheDocument();
     });
   });
+
+  it('excludes volunteers based on excludeIds prop', async () => {
+    render(<VolunteerPicker title="Select Volunteers" open={true} excludeIds={['id-1']} />);
+    await waitFor(() => {
+      expect(screen.queryByText('Volunteer 1')).not.toBeInTheDocument();
+      expect(screen.getByText('Volunteer 2')).toBeInTheDocument();
+    });
+  });
+
+  it('calls onSelect with the selected volunteers when save is clicked', async () => {
+    const onSelect = jest.fn();
+    render(<VolunteerPicker title="Select Volunteers" open={true} onSelect={onSelect} />);
+    await waitFor(() => {
+      expect(screen.getByText('Volunteer 1')).toBeInTheDocument();
+      expect(screen.getByText('Volunteer 2')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByText('Volunteer 1'));
+    fireEvent.click(screen.getByText('save'));
+
+    await waitFor(() => {
+      expect(onSelect).toHaveBeenCalledWith([{ id: 'id-1', displayName: 'Volunteer 1' }]);
+    });
+  });
 });

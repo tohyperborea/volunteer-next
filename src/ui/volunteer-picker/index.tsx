@@ -19,15 +19,26 @@ interface Props {
   title: string;
   open?: boolean;
   onClose?: () => void;
+  onSelect?: (volunteers: VolunteerInfo[]) => void;
   onSubmit?: FormSubmitAction;
   filter?: UserFilters;
+  excludeIds?: UserId[];
 }
 
-export default function VolunteerPicker({ title, open, onClose, onSubmit, filter }: Props) {
+export default function VolunteerPicker({
+  title,
+  open,
+  onClose,
+  onSelect,
+  onSubmit,
+  filter,
+  excludeIds
+}: Props) {
   const t = useTranslations('VolunteerPicker');
   const [volunteers, setVolunteers] = useState<VolunteerInfo[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [search, setSearch] = useState<string | undefined>(undefined);
+  const [selected, setSelected] = useState<Record<UserId, VolunteerInfo>>({});
 
   const debouncedSetSearch = useDebouncedCallback((value: string) => {
     setSearch(value);
@@ -42,15 +53,22 @@ export default function VolunteerPicker({ title, open, onClose, onSubmit, filter
       console.error('Failed to fetch volunteers:', response.statusText);
       return [];
     }
-    const data = await response.json();
-    return data as VolunteerInfo[];
+    const data: VolunteerInfo[] = await response.json();
+    const excludedSet = new Set(excludeIds);
+    return excludedSet.size > 0 ? data.filter((volunteer) => !excludedSet.has(volunteer.id)) : data;
   };
+
+  useEffect(() => {
+    if (open) {
+      setSelected({});
+    }
+  }, [open]);
 
   useEffect(() => {
     if (open) {
       fetchVolunteers(search).then(setVolunteers);
     }
-  }, [filter, search, open]);
+  }, [filter, search, open, excludeIds]);
 
   return (
     <FormDialog description={title} open={open} onClose={onClose}>
@@ -67,7 +85,21 @@ export default function VolunteerPicker({ title, open, onClose, onSubmit, filter
         />
         <CheckboxCards.Root columns="1" mt="4" name="volunteers">
           {volunteers.map((volunteer) => (
-            <CheckboxCards.Item key={volunteer.id} value={volunteer.id}>
+            <CheckboxCards.Item
+              key={volunteer.id}
+              value={volunteer.id}
+              onClick={() => {
+                setSelected((prev) => {
+                  const newSelected = { ...prev };
+                  if (newSelected[volunteer.id]) {
+                    delete newSelected[volunteer.id];
+                  } else {
+                    newSelected[volunteer.id] = volunteer;
+                  }
+                  return newSelected;
+                });
+              }}
+            >
               <VolunteerCardContent volunteer={volunteer} />
             </CheckboxCards.Item>
           ))}
@@ -78,7 +110,18 @@ export default function VolunteerPicker({ title, open, onClose, onSubmit, filter
               {t('cancel')}
             </Button>
           </Dialog.Close>
-          <Button variant="soft" formAction={onSubmit}>
+          <Button
+            variant="soft"
+            type={onSubmit ? 'submit' : 'button'}
+            formAction={onSubmit}
+            onClick={
+              onSelect
+                ? () => {
+                    onSelect(Object.values(selected));
+                  }
+                : undefined
+            }
+          >
             {t('save')}
           </Button>
         </Flex>

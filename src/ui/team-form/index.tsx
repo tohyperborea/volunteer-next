@@ -6,22 +6,25 @@
 
 'use client';
 
-import { Flex, TextField, Select, Button, TextArea } from '@radix-ui/themes';
+import { useState } from 'react';
+import { Flex, TextField, Button, TextArea, IconButton, Box } from '@radix-ui/themes';
+import { Cross1Icon, PlusIcon } from '@radix-ui/react-icons';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
-import { FormField } from '../form-dialog';
-import DeleteButton from '../delete-button';
+import { FormField } from '@/ui/form-dialog';
+import DeleteButton from '@/ui/delete-button';
 import { TEAM_SLUG_PATTERN } from '@/validator/team-validator';
 import { EMAIL_PATTERN } from '@/utils/string';
+import VolunteerList from '@/ui/volunteer-list';
+import VolunteerPicker from '@/ui/volunteer-picker';
 
 interface Props {
   eventId: EventId;
   onSubmit: (data: FormData) => Promise<void>;
   onDelete?: () => Promise<void>;
   backOnCancel?: boolean;
-  teamleadOptions: VolunteerInfo[];
   editingTeam?: TeamInfo;
-  editingTeamlead?: VolunteerInfo;
+  editingTeamleads?: VolunteerInfo[];
 }
 
 export default function TeamForm({
@@ -29,12 +32,32 @@ export default function TeamForm({
   onSubmit,
   onDelete,
   backOnCancel,
-  teamleadOptions,
   editingTeam,
-  editingTeamlead
+  editingTeamleads
 }: Props) {
   const t = useTranslations('TeamForm');
   const router = useRouter();
+  const [leads, setLeads] = useState<VolunteerInfo[]>(editingTeamleads || []);
+  const [pickerOpen, setPickerOpen] = useState(false);
+
+  const removeLeadActions = leads.reduce(
+    (actions, volunteer) => {
+      actions[volunteer.id] = (
+        <IconButton
+          variant="ghost"
+          color="red"
+          onClick={() => setLeads((prev) => prev.filter((v) => v.id !== volunteer.id))}
+          aria-label={t('removeLead', { name: volunteer.displayName })}
+          title={t('removeLead', { name: volunteer.displayName })}
+        >
+          <Cross1Icon />
+        </IconButton>
+      );
+      return actions;
+    },
+    {} as Record<UserId, React.ReactNode>
+  );
+
   return (
     <Flex asChild direction="column" align="start" gap="6">
       <form>
@@ -114,22 +137,54 @@ export default function TeamForm({
               pattern={EMAIL_PATTERN}
             />
           </FormField>
+
           <FormField
             ariaId="team-lead-label"
             name={t('teamLead')}
             description={t('teamLeadDescription')}
           >
-            <Select.Root required name="teamleadId" defaultValue={editingTeamlead?.id}>
-              <Select.Trigger placeholder={t('teamLead')} />
-              <Select.Content>
-                {teamleadOptions.map((volunteer) => (
-                  <Select.Item key={volunteer.id} value={volunteer.id}>
-                    {volunteer.displayName}
-                  </Select.Item>
-                ))}
-              </Select.Content>
-            </Select.Root>
+            {leads.length > 0 && (
+              <VolunteerList volunteers={leads} itemActions={removeLeadActions} />
+            )}
+            {leads.map((lead) => (
+              <input
+                type="checkbox"
+                name="teamleadId"
+                value={lead.id}
+                key={lead.id}
+                hidden
+                defaultChecked
+              />
+            ))}
+            {leads.length === 0 && (
+              // This input exists only to trigger HTML5 validation if no leads are selected
+              <input
+                type="checkbox"
+                name="teamleadId"
+                style={{ opacity: 0, position: 'absolute' }}
+                value=""
+                required
+                onInvalid={(e) => e.currentTarget.setCustomValidity(t('teamLeadRequired'))}
+              />
+            )}
+            <Box mt="1">
+              <Button variant="soft" type="button" onClick={() => setPickerOpen(true)}>
+                <PlusIcon />
+                {t('addLead')}
+              </Button>
+            </Box>
+            <VolunteerPicker
+              title={t('addLead')}
+              excludeIds={leads.map(({ id }) => id)}
+              open={pickerOpen}
+              onSelect={(selectedVolunteers) => {
+                setLeads((prev) => [...prev, ...selectedVolunteers]);
+                setPickerOpen(false);
+              }}
+              onClose={() => setPickerOpen(false)}
+            />
           </FormField>
+
           <Flex gap="2" my="6">
             {backOnCancel && (
               <Button

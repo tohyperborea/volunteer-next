@@ -18,7 +18,7 @@ import {
   recordSuccessfulLogin,
   checkSignInRateLimit
 } from '@/lib/login-security';
-import { addRoleToUser, getRoleCount } from './service/user-service';
+import { addRoleToUsers, getRoleCount } from './service/user-service';
 import { cookies } from 'next/headers';
 
 /** oauth = Pretix/OAuth provider, credentials = email/password. Defaults to oauth. */
@@ -57,7 +57,7 @@ const afterHook = createAuthMiddleware(async (ctx) => {
         console.info('[auth] System has no admins, granting admin role to new user');
         const returned = ctx.context.returned as { user?: { id: string } } | Error | undefined;
         if (returned && !(returned instanceof Error) && returned.user) {
-          await addRoleToUser({ type: 'admin' }, returned.user.id, client);
+          await addRoleToUsers({ type: 'admin' }, [returned.user.id], client);
         }
       }
     });
