@@ -14,6 +14,7 @@ import { useState } from 'react';
 import ShiftDialog from '../shift-dialog';
 import NextLink from 'next/link';
 import { getTeamShiftsPath } from '@/utils/path';
+import { canCancelShiftSignup } from '@/utils/permissions';
 
 interface Props {
   event: EventInfo;
@@ -103,7 +104,11 @@ export default function ShiftOverviewList({
                             ? () => setEditingShift({ ...shift, id: undefined })
                             : undefined
                         }
-                        onCancel={onCancelShift?.bind(null, shift.id)}
+                        onCancel={
+                          canCancelShiftSignup(event, shift)
+                            ? onCancelShift?.bind(null, shift.id)
+                            : undefined
+                        }
                       />
                     );
                   })}

@@ -69,6 +69,7 @@ export default async function EventShifts({ searchParams }: PageProps<`/shifts`>
   );
   const leadTeamsIdsSet = new Set(leadTeamsIds);
   const isEditable = !hasEventStarted(event) && (hasEventAccess || leadTeamsIds.length > 0);
+
   const managedTeams = hasEventAccess
     ? teams
     : teams.filter((team) => leadTeamsIdsSet.has(team.id));
@@ -105,7 +106,7 @@ export default async function EventShifts({ searchParams }: PageProps<`/shifts`>
         {t('allShifts')}
       </Heading>
       <Flex direction="row" gap="2" wrap="wrap">
-        {isEditable && (
+        {onSaveShift && (
           <AddShiftButton
             event={event}
             teams={managedTeams}

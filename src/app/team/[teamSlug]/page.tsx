@@ -24,7 +24,7 @@ import {
   getCurrentEventOrRedirect
 } from '@/session';
 import ShiftList from '@/ui/shift-list';
-import { hasShiftStarted } from '@/utils/date';
+import { hasEventStarted, hasShiftStarted } from '@/utils/date';
 import { getTeamShiftsApiPath, getTeamShiftsPath } from '@/utils/path';
 import {
   canCancelShiftSignup,
@@ -77,7 +77,8 @@ export default async function TeamPage({ params, searchParams }: PageProps<`/tea
     { type: 'team-lead', eventId: team.eventId, teamId: team.id }
   ];
 
-  const isEditable = await checkAuthorisation(editorRoles, true);
+  const hasAccess = await checkAuthorisation(editorRoles, true);
+  const isEditable = !hasEventStarted(event) && hasAccess;
   const t = await getTranslations(PAGE_KEY);
   const user = (await currentUser())!; // checkAuthorisation guarantees this is not null
   const permissions = getPermissionsProfile(user);

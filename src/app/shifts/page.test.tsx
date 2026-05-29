@@ -5,6 +5,7 @@ import { getTeamsForEvent } from '@/service/team-service';
 import { getCurrentEvent, getCurrentEventOrRedirect } from '@/session';
 import ShiftOverviewList from '@/ui/shift-overview-list';
 import AddShiftButton from '@/ui/add-shift-button';
+import { getSaveShiftAction } from '@/lib/shifts';
 
 jest.mock('next-intl', () => ({
   useTranslations: () => (key: string) => key,
@@ -86,6 +87,7 @@ const mockGetFilteredShiftsForEvent = getFilteredShiftsForEvent as jest.MockedFu
 const mockGetTeamsForEvent = getTeamsForEvent as jest.MockedFunction<typeof getTeamsForEvent>;
 const mockShiftOverviewList = ShiftOverviewList as jest.MockedFunction<typeof ShiftOverviewList>;
 const mockAddShiftButton = AddShiftButton as jest.MockedFunction<typeof AddShiftButton>;
+const mockGetSaveShiftAction = getSaveShiftAction as jest.MockedFunction<typeof getSaveShiftAction>;
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -221,22 +223,8 @@ describe('EventShifts Page', () => {
     );
   });
 
-  it('does not render the Add Shift button for unauthorised users', async () => {
-    const { checkAuthorisation } = require('@/session');
-    checkAuthorisation.mockResolvedValue(false);
-    mockGetCurrentEvent.mockResolvedValue(mockEvent);
-    mockGetCurrentEventOrRedirect.mockResolvedValue(mockEvent);
-    mockGetFilteredShiftsForEvent.mockResolvedValue(mockShifts);
-    mockGetTeamsForEvent.mockResolvedValue(mockTeams);
-    render(await EventShifts(props));
-    expect(mockAddShiftButton).not.toHaveBeenCalled();
-  });
-
-  it('does not render the Add Shift button if the event has started', async () => {
-    const { checkAuthorisation } = require('@/session');
-    checkAuthorisation.mockResolvedValue(true);
-    const { hasEventStarted } = require('@/utils/date');
-    hasEventStarted.mockReturnValue(true);
+  it('does not render the Add Shift button when getSaveShiftAction returns undefined', async () => {
+    mockGetSaveShiftAction.mockReturnValue(undefined);
     mockGetCurrentEvent.mockResolvedValue(mockEvent);
     mockGetCurrentEventOrRedirect.mockResolvedValue(mockEvent);
     mockGetFilteredShiftsForEvent.mockResolvedValue(mockShifts);

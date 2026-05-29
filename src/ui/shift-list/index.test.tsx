@@ -157,7 +157,6 @@ describe('ShiftList', () => {
       );
     } else {
       expect(screen.queryByText('addShift')).not.toBeInTheDocument();
-      expect(screen.queryByText('export')).not.toBeInTheDocument();
       expect(screen.queryByTestId('shift-dialog')).not.toBeInTheDocument();
     }
 

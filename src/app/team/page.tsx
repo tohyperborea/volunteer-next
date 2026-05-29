@@ -90,12 +90,14 @@ export default async function TeamsDashboard({ searchParams }: PageProps<'/team'
               </NextLink>
             </Button>
           )}
-          <AddShiftButton
-            event={event}
-            teams={managedTeams}
-            qualifications={qualifications}
-            onSaveShift={onSaveShift}
-          />
+          {onSaveShift && (
+            <AddShiftButton
+              event={event}
+              teams={managedTeams}
+              qualifications={qualifications}
+              onSaveShift={onSaveShift}
+            />
+          )}
         </Flex>
       )}
       <TeamList

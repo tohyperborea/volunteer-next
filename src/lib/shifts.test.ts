@@ -90,7 +90,9 @@ describe('shifts actions', () => {
         redirectUri: '/events/event-1/shifts'
       });
 
-      await expect(action(makeFormData({ teamId: 'team-1' }))).rejects.toThrow('redirect');
+      expect(action).toBeDefined();
+
+      await expect(action!(makeFormData({ teamId: 'team-1' }))).rejects.toThrow('redirect');
 
       expect(mockCheckAuthorisation).toHaveBeenCalledWith([
         { type: 'admin' },
@@ -119,7 +121,7 @@ describe('shifts actions', () => {
         redirectUri
       });
 
-      await expect(action(makeFormData(updated))).rejects.toThrow('redirect');
+      await expect(action!(makeFormData(updated))).rejects.toThrow('redirect');
 
       expect(mockUpdateShift).toHaveBeenCalledWith(updated);
       expect(mockCreateShift).not.toHaveBeenCalled();
@@ -135,9 +137,7 @@ describe('shifts actions', () => {
         redirectUri: '/x'
       });
 
-      await expect(action(makeFormData({}))).rejects.toThrow('unauthorized');
-      expect(unauthorized).toHaveBeenCalled();
-      expect(mockCheckAuthorisation).not.toHaveBeenCalled();
+      expect(action).toBeUndefined();
     });
 
     test('throws unauthorized when existing shift has started', async () => {
@@ -150,7 +150,9 @@ describe('shifts actions', () => {
         redirectUri: '/x'
       });
 
-      await expect(action(makeFormData({ id: 'shift-1' }))).rejects.toThrow('unauthorized');
+      expect(action).toBeDefined();
+
+      await expect(action!(makeFormData({ id: 'shift-1' }))).rejects.toThrow('unauthorized');
       expect(unauthorized).toHaveBeenCalled();
       expect(mockUpdateShift).not.toHaveBeenCalled();
       expect(mockCreateShift).not.toHaveBeenCalled();
@@ -165,7 +167,9 @@ describe('shifts actions', () => {
         redirectUri: '/x'
       });
 
-      await expect(action(makeFormData({ teamId: 'team-1' }))).rejects.toThrow('unauthorized');
+      expect(action).toBeDefined();
+
+      await expect(action!(makeFormData({ teamId: 'team-1' }))).rejects.toThrow('unauthorized');
       expect(unauthorized).toHaveBeenCalled();
       expect(mockUpdateShift).not.toHaveBeenCalled();
       expect(mockCreateShift).not.toHaveBeenCalled();
@@ -183,7 +187,9 @@ describe('shifts actions', () => {
         redirectUri: '/x'
       });
 
-      await expect(action(makeFormData({ id: 'shift-1', teamId: 'team-2' }))).rejects.toThrow(
+      expect(action).toBeDefined();
+
+      await expect(action!(makeFormData({ id: 'shift-1', teamId: 'team-2' }))).rejects.toThrow(
         'unauthorized'
       );
       expect(unauthorized).toHaveBeenCalled();
@@ -200,19 +206,20 @@ describe('shifts actions', () => {
         redirectUri: '/x'
       });
 
-      await expect(action('' as any)).rejects.toThrow('notFound');
+      expect(action).toBeDefined();
+
+      await expect(action!('' as any)).rejects.toThrow('notFound');
       expect(notFound).toHaveBeenCalled();
     });
 
-    test('throws unauthorized when event is not editable', async () => {
+    test('returns unauthorized when event is not editable', async () => {
       const action = getDeleteShiftAction({
         isEditable: false,
         event,
         redirectUri: '/x'
       });
 
-      await expect(action('shift-1')).rejects.toThrow('unauthorized');
-      expect(unauthorized).toHaveBeenCalled();
+      expect(action).toBeUndefined();
     });
 
     test('throws notFound when shift does not exist', async () => {
@@ -224,7 +231,9 @@ describe('shifts actions', () => {
         redirectUri: '/x'
       });
 
-      await expect(action('shift-404')).rejects.toThrow('notFound');
+      expect(action).toBeDefined();
+
+      await expect(action!('shift-404')).rejects.toThrow('notFound');
       expect(notFound).toHaveBeenCalled();
     });
 
@@ -238,7 +247,9 @@ describe('shifts actions', () => {
         redirectUri: '/x'
       });
 
-      await expect(action('shift-1')).rejects.toThrow('unauthorized');
+      expect(action).toBeDefined();
+
+      await expect(action!('shift-1')).rejects.toThrow('unauthorized');
       expect(unauthorized).toHaveBeenCalled();
       expect(mockDeleteShift).not.toHaveBeenCalled();
     });
@@ -254,7 +265,9 @@ describe('shifts actions', () => {
         redirectUri: '/events/event-1/shifts'
       });
 
-      await action('shift-1');
+      expect(action).toBeDefined();
+
+      await action!('shift-1');
 
       expect(checkAuthorisation).toHaveBeenCalledWith([
         { type: 'admin' },
@@ -278,7 +291,9 @@ describe('shifts actions', () => {
         redirectUri
       });
 
-      await action('shift-2');
+      expect(action).toBeDefined();
+
+      await action!('shift-2');
 
       expect(deleteShift).toHaveBeenCalledWith('shift-2');
       expect(redirectUri).toHaveBeenCalledWith(shift);
@@ -296,7 +311,9 @@ describe('shifts actions', () => {
         redirectUri: '/x'
       });
 
-      await expect(action('shift-1')).rejects.toThrow('unauthorized');
+      expect(action).toBeDefined();
+
+      await expect(action!('shift-1')).rejects.toThrow('unauthorized');
       expect(unauthorized).toHaveBeenCalled();
       expect(mockDeleteShift).not.toHaveBeenCalled();
     });
