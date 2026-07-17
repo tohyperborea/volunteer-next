@@ -31,19 +31,6 @@ interface Props {
   eventStartDate?: Date;
 }
 
-const getStatusColour = (volunteerCount: number, minVolunteers: number, maxVolunteers: number) => {
-  if (volunteerCount >= maxVolunteers) {
-    return 'green';
-  }
-  if (volunteerCount === 0) {
-    return 'red';
-  }
-  if (volunteerCount < minVolunteers) {
-    return 'orange';
-  }
-  return 'accent';
-};
-
 export default function ShiftCard({
   shift,
   eventStartDate,
