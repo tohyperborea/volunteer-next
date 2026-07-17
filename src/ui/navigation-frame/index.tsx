@@ -7,12 +7,13 @@
 'use client';
 
 import { Heading, Text, Flex, Avatar, IconButton, Box, Link } from '@radix-ui/themes';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import NextLink from 'next/link';
 import { getUserProfilePath } from '@/utils/path';
 import { HamburgerMenuIcon } from '@radix-ui/react-icons';
 import NavMenu from './navmenu';
 import { getPermissionsProfile } from '@/utils/permissions';
+import { usePathname } from 'next/navigation';
 
 interface Props {
   title?: string;
@@ -24,6 +25,8 @@ interface Props {
 export default function NavigationFrame({ title, subtitle, currentUser, children }: Props) {
   const [isNavOpen, setIsNavOpen] = useState(false);
   const permissionsProfile = getPermissionsProfile(currentUser);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const pathname = usePathname();
 
   // Wait for umami to load and then identify the user for analytics
   useEffect(() => {
@@ -41,6 +44,14 @@ export default function NavigationFrame({ title, subtitle, currentUser, children
     }, 100);
     return () => clearInterval(timer);
   }, [currentUser]);
+
+  // Since we're scrolling an inner div, nextjs won't automatically scroll
+  // to top on navigation. We have to do it manually.
+  useEffect(() => {
+    if (contentRef.current) {
+      contentRef.current.scrollTop = 0;
+    }
+  }, [pathname]);
 
   return (
     <Flex direction="column" style={{ height: '100vh', overflow: 'hidden' }}>
@@ -119,7 +130,7 @@ export default function NavigationFrame({ title, subtitle, currentUser, children
             <NavMenu permissionsProfile={permissionsProfile} />
           </Box>
         </Box>
-        <Flex direction="column" overflow="auto" flexGrow="1" justify="between">
+        <Flex direction="column" overflow="auto" flexGrow="1" justify="between" ref={contentRef}>
           {children}
           <Flex p="4" direction="column" asChild>
             <footer>

@@ -18,7 +18,7 @@ const PAGE_KEY = 'EventsManagementPage';
 export const generateMetadata = metadata(PAGE_KEY);
 
 export default async function EventsDashboard({ searchParams }: PageProps<`/events`>) {
-  await checkAuthorisation([{ type: 'admin' }, { type: 'organiser' }]);
+  await checkAuthorisation([{ type: 'admin' }]);
 
   const filters = recordToEventFilters(await searchParams);
   const t = await getTranslations(PAGE_KEY);

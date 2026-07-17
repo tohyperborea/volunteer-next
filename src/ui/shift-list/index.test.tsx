@@ -47,7 +47,7 @@ const mockShifts: ShiftInfo[] = [
     eventDay: 0,
     startTime: '09:00',
     durationHours: 4,
-    requirement: 'qual1',
+    requirements: ['qual1'],
     isActive: true,
     minVolunteers: 1,
     maxVolunteers: 3
@@ -61,7 +61,8 @@ const mockShifts: ShiftInfo[] = [
     durationHours: 4,
     isActive: true,
     minVolunteers: 1,
-    maxVolunteers: 3
+    maxVolunteers: 3,
+    requirements: []
   }
 ];
 const mockQualifications: QualificationInfo[] = [
@@ -156,7 +157,6 @@ describe('ShiftList', () => {
       );
     } else {
       expect(screen.queryByText('addShift')).not.toBeInTheDocument();
-      expect(screen.queryByText('export')).not.toBeInTheDocument();
       expect(screen.queryByTestId('shift-dialog')).not.toBeInTheDocument();
     }
 
@@ -169,17 +169,22 @@ describe('ShiftList', () => {
     props.shifts.forEach((shift, i) => {
       const showSignup = props.onSignup && props.userShifts && !props.userShifts.has(shift.id);
       const showCancel = props.onCancel && props.userShifts && props.userShifts.has(shift.id);
-      const isQualified = shift.requirement
-        ? props.userQualifications
-          ? props.userQualifications.has(shift.requirement)
-          : false
-        : true;
+      const isQualified =
+        shift.requirements.length === 0 ||
+        Boolean(
+          props.userQualifications &&
+          shift.requirements.every((qualificationId) =>
+            props.userQualifications!.has(qualificationId)
+          )
+        );
       expect(screen.getByTestId(`shift-card:${shift.id}`)).toBeInTheDocument();
       expect(mockShiftCard).toHaveBeenNthCalledWith(
         i + 1,
         expect.objectContaining({
           shift,
-          qualification: mockQualificationMap.get(shift.requirement ?? ''),
+          qualifications: shift.requirements
+            .map((qualificationId) => mockQualificationMap.get(qualificationId))
+            .filter((qualification): qualification is QualificationInfo => Boolean(qualification)),
           volunteers: props.shiftVolunteers[shift.id] || [],
           onSignup: showSignup ? expect.any(Function) : undefined,
           onCancel: showCancel ? expect.any(Function) : undefined,

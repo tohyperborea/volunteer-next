@@ -6,13 +6,13 @@
 
 'use client';
 
-import { Badge, Button, Card, Flex, Heading, IconButton, Text } from '@radix-ui/themes';
+import { Badge, Box, Button, Card, Flex, Heading, IconButton, Text } from '@radix-ui/themes';
 import TimeSpan from '../time-span';
 import { useTranslations } from 'next-intl';
 import styles from './styles.module.css';
 import Collapsible from '../collapsible';
 import { Pencil2Icon, ChevronDownIcon, CopyIcon } from '@radix-ui/react-icons';
-import { addHoursToTimeString } from '@/utils/datetime';
+import { addHoursToTimeString, eventDayTimeToDate } from '@/utils/datetime';
 import { getQualificationDetailsPath } from '@/utils/path';
 import { useState } from 'react';
 import ProgressBar from '../progress-bar';
@@ -21,32 +21,21 @@ import NextLink from 'next/link';
 interface Props {
   shift: ShiftInfo;
   volunteers: VolunteerInfo[];
-  qualification?: QualificationInfo;
+  qualifications?: QualificationInfo[];
   isQualified?: boolean;
   collapsible?: boolean;
   onEdit?: () => void;
   onCopy?: () => void;
   onSignup?: () => void;
   onCancel?: () => void;
+  eventStartDate?: Date;
 }
-
-const getStatusColour = (volunteerCount: number, minVolunteers: number, maxVolunteers: number) => {
-  if (volunteerCount >= maxVolunteers) {
-    return 'green';
-  }
-  if (volunteerCount === 0) {
-    return 'red';
-  }
-  if (volunteerCount < minVolunteers) {
-    return 'orange';
-  }
-  return 'accent';
-};
 
 export default function ShiftCard({
   shift,
+  eventStartDate,
   volunteers,
-  qualification,
+  qualifications = [],
   onEdit,
   onCopy,
   onSignup,
@@ -55,20 +44,21 @@ export default function ShiftCard({
   isQualified
 }: Props) {
   const t = useTranslations('ShiftCard');
-  const startTime = shift.startTime;
-  const endTime = addHoursToTimeString(shift.startTime, shift.durationHours);
+  const startTime = eventStartDate
+    ? eventDayTimeToDate(eventStartDate, shift.eventDay, shift.startTime)
+    : shift.startTime;
+  const endTime =
+    startTime instanceof Date
+      ? new Date(startTime.getTime() + shift.durationHours * 60 * 60 * 1000)
+      : addHoursToTimeString(shift.startTime, shift.durationHours);
   const volunteerCount = volunteers.length;
-  const requirementLabel =
-    shift.requirement && qualification && qualification.id === shift.requirement
-      ? qualification.name
-      : null;
   const [isExpanded, setIsExpanded] = useState(!collapsible);
 
   const isFull = volunteerCount >= shift.maxVolunteers;
   const cantSignupMessage = isFull
     ? t('full')
-    : shift.requirement && !isQualified
-      ? qualification?.errorMessage
+    : qualifications.length > 0 && !isQualified
+      ? qualifications.map((qualification) => qualification.errorMessage).join('\n')
       : undefined;
   const canSignup = !cantSignupMessage;
   const hasButtons = onSignup || onCancel;
@@ -94,64 +84,64 @@ export default function ShiftCard({
             </Flex>
             {/* Spots and Signup */}
             <Flex
+              direction={{ initial: 'column', sm: 'row' }}
+              justify="end"
+              flexGrow="1"
+              gap="3"
               display={{ initial: isExpanded ? 'flex' : 'none', sm: 'flex' }}
               className={collapsible ? styles.transitionOpen : undefined}
-              justify="between"
-              align={{ initial: 'end', sm: 'center' }}
-              flexGrow="1"
-              gap="4"
             >
-              <Flex direction={{ initial: 'column', sm: 'row' }} flexGrow="1" gap="3" justify="end">
+              <Flex direction="row" gap="2" align="start" justify={{ sm: 'end' }} wrap="wrap">
+                {qualifications.map((qualification) => (
+                  <Badge key={qualification.id} color="yellow" asChild>
+                    <NextLink href={getQualificationDetailsPath(qualification.id)}>
+                      {t('requires')}: {qualification.name}
+                    </NextLink>
+                  </Badge>
+                ))}
                 <Flex direction="row" gap="2" align="center" wrap="wrap">
-                  {requirementLabel && (
-                    <Badge color="yellow" asChild>
-                      <NextLink href={getQualificationDetailsPath(shift.requirement!)}>
-                        {t('requires')}: {requirementLabel}
-                      </NextLink>
-                    </Badge>
-                  )}
-                  <Flex direction="row" gap="2" align="center" wrap="wrap">
-                    <Badge color="gray">
-                      {t('max')}: {shift.maxVolunteers}
-                    </Badge>
-                    <Badge color="gray">
-                      {t('min')}: {shift.minVolunteers}
-                    </Badge>
-                  </Flex>
+                  <Badge color="gray">
+                    {t('max')}: {shift.maxVolunteers}
+                  </Badge>
+                  <Badge color="gray">
+                    {t('min')}: {shift.minVolunteers}
+                  </Badge>
                 </Flex>
-                <ProgressBar
-                  colour={getStatusColour(volunteerCount, shift.minVolunteers, shift.maxVolunteers)}
-                  filled={shift.maxVolunteers - volunteerCount}
-                  total={shift.maxVolunteers}
-                />
               </Flex>
-              {hasButtons && (
-                <Flex minWidth="110px" justify="end">
-                  {onSignup && (
-                    <Button
-                      disabled={!canSignup}
-                      onClick={onSignup}
-                      title={cantSignupMessage}
-                      data-umami-event="Shift sign up"
-                      data-umami-event-team={shift.teamId}
-                      data-umami-event-shift={shift.title}
-                    >
-                      {t('signup')}
-                    </Button>
-                  )}
-                  {onCancel && (
-                    <Button
-                      onClick={onCancel}
-                      color="red"
-                      data-umami-event="Shift cancel"
-                      data-umami-event-team={shift.teamId}
-                      data-umami-event-shift={shift.title}
-                    >
-                      {t('cancel')}
-                    </Button>
-                  )}
-                </Flex>
-              )}
+              <Flex justify="end" align="start" gap="4" width="100%" maxWidth={{ sm: '326px' }}>
+                <ProgressBar
+                  filled={volunteerCount}
+                  total={shift.maxVolunteers}
+                  needed={Math.max(0, shift.minVolunteers - volunteerCount)}
+                />
+                {hasButtons && (
+                  <Flex minWidth="110px" justify="end">
+                    {onSignup && (
+                      <Button
+                        disabled={!canSignup}
+                        onClick={onSignup}
+                        title={cantSignupMessage}
+                        data-umami-event="Shift sign up"
+                        data-umami-event-team={shift.teamId}
+                        data-umami-event-shift={shift.title}
+                      >
+                        {t('signup')}
+                      </Button>
+                    )}
+                    {onCancel && (
+                      <Button
+                        onClick={onCancel}
+                        color="red"
+                        data-umami-event="Shift cancel"
+                        data-umami-event-team={shift.teamId}
+                        data-umami-event-shift={shift.title}
+                      >
+                        {t('cancel')}
+                      </Button>
+                    )}
+                  </Flex>
+                )}
+              </Flex>
             </Flex>
           </Flex>
 
@@ -208,17 +198,19 @@ export default function ShiftCard({
               </IconButton>
             )}
             {collapsible && (
-              <IconButton
-                variant="ghost"
-                aria-label={isExpanded ? t('collapse') : t('expand')}
-                aria-expanded={isExpanded}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setIsExpanded((prev) => !prev);
-                }}
-              >
-                <ChevronDownIcon className={styles.collapse} />
-              </IconButton>
+              <Box display={{ sm: 'none' }}>
+                <IconButton
+                  variant="ghost"
+                  aria-label={isExpanded ? t('collapse') : t('expand')}
+                  aria-expanded={isExpanded}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsExpanded((prev) => !prev);
+                  }}
+                >
+                  <ChevronDownIcon className={styles.collapse} />
+                </IconButton>
+              </Box>
             )}
           </Flex>
         )}

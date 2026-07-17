@@ -65,17 +65,19 @@ export default function ShiftList({
 
   return (
     <Flex direction="column" gap="6">
-      {canEdit && (
+      {(canEdit || exportLink) && (
         <Flex direction="row" gap="2">
-          <Button
-            variant="soft"
-            onClick={() => {
-              setEditingShift(undefined);
-              setCreatingShift(true);
-            }}
-          >
-            <PlusIcon /> {t('addShift')}
-          </Button>
+          {canEdit && (
+            <Button
+              variant="soft"
+              onClick={() => {
+                setEditingShift(undefined);
+                setCreatingShift(true);
+              }}
+            >
+              <PlusIcon /> {t('addShift')}
+            </Button>
+          )}
           {exportLink && (
             <Button variant="soft" asChild>
               <a
@@ -96,27 +98,39 @@ export default function ShiftList({
         <DatedList
           items={shifts}
           getDate={(shift) => eventDayToDate(event.startDate, shift.eventDay)}
-          renderItem={(shift) => (
-            <ShiftCard
-              shift={shift}
-              qualification={
-                shift.requirement ? qualificationMap.get(shift.requirement) : undefined
-              }
-              volunteers={shiftVolunteers[shift.id] || []}
-              key={shift.id}
-              onEdit={showEdit(shift) ? () => setEditingShift(shift) : undefined}
-              onCopy={canEdit ? () => setEditingShift({ ...shift, id: undefined }) : undefined}
-              onSignup={showSignup(shift) ? () => onSignup!(shift.id) : undefined}
-              onCancel={showCancel(shift) ? () => onCancel!(shift.id) : undefined}
-              isQualified={
-                shift.requirement
-                  ? userQualifications
-                    ? userQualifications.has(shift.requirement)
-                    : false
-                  : true
-              }
-            />
-          )}
+          renderItem={(shift) => {
+            const requiredQualifications = shift.requirements
+              .map((qualificationId) => qualificationMap.get(qualificationId))
+              .filter((qualification): qualification is QualificationInfo =>
+                Boolean(qualification)
+              );
+
+            const isQualified =
+              shift.requirements.length === 0 ||
+              Boolean(
+                userQualifications &&
+                shift.requirements.every((qualificationId) =>
+                  userQualifications.has(qualificationId)
+                )
+              );
+
+            return (
+              <ShiftCard
+                eventStartDate={event.startDate}
+                shift={shift}
+                qualifications={requiredQualifications}
+                volunteers={shiftVolunteers[shift.id] || []}
+                key={shift.id}
+                onEdit={showEdit(shift) ? () => setEditingShift(shift) : undefined}
+                onCopy={
+                  showEdit(shift) ? () => setEditingShift({ ...shift, id: undefined }) : undefined
+                }
+                onSignup={showSignup(shift) ? () => onSignup!(shift.id) : undefined}
+                onCancel={showCancel(shift) ? () => onCancel!(shift.id) : undefined}
+                isQualified={isQualified}
+              />
+            );
+          }}
         />
       </Flex>
       {canEdit && (

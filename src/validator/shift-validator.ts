@@ -7,6 +7,14 @@
 import { stringToTime } from '@/utils/datetime';
 
 /**
+ * Get a TeamId from FormData for a Shift
+ * @param data - FormData for a Shift
+ * @returns - TeamId for the saved Shift, or null if not present
+ */
+export const getShiftTeamId = (data: FormData): TeamId | null =>
+  data.get('teamId')?.toString() ?? null;
+
+/**
  * Validates FormData for updating an existing shift, so 'id' field is required.
  * @param data - FormData to validate, must include 'id' field
  * @returns - Validated ShiftInfo object
@@ -31,7 +39,7 @@ export const validateExistingShift = (data: FormData): ShiftInfo => {
  * @throws - Error if validation fails
  */
 export const validateNewShift = (data: FormData): Omit<ShiftInfo, 'id'> => {
-  const teamId = data.get('teamId')?.toString() ?? null;
+  const teamId = getShiftTeamId(data);
   if (!teamId) {
     throw new Error('Shift teamId is required');
   }
@@ -80,8 +88,11 @@ export const validateNewShift = (data: FormData): Omit<ShiftInfo, 'id'> => {
   const isActiveStr = data.get('isActive')?.toString() ?? null;
   const isActive = isActiveStr === 'on';
 
-  // The form submits the string "null" when no requirement is selected, so that will be our default
-  const requirement = data.get('requirement')?.toString() ?? 'null';
+  // The form submits one requirements value per checked box but leave handling for any stale "null" values
+  const requirements = data
+    .getAll('requirements')
+    .map((value) => value.toString())
+    .filter((value) => value && value.toLowerCase() !== 'null');
 
   const shift: Omit<ShiftInfo, 'id'> = {
     teamId,
@@ -91,10 +102,9 @@ export const validateNewShift = (data: FormData): Omit<ShiftInfo, 'id'> => {
     durationHours,
     minVolunteers,
     maxVolunteers,
-    isActive
+    isActive,
+    requirements
   };
-  if (requirement && requirement.toLowerCase() !== 'null') {
-    shift.requirement = requirement;
-  }
+
   return shift;
 };

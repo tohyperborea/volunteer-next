@@ -48,6 +48,7 @@
     "contact": "Contact",
     "descriptionLabel": "Description",
     "teamLeads": "Team Leads",
+    "edit": "Edit team",
     "tabs": {
       "team": "Team",
       "shifts": "Shifts",
@@ -275,6 +276,8 @@
   },
   "ShiftFilters": {
     "filters": "Filters",
+    "teamFilterLabel": "Filter by team",
+    "allTeams": "All teams",
     "clear": "Clear"
   },
   "EventFilters": {
@@ -321,6 +324,9 @@
     "contactAddressDescription": "Provide a contact email",
     "teamLead": "Team Lead",
     "teamLeadDescription": "Select the lead for this team.",
+    "addLead": "Add team lead",
+    "removeLead": "Remove {name} as team lead",
+    "teamLeadRequired": "At least one team lead is required",
     "createButton": "Add Team",
     "updateButton": "Save Changes",
     "cancelButton": "Cancel",
@@ -449,7 +455,7 @@
     "delete": "Delete"
   },
   "ProgressBar": {
-    "label": "{filled}/{total} Spots"
+    "needed": "{needed, plural, one {# more volunteer} other {# more volunteers}} needed"
   },
   "SendEmailButton": {
     "notifyAll": "Notify All Volunteers",

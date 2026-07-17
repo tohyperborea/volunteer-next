@@ -45,10 +45,10 @@ describe('ShiftDialog', () => {
       durationHours: 4,
       minVolunteers: 2,
       maxVolunteers: 5,
-      requirement: 'qualification-1'
+      requirements: ['qualification-1']
     };
 
-    const { getByText, getByRole, getByDisplayValue } = render(
+    const { getByText, getByRole, getByDisplayValue, getByLabelText } = render(
       <ShiftDialog
         startDate={new Date()}
         teamId="team-1"
@@ -70,6 +70,7 @@ describe('ShiftDialog', () => {
     expect(getByRole('heading', { name: 'editShift' })).toBeInTheDocument();
     expect(getByDisplayValue('Morning Shift')).toBeInTheDocument();
     expect(getByText('deleteShift')).toBeInTheDocument();
+    expect(getByLabelText('CPR Certified')).toBeChecked();
   });
 
   it('calls onClose when the cancel button is clicked', () => {
@@ -119,13 +120,13 @@ describe('ShiftDialog', () => {
     });
   });
 
-  it('renders qualifications in the requirements dropdown', () => {
+  it('renders qualifications as requirement checkboxes', () => {
     const qualifications: QualificationInfo[] = [
       { id: 'qualification-1', eventId: 'event-1', name: 'CPR Certified', errorMessage: 'error' },
       { id: 'qualification-2', eventId: 'event-1', name: 'First Aid', errorMessage: 'error' }
     ];
 
-    const { getByRole } = render(
+    const { getByLabelText } = render(
       <ShiftDialog
         startDate={new Date()}
         teamId="team-1"
@@ -134,8 +135,7 @@ describe('ShiftDialog', () => {
       />
     );
 
-    fireEvent.click(getByRole('combobox', { name: 'requirements' }));
-    expect(getByRole('option', { name: 'CPR Certified' })).toBeInTheDocument();
-    expect(getByRole('option', { name: 'First Aid' })).toBeInTheDocument();
+    expect(getByLabelText('CPR Certified')).toBeInTheDocument();
+    expect(getByLabelText('First Aid')).toBeInTheDocument();
   });
 });

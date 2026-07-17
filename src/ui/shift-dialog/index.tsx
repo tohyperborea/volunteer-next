@@ -54,7 +54,9 @@ export default function ShiftDialog({
   return (
     <FormDialog description={title} open={open} onClose={onClose}>
       <input type="hidden" name="id" value={editing?.id ?? ''} />
-      {teamId && <input type="hidden" name="teamId" value={teamId} />}
+      {(editing?.teamId ?? teamId) && (
+        <input type="hidden" name="teamId" value={editing?.teamId ?? teamId} />
+      )}
       <Flex direction="column" align="start" height="100%">
         <Dialog.Title as="h2" mt="4" mb="6">
           {title}
@@ -81,7 +83,7 @@ export default function ShiftDialog({
               {t('active')}
             </Flex>
           </Text>
-          {teams && (
+          {teams && creating && (
             <FormField ariaId="shift-team" name={t('team')} description={t('teamDescription')}>
               <Select.Root
                 required
@@ -180,22 +182,26 @@ export default function ShiftDialog({
             name={t('requirements')}
             description={t('requirementsDescription')}
           >
-            <Select.Root name="requirement" defaultValue={editing?.requirement ?? 'null'}>
-              <Select.Trigger aria-labelledby="shift-requirements" />
-              <Select.Content>
-                <Select.Group>
-                  <Select.Item value="null">{t('none')}</Select.Item>
-                </Select.Group>
-                <Select.Separator />
-                <Select.Group>
-                  {qualificationOptions.map((q) => (
-                    <Select.Item key={q.id} value={q.id}>
-                      {q.name}
-                    </Select.Item>
-                  ))}
-                </Select.Group>
-              </Select.Content>
-            </Select.Root>
+            <Flex direction="column" gap="2" role="group" aria-labelledby="shift-requirements">
+              {qualificationOptions.length === 0 && (
+                <Text size="2" color="gray">
+                  {t('none')}
+                </Text>
+              )}
+
+              {qualificationOptions.map((q) => (
+                <Text as="label" key={q.id} size="2">
+                  <Flex gap="2" align="center">
+                    <Checkbox
+                      name="requirements"
+                      value={q.id}
+                      defaultChecked={editing?.requirements?.includes(q.id) ?? false}
+                    />
+                    {q.name}
+                  </Flex>
+                </Text>
+              ))}
+            </Flex>
           </FormField>
         </Flex>
         <Flex gap="4" mt="auto" py="4">

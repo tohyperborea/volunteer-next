@@ -3,12 +3,12 @@ import { redirect } from 'next/navigation';
 import { Flex, Heading, Card } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
 import { createEvent } from '@/service/event-service';
-import { addRoleToUser, getUsers } from '@/service/user-service';
+import { addRoleToUsers, getUsers } from '@/service/user-service';
 import { checkAuthorisation, currentUser } from '@/session';
 import { inTransaction } from '@/db';
 import EventForm from '@/ui/event-form';
 import { validateNewEvent } from '@/validator/event-validator';
-import { validateUserId } from '@/validator/user-validator';
+import { validateUserIds } from '@/validator/user-validator';
 import { usersToVolunteers } from '@/lib/volunteer';
 import { getPermissionsProfile } from '@/utils/permissions';
 import { getEventsPath } from '@/utils/path';
@@ -25,11 +25,11 @@ export default async function CreateEvent() {
     await checkAuthorisation([{ type: 'admin' }]);
 
     const newEvent = validateNewEvent(data);
-    const organiser = validateUserId(data, 'organiserId');
+    const organiser = validateUserIds(data, 'organiserId')[0]; // Only single organiser supported for now
 
     await inTransaction(async (client) => {
       const createdEvent = await createEvent(newEvent, client);
-      await addRoleToUser({ type: 'organiser', eventId: createdEvent.id }, organiser, client);
+      await addRoleToUsers({ type: 'organiser', eventId: createdEvent.id }, [organiser], client);
     });
     redirect(getEventsPath());
   };

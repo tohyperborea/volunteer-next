@@ -56,7 +56,8 @@ describe('TeamList', () => {
         startTime: '10:00',
         durationHours: 4,
         minVolunteers: 1,
-        maxVolunteers: 5
+        maxVolunteers: 5,
+        requirements: []
       },
       {
         id: 'shift2',
@@ -67,7 +68,8 @@ describe('TeamList', () => {
         startTime: '17:00',
         durationHours: 4,
         minVolunteers: 1,
-        maxVolunteers: 5
+        maxVolunteers: 5,
+        requirements: []
       }
     ];
     const itemActions: Record<TeamId, React.ReactNode> = {

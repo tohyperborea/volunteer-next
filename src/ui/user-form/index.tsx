@@ -13,6 +13,7 @@ import NewRoleForm from './new-role-form';
 
 import NextLink from 'next/link';
 import { getUsersDashboardPath } from '@/utils/path';
+import { EMAIL_PATTERN } from '@/utils/string';
 
 const FormItem = ({ children }: { children: React.ReactNode }) => (
   <Flex direction="column" gap="1">
@@ -93,6 +94,7 @@ export default function UserForm({
             defaultValue={editingUser?.email}
             readOnly={editingUser && !permissionsProfile.admin}
             required
+            pattern={EMAIL_PATTERN}
           />
         </FormItem>
         <Flex direction="row" justify="between">

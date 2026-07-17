@@ -18,7 +18,8 @@ import {
   recordSuccessfulLogin,
   checkSignInRateLimit
 } from '@/lib/login-security';
-import { addRoleToUser, getRoleCount } from './service/user-service';
+import { addRoleToUsers, getRoleCount } from './service/user-service';
+import { cookies } from 'next/headers';
 
 /** oauth = Pretix/OAuth provider, credentials = email/password. Defaults to oauth. */
 export const AUTH_MODE = (process.env.AUTH_MODE ?? 'oauth') as 'oauth' | 'credentials';
@@ -56,7 +57,7 @@ const afterHook = createAuthMiddleware(async (ctx) => {
         console.info('[auth] System has no admins, granting admin role to new user');
         const returned = ctx.context.returned as { user?: { id: string } } | Error | undefined;
         if (returned && !(returned instanceof Error) && returned.user) {
-          await addRoleToUser({ type: 'admin' }, returned.user.id, client);
+          await addRoleToUsers({ type: 'admin' }, [returned.user.id], client);
         }
       }
     });
@@ -104,6 +105,15 @@ const beforeHook = createAuthMiddleware(async (ctx) => {
   }
 });
 
+const sessionExpiresIn = Number(process.env.OAUTH_SESSION_EXPIRY_SECONDS);
+const sessionUpdateAge = Number(process.env.OAUTH_SESSION_UPDATE_AGE_SECONDS);
+const sessionConfig = useOAuth
+  ? {
+      expiresIn: sessionExpiresIn || 60 * 24 * 7, // 7 days
+      updateAge: sessionUpdateAge || 60 * 24 // 24 hours
+    }
+  : undefined;
+
 export const auth = betterAuth({
   plugins,
   database: db,
@@ -147,6 +157,7 @@ export const auth = betterAuth({
           }
         }
       },
+  session: sessionConfig,
   advanced: {
     defaultCookieAttributes: {
       // 'lax' reduces CSRF risk; use 'none' only if you need cookies on cross-site requests (e.g. embedded iframes).
@@ -157,3 +168,22 @@ export const auth = betterAuth({
     }
   }
 });
+
+/**
+ * Sign out the current user and return the redirect URL
+ * If using OAuth and OAUTH_LOGOUT_URL is set, this will be the URL to log out of the OAuth provider; otherwise, it will be the home page.
+ * @param headers
+ * @returns URL to redirect the user to after signing out
+ */
+export const signOut = async (headers: HeadersInit) => {
+  'use server';
+  await auth.api.signOut({
+    headers
+  });
+  const cookieStore = await cookies();
+  cookieStore.delete('event-id');
+  if (useOAuth && process.env.OAUTH_LOGOUT_URL) {
+    return process.env.OAUTH_LOGOUT_URL;
+  }
+  return '/';
+};

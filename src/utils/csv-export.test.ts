@@ -28,7 +28,8 @@ describe('shiftsToCSV', () => {
       title: 'Shift 1',
       minVolunteers: 1,
       maxVolunteers: 5,
-      isActive: true
+      isActive: true,
+      requirements: []
     }
   ];
   const john: VolunteerInfo = {
@@ -151,7 +152,8 @@ describe('shiftsToCSV', () => {
         title: 'Shift 2',
         minVolunteers: 1,
         maxVolunteers: 5,
-        isActive: true
+        isActive: true,
+        requirements: []
       }
     ];
     const shiftVolunteers = {

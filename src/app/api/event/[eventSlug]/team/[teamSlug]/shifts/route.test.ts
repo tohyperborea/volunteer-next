@@ -68,7 +68,8 @@ describe('GET /api/event/[eventSlug]/team/[teamSlug]/shifts', () => {
         durationHours: 4,
         minVolunteers: 1,
         maxVolunteers: 3,
-        isActive: true
+        isActive: true,
+        requirements: []
       }
     ];
     const mockCSVContent = 'csv-content';

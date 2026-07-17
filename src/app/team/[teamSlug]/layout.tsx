@@ -9,12 +9,15 @@ import { getTeamBySlug } from '@/service/team-service';
 import { getTeamLeadsForTeam } from '@/service/user-service';
 import { checkAuthorisation, currentUser, getCurrentEventOrRedirect } from '@/session';
 import VolunteerCard from '@/ui/volunteer-card';
-import { getTeamShiftsPath, getTeamVolunteersPath } from '@/utils/path';
+import { getTeamShiftsPath, getTeamVolunteersPath, getUpdateTeamPath } from '@/utils/path';
 import { getPermissionsProfile } from '@/utils/permissions';
-import { Box, DataList, Flex, Heading, Link } from '@radix-ui/themes';
+import { Box, DataList, Flex, Grid, Heading, IconButton, Link } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import TeamTabs from '@/ui/team-tabs';
+import NextLink from 'next/link';
+import { Pencil2Icon } from '@radix-ui/react-icons';
+import { headers } from 'next/headers';
 
 const PAGE_KEY = 'TeamPage';
 
@@ -27,6 +30,7 @@ export default async function TeamLayout({ params, children }: Props) {
   const { teamSlug } = await params;
   const event = await getCurrentEventOrRedirect();
   const team = teamSlug ? await getTeamBySlug(event.slug, teamSlug) : null;
+  const currentPath = (await headers()).get('x-pathname') ?? undefined;
 
   if (!team) {
     notFound();
@@ -51,9 +55,23 @@ export default async function TeamLayout({ params, children }: Props) {
   const volunteersPath = getTeamVolunteersPath(teamSlug);
   return (
     <Flex direction="column">
-      <Heading my="4" align="center">
-        {team.name}
-      </Heading>
+      <Flex asChild justify="center" align="center" position="relative">
+        <Heading my="4">
+          {team.name}
+          {canEdit && (
+            <IconButton
+              variant="ghost"
+              aria-label={t('edit')}
+              asChild
+              style={{ position: 'absolute', right: 0 }}
+            >
+              <NextLink href={getUpdateTeamPath(team.id, currentPath)}>
+                <Pencil2Icon width={20} height={20} />
+              </NextLink>
+            </IconButton>
+          )}
+        </Heading>
+      </Flex>
       <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', fontFamily: 'inherit' }}>
         {team.description}
       </pre>
@@ -67,11 +85,11 @@ export default async function TeamLayout({ params, children }: Props) {
         <DataList.Item>
           <DataList.Label>{t('teamLeads')}</DataList.Label>
           <DataList.Value>
-            <Flex direction="column" gap="1" mt="1" flexGrow="1">
+            <Grid columns={{ initial: '1', md: '2' }} gap="4" width="100%">
               {teamLeads.map((lead) => (
                 <VolunteerCard key={lead.id} volunteer={lead} />
               ))}
-            </Flex>
+            </Grid>
           </DataList.Value>
         </DataList.Item>
       </DataList.Root>

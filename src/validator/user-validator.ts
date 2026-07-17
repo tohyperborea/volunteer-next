@@ -4,19 +4,24 @@
  * @author Michael Townsend <@continuities>
  */
 
+import { deduplicateBy } from '@/utils/list';
+
 /**
- * Validates FormData for a user ID.
+ * Validates FormData for user IDs.
  * @param data - FormData to validate
- * @param fieldName - Optional field name for user ID
- * @returns - Validated user ID string
+ * @param fieldName - Optional field name for user IDs (defaults to 'userId')
+ * @returns - Array of validated user ID strings
  * @throws - Error if validation fails
  */
-export const validateUserId = (data: FormData, fieldName?: string): string => {
-  const userId = data.get(fieldName ?? 'userId')?.toString() ?? null;
-  if (!userId) {
+export const validateUserIds = (data: FormData, fieldName?: string): string[] => {
+  const userIds = data
+    .getAll(fieldName ?? 'userId')
+    .map((id) => id.toString().trim())
+    .filter((id) => id.length > 0);
+  if (userIds.length === 0) {
     throw new Error(`${fieldName ?? 'User ID'} is required`);
   }
-  return userId;
+  return deduplicateBy(userIds, (id) => id);
 };
 
 /**

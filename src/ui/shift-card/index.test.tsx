@@ -32,7 +32,7 @@ describe('ShiftCard', () => {
     durationHours: 4,
     maxVolunteers: 10,
     minVolunteers: 2,
-    requirement: 'qualification-id'
+    requirements: ['qualification-id']
   };
   const mockQualification = {
     id: 'qualification-id',
@@ -63,16 +63,20 @@ describe('ShiftCard', () => {
     expect(screen.getByText('min: 2')).toBeInTheDocument();
   });
 
-  it('shows the qualification requirement when present', () => {
+  it('shows required qualifications when present', () => {
     render(
-      <ShiftCard shift={mockShift} qualification={mockQualification} volunteers={mockVolunteers} />
+      <ShiftCard
+        shift={mockShift}
+        qualifications={[mockQualification]}
+        volunteers={mockVolunteers}
+      />
     );
     const badge = screen.getByText('requires: First Aid');
     expect(badge).toBeInTheDocument();
     expect(badge).toHaveAttribute('href', getQualificationDetailsPath(mockQualification.id));
   });
 
-  it('does not show qualification requirement when not present', () => {
+  it('does not show required qualifications when none are present', () => {
     const mockShiftWithoutRequirement = {
       id: 'shift-id',
       teamId: 'team-id',
@@ -82,7 +86,8 @@ describe('ShiftCard', () => {
       startTime: '08:00',
       durationHours: 4,
       maxVolunteers: 10,
-      minVolunteers: 2
+      minVolunteers: 2,
+      requirements: []
     };
     render(<ShiftCard shift={mockShiftWithoutRequirement} volunteers={mockVolunteers} />);
 
@@ -114,50 +119,37 @@ describe('ShiftCard', () => {
     expect(screen.queryByRole('button', { name: 'editShift' })).not.toBeInTheDocument();
   });
 
-  it('renders the progress bar with correct filled and total values', () => {
-    render(<ShiftCard shift={mockShift} volunteers={mockVolunteers} />);
-
-    expect(mockProgressBar).toHaveBeenCalledWith(
-      expect.objectContaining({
-        filled: mockShift.maxVolunteers - mockVolunteers.length,
-        total: mockShift.maxVolunteers
-      }),
-      undefined
-    );
-    expect(screen.getByTestId('progress-bar')).toBeInTheDocument();
-  });
-
   test.each<{
     isFull: boolean;
-    requirement: QualificationInfo | null;
+    qualifications: QualificationInfo[];
     isQualified: boolean;
     signupError: string | null;
   }>([
-    { isFull: false, requirement: null, isQualified: false, signupError: null },
-    { isFull: true, requirement: null, isQualified: false, signupError: 'full' },
+    { isFull: false, qualifications: [], isQualified: false, signupError: null },
+    { isFull: true, qualifications: [], isQualified: false, signupError: 'full' },
     {
       isFull: false,
-      requirement: mockQualification,
+      qualifications: [mockQualification],
       isQualified: false,
       signupError: mockQualification.errorMessage
     },
-    { isFull: false, requirement: mockQualification, isQualified: true, signupError: null },
-    { isFull: true, requirement: mockQualification, isQualified: false, signupError: 'full' },
-    { isFull: true, requirement: mockQualification, isQualified: true, signupError: 'full' }
+    { isFull: false, qualifications: [mockQualification], isQualified: true, signupError: null },
+    { isFull: true, qualifications: [mockQualification], isQualified: false, signupError: 'full' },
+    { isFull: true, qualifications: [mockQualification], isQualified: true, signupError: 'full' }
   ])(
     'renders the signup button when onSignup is provided',
-    ({ isFull, requirement, isQualified, signupError }) => {
+    ({ isFull, qualifications, isQualified, signupError }) => {
       const onSignupMock = jest.fn();
       const shift = {
         ...mockShift,
         maxVolunteers: isFull ? mockVolunteers.length : mockShift.maxVolunteers,
-        requirement: requirement ? requirement.id : undefined
+        requirements: qualifications.map((qualification) => qualification.id)
       };
       render(
         <ShiftCard
           shift={shift}
           volunteers={mockVolunteers}
-          qualification={requirement || undefined}
+          qualifications={qualifications}
           isQualified={isQualified}
           onSignup={onSignupMock}
         />
@@ -180,17 +172,17 @@ describe('ShiftCard', () => {
     minVolunteers: number;
     maxVolunteers: number;
     volunteerCount: number;
-    expectedColour: string;
+    needed: number;
   }>([
-    { minVolunteers: 2, maxVolunteers: 10, volunteerCount: 0, expectedColour: 'red' },
-    { minVolunteers: 2, maxVolunteers: 10, volunteerCount: 1, expectedColour: 'orange' },
-    { minVolunteers: 2, maxVolunteers: 10, volunteerCount: 2, expectedColour: 'accent' },
-    { minVolunteers: 2, maxVolunteers: 10, volunteerCount: 5, expectedColour: 'accent' },
-    { minVolunteers: 2, maxVolunteers: 10, volunteerCount: 10, expectedColour: 'green' },
-    { minVolunteers: 2, maxVolunteers: 10, volunteerCount: 12, expectedColour: 'green' }
+    { minVolunteers: 2, maxVolunteers: 10, volunteerCount: 0, needed: 2 },
+    { minVolunteers: 2, maxVolunteers: 10, volunteerCount: 1, needed: 1 },
+    { minVolunteers: 2, maxVolunteers: 10, volunteerCount: 2, needed: 0 },
+    { minVolunteers: 2, maxVolunteers: 10, volunteerCount: 5, needed: 0 },
+    { minVolunteers: 2, maxVolunteers: 10, volunteerCount: 10, needed: 0 },
+    { minVolunteers: 2, maxVolunteers: 10, volunteerCount: 12, needed: 0 }
   ])(
-    'renders the progress bar with the correct status colour based on volunteer count',
-    ({ minVolunteers, maxVolunteers, volunteerCount, expectedColour }) => {
+    'renders the progress bar correctly based on volunteer count',
+    ({ minVolunteers, maxVolunteers, volunteerCount, needed }) => {
       const shift = {
         ...mockShift,
         minVolunteers,
@@ -204,7 +196,9 @@ describe('ShiftCard', () => {
 
       expect(mockProgressBar).toHaveBeenCalledWith(
         expect.objectContaining({
-          colour: expectedColour
+          filled: volunteerCount,
+          total: maxVolunteers,
+          needed
         }),
         undefined
       );

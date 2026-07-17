@@ -40,7 +40,7 @@ const rowToShift = (row: any): ShiftInfo => ({
   minVolunteers: row.minVolunteers,
   maxVolunteers: row.maxVolunteers,
   isActive: row.isActive,
-  requirement: row.qualificationId || undefined
+  requirements: []
 });
 
 const rowsToShifts = (rows: any[]): ShiftInfo[] => {
@@ -48,14 +48,15 @@ const rowsToShifts = (rows: any[]): ShiftInfo[] => {
 
   rows.forEach((row) => {
     if (!shiftsMap.has(row.id)) {
-      shiftsMap.set(row.id, rowToShift(row));
+      const shift = rowToShift(row);
+      shift.requirements = [];
+      shiftsMap.set(row.id, shift);
     }
 
     const shift = shiftsMap.get(row.id)!;
 
-    if (row.qualificationId) {
-      // Right now, we only support one requirement per shift
-      shift.requirement = row.qualificationId;
+    if (row.qualificationId && !shift.requirements.includes(row.qualificationId)) {
+      shift.requirements.push(row.qualificationId);
     }
   });
 
@@ -93,7 +94,7 @@ export const getShiftById = cache(async (shiftId: ShiftId): Promise<ShiftInfo | 
   if (result.rows.length === 0) {
     return null;
   }
-  return rowToShift(result.rows[0]);
+  return rowsToShifts(result.rows)[0];
 });
 
 /**
@@ -145,17 +146,23 @@ export const getShiftsForTeams = cache(
 );
 
 /**
- * Fetches a list of shifts for a given team, filtered by the provided criteria.
- * @param teamId - The ID of the team to fetch shifts for.
+ * Fetches a list of shifts for a given event, filtered by the provided criteria.
+ * @param eventId - The ID of the event to fetch shifts for.
  * @param filters - A ShiftFilters object
  * @return An array of ShiftInfo objects that match the filter criteria.
  */
-export const getFilteredShiftsForTeam = cache(
-  async (teamId: TeamId, filters: ShiftFilters): Promise<ShiftInfo[]> => {
-    const { searchQuery } = filters;
+export const getFilteredShiftsForEvent = cache(
+  async (eventId: EventId, filters: ShiftFilters): Promise<ShiftInfo[]> => {
+    const { searchQuery, teamId } = filters;
 
-    const params = [teamId];
-    const whereClauses = [`"teamId" = $${params.length}`];
+    const params = [eventId];
+    const whereClauses = [`t."eventId" = $${params.length}`];
+
+    if (teamId) {
+      params.push(teamId);
+      whereClauses.push(`s."teamId" = $${params.length}`);
+    }
+
     if (searchQuery) {
       params.push(`%${searchQuery}%`);
       whereClauses.push(`s."title" ILIKE $${params.length}`);
@@ -164,6 +171,7 @@ export const getFilteredShiftsForTeam = cache(
     const result = await pool.query(
       `
       ${SHIFT_QUERY}
+      JOIN team t ON s."teamId" = t.id
       WHERE ${whereClauses.join(' AND ')}
       ORDER BY s."eventDay", s."startTime"
       `,
@@ -191,6 +199,27 @@ export const getShiftsForEvent = cache(async (eventId: EventId): Promise<ShiftIn
   return rowsToShifts(result.rows);
 });
 
+//Helper for inserting requirements
+const insertShiftRequirements = async (
+  db: PoolClient | typeof pool,
+  shiftId: ShiftId,
+  requirements: QualificationId[] = []
+) => {
+  for (const qualificationId of requirements) {
+    await db.query(
+      `
+      INSERT INTO requirement (
+        "shiftId",
+        "qualificationId"
+      )
+      VALUES ($1, $2)
+      ON CONFLICT ("shiftId", "qualificationId") DO NOTHING
+      `,
+      [shiftId, qualificationId]
+    );
+  }
+};
+
 /**
  * Creates a new shift in the database.
  * @param shift - The shift data, excluding the ID.
@@ -202,55 +231,66 @@ export const createShift = async (
   client?: PoolClient
 ): Promise<ShiftInfo> => {
   const db = client || pool;
-  const result = await db.query(
-    `
-    INSERT INTO shift (
-      "teamId",
-      "title",
-      "eventDay",
-      "startTime",
-      "durationHours",
-      "minVolunteers",
-      "maxVolunteers",
-      "isActive"
-    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-    RETURNING 
-      "id",
-      "teamId",
-      "title",
-      "eventDay",
-      "startTime",
-      "durationHours",
-      "minVolunteers",
-      "maxVolunteers",
-      "isActive"
-    `,
-    [
-      shift.teamId,
-      shift.title,
-      shift.eventDay,
-      shift.startTime,
-      shift.durationHours,
-      shift.minVolunteers,
-      shift.maxVolunteers,
-      shift.isActive
-    ]
-  );
-  const newShift = rowToShift(result.rows[0]);
-  if (shift.requirement) {
-    await db.query(
-      `
-      INSERT INTO requirement (
-        "shiftId",
-        "qualificationId"
-      ) VALUES ($1, $2)
-      `,
-      [newShift.id, shift.requirement]
-    );
-    newShift.requirement = shift.requirement;
+  const useTransaction = !client;
+
+  if (useTransaction) {
+    await db.query('BEGIN');
   }
-  console.info('Created new shift:', newShift);
-  return newShift;
+
+  try {
+    const result = await db.query(
+      `
+      INSERT INTO shift (
+        "teamId",
+        "title",
+        "eventDay",
+        "startTime",
+        "durationHours",
+        "minVolunteers",
+        "maxVolunteers",
+        "isActive"
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      RETURNING 
+        "id",
+        "teamId",
+        "title",
+        "eventDay",
+        "startTime",
+        "durationHours",
+        "minVolunteers",
+        "maxVolunteers",
+        "isActive"
+      `,
+      [
+        shift.teamId,
+        shift.title,
+        shift.eventDay,
+        shift.startTime,
+        shift.durationHours,
+        shift.minVolunteers,
+        shift.maxVolunteers,
+        shift.isActive
+      ]
+    );
+
+    const newShift = rowToShift(result.rows[0]);
+
+    await insertShiftRequirements(db, newShift.id, shift.requirements);
+    newShift.requirements = shift.requirements ?? [];
+
+    if (useTransaction) {
+      await db.query('COMMIT');
+    }
+
+    console.info('Created new shift:', newShift);
+    return newShift;
+  } catch (error) {
+    if (useTransaction) {
+      await db.query('ROLLBACK');
+    }
+
+    throw error;
+  }
 };
 
 /**
@@ -261,59 +301,50 @@ export const createShift = async (
  */
 export const updateShift = async (shift: ShiftInfo, client?: PoolClient): Promise<ShiftInfo> => {
   const db = client || pool;
-  const result = await db.query(
-    `
-    UPDATE shift SET 
-      "title" = $2,
-      "eventDay" = $3,
-      "startTime" = $4,
-      "durationHours" = $5,
-      "minVolunteers" = $6,
-      "maxVolunteers" = $7,
-      "isActive" = $8,
-      "updatedAt" = NOW()
-    WHERE id = $1
-    RETURNING
-      "id",
-      "teamId",
-      "title",
-      "eventDay",
-      "startTime",
-      "durationHours",
-      "minVolunteers",
-      "maxVolunteers",
-      "isActive"
-    `,
-    [
-      shift.id,
-      shift.title,
-      shift.eventDay,
-      shift.startTime,
-      shift.durationHours,
-      shift.minVolunteers,
-      shift.maxVolunteers,
-      shift.isActive
-    ]
-  );
-  const updatedShift = rowToShift(result.rows[0]);
-  if (shift.requirement) {
-    // We currently only support one requirement per shift, so we can use an upsert to simplify logic
-    await db.query(
+  const useTransaction = !client;
+
+  if (useTransaction) {
+    await db.query('BEGIN');
+  }
+
+  try {
+    const result = await db.query(
       `
-      INSERT INTO requirement (
-        "shiftId",
-        "qualificationId"
-      ) VALUES ($1, $2)
-      ON CONFLICT ("shiftId")
-      DO UPDATE SET
-        "qualificationId" = EXCLUDED."qualificationId",
+      UPDATE shift SET 
+        "title" = $2,
+        "eventDay" = $3,
+        "startTime" = $4,
+        "durationHours" = $5,
+        "minVolunteers" = $6,
+        "maxVolunteers" = $7,
+        "isActive" = $8,
         "updatedAt" = NOW()
+      WHERE id = $1
+      RETURNING
+        "id",
+        "teamId",
+        "title",
+        "eventDay",
+        "startTime",
+        "durationHours",
+        "minVolunteers",
+        "maxVolunteers",
+        "isActive"
       `,
-      [updatedShift.id, shift.requirement]
+      [
+        shift.id,
+        shift.title,
+        shift.eventDay,
+        shift.startTime,
+        shift.durationHours,
+        shift.minVolunteers,
+        shift.maxVolunteers,
+        shift.isActive
+      ]
     );
-    updatedShift.requirement = shift.requirement;
-  } else {
-    // If no requirement is provided, delete any existing requirement for this shift
+
+    const updatedShift = rowToShift(result.rows[0]);
+
     await db.query(
       `
       DELETE FROM requirement
@@ -321,9 +352,24 @@ export const updateShift = async (shift: ShiftInfo, client?: PoolClient): Promis
       `,
       [updatedShift.id]
     );
+
+    await insertShiftRequirements(db, updatedShift.id, shift.requirements);
+
+    updatedShift.requirements = shift.requirements ?? [];
+
+    if (useTransaction) {
+      await db.query('COMMIT');
+    }
+
+    console.info('Updated shift:', updatedShift);
+    return updatedShift;
+  } catch (error) {
+    if (useTransaction) {
+      await db.query('ROLLBACK');
+    }
+
+    throw error;
   }
-  console.info('Updated shift:', updatedShift);
-  return updatedShift;
 };
 
 /**

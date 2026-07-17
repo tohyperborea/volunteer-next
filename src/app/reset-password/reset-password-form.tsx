@@ -38,10 +38,11 @@ export function ResetPasswordForm({
       action={handleSubmit}
       style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '16px' }}
     >
-      <TextField.Root name="token" value={token} hidden />
+      <input type="hidden" name="token" value={token} />
       <div>
         <TextField.Root
           name="password"
+          type="password"
           placeholder={passwordPlaceholder}
           autoComplete="new-password"
           required
@@ -53,6 +54,7 @@ export function ResetPasswordForm({
       <div>
         <TextField.Root
           name="confirmPassword"
+          type="password"
           placeholder={confirmPlaceholder}
           autoComplete="new-password"
           required

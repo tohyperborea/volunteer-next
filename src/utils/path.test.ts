@@ -21,8 +21,43 @@ import {
   getUpdateEventPath,
   getMyShiftsPath,
   getNoEventsPath,
-  getDashboardPath
+  getDashboardPath,
+  getCallbackUrl
 } from './path';
+
+describe('getCallbackUrl', () => {
+  it('should return the callback URL from search params', () => {
+    const searchParams = { callbackUrl: '/callback' };
+    const result = getCallbackUrl(searchParams);
+    expect(result).toBe('/callback');
+  });
+
+  it('should return undefined if callback URL is not present', () => {
+    const searchParams = {};
+    const result = getCallbackUrl(searchParams);
+    expect(result).toBeUndefined();
+  });
+
+  it('should return the first callback URL if multiple are present', () => {
+    const searchParams = {
+      callbackUrl: ['/callback1', '/callback2']
+    };
+    const result = getCallbackUrl(searchParams);
+    expect(result).toBe('/callback1');
+  });
+
+  it('should return undefined for non-relative callback URLs', () => {
+    const searchParams = { callbackUrl: 'http://malicious.com' };
+    const result = getCallbackUrl(searchParams);
+    expect(result).toBeUndefined();
+  });
+
+  it('should return undefined for callback URLs with double slashes', () => {
+    const searchParams = { callbackUrl: '//malicious.com' };
+    const result = getCallbackUrl(searchParams);
+    expect(result).toBeUndefined();
+  });
+});
 
 describe('getTeamsPath', () => {
   it('should return the correct path for teams', () => {
@@ -52,6 +87,12 @@ describe('getUpdateTeamPath', () => {
     const teamId = 'team-456';
     const result = getUpdateTeamPath(teamId);
     expect(result).toBe('/update-team/team-456');
+  });
+  it('should add a callback URL to the path if provided', () => {
+    const teamId = 'team-456';
+    const callbackUrl = '/dashboard';
+    const result = getUpdateTeamPath(teamId, callbackUrl);
+    expect(result).toBe('/update-team/team-456?callbackUrl=%2Fdashboard');
   });
 });
 

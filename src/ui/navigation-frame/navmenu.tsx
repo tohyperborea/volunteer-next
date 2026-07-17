@@ -28,7 +28,7 @@ const VolunteerLinks = [
 ];
 
 const AdminLinks: [string, string, UserRoleType[]?][] = [
-  [getEventsPath(), 'events', ['admin', 'organiser']],
+  [getEventsPath(), 'events', ['admin']],
   [getQualificationsPath(), 'qualifications'],
   [getEventShiftsPath(), 'shifts'],
   [getUsersDashboardPath(), 'volunteers']

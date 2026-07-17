@@ -43,3 +43,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+#db or file Backups
+/backup*.sql
+/*.bak
+
+#Caddyfile (for local SSL Testing)
+Caddyfile

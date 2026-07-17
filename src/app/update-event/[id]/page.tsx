@@ -4,7 +4,7 @@ import { Flex, Heading, Card } from '@radix-ui/themes';
 import { getTranslations } from 'next-intl/server';
 import { updateEvent, getEventsById } from '@/service/event-service';
 import {
-  addRoleToUser,
+  addRoleToUsers,
   getUsers,
   getUsersWithRole,
   removeRoleFromUsers
@@ -13,10 +13,10 @@ import { checkAuthorisation, currentUser } from '@/session';
 import { inTransaction } from '@/db';
 import EventForm from '@/ui/event-form';
 import { validateExistingEvent } from '@/validator/event-validator';
-import { validateUserId } from '@/validator/user-validator';
+import { validateUserIds } from '@/validator/user-validator';
 import { usersToVolunteers, userToVolunteer } from '@/lib/volunteer';
 import { getPermissionsProfile } from '@/utils/permissions';
-import { getEventsPath, getImageApiPath } from '@/utils/path';
+import { getEventsPath } from '@/utils/path';
 import { hasEventStarted } from '@/utils/date';
 import { uploadImageAction } from '@/lib/image';
 
@@ -31,7 +31,7 @@ export default async function UpdateEvent({ params }: PageProps<`/update-event/[
     await checkAuthorisation([{ type: 'admin' }]);
 
     const newEvent = validateExistingEvent(data);
-    const organiser = validateUserId(data, 'organiserId');
+    const organiser = validateUserIds(data, 'organiserId')[0]; // Only single organiser supported for now
 
     const event = (await getEventsById([newEvent.id]))[0];
     if (!event) {
@@ -56,7 +56,7 @@ export default async function UpdateEvent({ params }: PageProps<`/update-event/[
         await removeRoleFromUsers(roleToAdd, toRemove, client);
       }
       if (shouldAdd) {
-        await addRoleToUser(roleToAdd, organiser, client);
+        await addRoleToUsers(roleToAdd, [organiser], client);
       }
     });
     redirect(getEventsPath());

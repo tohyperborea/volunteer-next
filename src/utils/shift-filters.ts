@@ -13,7 +13,8 @@ import { normalise } from './list';
  */
 export function paramsToShiftFilters(searchParams: URLSearchParams): ShiftFilters {
   return {
-    searchQuery: searchParams.get('searchQuery') || undefined
+    searchQuery: searchParams.get('searchQuery') || undefined,
+    teamId: searchParams.get('teamId') || undefined
   };
 }
 
@@ -26,8 +27,10 @@ export function recordToShiftFilters(
   record: Record<string, string | string[] | undefined>
 ): ShiftFilters {
   const searchQuery = normalise(record['searchQuery'])?.trim();
+  const teamId = normalise(record['teamId'])?.trim();
   return {
-    searchQuery: searchQuery === '' ? undefined : searchQuery
+    searchQuery: searchQuery === '' ? undefined : searchQuery,
+    teamId: teamId === '' ? undefined : teamId
   };
 }
 
@@ -47,5 +50,11 @@ export function shiftFiltersToParams(
   } else {
     params.delete('searchQuery');
   }
+  if (filters.teamId) {
+    params.set('teamId', filters.teamId);
+  } else {
+    params.delete('teamId');
+  }
+
   return params;
 }

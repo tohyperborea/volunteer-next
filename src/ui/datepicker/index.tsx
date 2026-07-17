@@ -178,18 +178,24 @@ interface TimeSelectProps {
 }
 
 export function TimeSelect({ name, defaultValue, onChange, required, ariaLabel }: TimeSelectProps) {
-  const [time, setTime] = useState<TimeString | undefined>(defaultValue);
-  const [hour, minute] = time ? time.split(':').map(Number) : [undefined, undefined];
+  const [defaultHour, defaultMinute] = defaultValue
+    ? defaultValue.split(':').map((part) => parseInt(part, 10))
+    : [undefined, undefined];
+  const [hour, setHour] = useState<number | undefined>(defaultHour);
+  const [minute, setMinute] = useState<number | undefined>(defaultMinute);
   const t = useTranslations('TimeSelect');
   return (
     <Flex gap="2">
       <Select.Root
         required={required}
-        value={hour?.toString() ?? ''}
+        defaultValue={defaultHour?.toString()}
         onValueChange={(v) => {
-          const newTime = buildTime(parseInt(v, 10), minute ?? 0);
-          setTime(newTime);
-          onChange && onChange(newTime);
+          const newHour = parseInt(v, 10);
+          setHour(newHour);
+          if (minute !== undefined) {
+            const newTime = buildTime(newHour, minute);
+            onChange && onChange(newTime);
+          }
         }}
       >
         <Select.Trigger placeholder="HH" aria-label={t('hour', { parent: ariaLabel })} />
@@ -204,11 +210,14 @@ export function TimeSelect({ name, defaultValue, onChange, required, ariaLabel }
 
       <Select.Root
         required={required}
-        value={minute?.toString() ?? ''}
+        defaultValue={defaultMinute?.toString()}
         onValueChange={(v) => {
-          const newTime = buildTime(hour ?? 0, parseInt(v, 10));
-          setTime(newTime);
-          onChange && onChange(newTime);
+          const newMinute = parseInt(v, 10);
+          setMinute(newMinute);
+          if (hour !== undefined) {
+            const newTime = buildTime(hour, newMinute);
+            onChange && onChange(newTime);
+          }
         }}
       >
         <Select.Trigger placeholder="MM" aria-label={t('minute', { parent: ariaLabel })} />
@@ -220,7 +229,11 @@ export function TimeSelect({ name, defaultValue, onChange, required, ariaLabel }
           ))}
         </Select.Content>
       </Select.Root>
-      <input type="hidden" name={name} value={time ?? ''} />
+      <input
+        type="hidden"
+        name={name}
+        value={hour !== undefined && minute !== undefined ? buildTime(hour, minute) : ''}
+      />
     </Flex>
   );
 }

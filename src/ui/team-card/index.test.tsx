@@ -64,34 +64,54 @@ describe('TeamCard', () => {
     const shifts: ShiftInfo[] = [
       {
         maxVolunteers: 5,
-        id: '',
+        id: 'shift-1',
         teamId: '',
         isActive: true,
         title: '',
         eventDay: 0,
         startTime: '',
         durationHours: 0,
-        minVolunteers: 0
+        minVolunteers: 2,
+        requirements: []
       },
       {
         maxVolunteers: 10,
-        id: '',
+        id: 'shift-2',
         teamId: '',
         isActive: true,
         title: '',
         eventDay: 0,
         startTime: '',
         durationHours: 0,
-        minVolunteers: 0
+        minVolunteers: 1,
+        requirements: []
+      },
+      {
+        maxVolunteers: 10,
+        id: 'shift-3',
+        teamId: '',
+        isActive: true,
+        title: '',
+        eventDay: 0,
+        startTime: '',
+        durationHours: 0,
+        minVolunteers: 0,
+        requirements: []
       }
     ];
+    const shiftVolunteers: Record<ShiftId, VolunteerInfo[]> = {
+      'shift-1': [{} as VolunteerInfo],
+      'shift-2': [{} as VolunteerInfo],
+      'shift-3': [{} as VolunteerInfo]
+    };
 
-    render(<TeamCard team={team} shifts={shifts} />);
+    render(<TeamCard team={team} shifts={shifts} shiftVolunteers={shiftVolunteers} />);
 
     expect(mockProgressBar).toHaveBeenCalledWith(
       expect.objectContaining({
-        filled: 15,
-        total: 15
+        filled: 3,
+        total: 25,
+        needed: 1
       }),
       undefined
     );
@@ -134,7 +154,8 @@ describe('TeamCard', () => {
         durationHours: 0,
         isActive: true,
         maxVolunteers: 5,
-        minVolunteers: 0
+        minVolunteers: 0,
+        requirements: []
       }
     ];
     const volunteers: Record<ShiftId, VolunteerInfo[]> = {
@@ -168,7 +189,8 @@ describe('TeamCard', () => {
         durationHours: 0,
         isActive: true,
         maxVolunteers: 5,
-        minVolunteers: 0
+        minVolunteers: 0,
+        requirements: []
       }
     ];
 
@@ -198,7 +220,8 @@ describe('TeamCard', () => {
         durationHours: 0,
         isActive: true,
         maxVolunteers: 5,
-        minVolunteers: 0
+        minVolunteers: 0,
+        requirements: []
       }
     ];
     const eventSlug = 'event-2025';
