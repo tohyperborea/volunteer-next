@@ -455,7 +455,7 @@
     "delete": "Delete"
   },
   "ProgressBar": {
-    "label": "{filled}/{total} Spots"
+    "needed": "{needed, plural, one {# more volunteer} other {# more volunteers}} needed"
   },
   "SendEmailButton": {
     "notifyAll": "Notify All Volunteers",

@@ -65,7 +65,11 @@ describe('ShiftCard', () => {
 
   it('shows required qualifications when present', () => {
     render(
-      <ShiftCard shift={mockShift} qualifications={[mockQualification]} volunteers={mockVolunteers} />
+      <ShiftCard
+        shift={mockShift}
+        qualifications={[mockQualification]}
+        volunteers={mockVolunteers}
+      />
     );
     const badge = screen.getByText('requires: First Aid');
     expect(badge).toBeInTheDocument();
@@ -113,19 +117,6 @@ describe('ShiftCard', () => {
     render(<ShiftCard shift={mockShift} volunteers={mockVolunteers} />);
 
     expect(screen.queryByRole('button', { name: 'editShift' })).not.toBeInTheDocument();
-  });
-
-  it('renders the progress bar with correct filled and total values', () => {
-    render(<ShiftCard shift={mockShift} volunteers={mockVolunteers} />);
-
-    expect(mockProgressBar).toHaveBeenCalledWith(
-      expect.objectContaining({
-        filled: mockShift.maxVolunteers - mockVolunteers.length,
-        total: mockShift.maxVolunteers
-      }),
-      undefined
-    );
-    expect(screen.getByTestId('progress-bar')).toBeInTheDocument();
   });
 
   test.each<{
@@ -181,17 +172,17 @@ describe('ShiftCard', () => {
     minVolunteers: number;
     maxVolunteers: number;
     volunteerCount: number;
-    expectedColour: string;
+    needed: number;
   }>([
-    { minVolunteers: 2, maxVolunteers: 10, volunteerCount: 0, expectedColour: 'red' },
-    { minVolunteers: 2, maxVolunteers: 10, volunteerCount: 1, expectedColour: 'orange' },
-    { minVolunteers: 2, maxVolunteers: 10, volunteerCount: 2, expectedColour: 'accent' },
-    { minVolunteers: 2, maxVolunteers: 10, volunteerCount: 5, expectedColour: 'accent' },
-    { minVolunteers: 2, maxVolunteers: 10, volunteerCount: 10, expectedColour: 'green' },
-    { minVolunteers: 2, maxVolunteers: 10, volunteerCount: 12, expectedColour: 'green' }
+    { minVolunteers: 2, maxVolunteers: 10, volunteerCount: 0, needed: 2 },
+    { minVolunteers: 2, maxVolunteers: 10, volunteerCount: 1, needed: 1 },
+    { minVolunteers: 2, maxVolunteers: 10, volunteerCount: 2, needed: 0 },
+    { minVolunteers: 2, maxVolunteers: 10, volunteerCount: 5, needed: 0 },
+    { minVolunteers: 2, maxVolunteers: 10, volunteerCount: 10, needed: 0 },
+    { minVolunteers: 2, maxVolunteers: 10, volunteerCount: 12, needed: 0 }
   ])(
-    'renders the progress bar with the correct status colour based on volunteer count',
-    ({ minVolunteers, maxVolunteers, volunteerCount, expectedColour }) => {
+    'renders the progress bar correctly based on volunteer count',
+    ({ minVolunteers, maxVolunteers, volunteerCount, needed }) => {
       const shift = {
         ...mockShift,
         minVolunteers,
@@ -205,7 +196,9 @@ describe('ShiftCard', () => {
 
       expect(mockProgressBar).toHaveBeenCalledWith(
         expect.objectContaining({
-          colour: expectedColour
+          filled: volunteerCount,
+          total: maxVolunteers,
+          needed
         }),
         undefined
       );

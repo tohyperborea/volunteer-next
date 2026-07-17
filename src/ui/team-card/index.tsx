@@ -7,7 +7,7 @@
 'use client';
 
 import { getTeamShiftsPath } from '@/utils/path';
-import { Button, Card, Flex, Heading, Link, Text } from '@radix-ui/themes';
+import { Box, Button, Card, Flex, Heading, Link, Text } from '@radix-ui/themes';
 import ProgressBar from '../progress-bar';
 import Collapsible from '../collapsible';
 import { useTranslations } from 'next-intl';
@@ -46,7 +46,7 @@ export default function TeamCard({ team, shifts, shiftVolunteers, actions, showS
           {/* Content */}
           <Flex
             flexGrow="1"
-            align={{ initial: 'stretch', sm: 'center' }}
+            align={{ initial: 'stretch', sm: 'start' }}
             direction={{ initial: 'column', sm: 'row' }}
             gap="3"
           >
@@ -57,13 +57,15 @@ export default function TeamCard({ team, shifts, shiftVolunteers, actions, showS
                 </Heading>
               </NextLink>
             </Link>
-            <Flex justify={{ initial: 'between', sm: 'end' }} align="center" flexGrow="1" gap="4">
+            <Flex justify={{ initial: 'between', sm: 'end' }} align="start" flexGrow="1" gap="4">
               {shifts && (
-                <ProgressBar
-                  colour={getStatusColour(shifts, shiftVolunteers)}
-                  filled={shiftSpots - filledSpots}
-                  total={shiftSpots}
-                />
+                <Box width="100%" maxWidth={{ sm: '200px' }}>
+                  <ProgressBar
+                    filled={filledSpots}
+                    total={shiftSpots}
+                    needed={getNumNeeded(shifts, shiftVolunteers)}
+                  />
+                </Box>
               )}
               {showSignup && (
                 <Button asChild={!isFull} disabled={isFull} title={isFull ? t('full') : undefined}>
@@ -96,29 +98,12 @@ export default function TeamCard({ team, shifts, shiftVolunteers, actions, showS
   );
 }
 
-const getStatusColour = (
+const getNumNeeded = (
   shifts: ShiftInfo[],
   shiftVolunteers: Record<ShiftId, VolunteerInfo[]> = {}
-) => {
-  let anyBelowMin = false;
-  let allFull = true;
-  for (const shift of shifts) {
-    const volunteers = shiftVolunteers?.[shift.id] ?? [];
-    if (volunteers.length === 0) {
-      return 'red';
-    }
-    if (volunteers.length < shift.minVolunteers) {
-      anyBelowMin = true;
-    }
-    if (volunteers.length < shift.maxVolunteers) {
-      allFull = false;
-    }
-  }
-  if (anyBelowMin) {
-    return 'orange';
-  }
-  if (allFull) {
-    return 'green';
-  }
-  return 'accent';
-};
+) =>
+  shifts.reduce(
+    (total, curr) =>
+      total + Math.max(0, curr.minVolunteers - (shiftVolunteers[curr.id]?.length ?? 0)),
+    0
+  );
